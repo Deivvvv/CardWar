@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CardConstructor : MonoBehaviour
 {
-
+    public CardConstructorUi Ui;
     /*
      
      
