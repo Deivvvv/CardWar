@@ -11,6 +11,9 @@ public class XMLSaver : MonoBehaviour
     void Start()
     {
         CardBase cardBase = new CardBase();
+        cardBase.Name = "New Hiro";
+        cardBase.Stat = new int[13];
+        cardBase.Trait = new string[5];
         string path = Application.dataPath + "/Resources";
         string name = "no";
         Save(cardBase, path, name);
@@ -27,28 +30,35 @@ public class XMLSaver : MonoBehaviour
 
         root.Add(new XElement("Name", cardBase.Name));
 
-        root.Add(new XElement("Slash", cardBase.Slash));
-        root.Add(new XElement("DistSlash", cardBase.DistSlash));
-        root.Add(new XElement("NoArmorSlash", cardBase.NoArmorSlash));
-        root.Add(new XElement("ArmorBreaker", cardBase.ArmorBreaker));
+        //root.Add(new XElement("Slash", cardBase.Slash));
+        //root.Add(new XElement("DistSlash", cardBase.DistSlash));
+        //root.Add(new XElement("NoArmorSlash", cardBase.NoArmorSlash));
+        //root.Add(new XElement("ArmorBreaker", cardBase.ArmorBreaker));
 
-        root.Add(new XElement("Helmet", cardBase.Helmet));
-        root.Add(new XElement("Hp", cardBase.Hp));
+        //root.Add(new XElement("Helmet", cardBase.Helmet));
+        //root.Add(new XElement("Hp", cardBase.Hp));
 
-        root.Add(new XElement("ShildTayp", cardBase.ShildTayp));
-        root.Add(new XElement("Shild", cardBase.Shild));
-        
-        root.Add(new XElement("Moving", cardBase.Moving));
-        root.Add(new XElement("Quirkiness", cardBase.Quirkiness));
-        root.Add(new XElement("Evasion", cardBase.Evasion));
-        root.Add(new XElement("Somersault", cardBase.Somersault));
+        //root.Add(new XElement("ShildTayp", cardBase.ShildTayp));
+        //root.Add(new XElement("Shild", cardBase.Shild));
 
-        for (int i =0; i < 5; i++)
+        //root.Add(new XElement("Moving", cardBase.Moving));
+        //root.Add(new XElement("Quirkiness", cardBase.Quirkiness));
+        //root.Add(new XElement("Evasion", cardBase.Evasion));
+        //root.Add(new XElement("Somersault", cardBase.Somersault));
+
+        root.Add(new XElement("Stat", cardBase.Stat.Length));
+        for (int i = 0; i < cardBase.Stat.Length; i++)
         {
-            root.Add(new XElement("Trait"+i, "Null"));
+            root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
         }
 
-        root.Add(new XElement("Mana", cardBase.Mana));
+        root.Add(new XElement("Trait", cardBase.Trait.Length));
+        for (int i =0; i < cardBase.Trait.Length; i++)
+        {
+            root.Add(new XElement("Trait"+i, cardBase.Trait[i]));
+        }
+
+     //   root.Add(new XElement("Mana", cardBase.Mana));
 
 
         XDocument saveDoc = new XDocument(root);
@@ -77,8 +87,8 @@ public class XMLSaver : MonoBehaviour
 
             CardBase card = new CardBase();
             // string PaletteName = root.Value("name");
-            //Debug.Log(root.Attribute("Name").Value);
-            //card.Name = root.Attribute("Name").Value;
+            Debug.Log(root.Element("Name").Value);
+            card.Name = root.Element("Name").Value;
 
             Debug.Log(path);
         }

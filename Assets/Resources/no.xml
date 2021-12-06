@@ -1,21 +1,23 @@
 <root>
-  <Name />
-  <Slash>0</Slash>
-  <DistSlash>0</DistSlash>
-  <NoArmorSlash>0</NoArmorSlash>
-  <ArmorBreaker>0</ArmorBreaker>
-  <Helmet>0</Helmet>
-  <Hp>0</Hp>
-  <ShildTayp>0</ShildTayp>
-  <Shild>0</Shild>
-  <Moving>0</Moving>
-  <Quirkiness>0</Quirkiness>
-  <Evasion>0</Evasion>
-  <Somersault>0</Somersault>
-  <Trait0>Null</Trait0>
-  <Trait1>Null</Trait1>
-  <Trait2>Null</Trait2>
-  <Trait3>Null</Trait3>
-  <Trait4>Null</Trait4>
-  <Mana>0</Mana>
+  <Name>New Hiro</Name>
+  <Stat>13</Stat>
+  <Trait0>0</Trait0>
+  <Trait1>0</Trait1>
+  <Trait2>0</Trait2>
+  <Trait3>0</Trait3>
+  <Trait4>0</Trait4>
+  <Trait5>0</Trait5>
+  <Trait6>0</Trait6>
+  <Trait7>0</Trait7>
+  <Trait8>0</Trait8>
+  <Trait9>0</Trait9>
+  <Trait10>0</Trait10>
+  <Trait11>0</Trait11>
+  <Trait12>0</Trait12>
+  <Trait>5</Trait>
+  <Trait0 />
+  <Trait1 />
+  <Trait2 />
+  <Trait3 />
+  <Trait4 />
 </root>
