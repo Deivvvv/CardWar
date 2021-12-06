@@ -11,5 +11,15 @@ public class CardBase
     public int NoArmorSlash;
     public int ArmorBreaker;
 
+    public int Hp;
+    public int Helmet;
+    public int ShildTayp;
+    public int Shild;
+
+    public int Moving;
+    public int Quirkiness;
+    public int Evasion;
+    public int Somersault;
+
     public int Mana;
 }

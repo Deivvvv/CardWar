@@ -1,3 +1,21 @@
 <root>
+  <Name />
   <Slash>0</Slash>
+  <DistSlash>0</DistSlash>
+  <NoArmorSlash>0</NoArmorSlash>
+  <ArmorBreaker>0</ArmorBreaker>
+  <Helmet>0</Helmet>
+  <Hp>0</Hp>
+  <ShildTayp>0</ShildTayp>
+  <Shild>0</Shild>
+  <Moving>0</Moving>
+  <Quirkiness>0</Quirkiness>
+  <Evasion>0</Evasion>
+  <Somersault>0</Somersault>
+  <Trait0>Null</Trait0>
+  <Trait1>Null</Trait1>
+  <Trait2>Null</Trait2>
+  <Trait3>Null</Trait3>
+  <Trait4>Null</Trait4>
+  <Mana>0</Mana>
 </root>

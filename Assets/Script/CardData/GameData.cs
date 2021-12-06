@@ -8,8 +8,7 @@ using System.IO;
 [CreateAssetMenu(fileName = "GameData", menuName = "ScriptableObjects/GameData", order = 1)]
 public class GameData : ScriptableObject
 {
-    public CardBase AllCard;
-
+    public List<string> AllCard;
     public Fraction[] AllFraction;
 }
 
@@ -19,7 +18,9 @@ public class GameData : ScriptableObject
 public class Fraction : ScriptableObject
 {
     public string Frac;
+    public string Path;
     // public XML
+    public string[] Card;
 
-    public TextAsset[] Hiro;
+   // public TextAsset[] Hiro;
 }
