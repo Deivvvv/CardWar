@@ -1,18 +1,28 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
 
 public class CardConstructorUi : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public InputField NameFlied;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public Transform BaseCard;
+
+    public Transform StatCard;
+    public Transform TraitCard;
+
+    public Text[] StatCount;
+    public Text[] TraitCount;
+
+    public Text ManaCount;
+    //public Text ManaCount;
+
+    public GameObject OrigStat;
+
+    public Sprite[] Icon;
+    public string[] StatName;
+    public int[] SellCount;
 }

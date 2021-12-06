@@ -10,14 +10,14 @@ public class XMLSaver : MonoBehaviour
 {
     void Start()
     {
-        CardBase cardBase = new CardBase();
-        cardBase.Name = "New Hiro";
-        cardBase.Stat = new int[13];
-        cardBase.Trait = new string[5];
-        string path = Application.dataPath + "/Resources";
-        string name = "no";
-        Save(cardBase, path, name);
-        Load(path+"/"+name);
+        //CardBase cardBase = new CardBase();
+        //cardBase.Name = "New Hiro";
+        //cardBase.Stat = new int[13];
+        //cardBase.Trait = new string[5];
+        //string path = Application.dataPath + "/Resources";
+        //string name = "no";
+        //Save(cardBase, path, name);
+        //Load(path+"/"+name);
     }
     void Save(CardBase cardBase, string path, string name)
     {
