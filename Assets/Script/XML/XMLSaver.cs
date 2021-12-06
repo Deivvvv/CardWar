@@ -64,33 +64,36 @@ public class XMLSaver : MonoBehaviour
         XDocument saveDoc = new XDocument(root);
         File.WriteAllText($"{path}/{name}.xml", saveDoc.ToString());
 
-
-        Debug.Log($"{path}/{name}.xml");
     }
 
     void Load(string path)
     {
         if (path !="")
         {
-            XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");// XDocument.Parse(File.ReadAllText(path)).Element("root");
-                                                                                             //XmlTextReader xmlReader = new XmlTextReader(new StringReader(xmlAsset.text));
-                                                                                             //while (xmlReader.Read())
-                                                                                             //{
-                                                                                             //    ////if (xmlReader.name == "item")
-                                                                                             //    ////{
-                                                                                             //    //    if (xmlReader.GetAttribute("num") == "0")
-                                                                                             //    //    {
-                                                                                             //    //        // что-то делаем
-                                                                                             //    //    }
-                                                                                             //    ////}
-                                                                                             //}
+            XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
 
-            CardBase card = new CardBase();
-            // string PaletteName = root.Value("name");
-            Debug.Log(root.Element("Name").Value);
-            card.Name = root.Element("Name").Value;
+            CardBase cardBase = new CardBase();
 
-            Debug.Log(path);
+            cardBase.Name = root.Element("Name").Value;
+
+
+            cardBase.Stat = new int[int.Parse(root.Element("Stat").Value)];
+            for (int i = 0; i < cardBase.Stat.Length; i++)
+            {
+                cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
+                Debug.Log(cardBase.Stat[i]);
+            }
+
+
+
+
+            cardBase.Trait = new string[int.Parse(root.Element("Trait").Value)];
+            for (int i = 0; i < cardBase.Trait.Length; i++)
+            {
+                cardBase.Trait[i] = root.Element($"Trait{i}").Value;
+                Debug.Log(cardBase.Trait[i]);
+            }
+
         }
     }
 }
