@@ -15,9 +15,9 @@
   <Stat11>0</Stat11>
   <Stat12>1</Stat12>
   <Trait>5</Trait>
-  <Trait0></Trait0>
-  <Trait1></Trait1>
-  <Trait2></Trait2>
-  <Trait3></Trait3>
-  <Trait4></Trait4>
+  <Trait0 />
+  <Trait1 />
+  <Trait2 />
+  <Trait3 />
+  <Trait4 />
 </root>

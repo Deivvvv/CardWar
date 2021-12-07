@@ -7,7 +7,8 @@ using UnityEngine;
 public class GameData : ScriptableObject
 {
     public List<int> BlackList;
-    public List<string> AllCard;
+    public int AllCard;
+   // public List<string> AllCard;
 
     public Fraction[] AllFraction;
 }

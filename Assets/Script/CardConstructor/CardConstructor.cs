@@ -10,7 +10,8 @@ public class CardConstructor : MonoBehaviour
     private int curentNum;
     private CardBase cardBase;
     public List<CardBase> LocalCard;
-
+    [SerializeField]
+    private List<int> newCard;
     [SerializeField]
     private CardConstructorUi Ui;
   //  [SerializeField]
@@ -22,6 +23,8 @@ public class CardConstructor : MonoBehaviour
     private List<int> newData;
     //[SerializeField]
     //private XMLSaver saver;
+
+    private string origPath = $"/Resources/Hiro";
 
     void Sort()
     {
@@ -62,12 +65,13 @@ public class CardConstructor : MonoBehaviour
                 ViewCardBase(a);
                 
                 gameData.BlackList.RemoveAt(0);
+                AddEdit(a);
             }
             else
             {
-                path = $"/Resources/Hiro{gameData.AllCard.Count}";
-                gameData.AllCard.Add(path);
-                path = Application.dataPath + $"/Resources/Hiro{gameData.AllCard.Count - 1}";
+                path = Application.dataPath + origPath + $"{LocalCard.Count}";
+
+                AddEdit(LocalCard.Count);
 
                 LocalCard.Add(card);
                 NewCard(LocalCard.Count - 1);
@@ -76,10 +80,14 @@ public class CardConstructor : MonoBehaviour
         }
         else
         {
-            card.Body = LocalCard[curentNum-1].Body;
-            LocalCard[curentNum - 1] = card;
-            ViewCardBase(curentNum - 1);
+            int a = curentNum - 1;
+            card.Body = LocalCard[a].Body;
+            LocalCard[a] = card;
+            ViewCardBase(a);
+
+            AddEdit(a);
         }
+
         Sort();
     }
     void Inject()
@@ -104,6 +112,7 @@ public class CardConstructor : MonoBehaviour
             {
                 cardBase.Trait[i] = card.Trait[i];
             }
+
         }
         ReCalculate();
     }
@@ -128,20 +137,20 @@ public class CardConstructor : MonoBehaviour
 
     void TransfData(GameData Data1, GameData Data2)
     {
-        if(Data1.AllCard.Count > Data2.AllCard.Count)
-        {
-            int a = Data1.AllCard.Count - Data2.AllCard.Count;
-            for (int i = 0; i < a; i++)
-            {
-                Data2.AllCard.Add("");
-            }
-        }
+        //if(Data1.AllCard.Count > Data2.AllCard.Count)
+        //{
+        //    int a = Data1.AllCard.Count - Data2.AllCard.Count;
+        //    for (int i = 0; i < a; i++)
+        //    {
+        //        Data2.AllCard.Add("");
+        //    }
+        //}
 
-        for (int i = 0; i < Data1.AllCard.Count; i++)
-        {
-            Data2.AllCard[i] = Data1.AllCard[i];
-        }
-
+        //for (int i = 0; i < Data1.AllCard.Count; i++)
+        //{
+        //    Data2.AllCard[i] = Data1.AllCard[i];
+        //}
+        Data2.AllCard = Data1.AllCard;
 
 
         if (Data1.BlackList.Count > Data2.BlackList.Count)
@@ -166,40 +175,30 @@ public class CardConstructor : MonoBehaviour
             Data2.BlackList[i] = Data1.BlackList[i];
         }
     }
+    void AddEdit(int a)
+    {
+        for (int i = 0; i < newCard.Count; i++)
+        {
+            if (a == newCard[i])
+                return;
+        }
+        newCard.Add(a);
+    }
+
     void Save()
     {
+        gameData.AllCard = LocalCard.Count;
         TransfData(gameData, gameSetting.GlobalMyData);
-        int a = gameData.AllCard.Count;
+        int b = 0;
         string path = "";
-        for (int i = 0; i < a; i++)
+        for (int i = 0; i < newCard.Count;i++)
         {
-            path = Application.dataPath + gameData.AllCard[i];
-            XMLSaver.ISave(LocalCard[i], path);
+            b = newCard[i];
+            path = Application.dataPath + origPath + $"{b}";
+            XMLSaver.ISave(LocalCard[b], path);
         }
+        newCard = new List<int>();
 
-        //if (curentNum == -1)
-        //{
-        //    string path = $"/Resources/Hiro{gameData.AllCard.Count}";
-
-        //    if (gameData.BlackList.Count > 0)
-        //    {
-        //        gameData.AllCard[gameData.BlackList[0]] = path;
-        //        path = Application.dataPath + $"/Resources/Hiro{gameData.BlackList[0]}";
-        //        gameData.BlackList.RemoveAt(0);
-        //    }
-        //    else
-        //    {
-        //        gameData.AllCard.Add(path);
-        //        path = Application.dataPath + $"/Resources/Hiro{gameData.AllCard.Count - 1}";
-        //    }
-
-        //    XMLSaver.ISave(cardBase, path);
-        //}
-        //else
-        //{
-        //    string path = Application.dataPath + $"/Resources/Hiro{curentNum}";
-        //    XMLSaver.ISave(cardBase, path);
-        //}
     }
     void Reset(int a)
     {
@@ -355,14 +354,14 @@ public class CardConstructor : MonoBehaviour
 
     void LoadBase()
     {
-        int a = gameData.AllCard.Count;
+
         string path = "";
 
         CardConstructor cardConstructor = gameObject.GetComponent<CardConstructor>();
-        for (int i = 0; i < a; i++)
+        for (int i = 0; i < gameData.AllCard; i++)
         {
             // NewCard();
-            path = Application.dataPath + $"/Resources/Hiro{i}";
+            path = Application.dataPath + origPath + $"{i}";
             XMLSaver.ILoad(path, cardConstructor, i);
             NewCard(i);
         }
@@ -411,29 +410,12 @@ public class CardConstructor : MonoBehaviour
         Ui.SaveButton.onClick.AddListener(() => Save());
 
         gameData = gameSetting.ReservData;//= new GameData();
-        gameData.AllCard = new List<string>();
+       // gameData.AllCard = // = new List<string>();
         gameData.BlackList = new List<int>();
 
 
         TransfData( gameSetting.GlobalMyData, gameData);
 
-        // GameData AltData =  gameSetting.GlobalMyData;
-        //for (int i = 0; i < AltData.AllCard.Count; i++)
-        //{
-        //    gameData.AllCard[i] = AltData.AllCard[i];
-        //}
-
-        //for (int i = 0; i < AltData.BlackList.Count; i++)
-        //{
-        //    gameData.BlackList[i] = AltData.BlackList[i];
-        //}
-        //ReservData
-        //GlobalMyData
-        //LocalMyData
-
-        //ReservPlayerData
-        //GlobalPlayerData
-        //LocalPlayerData
 
     }
 

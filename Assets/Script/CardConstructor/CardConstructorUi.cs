@@ -18,7 +18,6 @@ public class CardConstructorUi : MonoBehaviour
     public Text[] TraitCount;
 
     public Text ManaCount;
-    //public Text ManaCount;
 
     public GameObject OrigStat;
     public GameObject OrigCard;
