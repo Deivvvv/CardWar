@@ -23,9 +23,17 @@ public class CardConstructor : MonoBehaviour
     //[SerializeField]
     //private XMLSaver saver;
 
+    void Sort()
+    {
+
+    }
+
     void Enject()
     {
         CardBase card = new CardBase();
+        card.Stat = new int[cardBase.Stat.Length];
+        card.Trait = new string[cardBase.Trait.Length ];
+        card.Name = cardBase.Name;
 
         for (int i = 0; i < cardBase.Stat.Length; i++)
         {
@@ -39,31 +47,50 @@ public class CardConstructor : MonoBehaviour
 
         if (curentNum < 0)
         {
-            LocalCard.Add(card);
-            NewCard(LocalCard.Count-1);
+            string path = "";
+
+            if (gameData.BlackList.Count > 0)
+            {
+                int a = gameData.BlackList[0];
+
+                path = $"/Resources/Hiro{a}";
+                gameData.AllCard[a] = path;
+
+                LocalCard[a].Body.gameObject.active = true;
+                ViewCardBase(a);
+                
+                gameData.BlackList.RemoveAt(0);
+            }
+            else
+            {
+                path = $"/Resources/Hiro{gameData.AllCard.Count}";
+                gameData.AllCard.Add(path);
+                path = Application.dataPath + $"/Resources/Hiro{gameData.AllCard.Count - 1}";
+
+                LocalCard.Add(card);
+                NewCard(LocalCard.Count - 1);
+            }
+
         }
         else
         {
-            LocalCard[curentNum] = card;
-            ViewCardBase(curentNum);
+            card.Body = LocalCard[curentNum-1].Body;
+            LocalCard[curentNum - 1] = card;
+            ViewCardBase(curentNum - 1);
         }
-      //  Sort();
+        Sort();
     }
     void Inject()
     {
-        cardBase = new CardBase();
-        if (curentNum < 0)
-        {
-            cardBase.Name = "New Hiro";
-            cardBase.Stat = new int[13];
-            cardBase.Trait = new string[5];
+        int a = curentNum;
+        curentNum = -1;
+        Delite();
+        curentNum = a;
 
-            cardBase.Stat[4] = 1;
-        }
-        else
+        if (curentNum > 0)
         {
-            cardBase = new CardBase();
-            CardBase card = LocalCard[curentNum];
+            CardBase card = LocalCard[curentNum-1];
+            cardBase.Name = card.Name;
 
             for (int i = 0; i < cardBase.Stat.Length; i++)
             {
@@ -79,10 +106,19 @@ public class CardConstructor : MonoBehaviour
     }
     void Delite()
     {
-        gameData.BlackList.Add(curentNum);
-        LocalCard[curentNum].Body.gameObject.active = false;
-       // Ui.
-        SwitchCard(-1);
+        if (curentNum != -1)
+        {
+            gameData.BlackList.Add(curentNum-1);
+            LocalCard[curentNum-1].Body.gameObject.active = false;
+            // Ui.
+            SwitchCard(-1);
+        }
+        cardBase = new CardBase();
+
+        cardBase.Name = "New Hiro";
+        cardBase.Stat = new int[13];
+        cardBase.Trait = new string[5];
+        cardBase.Stat[4] = 1;
     }
 
     void Save()
@@ -191,14 +227,20 @@ public class CardConstructor : MonoBehaviour
     }
     void SwitchCard(int a)
     {
-        int b = curentNum + 1;
+        int b = curentNum;
         //После появления метода сортировки перевести на локальный номер карты
-        Ui.BaseCard.GetChild(b).gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+        if(b!= -1)
+            Ui.BaseCard.GetChild(b).gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+        else
+            Ui.BaseCard.GetChild(0).gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
 
         curentNum = a;
-        b = curentNum + 1;
+        b = curentNum;
 
-        Ui.BaseCard.GetChild(b).gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+        if (b != -1)
+            Ui.BaseCard.GetChild(b).gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+        else
+            Ui.BaseCard.GetChild(0).gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
 
     }
     void NewCard(int i)
@@ -209,6 +251,8 @@ public class CardConstructor : MonoBehaviour
         int a = Ui.BaseCard.childCount - 1;
         Button button = GO.GetComponent<Button>();
         SwitchCardButton(a, button);
+
+        GO.GetComponent<Image>().color = Ui.SelectColor[1];
 
         LocalCard[i].Body = GO.transform;
       //  LocalCard.Add(new CardBase());
@@ -233,17 +277,19 @@ public class CardConstructor : MonoBehaviour
         {
             CardBase card = LocalCard[a];
                Transform trans = card.Body;
-
+        //    Debug.Log(trans);
+         //   Debug.Log(LocalCard[a]);
             //trans.GetChild(1).//портреты
 
             TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
             text.text = card.Name;
 
             text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
-            for (int i = 0; i < card.Stat.Length; i++)
+            text.text = "";
+            for (int i = 0; i < card.Stat.Length-1; i++)
             {
-                if (card.Stat[i] > 0)
-                    text.text += $"<sprite name={gameSetting.NameIcon[0]}>{card.Stat[0]} ";
+                if (card.Stat[i] > 0) 
+                    text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
             }
             // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
 
@@ -278,18 +324,7 @@ public class CardConstructor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        curentNum = -1;
-        cardBase = new CardBase();
-        cardBase.Stat = new int[13];
-        cardBase.Trait = new string[5];
-
         PreLoad();
-
-        GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
-        GO.GetComponent<Image>().color = Ui.SelectColor[0];
-        GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
-
-        LocalCard = new List<CardBase>();
 
         LoadBase();
         // NewCard();
@@ -300,6 +335,22 @@ public class CardConstructor : MonoBehaviour
 
     void PreLoad()
     {
+        curentNum = -1;
+        Delite();
+
+        LocalCard = new List<CardBase>();
+
+
+
+        GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
+        GO.GetComponent<Image>().color = Ui.SelectColor[0];
+        GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
+
+        Ui.EjectButton.onClick.AddListener(() => Enject());
+        Ui.InjectButton.onClick.AddListener(() => Inject());
+        Ui.DeliteButton.onClick.AddListener(() => Delite());
+
+
         gameData = new GameData();
         gameData.AllCard = new List<string>();
         gameData.BlackList = new List<int>();

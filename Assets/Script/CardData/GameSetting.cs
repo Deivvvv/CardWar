@@ -18,4 +18,7 @@ public class GameSetting : ScriptableObject
     public string[] StatName;
     public int[] SellCount;
     public string[] NameIcon;
+
+
+   // public Color[] SelectColor; ??
 }

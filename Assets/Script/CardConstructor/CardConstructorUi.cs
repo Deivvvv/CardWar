@@ -28,9 +28,12 @@ public class CardConstructorUi : MonoBehaviour
     //public int[] SellCount;
     //public string[] NameIcon;
 
+    public Button EjectButton;
+    public Button InjectButton;
+    public Button DeliteButton;
+
     public Button SaveButton;
     public Button LoadButton;
-    public Button DeliteButton;
 
     public Color[] SelectColor;
 }
