@@ -14,6 +14,8 @@ public class CardConstructorUi : MonoBehaviour
     public Transform StatCard;
     public Transform TraitCard;
 
+    public Transform BaseFiltr;
+
     public Text[] StatCount;
     public Text[] TraitCount;
 
@@ -21,6 +23,7 @@ public class CardConstructorUi : MonoBehaviour
 
     public GameObject OrigStat;
     public GameObject OrigCard;
+    public GameObject OrigFiltr;
 
     //public Sprite[] Icon;
     //public string[] StatName;

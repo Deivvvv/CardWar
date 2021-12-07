@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 using Saver;
 
+using System.Linq;
+
 public class CardConstructor : MonoBehaviour
 {
     private int curentNum;
@@ -21,14 +23,76 @@ public class CardConstructor : MonoBehaviour
     private GameSetting gameSetting;
 
     private List<int> newData;
+    private int curentFiltr;
+    private bool filterRevers;
     //[SerializeField]
     //private XMLSaver saver;
 
     private string origPath = $"/Resources/Hiro";
 
-    void Sort()
+    void GenerateFiltr()
+    {
+        int a = gameSetting.SellCount.Length + 1;
+
+        GameObject GO = null;
+
+        GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
+        GO.transform.SetParent(Ui.BaseFiltr);
+
+        AddFiltr(-1, GO.GetComponent<Button>());
+
+
+        for (int i = 0; i < a; i++)
+        {
+
+            GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
+            GO.transform.SetParent(Ui.BaseFiltr);
+
+            GO.GetComponent<Image>().sprite = gameSetting.Icon[i];
+            AddFiltr(i, GO.GetComponent<Button>());
+        }
+    }
+    void AddFiltr(int a, Button button)
     {
 
+        button.onClick.AddListener(() => SetFiltr(a)); 
+    }
+    void SetFiltr(int a)
+    {
+        if (curentFiltr == a)
+            filterRevers = !filterRevers;
+        else
+            filterRevers = false;
+
+        curentFiltr = a;
+
+        Sort();
+    }
+
+    void Sort()
+    {
+        IEnumerable<CardBase> items = null;//biomData.Arsenal.OrderBy(i => i.Class).ThenBy(x => x.CostMin).ThenBy(x => x.Qvailty);
+
+
+        if (curentFiltr == -1)
+        {
+            items = LocalCard;
+        }
+        else
+        {
+            if(filterRevers)
+                items = LocalCard.OrderBy(i => i.Stat[curentFiltr]);
+            else
+                items = LocalCard.OrderByDescending(i => i.Stat[curentFiltr]);
+          
+
+        }
+
+        foreach (CardBase item in items)
+        {
+            item.Body.SetParent(Ui.TraitCard);
+            item.Body.SetParent(Ui.BaseCard);
+        }
     }
 
     void Enject()
@@ -137,19 +201,6 @@ public class CardConstructor : MonoBehaviour
 
     void TransfData(GameData Data1, GameData Data2)
     {
-        //if(Data1.AllCard.Count > Data2.AllCard.Count)
-        //{
-        //    int a = Data1.AllCard.Count - Data2.AllCard.Count;
-        //    for (int i = 0; i < a; i++)
-        //    {
-        //        Data2.AllCard.Add("");
-        //    }
-        //}
-
-        //for (int i = 0; i < Data1.AllCard.Count; i++)
-        //{
-        //    Data2.AllCard[i] = Data1.AllCard[i];
-        //}
         Data2.AllCard = Data1.AllCard;
 
 
@@ -383,11 +434,14 @@ public class CardConstructor : MonoBehaviour
         cardBase.Trait = new string[5];
         PreLoad();
 
+
         LoadBase();
         // NewCard();
 
         LoadUi();
         Inject();
+
+        GenerateFiltr();
     }
 
     void PreLoad()
@@ -396,6 +450,7 @@ public class CardConstructor : MonoBehaviour
        // Delite();
 
         LocalCard = new List<CardBase>();
+        newCard = new List<int>();
 
 
 
