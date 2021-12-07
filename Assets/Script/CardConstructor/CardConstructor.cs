@@ -33,7 +33,7 @@ public class CardConstructor : MonoBehaviour
         CardBase card = new CardBase();
         card.Stat = new int[cardBase.Stat.Length];
         card.Trait = new string[cardBase.Trait.Length ];
-        card.Name = cardBase.Name;
+        card.Name = Ui.NameFlied.text;
 
         for (int i = 0; i < cardBase.Stat.Length; i++)
         {
@@ -53,10 +53,12 @@ public class CardConstructor : MonoBehaviour
             {
                 int a = gameData.BlackList[0];
 
-                path = $"/Resources/Hiro{a}";
-                gameData.AllCard[a] = path;
+                //path = $"/Resources/Hiro{a}";
+                //gameData.AllCard[a] = path;
 
                 LocalCard[a].Body.gameObject.active = true;
+                card.Body = LocalCard[a].Body;
+                LocalCard[a] = card;
                 ViewCardBase(a);
                 
                 gameData.BlackList.RemoveAt(0);
@@ -90,7 +92,8 @@ public class CardConstructor : MonoBehaviour
         if (curentNum > 0)
         {
             CardBase card = LocalCard[curentNum-1];
-            cardBase.Name = card.Name;
+            cardBase.Name = card.Name; 
+            Ui.NameFlied.text = cardBase.Name;
 
             for (int i = 0; i < cardBase.Stat.Length; i++)
             {
@@ -119,10 +122,61 @@ public class CardConstructor : MonoBehaviour
         cardBase.Stat = new int[13];
         cardBase.Trait = new string[5];
         cardBase.Stat[4] = 1;
+        Ui.NameFlied.text = cardBase.Name;
+        ViewCard();
     }
 
+    void TransfData(GameData Data1, GameData Data2)
+    {
+        if(Data1.AllCard.Count > Data2.AllCard.Count)
+        {
+            int a = Data1.AllCard.Count - Data2.AllCard.Count;
+            for (int i = 0; i < a; i++)
+            {
+                Data2.AllCard.Add("");
+            }
+        }
+
+        for (int i = 0; i < Data1.AllCard.Count; i++)
+        {
+            Data2.AllCard[i] = Data1.AllCard[i];
+        }
+
+
+
+        if (Data1.BlackList.Count > Data2.BlackList.Count)
+        {
+            int a = Data1.BlackList.Count - Data2.BlackList.Count;
+            for (int i = 0; i < a; i++)
+            {
+                Data2.BlackList.Add(-1);
+            }
+        }
+        else if (Data1.BlackList.Count < Data2.BlackList.Count)
+        {
+            int a = Data2.BlackList.Count - Data1.BlackList.Count;
+            for (int i = 0; i < a; i++)
+            {
+                Data2.BlackList.RemoveAt(0);
+            }
+        }
+
+        for (int i = 0; i < Data1.BlackList.Count; i++)
+        {
+            Data2.BlackList[i] = Data1.BlackList[i];
+        }
+    }
     void Save()
     {
+        TransfData(gameData, gameSetting.GlobalMyData);
+        int a = gameData.AllCard.Count;
+        string path = "";
+        for (int i = 0; i < a; i++)
+        {
+            path = Application.dataPath + gameData.AllCard[i];
+            XMLSaver.ISave(LocalCard[i], path);
+        }
+
         //if (curentNum == -1)
         //{
         //    string path = $"/Resources/Hiro{gameData.AllCard.Count}";
@@ -147,7 +201,7 @@ public class CardConstructor : MonoBehaviour
         //    XMLSaver.ISave(cardBase, path);
         //}
     }
-    void Load(int a)
+    void Reset(int a)
     {
         string path = $"/Resources/Hiro{a}";
         //XMLSaver.ILoad(path, Ui,a);
@@ -263,7 +317,6 @@ public class CardConstructor : MonoBehaviour
 
     void ViewCard()
     {
-        Ui.NameFlied.text = cardBase.Name;
         for (int i = 0; i < cardBase.Stat.Length - 1; i++)
         {
             Ui.StatCount[i].text = $"{cardBase.Stat[i]}";
@@ -277,8 +330,7 @@ public class CardConstructor : MonoBehaviour
         {
             CardBase card = LocalCard[a];
                Transform trans = card.Body;
-        //    Debug.Log(trans);
-         //   Debug.Log(LocalCard[a]);
+
             //trans.GetChild(1).//портреты
 
             TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
@@ -314,6 +366,7 @@ public class CardConstructor : MonoBehaviour
             XMLSaver.ILoad(path, cardConstructor, i);
             NewCard(i);
         }
+
         // for (int i = 0; i < LocalCard.Count; i++)
         for (int i = 0; i < gameData.BlackList.Count; i++)
         {
@@ -324,19 +377,24 @@ public class CardConstructor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        cardBase = new CardBase();
+
+        cardBase.Name = "New Hiro";
+        cardBase.Stat = new int[13];
+        cardBase.Trait = new string[5];
         PreLoad();
 
         LoadBase();
         // NewCard();
-        LoadUi();
 
+        LoadUi();
         Inject();
     }
 
     void PreLoad()
     {
         curentNum = -1;
-        Delite();
+       // Delite();
 
         LocalCard = new List<CardBase>();
 
@@ -350,21 +408,25 @@ public class CardConstructor : MonoBehaviour
         Ui.InjectButton.onClick.AddListener(() => Inject());
         Ui.DeliteButton.onClick.AddListener(() => Delite());
 
+        Ui.SaveButton.onClick.AddListener(() => Save());
 
-        gameData = new GameData();
+        gameData = gameSetting.ReservData;//= new GameData();
         gameData.AllCard = new List<string>();
         gameData.BlackList = new List<int>();
 
-        GameData AltData =  gameSetting.GlobalMyData;
-        for (int i = 0; i < AltData.AllCard.Count; i++)
-        {
-            gameData.AllCard[i] = AltData.AllCard[i];
-        }
 
-        for (int i = 0; i < AltData.BlackList.Count; i++)
-        {
-            gameData.BlackList[i] = AltData.BlackList[i];
-        }
+        TransfData( gameSetting.GlobalMyData, gameData);
+
+        // GameData AltData =  gameSetting.GlobalMyData;
+        //for (int i = 0; i < AltData.AllCard.Count; i++)
+        //{
+        //    gameData.AllCard[i] = AltData.AllCard[i];
+        //}
+
+        //for (int i = 0; i < AltData.BlackList.Count; i++)
+        //{
+        //    gameData.BlackList[i] = AltData.BlackList[i];
+        //}
         //ReservData
         //GlobalMyData
         //LocalMyData

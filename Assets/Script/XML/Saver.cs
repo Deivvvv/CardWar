@@ -11,12 +11,8 @@ namespace Saver
     static class XMLSaver// : MonoBehaviour
     {
 
-      public static void ISave(CardBase cardBase, string path)
+        public static void ISave(CardBase cardBase, string path)
         {
-            //if (!File.Exists(path))
-            //{
-            //    Directory.CreateDirectory(path);
-            //}
 
             XElement root = new XElement("root");
 
@@ -65,15 +61,15 @@ namespace Saver
                     cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
 
-                if (a > -1)
-                {
-                    cardConstructor.LocalCard[a] = cardBase;
-                }
-                else
-                {
+                //if (a > -1)
+                //{
+                //    cardConstructor.LocalCard[a] = cardBase;
+                //}
+                //else
+                //{
                     cardConstructor.LocalCard.Add(cardBase);
-                }
-               // return(cardBase);
+               // }
+
             }
         }
     }

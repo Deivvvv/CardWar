@@ -33,7 +33,7 @@ public class CardConstructorUi : MonoBehaviour
     public Button DeliteButton;
 
     public Button SaveButton;
-    public Button LoadButton;
+    public Button ResetButton;
 
     public Color[] SelectColor;
 }
