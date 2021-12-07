@@ -39,7 +39,7 @@ namespace Saver
 
         }
 
-        public static void ILoad(string path, CardConstructorUi cardConstructor, int a)
+        public static void ILoad(string path, CardConstructor cardConstructor, int a)
         {
             if (path != "")
             {
@@ -67,11 +67,11 @@ namespace Saver
 
                 if (a > -1)
                 {
-                    cardConstructor.CardLibrary[a] = cardBase;
+                    cardConstructor.LocalCard[a] = cardBase;
                 }
                 else
                 {
-                    cardConstructor.CardLibrary.Add(cardBase);
+                    cardConstructor.LocalCard.Add(cardBase);
                 }
                // return(cardBase);
             }

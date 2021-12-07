@@ -7,7 +7,6 @@ using TMPro;
 
 public class CardConstructorUi : MonoBehaviour
 {
-    public List<CardBase> CardLibrary;
     public InputField NameFlied;
 
     public Transform BaseCard;

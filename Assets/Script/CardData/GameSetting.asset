@@ -9,12 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbd6eb45e639d454a9265a8cd6dde7d7, type: 3}
-  m_Name: Orig_Data
+  m_Script: {fileID: 11500000, guid: a98a75caf9b362f47838a442af0ebfbc, type: 3}
+  m_Name: GameSetting
   m_EditorClassIdentifier: 
-  BlackList: 
-  AllCard: []
-  AllFraction: []
+  ReservData: {fileID: 11400000, guid: f3cabbf0cc8bb6c49ab3bf7516b7eb72, type: 2}
+  GlobalMyData: {fileID: 11400000, guid: 8c283ae78cc7dad4d9e55d2ea27299cb, type: 2}
+  LocalMyData: {fileID: 0}
+  ReservPlayerData: {fileID: 11400000, guid: 87d98fc44137376419d723b2573252eb, type: 2}
+  GlobalPlayerData: {fileID: 11400000, guid: deffde4e2c79e4f4db9fd1353ef8e171, type: 2}
+  LocalPlayerData: {fileID: 0}
   Icon:
   - {fileID: 5326298009011848276, guid: 9a1e5d2af59607545afd327dc74a1180, type: 3}
   - {fileID: -6703198102253698068, guid: 9a1e5d2af59607545afd327dc74a1180, type: 3}
