@@ -7,6 +7,7 @@ using TMPro;
 
 public class CardConstructorUi : MonoBehaviour
 {
+    public List<CardBase> CardLibrary;
     public InputField NameFlied;
 
     public Transform BaseCard;
@@ -21,8 +22,16 @@ public class CardConstructorUi : MonoBehaviour
     //public Text ManaCount;
 
     public GameObject OrigStat;
+    public GameObject OrigCard;
 
-    public Sprite[] Icon;
-    public string[] StatName;
-    public int[] SellCount;
+    //public Sprite[] Icon;
+    //public string[] StatName;
+    //public int[] SellCount;
+    //public string[] NameIcon;
+
+    public Button SaveButton;
+    public Button LoadButton;
+    public Button DeliteButton;
+
+    public Color[] SelectColor;
 }

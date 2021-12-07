@@ -41,6 +41,12 @@ MonoBehaviour:
   m_SpriteCharacterTable:
   - m_ElementType: 2
     m_Unicode: 65534
+    m_GlyphIndex: 89
+    m_Scale: 1
+    m_Name: IconSet_89
+    m_HashCode: -1484862441
+  - m_ElementType: 2
+    m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
     m_Name: IconSet_0
@@ -427,20 +433,20 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 64
     m_Scale: 1
-    m_Name: IconSet_64
-    m_HashCode: -1484862892
+    m_Name: Stat9
+    m_HashCode: 99187467
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 65
     m_Scale: 1
-    m_Name: IconSet_65
-    m_HashCode: -1484862891
+    m_Name: Stat10
+    m_HashCode: -1021781165
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 66
     m_Scale: 1
-    m_Name: IconSet_66
-    m_HashCode: -1484862890
+    m_Name: Stat12
+    m_HashCode: -1021781167
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 67
@@ -481,8 +487,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 73
     m_Scale: 1
-    m_Name: Agility
-    m_HashCode: -1244568665
+    m_Name: Stat11
+    m_HashCode: -1021781166
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 74
@@ -493,8 +499,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 75
     m_Scale: 1
-    m_Name: IconSet_75
-    m_HashCode: -1484862796
+    m_Name: Stat5
+    m_HashCode: 99187463
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 76
@@ -535,20 +541,20 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 82
     m_Scale: 1
-    m_Name: IconSet_82
-    m_HashCode: -1484862436
+    m_Name: Stat1
+    m_HashCode: 99187459
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 83
     m_Scale: 1
-    m_Name: IconSet_83
-    m_HashCode: -1484862435
+    m_Name: Stat4
+    m_HashCode: 99187462
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 84
     m_Scale: 1
-    m_Name: IconSet_84
-    m_HashCode: -1484862438
+    m_Name: Stat3
+    m_HashCode: 99187457
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 85
@@ -571,14 +577,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 88
     m_Scale: 1
-    m_Name: Hit
-    m_HashCode: 77109
-  - m_ElementType: 2
-    m_Unicode: 65534
-    m_GlyphIndex: 89
-    m_Scale: 1
-    m_Name: IconSet_89
-    m_HashCode: -1484862441
+    m_Name: Stat2
+    m_HashCode: 99187456
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 90
@@ -703,8 +703,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 110
     m_Scale: 1
-    m_Name: IconSet_110
-    m_HashCode: -1755825658
+    m_Name: Stat7
+    m_HashCode: 99187461
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 111
@@ -715,8 +715,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 112
     m_Scale: 1
-    m_Name: IconSet_112
-    m_HashCode: -1755825660
+    m_Name: Stat6
+    m_HashCode: 99187460
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 113
@@ -751,20 +751,20 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 118
     m_Scale: 1
-    m_Name: IconSet_118
-    m_HashCode: -1755825650
-  - m_ElementType: 2
-    m_Unicode: 65534
-    m_GlyphIndex: 119
-    m_Scale: 1
-    m_Name: IconSet_119
-    m_HashCode: -1755825649
+    m_Name: Stat8
+    m_HashCode: 99187466
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 120
     m_Scale: 1
     m_Name: IconSet_120
     m_HashCode: -1755825627
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 119
+    m_Scale: 1
+    m_Name: IconSet_119
+    m_HashCode: -1755825649
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 121

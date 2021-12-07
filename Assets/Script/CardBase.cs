@@ -5,9 +5,12 @@ using UnityEngine;
 public class CardBase 
 {
     public string Name;
+    public int LocalNum;
 
     public int[] Stat;
     public string[] Trait;
+
+    public Transform Body;
     //public int Slash;
     //public int DistSlash;
     //public int NoArmorSlash;

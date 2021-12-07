@@ -5,5 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Trait", menuName = "ScriptableObjects/Trait", order = 1)]
 public class Trait : ScriptableObject
 {
-
+    public string Name;
+    public int Count;
 }

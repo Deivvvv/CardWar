@@ -8,19 +8,13 @@ using System.IO;
 [CreateAssetMenu(fileName = "GameData", menuName = "ScriptableObjects/GameData", order = 1)]
 public class GameData : ScriptableObject
 {
+    public List<int> BlackList;
     public List<string> AllCard;
     public Fraction[] AllFraction;
+
+    public Sprite[] Icon;
+    public string[] StatName;
+    public int[] SellCount;
+    public string[] NameIcon;
 }
 
-
-[CreateAssetMenu(fileName = "Fraction", menuName = "ScriptableObjects/Fraction", order = 1)]
-[System.Serializable]
-public class Fraction : ScriptableObject
-{
-    public string Frac;
-    public string Path;
-    // public XML
-    public string[] Card;
-
-   // public TextAsset[] Hiro;
-}
