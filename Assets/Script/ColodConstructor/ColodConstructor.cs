@@ -31,6 +31,18 @@ public class ColodConstructor : MonoBehaviour
     private List<Transform> origTrans;
     // public List<Transform> OrigBody;
 
+    void Save()
+    {
+        cardSet.OrigCard = new List<int>();
+        cardSet.OrigCount = new List<int>();
+        int a = origCard.Count;
+        for(int i = 0; i < a; i++)
+        {
+            cardSet.OrigCard.Add(origCard[i]);
+            cardSet.OrigCount.Add(origCount[i]);
+        }
+    }
+
     void Start()
     {
         LoadBase();
@@ -48,7 +60,7 @@ public class ColodConstructor : MonoBehaviour
         //Ui.InjectButton.onClick.AddListener(() => Inject());
         //Ui.DeliteButton.onClick.AddListener(() => Delite());
 
-        //Ui.SaveButton.onClick.AddListener(() => Save());
+        Ui.SaveButton.onClick.AddListener(() => Save());
 
         gameData = gameSetting.GlobalMyData;
         LocalCard = new List<CardBase>();
@@ -145,24 +157,25 @@ public class ColodConstructor : MonoBehaviour
             }
 
 
+            if (blackList.Count > 0)
+            {
+                b = blackList[0];
+                blackList.RemoveAt(0);
+                origCard[b] = a;
+                origCount[b] = 1;
 
-                if (blackList.Count > 0)
-                {
-                    b = blackList[0];
-                    blackList.RemoveAt(0);
-                    origCard[b] = a;
-                    origCount[b] =1;
+                origTrans[b].gameObject.active = true;
+                ViewCardTable(b);
+            }
+            else
+            {
+                origCard.Add(a);
+                origCount.Add(1);
+                AddCardTable(a);
+            }
 
-                    origTrans[b].gameObject.active = true;
-                    ViewCardTable(b);
-                }
-                else
-                {
-                    origCard.Add(a);
-                    origCount.Add(1);
-                    AddCardTable(a);
-                }
-               // ViewCardTable(b);
+
+            // ViewCardTable(b);
             Calculation();
         }
        // NewCardTable(b);

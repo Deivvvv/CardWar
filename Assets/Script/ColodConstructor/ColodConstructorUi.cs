@@ -12,4 +12,6 @@ public class ColodConstructorUi : MonoBehaviour
     public Transform DeskCard;
 
     public Text CardCount;
+
+    public Button SaveButton;
 }
