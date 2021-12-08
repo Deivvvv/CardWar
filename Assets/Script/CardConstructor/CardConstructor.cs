@@ -497,6 +497,7 @@ public class CardConstructor : MonoBehaviour
 
     void PreLoad()
     {
+
         curentNum = -1;
        // Delite();
 
