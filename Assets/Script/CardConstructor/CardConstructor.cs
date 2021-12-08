@@ -49,6 +49,7 @@ public class CardConstructor : MonoBehaviour
         a = LocalCard.Count;
         if (oldAllCard < a)
         {
+            a--;
             for (int i = oldAllCard-1; i < a; i++)
             {
                 Destroy(LocalCard[oldAllCard].Body.gameObject);
