@@ -4,13 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using Saver;
+using TMPro;
 
 
 public class ColodConstructor : MonoBehaviour
 {
+    [SerializeField]
     private GameSetting gameSetting;
     private GameData gameData;
+    [SerializeField]
     private ColodConstructorUi Ui;
+
+    [SerializeField]
+    private CardSet cardSet;
 
     private int allCard;
     private int maxCard = 40;
@@ -18,7 +24,7 @@ public class ColodConstructor : MonoBehaviour
     private string origPath = $"/Resources/Hiro";
     public List<CardBase> LocalCard;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         LoadBase();
@@ -47,12 +53,17 @@ public class ColodConstructor : MonoBehaviour
             path = Application.dataPath + origPath + $"{i}";
             XMLSaver.ILoad(path, colodConstructor);
             NewCard(i);
-            //  XMLSaver.ILoad(i, colodConstructor);
+        }
+
+        a = gameData.BlackList.Count;
+        for (int i = 0; i < a; i++)
+        {
+            LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
         }
     }
     void NewCard(int i)
     {
-        GameObject GO = Instantiate(Ui.OrigCard);// BaseCard.GetChild(a + 1).gameObject;
+        GameObject GO = Instantiate(Ui.OrigCard);
         GO.transform.SetParent(Ui.BaseCard);
 
         int a = Ui.BaseCard.childCount;
@@ -65,7 +76,7 @@ public class ColodConstructor : MonoBehaviour
         //  LocalCard.Add(new CardBase());
         //  Save();
 
-       // ViewCardBase(i);
+        ViewCardBase(i);
     }
     void AddCardButton(int a, Button button)
     {
@@ -83,5 +94,30 @@ public class ColodConstructor : MonoBehaviour
     void RemoveCard(int a)
     {
 
+    }
+
+    void ViewCardBase(int a)
+    {
+        CardBase card = LocalCard[a];
+        Transform trans = card.Body;
+
+        //trans.GetChild(1).//портреты
+
+        TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
+        text.text = card.Name;
+
+        text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
+        text.text = "";
+        for (int i = 0; i < card.Stat.Length - 1; i++)
+        {
+            if (card.Stat[i] > 0)
+                text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
+        }
+        // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
+
+
+        text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
+        text.text = "" + card.Stat[card.Stat.Length - 1];
+        //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
     }
 }

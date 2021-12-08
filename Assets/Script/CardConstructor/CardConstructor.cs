@@ -9,11 +9,15 @@ using System.Linq;
 
 public class CardConstructor : MonoBehaviour
 {
+    //ResetSystem
+    private int oldAllCard;
+    private List<CardBase> oldCard;
+    private List<int> newCard;
+
     private int curentNum;
     private CardBase cardBase;
     public List<CardBase> LocalCard;
-    [SerializeField]
-    private List<int> newCard;
+   // [SerializeField]
     [SerializeField]
     private CardConstructorUi Ui;
   //  [SerializeField]
@@ -29,6 +33,54 @@ public class CardConstructor : MonoBehaviour
     //private XMLSaver saver;
 
     private string origPath = $"/Resources/Hiro";
+
+    void Reset()
+    {
+        int a = newCard.Count;
+        int b = 0;
+        for (int i = 0; i < a; i++)
+        {
+            b = newCard[i];
+            LocalCard[b] = oldCard[i];
+            ViewCardBase(b);
+        }
+
+        //Remove add LocalCard
+        a = LocalCard.Count;
+        if (oldAllCard < a)
+        {
+            for (int i = oldAllCard-1; i < a; i++)
+            {
+                Destroy(LocalCard[oldAllCard].Body.gameObject);
+                LocalCard.RemoveAt(oldAllCard);
+            }
+        }
+
+        //BlackList
+        a = gameData.BlackList.Count;
+        for(int i = 0; i < a; i++)
+        {
+            b = gameData.BlackList[i];
+            if (LocalCard.Count > b)
+            {
+                LocalCard[b].Body.gameObject.active = true;
+            }
+        }
+
+        TransfData(gameSetting.GlobalMyData, gameData);
+
+
+        a = gameData.BlackList.Count;
+        for (int i = 0; i < a; i++)
+        {
+            b = gameData.BlackList[i];
+            LocalCard[b].Body.gameObject.active = false;
+        }
+
+        //ResetData
+        newCard = new List<int>();
+        oldCard = new List<CardBase>();
+    }
 
     void GenerateFiltr()
     {
@@ -129,13 +181,13 @@ public class CardConstructor : MonoBehaviour
                 ViewCardBase(a);
                 
                 gameData.BlackList.RemoveAt(0);
-                AddEdit(a);
             }
             else
             {
                 path = Application.dataPath + origPath + $"{LocalCard.Count}";
 
-                AddEdit(LocalCard.Count);
+                AddEdit(LocalCard.Count, card);
+            //    AddEdit(LocalCard.Count);
 
                 LocalCard.Add(card);
                 NewCard(LocalCard.Count - 1);
@@ -146,10 +198,12 @@ public class CardConstructor : MonoBehaviour
         {
             int a = curentNum - 1;
             card.Body = LocalCard[a].Body;
+
+            AddEdit(a, LocalCard[a]);
+
             LocalCard[a] = card;
             ViewCardBase(a);
 
-            AddEdit(a);
         }
 
         Sort();
@@ -226,7 +280,7 @@ public class CardConstructor : MonoBehaviour
             Data2.BlackList[i] = Data1.BlackList[i];
         }
     }
-    void AddEdit(int a)
+    void AddEdit(int a, CardBase card)
     {
         for (int i = 0; i < newCard.Count; i++)
         {
@@ -234,6 +288,7 @@ public class CardConstructor : MonoBehaviour
                 return;
         }
         newCard.Add(a);
+        oldCard.Add(card);
     }
 
     void Save()
@@ -248,13 +303,10 @@ public class CardConstructor : MonoBehaviour
             path = Application.dataPath + origPath + $"{b}";
             XMLSaver.ISave(LocalCard[b], path);
         }
-        newCard = new List<int>();
 
-    }
-    void Reset(int a)
-    {
-        string path = $"/Resources/Hiro{a}";
-        //XMLSaver.ILoad(path, Ui,a);
+        oldAllCard = gameData.AllCard;
+        newCard = new List<int>();
+        oldCard = new List<CardBase>();
     }
 
     void LoadUi()
@@ -435,7 +487,6 @@ public class CardConstructor : MonoBehaviour
 
 
         LoadBase();
-        // NewCard();
 
         LoadUi();
         Inject();
@@ -450,6 +501,7 @@ public class CardConstructor : MonoBehaviour
 
         LocalCard = new List<CardBase>();
         newCard = new List<int>();
+        oldCard = new List<CardBase>();
 
 
 
@@ -462,11 +514,13 @@ public class CardConstructor : MonoBehaviour
         Ui.DeliteButton.onClick.AddListener(() => Delite());
 
         Ui.SaveButton.onClick.AddListener(() => Save());
+        Ui.ResetButton.onClick.AddListener(() => Reset());
 
         gameData = gameSetting.ReservData;//= new GameData();
        // gameData.AllCard = // = new List<string>();
         gameData.BlackList = new List<int>();
 
+        oldAllCard = gameData.AllCard;
 
         TransfData( gameSetting.GlobalMyData, gameData);
 

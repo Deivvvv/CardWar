@@ -6,4 +6,6 @@ public class ColodConstructorUi : MonoBehaviour
 {
     public GameObject OrigCard;
     public GameObject OrigCardColod;
+
+    public Transform BaseCard;
 }
