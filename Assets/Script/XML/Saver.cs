@@ -35,7 +35,7 @@ namespace Saver
 
         }
 
-        public static void ILoad(string path, CardConstructor cardConstructor, int a)
+        public static void ILoad(string path, CardConstructor cardConstructor)
         {
             if (path != "")
             {
@@ -69,6 +69,37 @@ namespace Saver
                 //{
                     cardConstructor.LocalCard.Add(cardBase);
                // }
+
+            }
+        }
+
+        public static void ILoad(string path, ColodConstructor colodConstructor)
+        {
+            if (path != "")
+            {
+                XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
+
+                CardBase cardBase = new CardBase();
+
+                cardBase.Name = root.Element("Name").Value;
+
+
+                cardBase.Stat = new int[int.Parse(root.Element("Stat").Value)];
+                for (int i = 0; i < cardBase.Stat.Length; i++)
+                {
+                    cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
+                }
+
+
+
+
+                cardBase.Trait = new string[int.Parse(root.Element("Trait").Value)];
+                for (int i = 0; i < cardBase.Trait.Length; i++)
+                {
+                    cardBase.Trait[i] = root.Element($"Trait{i}").Value;
+                }
+
+                colodConstructor.LocalCard.Add(cardBase);
 
             }
         }

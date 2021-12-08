@@ -407,18 +407,17 @@ public class CardConstructor : MonoBehaviour
     {
 
         string path = "";
-
+        int a = gameData.AllCard;
         CardConstructor cardConstructor = gameObject.GetComponent<CardConstructor>();
-        for (int i = 0; i < gameData.AllCard; i++)
+        for (int i = 0; i < a; i++)
         {
-            // NewCard();
             path = Application.dataPath + origPath + $"{i}";
-            XMLSaver.ILoad(path, cardConstructor, i);
+            XMLSaver.ILoad(path, cardConstructor);
             NewCard(i);
         }
 
-        // for (int i = 0; i < LocalCard.Count; i++)
-        for (int i = 0; i < gameData.BlackList.Count; i++)
+        a = gameData.BlackList.Count;
+        for (int i = 0; i < a; i++)
         {
             LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
         }
