@@ -4,15 +4,37 @@ using UnityEngine;
 
 public class Stol : MonoBehaviour
 {
+   // private List<CardBase> enemyCard;
+
+    [SerializeField]
+    private CardSet myCardSet;
+    [SerializeField]
+    private CardSet enemyCardSet;
+
+    private
+
+    void LoadData()
+    {
+
+    }
     // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+
+    void MeleeTurn()
     {
-        
+
     }
+    void ShotTurn()
+    {
+
+    }
+    void NextCard()
+    {
+
+    }
+
 }
