@@ -7,7 +7,7 @@ namespace BattleTable
  
     public static class BattleSystem 
     {
-        static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
+       public static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
             RealCard card = new RealCard();
             CardBase cardBase = hiro1.CardColod[hiro1.CardHand[handNum]];

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using BattleTable;
 using Saver;
@@ -113,8 +114,8 @@ public class Stol : MonoBehaviour
     //}
     void CreateUi(int slot, int pos, int line)
     {
-        RealCard hiro = hiro[line].Slots[slot].Position[pos];
-        int a = hiro.Action.Count;
+        RealCard newHiro = hiro[line].Slots[slot].Position[pos];
+        int a = newHiro.Action.Count;
         Transform trans = null;
         if (pos == 0)
         {
@@ -139,7 +140,7 @@ public class Stol : MonoBehaviour
         int b = 0;
         for (int i = 0; i < a; i++)
         {
-            b = hiro.Action[i];
+            b = newHiro.Action[i];
             GO = Instantiate(Ui.OrigAction);
             GO.transform.SetParent(trans1);
             //if (gameSetting.ActionLibrary[b].Tayp == "Melee")
@@ -176,10 +177,10 @@ public class Stol : MonoBehaviour
 
     void PlayCard(int handNum, int slot, int pos, Hiro hiro1, Hiro hiro2)
     {
-        int b = hiro.CardColod[handNum].Mana;
-        if (hiro.ManaCurent >= b)
+        int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Length-1];
+        if (hiro1.ManaCurent >= b)
         {
-            hiro.ManaCurent -= b;
+            hiro1.ManaCurent -= b;
             BattleSystem.IPlayCard(hiro1, hiro2, handNum, slot, pos);
         }
     }
