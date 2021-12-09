@@ -103,5 +103,36 @@ namespace Saver
 
             }
         }
+
+        public static void ILoad(string path, Stol stol)
+        {
+            if (path != "")
+            {
+                XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
+
+                CardBase cardBase = new CardBase();
+
+                cardBase.Name = root.Element("Name").Value;
+
+
+                cardBase.Stat = new int[int.Parse(root.Element("Stat").Value)];
+                for (int i = 0; i < cardBase.Stat.Length; i++)
+                {
+                    cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
+                }
+
+
+
+
+                cardBase.Trait = new string[int.Parse(root.Element("Trait").Value)];
+                for (int i = 0; i < cardBase.Trait.Length; i++)
+                {
+                    cardBase.Trait[i] = root.Element($"Trait{i}").Value;
+                }
+
+                stol.BufferColod.Add(cardBase);
+
+            }
+        }
     }
 }

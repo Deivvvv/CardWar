@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RealCard
 {
-    public int Name;
+    public string Name;
 
     public int MeleeDMG;
     public int ShotDMG;
@@ -23,8 +23,8 @@ public class RealCard
 
     public int Mana;
 
-    public Slot Slot;
+    public int Slot;
     public int Position;
     public int Team;
-    public CardBase Id;
+    public int Id;
 }

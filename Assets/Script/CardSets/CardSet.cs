@@ -8,7 +8,7 @@ public class CardSet : ScriptableObject
     public string Name;
     public List<int> OrigCard;
     public List<int> OrigCount;
-
+    public int AllCard = 40;
 
    // public int[] Card = new int[40];
 }

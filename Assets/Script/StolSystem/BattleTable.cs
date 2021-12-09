@@ -10,7 +10,7 @@ namespace BattleTable
         static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
             RealCard card = new RealCard();
-            CardBase cardBase = hiro1.CardColod[CardHand[handNum]];
+            CardBase cardBase = hiro1.CardColod[hiro1.CardHand[handNum]];
 
             card.Name = cardBase.Name;
 
@@ -32,18 +32,22 @@ namespace BattleTable
             card.Mana = cardBase.Stat[12];
 
 
-            card.Slot = hiro2.Slot[slot];
+            card.Slot = slot;
             card.Position = pos;
             card.Team = hiro1.Team;
-            card.Id = cardBase;
+            card.Id = hiro1.CardHand[handNum];
 
 
             hiro1.Army.Add(card);
-
-            hiro2.Slot[slot].Position[pos] = card;
+            hiro2.Slots[slot].Position[pos] = card;
         }
 
-        public static void IHit()
+        public static void IHit(RealCard card1, RealCard card2)
+        {
+
+        }
+
+        public static void IShot(RealCard card1, RealCard card2)
         {
 
         }

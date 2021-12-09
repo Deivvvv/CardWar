@@ -9,13 +9,13 @@ public class Hiro
     public List<RealCard> Army;
 
 
-    private List<CardBase> CardColod;
-    private List<int> CardHand;
+    public List<CardBase> CardColod;
+    public List<int> CardHand;
 
     public int ManaMax = 10;
     public int Mana;
     public int ManaCurent;
-
+    public int Team;
 }
 public class Slot
 {

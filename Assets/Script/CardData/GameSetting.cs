@@ -19,6 +19,7 @@ public class GameSetting : ScriptableObject
     public int[] SellCount;
     public string[] NameIcon;
 
+    public string origPath = $"/Resources/Hiro";
 
-   // public Color[] SelectColor; ??
+    // public Color[] SelectColor; ??
 }
