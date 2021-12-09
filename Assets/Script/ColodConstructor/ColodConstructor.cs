@@ -141,15 +141,15 @@ public class ColodConstructor : MonoBehaviour
             {
                 if (a == origCard[i])
                 {
-                    //if (origCount[i] < 3)
-                    //{
+                    if (origCount[i] < 3)
+                    {
                         if (origCount[i] == 0)
                             origTrans[i].gameObject.active = true;
 
                         origCount[i]++;
                         Calculation();
                         ViewCardTable(i);
-                  //  }
+                    }
 
                     return;
                 }
