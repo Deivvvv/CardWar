@@ -34,31 +34,31 @@ public class Stol : MonoBehaviour
     {
         hiro.CardColod = new List<CardBase>();
         BufferColod = new List<CardBase>();
-        int a = cardSet.AllCard;
+        int a = cardSet.OrigCard.Count;
         int b = 0;
         Stol stol = gameObject.GetComponent<Stol>();
         for (int i =0; i < a; i++)
         {
-            hiro.CardColod.Add(null);
+          //  hiro.CardColod.Add(null);
             b = cardSet.OrigCount[i];
             for (int i1 = 0; i1 < b; i1++)
-                XMLSaver.ILoad(gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
-        }
-
-        List<CardBase> newColod = new List<CardBase>();
-        int r = 0;
-        for (int i = 0; i < a; i++)
-        {
-            r = Random.Range(0,a);
-            a--;
-            hiro.CardColod[i] = BufferColod[r];
-            BufferColod.RemoveAt(r);
+                XMLSaver.ILoad(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
         }
 
         a = cardSet.AllCard;
+        int r = 0;
+        for (int i = a; i > 0; i--)
+        {
+            r = Random.Range(0,i);
+            hiro.CardColod.Add(BufferColod[r]);
+            BufferColod.RemoveAt(r);
+        }
+
+      //  a = cardSet.AllCard;
         for (int i = 0; i < a; i++)
         {
-            Debug.Log(hiro.CardColod[i]);
+            Debug.Log(hiro.CardColod[i].Name);
+          //  Debug.Log(i);
         }
     }
 

@@ -197,13 +197,13 @@ public class CardConstructor : MonoBehaviour
         }
         else
         {
-            int a = curentNum - 1;
-            card.Body = LocalCard[a].Body;
 
-            AddEdit(a, LocalCard[a]);
+            card.Body = LocalCard[curentNum].Body;
 
-            LocalCard[a] = card;
-            ViewCardBase(a);
+            AddEdit(curentNum, LocalCard[curentNum]);
+
+            LocalCard[curentNum] = card;
+            ViewCardBase(curentNum);
 
         }
 
@@ -216,9 +216,9 @@ public class CardConstructor : MonoBehaviour
         Delite();
         curentNum = a;
 
-        if (curentNum > 0)
+        if (curentNum > -1)
         {
-            CardBase card = LocalCard[curentNum-1];
+            CardBase card = LocalCard[curentNum];
             cardBase.Name = card.Name; 
             Ui.NameFlied.text = cardBase.Name;
 
@@ -239,8 +239,8 @@ public class CardConstructor : MonoBehaviour
     {
         if (curentNum != -1)
         {
-            gameData.BlackList.Add(curentNum-1);
-            LocalCard[curentNum-1].Body.gameObject.active = false;
+            gameData.BlackList.Add(curentNum);
+            LocalCard[curentNum].Body.gameObject.active = false;
             // Ui.
             SwitchCard(-1);
         }
@@ -384,28 +384,29 @@ public class CardConstructor : MonoBehaviour
     }
     void SwitchCard(int a)
     {
-        int b = curentNum;
         //После появления метода сортировки перевести на локальный номер карты
-        if(b!= -1)
-            Ui.BaseCard.GetChild(b).gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+        if (curentNum != -1)
+        {
+            if (curentNum < gameData.AllCard)
+                LocalCard[curentNum].Body.gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+        }
         else
             Ui.BaseCard.GetChild(0).gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
 
         curentNum = a;
-        b = curentNum;
 
-        if (b != -1)
-            Ui.BaseCard.GetChild(b).gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+        if (curentNum != -1)
+            LocalCard[curentNum].Body.gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
         else
             Ui.BaseCard.GetChild(0).gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
 
     }
     void NewCard(int i)
     {
+        int a = Ui.BaseCard.childCount - 1;
         GameObject GO = Instantiate(Ui.OrigCard);// BaseCard.GetChild(a + 1).gameObject;
         GO.transform.SetParent(Ui.BaseCard);
 
-        int a = Ui.BaseCard.childCount - 1;
         Button button = GO.GetComponent<Button>();
         SwitchCardButton(a, button);
 
