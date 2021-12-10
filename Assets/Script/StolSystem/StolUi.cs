@@ -19,4 +19,7 @@ public class StolUi : MonoBehaviour
     public GameObject OrigHiro;
 
     public Material[] TargetColor;
+
+    public Transform UseCard;
+
 }

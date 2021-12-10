@@ -24,6 +24,8 @@ public class Stol : MonoBehaviour
 
     public List<CardBase> BufferColod;
 
+    private int useCard =-1;
+
     private RealCard curentCard;
     private int action =-1;
 
@@ -110,35 +112,82 @@ public class Stol : MonoBehaviour
             curentPlayer = 1;
     }
 
+    void GrabCard(int a)
+    {
+        Hiro newHiro = hiro[0];
+        a = newHiro.CardHand[a];
+
+        if (newHiro.ManaCurent >= newHiro.CardColod[newHiro[a]])
+        {
+            useCard = a;
+        }
+    }
+
+    void ViewUseCard()
+    {
+
+    }
+
     void Update()
     {
         if (curentPlayer == 0)
         {
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (useCard != -1)
+                {
+                    if (useCard == -1)
+                    {
+                        int layerMask = 1 << 8;
+
+                        // This would cast rays only against colliders in layer 8.
+                        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                        layerMask = ~layerMask;
+                        RaycastHit hit;
+                        // Does the ray intersect any objects excluding the player layer
+                        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+                        {
+                            TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
+                            if (targetHiro != null) 
+                            { 
+                                targetHiro.CardLoad();
+                            }
+                        }
+                    }
+                }
+            }
             if (Input.GetMouseButtonDown(0))
             {
-          
-                int layerMask = 1 << 8;
-
-                // This would cast rays only against colliders in layer 8.
-                // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-                layerMask = ~layerMask;
-                RaycastHit hit;
-                // Does the ray intersect any objects excluding the player layer
-                if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+                if (useCard == -1)
                 {
-                    TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
-                    if (targetHiro != null)
+                    int layerMask = 1 << 8;
+
+                    // This would cast rays only against colliders in layer 8.
+                    // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                    layerMask = ~layerMask;
+                    RaycastHit hit;
+                    // Does the ray intersect any objects excluding the player layer
+                    if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
                     {
-                        if (curentCard == null)
-                            targetHiro.Play();
-                        else if (action != -1)
-                            targetHiro.Target();
+                        TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
+                        if (targetHiro != null)
+                        {
+                            if (curentCard == null)
+                                targetHiro.Play();
+                            else if (action != -1)
+                                targetHiro.Target();
+                        }
                     }
                 }
             }
             else if (Input.GetMouseButtonDown(1))
             {
-                if (action != -1)
+                if (useCard != -1)
+                {
+                    useCard = -1;
+                }
+                else if (action != -1)
                 {
                     if (shotTime)
                     {
@@ -160,12 +209,27 @@ public class Stol : MonoBehaviour
             }
         }
     }
+    void CardReset(Hiro newHiro)
+    {
+        int a = newHiro.Army.Count;
+        for (int i = 0; i < a; i++)
+            newHiro.Army[i].MovePoint = 1;
+    }// Временное решение
+
+
+    void UseCard(int line, int slot, int position)
+    {
+        RealCard targetCard = hiro[line].Slots[slot].Position[position];
+
+    }
     void UseAction()
     {
         curentCard.MovePoint -= gameSetting.Library.Action[action].MoveCost;
         switch (actionTayp)
         {
-            case("-1"):
+            case("Slash"):
+                break;
+            case ("Hit"):
                 break;
             default:
                 Debug.Log(actionTayp);
@@ -196,9 +260,9 @@ public class Stol : MonoBehaviour
         {
             action = -1;
             curentCard = null;
-            //UseAction();
+            UseAction();
             //Приписать расширение для авто активации соответвующих скилов
-           
+
         }
         else if (shotTime)
         {
