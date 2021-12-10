@@ -207,8 +207,25 @@ public class Stol : MonoBehaviour
             curentPlayer = 1;
 
         shotTime = false;
-        //LoadUIShot
+      //  if (curentPlayer ==1)
+            LoadUiShot();
 
     }
+    void LoadUiShot()
+    {
+        Transform[] slots = null;
+        List<Slot> hiroSlot = hiro[curentPlayer].Slots;
 
+        if (curentPlayer == 0)
+            slots = Ui.MySlot;
+        else
+            slots = Ui.EnemySlot;
+
+        int a = slots.Length;
+        for (int i = 0; i < a; i++)
+        {
+            //if
+            //slots
+        }
+    }
 }

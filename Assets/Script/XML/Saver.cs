@@ -10,6 +10,101 @@ namespace Saver
 {
     static class XMLSaver// : MonoBehaviour
     {
+        public static void ISaveGameData(CardBase cardBase, string path)
+        {
+
+            XElement root = new XElement("root");
+
+            root.Add(new XElement("Name", cardBase.Name));
+
+            root.Add(new XElement("Stat", cardBase.Stat.Length));
+            for (int i = 0; i < cardBase.Stat.Length; i++)
+            {
+                root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
+            }
+
+            root.Add(new XElement("Trait", cardBase.Trait.Length));
+            for (int i = 0; i < cardBase.Trait.Length; i++)
+            {
+                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+            }
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText($"{path}.xml", saveDoc.ToString());
+
+        }
+        public static void ILoadGameData(CardBase cardBase, string path)
+        {
+
+            XElement root = new XElement("root");
+
+            root.Add(new XElement("Name", cardBase.Name));
+
+            root.Add(new XElement("Stat", cardBase.Stat.Length));
+            for (int i = 0; i < cardBase.Stat.Length; i++)
+            {
+                root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
+            }
+
+            root.Add(new XElement("Trait", cardBase.Trait.Length));
+            for (int i = 0; i < cardBase.Trait.Length; i++)
+            {
+                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+            }
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText($"{path}.xml", saveDoc.ToString());
+
+        }
+
+
+        public static void ISaveCardSet(CardBase cardBase, string path)
+        {
+
+            XElement root = new XElement("root");
+
+            root.Add(new XElement("Name", cardBase.Name));
+
+            root.Add(new XElement("Stat", cardBase.Stat.Length));
+            for (int i = 0; i < cardBase.Stat.Length; i++)
+            {
+                root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
+            }
+
+            root.Add(new XElement("Trait", cardBase.Trait.Length));
+            for (int i = 0; i < cardBase.Trait.Length; i++)
+            {
+                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+            }
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText($"{path}.xml", saveDoc.ToString());
+
+        }
+        public static void ILoadCardSet(CardBase cardBase, string path)
+        {
+
+            XElement root = new XElement("root");
+
+            root.Add(new XElement("Name", cardBase.Name));
+
+            root.Add(new XElement("Stat", cardBase.Stat.Length));
+            for (int i = 0; i < cardBase.Stat.Length; i++)
+            {
+                root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
+            }
+
+            root.Add(new XElement("Trait", cardBase.Trait.Length));
+            for (int i = 0; i < cardBase.Trait.Length; i++)
+            {
+                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+            }
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText($"{path}.xml", saveDoc.ToString());
+
+        }
+
 
         public static void ISave(CardBase cardBase, string path)
         {
@@ -72,7 +167,6 @@ namespace Saver
 
             }
         }
-
         public static void ILoad(string path, ColodConstructor colodConstructor)
         {
             if (path != "")
@@ -103,7 +197,6 @@ namespace Saver
 
             }
         }
-
         public static void ILoad(string path, Stol stol)
         {
             if (path != "")
