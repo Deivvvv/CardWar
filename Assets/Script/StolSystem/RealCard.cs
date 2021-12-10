@@ -29,5 +29,8 @@ public class RealCard
     public int Id;
 
     public int MovePoint;
-    public List<int> Action; 
+    public List<int> Action;
+    public List<int> ShotAction;
+    public List<int> PasiveAction;
+
 }

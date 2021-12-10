@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class GameSetting : ScriptableObject
 {
+    public ActionLibrary Library;
+
     public GameData ReservData;
     public GameData GlobalMyData;
     public GameData LocalMyData;

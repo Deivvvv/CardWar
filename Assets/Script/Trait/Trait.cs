@@ -7,4 +7,6 @@ public class Trait : ScriptableObject
 {
     public string Name;
     public int Count;
+    public int MoveCost;
+    public string Tayp;
 }
