@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: GameData_MyGlobal
   m_EditorClassIdentifier: 
   BlackList: 
-  AllCard: []
+  AllCard: 14
   AllFraction: []

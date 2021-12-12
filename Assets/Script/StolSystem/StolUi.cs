@@ -15,6 +15,7 @@ public class StolUi : MonoBehaviour
     public GameObject OrigAction;
     public GameObject OrigCase;
     public GameObject OrigSlot;
+    public GameObject OrigSlotEnemy;
 
     public GameObject OrigHiro;
 

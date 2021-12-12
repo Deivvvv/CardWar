@@ -5,7 +5,7 @@ using UnityEngine;
 public class Hiro
 {
     public int NextCard;
-    public List<Slot> Slots;
+    public Slot[] Slots;
     public List<RealCard> Army;
 
 
