@@ -25,11 +25,9 @@ namespace BattleTable
     {
         static void ICreateCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
         {
-            Debug.Log(handNum);
             RealCard card = new RealCard();
             CardBase cardBase = hiro1.CardColod[handNum];
 
-            Debug.Log(handNum);
             card.Name = cardBase.Name;
 
             card.MeleeDMG = cardBase.Stat[0];
@@ -37,7 +35,6 @@ namespace BattleTable
             card.NoArmorDMG = cardBase.Stat[2];
             card.ArmorBreakerDMG = cardBase.Stat[3];
 
-            Debug.Log(handNum);
             card.Hp = cardBase.Stat[4];
             card.Helmet = cardBase.Stat[5];
             card.Shild = cardBase.Stat[6];
@@ -54,7 +51,6 @@ namespace BattleTable
             card.Slot = slot;
             card.Position = pos;
             card.Team = hiro1.Team;
-            Debug.Log(handNum);
             card.Id = handNum;//hiro1.CardColod[handNum];
 
 
@@ -67,9 +63,9 @@ namespace BattleTable
 
             card.Body = GO;
             if (card.Team == 0)
-                GO.transform.position = new Vector3(slot * 3, 0, pos);
+                GO.transform.position = new Vector3(slot * 3, 0, -(pos * 4) + 5);
             else
-                GO.transform.position = new Vector3(slot * 3, 0, pos + 10);
+                GO.transform.position = new Vector3(slot * 3, 0, pos * 4 + 1 + 10);
 
             //  cardBase.Body.active = false;
 
@@ -110,11 +106,10 @@ namespace BattleTable
     {
         public static void IViewCard(CardBase card, GameSetting gameSetting)
         {
-            Transform trans = card.Body;
+           // Transform trans = card.Body;
             CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
 
             // Ui.Avatar.sprite = ?;//портреты
-
             Ui.Name.text = card.Name;
 
             Ui.Stat.text = "";
@@ -250,5 +245,6 @@ namespace BattleTable
                 //}
             }
         }
+
     }
 }
