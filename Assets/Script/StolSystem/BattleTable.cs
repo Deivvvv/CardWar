@@ -129,6 +129,18 @@ namespace BattleTable
             Destroy(cardBase.Body.gameObject);
             hiro1.CardHand.Remove(handNum);
 
+            //прогрузка спосбностей
+            ILoadAction(card, gameSetting)
+        }
+
+        static void ILoadAction(RealCard card, GameSetting gameSetting)
+        {
+            card.Action = new List<int>();
+            card.ShotAction = new List<int>();
+            card.PasiveAction = new List<int>();
+
+            //if (card.MeleeDMG > 0)
+            //    card.Action.Add(gameSetting.Library.Action.IndexOf("Slash"));
         }
 
         static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
