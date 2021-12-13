@@ -7,7 +7,21 @@ namespace BattleTable
  
     public static class BattleSystem 
     {
-       public static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
+
+        public static void IHit(RealCard card1, RealCard card2)
+        {
+
+        }
+
+        public static void IShot(RealCard card1, RealCard card2)
+        {
+
+        }
+    }
+
+    public static class TableRule
+    {
+        static void ICreateCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
             RealCard card = new RealCard();
             CardBase cardBase = hiro1.CardColod[hiro1.CardHand[handNum]];
@@ -41,15 +55,31 @@ namespace BattleTable
             hiro1.Army.Add(card);
             hiro2.Slots[slot].Position[pos] = card;
         }
-
-        public static void IHit(RealCard card1, RealCard card2)
+        static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
+            RealCard targetCard = hiro1.Slots[slot].Position[pos];
+            if (targetCard == null)
+            {
+                //  ICreateCard(useCard, slot, pos, hiro[curentPlayer], hiro[line]);
+                ICreateCard(hiro1, hiro2, handNum, slot, pos);
+            }
+        }//порцелура инициализации логики карты после предварительной расшифровки
 
-        }
-
-        public static void IShot(RealCard card1, RealCard card2)
+        public static void IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
+            int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Length - 1];
+            if (hiro1.ManaCurent >= b)
+            {
+                RealCard targetCard = hiro1.Slots[slot].Position[pos];
+                if (targetCard == null)
+                {
+                    hiro1.ManaCurent -= b;
+                    //  ICreateCard(useCard, slot, pos, hiro[curentPlayer], hiro[line]);
+                    IPlayCard(hiro1, hiro2, handNum, slot, pos);
+                }
+            }
+         
 
-        }
+        }//процедура определения задачи карты и возможности ее реализации
     }
 }

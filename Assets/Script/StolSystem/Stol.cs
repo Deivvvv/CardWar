@@ -49,24 +49,6 @@ public class Stol : MonoBehaviour
         NewTurn();
     }
 
-    void GrabCard(int a)
-    {
-        Hiro newHiro = hiro[0];
-        a = newHiro.CardHand[a];
-        CardBase cardBase = newHiro.CardColod[a];
-        int b = cardBase.Stat.Length - 1;
-
-        if (newHiro.ManaCurent >= cardBase.Stat[b])
-        {
-            useCard = a;
-        }
-    }
-
-    void ViewUseCard()
-    {
-
-    }
-
     void Update()
     {
         if (curentPlayer == 0)
@@ -148,76 +130,18 @@ public class Stol : MonoBehaviour
             }
         }
     }
-    void CardReset(Hiro newHiro)
-    {
-        int a = newHiro.Army.Count;
-        for (int i = 0; i < a; i++)
-            newHiro.Army[i].MovePoint = 1;
-    }// Временное решение
 
+
+
+
+
+    #region Public Metods
 
     public void UseCard(int line, int slot, int pos)
     {
-        RealCard targetCard = hiro[line].Slots[slot].Position[pos];
-        if(targetCard == null)
-        {
-            PlayCard(useCard, slot,pos, hiro[curentPlayer], hiro[line]);
-        }
-    }//Инициализация карт на столе // реализован метод только установки карт на любой слот
-    void UseAction()
-    {
-        curentCard.MovePoint -= gameSetting.Library.Action[action].MoveCost;
-        switch (actionTayp)
-        {
-            case("Slash"):
-                break;
-            case ("Hit"):
-                break;
-            default:
-                Debug.Log(actionTayp);
-                break;
-        }
-        curentCard = null;
-        action =-1;
-
-        if (shotTime)
-        {
-            LoadUiView(0, "ShotView");
-            LoadUiView(1, "ShotView");
-        }
-        else
-        {
-
-            LoadUiView(0, "MeleeView");
-            LoadUiView(1, "MeleeView");
-        }
+        TableRule.IUseCard(hiro[curentPlayer], hiro[line], useCard, slot, pos);
     }
-    void SelectAction(int a)
-    {
-        action = a;
 
-        actionTayp = gameSetting.Library.Action[action].Tayp;
-
-        if (actionTayp == "avtoActiv") 
-        {
-            action = -1;
-            curentCard = null;
-            UseAction();
-            //Приписать расширение для авто активации соответвующих скилов
-
-        }
-        else if (shotTime)
-        {
-            LoadUiView(0, "ShotTarget");
-            LoadUiView(1, "ShotTarget");
-        }
-        else
-        {
-
-            LoadUiView(0, "MeleeTarget");
-            LoadUiView(1, "MeleeTarget");
-        }
-    }
     public void SelectTarget(int line, int slot, int position)
     {
         bool load = true;
@@ -225,7 +149,7 @@ public class Stol : MonoBehaviour
 
         //action
 
-        if(targetCard.Team == curentCard.Team)
+        if (targetCard.Team == curentCard.Team)
         {
 
         }
@@ -267,157 +191,16 @@ public class Stol : MonoBehaviour
                         load = false;
                 }
             }
-            else 
+            else
                 load = false;
         }
-        else 
+        else
             load = false;
 
         if (!load)
             curentCard = null;
     }
-    //void CreateUi(int slot, int pos, int line)
-    //{
-    //    RealCard newHiro = hiro[line].Slots[slot].Position[pos];
-    //    int a = newHiro.Action.Count;
-    //    Transform trans = null;
-    //    if (pos == 0)
-    //    {
-    //        if (line == 0)
-    //            trans = Ui.MySlotUi[slot];
-    //        else
-    //            trans = Ui.EnemySlotUi[slot];
-    //    }
-    //    else
-    //    {
-    //        if (line == 0)
-    //            trans = Ui.MySlotUiArergard[slot];
-    //        else
-    //            trans = Ui.EnemySlotUiArergard[slot];
-    //    }
-
-
-    //    GameObject GO = Instantiate(Ui.OrigCase);
-    //    GO.transform.SetParent(trans);
-    //    Transform trans1 = GO.transform;
-
-    //    int b = 0;
-    //    for (int i = 0; i < a; i++)
-    //    {
-    //        b = newHiro.Action[i];
-    //        GO = Instantiate(Ui.OrigAction);
-    //        GO.transform.SetParent(trans1);
-    //        //if (gameSetting.ActionLibrary[b].Tayp == "Melee")
-    //        //{
-    //        //    GO.transform.SetParent(trans1);
-    //        //}
-    //        //else if (gameSetting.ActionLibrary[b].Tayp == "Shot")
-    //        //{
-
-    //        //}
-    //        //  GO.GetComponent<Image>().sprite = gameSetting.ActionLibrary[b].Icon;
-    //        GO.GetComponent<Button>().onClick.AddListener(() => PreUseAction(b, slot, pos, line));
-    //    }
-    //}
-
-
-    void PlayCard(int handNum, int slot, int pos, Hiro hiro1, Hiro hiro2)
-    {
-        int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Length - 1];
-        if (hiro1.ManaCurent >= b)
-        {
-            hiro1.ManaCurent -= b;
-            BattleSystem.IPlayCard(hiro1, hiro2, handNum, slot, pos);
-        }
-    }
-
-
-    void SlotView(RealCard newPosition, MeshRenderer mesh, string mood, int a)
-    {
-        mesh.material = Ui.TargetColor[0];
-        //int a - используется для указания на использование первой или второй линин позиции
-        switch (mood)
-        {
-            case ("ShotView"):
-                if (newPosition.Team == curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.ShotAction.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[1];
-                        }
-                break;
-
-            case ("ShotTarget"):
-                if (newPosition.Team != curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.ShotAction.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[2];
-                        }
-                if (newPosition == curentCard)
-                    mesh.material = Ui.TargetColor[3];
-
-                break;
-
-            case ("MeleeView"):
-                if (newPosition.Team == curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.Action.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[1];
-                        }
-                break;
-
-            case ("MeleeTarget"):
-                if (newPosition.Team != curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.ShotAction.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[2];
-                        }
-                if (newPosition == curentCard)
-                    mesh.material = Ui.TargetColor[3];
-
-                break;
-        }
-    }
-    
-    void LoadUiView(int line, string mood)
-    {// ViewArmy
-        Transform[] slots = null;
-        Slot[] hiroSlot = hiro[line].Slots;
-       // Slot newSlot = null;
-
-        if (line == 0)
-            slots = Ui.MySlot;
-        else
-            slots = Ui.EnemySlot;
-
-        RealCard newPosition = null;
-        MeshRenderer mesh = null;
-        int a = slots.Length;
-        int b = 0;
-        for (int i = 0; i < a; i++)
-        {
-            b = 0;
-            newPosition = hiroSlot[i].Position[b];
-            if (newPosition != null)
-            {
-                mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                SlotView(newPosition, mesh, mood, b);
-            }
-            //else
-
-            b++;
-            newPosition = hiroSlot[i].Position[b];
-            if (newPosition != null)
-            {
-                mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                SlotView(newPosition, mesh, mood, b);
-            }
-
-        }
-    }
+    #endregion
 
     #region PreStart
 
@@ -469,17 +252,282 @@ public class Stol : MonoBehaviour
         }
     }
 
+    void LoadSet(Hiro hiro, CardSet cardSet)
+    {
+        hiro.CardColod = new List<CardBase>();
+        BufferColod = new List<CardBase>();
+        int a = cardSet.OrigCard.Count;
+        int b = 0;
+        Stol stol = gameObject.GetComponent<Stol>();
+        for (int i = 0; i < a; i++)
+        {
+            b = cardSet.OrigCount[i];
+            for (int i1 = 0; i1 < b; i1++)
+                XMLSaver.ILoad(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
+        }
+
+        a = cardSet.AllCard;
+        int r = 0;
+        for (int i = a; i > 0; i--)
+        {
+            r = Random.Range(0, i);
+            hiro.CardColod.Add(BufferColod[r]);
+            BufferColod.RemoveAt(r);
+        }
+
+        hiro.CardHand = new List<int>();
+        AddCardInHand(hiro, 5);
+
+    }
+
+    void CreateHiro(bool enemy)
+    {
+        Hiro newHiro = new Hiro();
+        newHiro.Slots = new Slot[sizeSlot];
+        int a = newHiro.Slots.Length;
+        for (int i = 0; i < a; i++)
+        {
+            newHiro.Slots[i] = new Slot();
+            newHiro.Slots[i].Position = new RealCard[2];
+        }
+        newHiro.Army = new List<RealCard>();
+        //public List<Slot> Slots;
+        //public List<RealCard> Army;
+
+
+        //public List<CardBase> CardColod;
+        //public List<int> CardHand;
+
+        AddManaCanal(newHiro);
+        LoadSet(newHiro, myCardSet);
+        // newHiro
+
+        if (enemy)
+        {
+            hiro[1] = newHiro;
+        }
+        else
+            hiro[0] = newHiro;
+
+
+        CreateSlots(enemy, newHiro);
+    }
     #endregion
 
-    #region Card
 
+    #region UiUse
+    //void CreateUi(int slot, int pos, int line)
+    //{
+    //    RealCard newHiro = hiro[line].Slots[slot].Position[pos];
+    //    int a = newHiro.Action.Count;
+    //    Transform trans = null;
+    //    if (pos == 0)
+    //    {
+    //        if (line == 0)
+    //            trans = Ui.MySlotUi[slot];
+    //        else
+    //            trans = Ui.EnemySlotUi[slot];
+    //    }
+    //    else
+    //    {
+    //        if (line == 0)
+    //            trans = Ui.MySlotUiArergard[slot];
+    //        else
+    //            trans = Ui.EnemySlotUiArergard[slot];
+    //    }
+
+
+    //    GameObject GO = Instantiate(Ui.OrigCase);
+    //    GO.transform.SetParent(trans);
+    //    Transform trans1 = GO.transform;
+
+    //    int b = 0;
+    //    for (int i = 0; i < a; i++)
+    //    {
+    //        b = newHiro.Action[i];
+    //        GO = Instantiate(Ui.OrigAction);
+    //        GO.transform.SetParent(trans1);
+    //        //if (gameSetting.ActionLibrary[b].Tayp == "Melee")
+    //        //{
+    //        //    GO.transform.SetParent(trans1);
+    //        //}
+    //        //else if (gameSetting.ActionLibrary[b].Tayp == "Shot")
+    //        //{
+
+    //        //}
+    //        //  GO.GetComponent<Image>().sprite = gameSetting.ActionLibrary[b].Icon;
+    //        GO.GetComponent<Button>().onClick.AddListener(() => PreUseAction(b, slot, pos, line));
+    //    }
+    //}
+
+    void SlotView(RealCard newPosition, MeshRenderer mesh, string mood, int a)
+    {
+        mesh.material = Ui.TargetColor[0];
+        //int a - используется для указания на использование первой или второй линин позиции
+        switch (mood)
+        {
+            case ("ShotView"):
+                if (newPosition.Team == curentPlayer)
+                    if (newPosition.MovePoint > 0)
+                        if (newPosition.ShotAction.Count > 0)
+                        {
+                            mesh.material = Ui.TargetColor[1];
+                        }
+                break;
+
+            case ("ShotTarget"):
+                if (newPosition.Team != curentPlayer)
+                    if (newPosition.MovePoint > 0)
+                        if (newPosition.ShotAction.Count > 0)
+                        {
+                            mesh.material = Ui.TargetColor[2];
+                        }
+                if (newPosition == curentCard)
+                    mesh.material = Ui.TargetColor[3];
+
+                break;
+
+            case ("MeleeView"):
+                if (newPosition.Team == curentPlayer)
+                    if (newPosition.MovePoint > 0)
+                        if (newPosition.Action.Count > 0)
+                        {
+                            mesh.material = Ui.TargetColor[1];
+                        }
+                break;
+
+            case ("MeleeTarget"):
+                if (newPosition.Team != curentPlayer)
+                    if (newPosition.MovePoint > 0)
+                        if (newPosition.ShotAction.Count > 0)
+                        {
+                            mesh.material = Ui.TargetColor[2];
+                        }
+                if (newPosition == curentCard)
+                    mesh.material = Ui.TargetColor[3];
+
+                break;
+        }
+    }
+
+    void LoadUiView(int line, string mood)
+    {// ViewArmy
+        Transform[] slots = null;
+        Slot[] hiroSlot = hiro[line].Slots;
+        // Slot newSlot = null;
+
+        if (line == 0)
+            slots = Ui.MySlot;
+        else
+            slots = Ui.EnemySlot;
+
+        RealCard newPosition = null;
+        MeshRenderer mesh = null;
+        int a = slots.Length;
+        int b = 0;
+        for (int i = 0; i < a; i++)
+        {
+            b = 0;
+            newPosition = hiroSlot[i].Position[b];
+            if (newPosition != null)
+            {
+                mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
+                SlotView(newPosition, mesh, mood, b);
+            }
+            //else
+
+            b++;
+            newPosition = hiroSlot[i].Position[b];
+            if (newPosition != null)
+            {
+                mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
+                SlotView(newPosition, mesh, mood, b);
+            }
+
+        }
+    }
     #endregion
 
-    #region Hiro
-
-    #endregion
 
     #region Stol
+
+    void GrabCard(int a)
+    {
+        Hiro newHiro = hiro[0];
+        a = newHiro.CardHand[a];
+        CardBase cardBase = newHiro.CardColod[a];
+        int b = cardBase.Stat.Length - 1;
+
+        if (newHiro.ManaCurent >= cardBase.Stat[b])
+        {
+            useCard = a;
+        }
+    }
+
+
+    void CardReset(Hiro newHiro)
+    {
+        int a = newHiro.Army.Count;
+        for (int i = 0; i < a; i++)
+            newHiro.Army[i].MovePoint = 1;
+    }// Временное решение
+
+
+    void UseAction()
+    {
+        curentCard.MovePoint -= gameSetting.Library.Action[action].MoveCost;
+        switch (actionTayp)
+        {
+            case ("Slash"):
+                break;
+            case ("Hit"):
+                break;
+            default:
+                Debug.Log(actionTayp);
+                break;
+        }
+        curentCard = null;
+        action = -1;
+
+        if (shotTime)
+        {
+            LoadUiView(0, "ShotView");
+            LoadUiView(1, "ShotView");
+        }
+        else
+        {
+
+            LoadUiView(0, "MeleeView");
+            LoadUiView(1, "MeleeView");
+        }
+    }
+    void SelectAction(int a)
+    {
+        action = a;
+
+        actionTayp = gameSetting.Library.Action[action].Tayp;
+
+        if (actionTayp == "avtoActiv")
+        {
+            action = -1;
+            curentCard = null;
+            UseAction();
+            //Приписать расширение для авто активации соответвующих скилов
+
+        }
+        else if (shotTime)
+        {
+            LoadUiView(0, "ShotTarget");
+            LoadUiView(1, "ShotTarget");
+        }
+        else
+        {
+
+            LoadUiView(0, "MeleeTarget");
+            LoadUiView(1, "MeleeTarget");
+        }
+    }
+
 
     void NewTurn()
     {
@@ -551,65 +599,5 @@ public class Stol : MonoBehaviour
 
     }
 
-    void LoadSet(Hiro hiro, CardSet cardSet)
-    {
-        hiro.CardColod = new List<CardBase>();
-        BufferColod = new List<CardBase>();
-        int a = cardSet.OrigCard.Count;
-        int b = 0;
-        Stol stol = gameObject.GetComponent<Stol>();
-        for (int i = 0; i < a; i++)
-        {
-            b = cardSet.OrigCount[i];
-            for (int i1 = 0; i1 < b; i1++)
-                XMLSaver.ILoad(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
-        }
-
-        a = cardSet.AllCard;
-        int r = 0;
-        for (int i = a; i > 0; i--)
-        {
-            r = Random.Range(0, i);
-            hiro.CardColod.Add(BufferColod[r]);
-            BufferColod.RemoveAt(r);
-        }
-
-        hiro.CardHand = new List<int>();
-        AddCardInHand(hiro, 5);
-
-    }
-
-    void CreateHiro(bool enemy)
-    {
-        Hiro newHiro = new Hiro();
-        newHiro.Slots = new Slot[sizeSlot];
-        int a = newHiro.Slots.Length;
-        for (int i=0; i<a; i++)
-        {
-            newHiro.Slots[i] = new Slot();
-            newHiro.Slots[i].Position = new RealCard[2];
-        }
-        newHiro.Army = new List<RealCard>();
-        //public List<Slot> Slots;
-        //public List<RealCard> Army;
-
-
-        //public List<CardBase> CardColod;
-        //public List<int> CardHand;
-
-        AddManaCanal(newHiro);
-        LoadSet(newHiro, myCardSet);
-        // newHiro
-
-        if (enemy)
-        {
-            hiro[1] = newHiro;
-        }
-        else
-            hiro[0] = newHiro;
-
-
-        CreateSlots(enemy, newHiro);
-    }
     #endregion
 }
