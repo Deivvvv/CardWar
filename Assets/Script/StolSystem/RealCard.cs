@@ -27,6 +27,7 @@ public class RealCard
     public int Position;
     public int Team;
     public int Id;
+    public Hiro HiroMain;
 
     public int MovePoint;
     public List<int> Action;

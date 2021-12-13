@@ -7,17 +7,73 @@ using TMPro;
 
 namespace BattleTable 
 {
+    class StatusSystem : MonoBehaviour
+    {
+        public static void IDie(RealCard card)
+        {
+            Destroy(card.Body);
+            card.HiroMain.Army.Remove(card);
+            if (card.ShotDMG > 0)
+                card.HiroMain.ShotHiro--;
+
+            card.HiroMain.Slots[card.Slot].Position[card.Position] = null;
+        }
+    }
+
     public static class BattleSystem 
     {
 
-        public static void IHit(RealCard card1, RealCard card2)
+        static void ISlash(RealCard card1, RealCard card2)
         {
+            card1.MovePoint--;
+            card2.MovePoint--;
 
+            card1.Hp -= card2.MeleeDMG;
+            card2.Hp -= card1.MeleeDMG;
+
+            if (card1.Hp <= 0)
+                StatusSystem.IDie(card1);
+            if (card2.Hp <= 0)
+                StatusSystem.IDie(card2);
         }
 
-        public static void IShot(RealCard card1, RealCard card2)
+        static void IShot(RealCard card1, RealCard card2)
         {
+            card1.MovePoint--;
+            card2.Hp -= card1.ShotDMG;
 
+            if (card1.Hp <= 0)
+                StatusSystem.IDie(card1);
+            if (card2.Hp <= 0)
+                StatusSystem.IDie(card2);
+        }
+
+        public static void IUseAction(string actionTayp, RealCard card1, RealCard card2)
+        {
+            switch (actionTayp)
+            {
+                case ("Slash"):
+                    if (card1.Team != card2.Team)
+                        if (card2.Position != 1)
+                            ISlash(card1, card2);
+                        else 
+                            return;
+                    else
+                        return;
+                    break;
+                case ("Hit"):
+                    if (card1.Team != card2.Team)
+                        if (card1.ShotDMG > 0)
+                            IShot(card1, card2);
+                        else
+                            return;
+                    else
+                        return;
+                    break;
+                default:
+                    Debug.Log(actionTayp);
+                    break;
+            }
         }
     }
 
@@ -51,13 +107,14 @@ namespace BattleTable
             card.Slot = slot;
             card.Position = pos;
             card.Team = hiro1.Team;
-            card.Id = handNum;//hiro1.CardColod[handNum];
+            card.Id = handNum;
+            card.HiroMain = hiro1;
 
 
             hiro1.Army.Add(card);
             hiro2.Slots[slot].Position[pos] = card;
-
-            // CreateCard.Create(card, slot, pos, gameSetting);
+            if (card.ShotDMG > 0)
+                card.HiroMain.ShotHiro++;
 
             GameObject GO = Instantiate(gameSetting.OrigHiro);
 
