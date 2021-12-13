@@ -14,9 +14,8 @@ public class StolUi : MonoBehaviour
     public GameObject OrigSlot;
     public GameObject OrigSlotEnemy;
 
+    public GameObject OrigCard;
     public GameObject OrigHiro;
-
-    public Material[] TargetColor;
 
     public Transform UseCard;
     public Transform TargetCard;
@@ -26,4 +25,9 @@ public class StolUi : MonoBehaviour
 
     public TMP_Text MyInfo;
     public TMP_Text EnemyInfo;
+
+    public Button NextTurn;
+
+    public GameObject MeleeTurn;
+    public GameObject ShotTurn;
 }

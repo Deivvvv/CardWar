@@ -23,5 +23,7 @@ public class GameSetting : ScriptableObject
 
     public string origPath = $"/Resources/Hiro";
 
+    public Material[] TargetColor;
+    public GameObject OrigHiro;
     // public Color[] SelectColor; ??
 }

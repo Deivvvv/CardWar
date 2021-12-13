@@ -16,6 +16,9 @@ public class Hiro
     public int Mana;
     public int ManaCurent;
     public int Team;
+
+    public int Hp;
+    public int ShotHiro;
 }
 public class Slot
 {

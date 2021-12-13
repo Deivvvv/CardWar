@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.UI;
+using UnityEngine.UI;
 using TMPro;
 
 using BattleTable;
@@ -9,6 +9,9 @@ using Saver;
 
 public class Stol : MonoBehaviour
 {
+    [SerializeField]
+    private Camera camera;
+
     [SerializeField]
     private StolUi Ui;
     // private List<CardBase> enemyCard;
@@ -47,7 +50,12 @@ public class Stol : MonoBehaviour
             curentPlayer = 0;
         else
             curentPlayer = 1;
+        curentPlayer = 1;
         NewTurn();
+        Ui.NextTurn.onClick.AddListener(() => NewTurn());
+
+        HiroUi(hiro[0]);
+        HiroUi(hiro[1]);
     }
 
     void Update()
@@ -55,50 +63,53 @@ public class Stol : MonoBehaviour
         if (curentPlayer == 0)
         {
 
-            if (Input.GetMouseButtonUp(0))
-            {
-                if (useCard != -1)
-                {
-                    if (useCard == -1)
-                    {
-                        int layerMask = 1 << 8;
+            //if (Input.GetMouseButtonUp(0))
+            //{
+            //    if (useCard != -1)
+            //    {
+            //        if (useCard == -1)
+            //        {
+            //            int layerMask = 1 << 8;
 
-                        // This would cast rays only against colliders in layer 8.
-                        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-                        layerMask = ~layerMask;
-                        RaycastHit hit;
-                        // Does the ray intersect any objects excluding the player layer
-                        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
-                        {
-                            TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
-                            if (targetHiro != null) 
-                            { 
-                                targetHiro.CardLoad();
-                            }
-                        }
-                    }
-                }
-            }
+            //            // This would cast rays only against colliders in layer 8.
+            //            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+            //            layerMask = ~layerMask;
+            //            RaycastHit hit;
+            //            // Does the ray intersect any objects excluding the player layer
+            //            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+            //            {
+            //                TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
+            //                if (targetHiro != null) 
+            //                { 
+            //                    targetHiro.CardLoad();
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
             if (Input.GetMouseButtonDown(0))
             {
-                if (useCard == -1)
-                {
-                    int layerMask = 1 << 8;
-
-                    // This would cast rays only against colliders in layer 8.
-                    // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-                    layerMask = ~layerMask;
-                    RaycastHit hit;
-                    // Does the ray intersect any objects excluding the player layer
-                    if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+                Ray ray = camera.ScreenPointToRay(Input.mousePosition); 
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, 100)) 
+                { 
+                    TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
+                    if (targetHiro != null)
                     {
-                        TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
-                        if (targetHiro != null)
+                        if (useCard == -1)
                         {
+                            Debug.Log("Ok");
                             if (curentCard == null)
                                 targetHiro.Play();
                             else if (action != -1)
                                 targetHiro.Target();
+                        }
+                        else
+                        {
+                            targetHiro.CardLoad();
+                         //   IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
+                         //IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
+                         //   IPlayCard();
                         }
                     }
                 }
@@ -107,7 +118,18 @@ public class Stol : MonoBehaviour
             {
                 if (useCard != -1)
                 {
+                    Debug.Log("Ok");
                     useCard = -1;
+                    Ui.UseCard.gameObject.active = false;
+
+                    if (shotTime)
+                    {
+                        CallTable("ShotView");
+                    }
+                    else
+                    {
+                        CallTable("MeleeView");
+                    }
                 }
                 else if (action != -1)
                 {
@@ -140,7 +162,11 @@ public class Stol : MonoBehaviour
 
     public void UseCard(int line, int slot, int pos)
     {
-        TableRule.IUseCard(hiro[curentPlayer], hiro[line], useCard, slot, pos);
+        Hiro newHiro = hiro[curentPlayer];
+        TableRule.IUseCard(newHiro, hiro[line], useCard, slot, pos, gameSetting);
+        HiroUi(newHiro);
+        CallTable("Clear");
+        Ui.UseCard.gameObject.active = false;
     }
 
     public void SelectTarget(int line, int slot, int position)
@@ -158,45 +184,45 @@ public class Stol : MonoBehaviour
 
     public void ClickHiro(int line, int slot, int position)
     {
-        bool load = true;
+        bool load = false;
         curentCard = hiro[line].Slots[slot].Position[position];
-        if (curentCard.Team == curentPlayer)
-        {
-            if (curentCard.MovePoint > 0)
+        if(curentCard!= null)
+            if (curentCard.Team == curentPlayer)
             {
-                if (shotTime)
+                load = true;
+                if (curentCard.MovePoint > 0)
                 {
-                    if (curentCard.ShotAction.Count > 1)
+                    if (shotTime)
                     {
-                        //SupportUi
-                    }
-                    else if (curentCard.ShotAction.Count > 0)
-                    {
-                        SelectAction(curentCard.ShotAction[0]);
+                        if (curentCard.ShotAction.Count > 1)
+                        {
+                            //SupportUi
+                        }
+                        else if (curentCard.ShotAction.Count > 0)
+                        {
+                            SelectAction(curentCard.ShotAction[0]);
+                        }
+                        else
+                            load = false;
+
                     }
                     else
-                        load = false;
-
+                    {
+                        if (curentCard.Action.Count > 1)
+                        {
+                            //SupportUi
+                        }
+                        else if (curentCard.Action.Count > 0)
+                        {
+                            SelectAction(curentCard.Action[0]);
+                        }
+                        else
+                            load = false;
+                    }
                 }
                 else
-                {
-                    if (curentCard.Action.Count > 1)
-                    {
-                        //SupportUi
-                    }
-                    else if (curentCard.Action.Count > 0)
-                    {
-                        SelectAction(curentCard.Action[0]);
-                    }
-                    else
-                        load = false;
-                }
+                    load = false;
             }
-            else
-                load = false;
-        }
-        else
-            load = false;
 
         if (!load)
             curentCard = null;
@@ -292,29 +318,24 @@ public class Stol : MonoBehaviour
             newHiro.Slots[i].Position = new RealCard[2];
         }
         newHiro.Army = new List<RealCard>();
-        //public List<Slot> Slots;
-        //public List<RealCard> Army;
-
-
-        //public List<CardBase> CardColod;
-        //public List<int> CardHand;
-
-        AddManaCanal(newHiro);
-        LoadSet(newHiro, myCardSet);
-        // newHiro
 
         if (enemy)
         {
+            newHiro.Team = 1;
             hiro[1] = newHiro;
         }
         else
+        {
+            newHiro.Team = 0;
             hiro[0] = newHiro;
+        }
 
+        AddManaCanal(newHiro);
+        LoadSet(newHiro, myCardSet);
 
         CreateSlots(enemy, newHiro);
     }
     #endregion
-
 
     #region UiUse
     //void CreateUi(int slot, int pos, int line)
@@ -361,115 +382,72 @@ public class Stol : MonoBehaviour
     //    }
     //}
 
-    void SlotView(RealCard newPosition, MeshRenderer mesh, string mood, int a)
+    void HiroUi(Hiro newHiro)
     {
-        mesh.material = Ui.TargetColor[0];
-        //int a - используется для указания на использование первой или второй линин позиции
-        switch (mood)
-        {
-            case ("ShotView"):
-                if (newPosition.Team == curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.ShotAction.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[1];
-                        }
-                break;
+        int b = newHiro.Team;
+        TMP_Text text = null;
 
-            case ("ShotTarget"):
-                if (newPosition.Team != curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.ShotAction.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[2];
-                        }
-                if (newPosition == curentCard)
-                    mesh.material = Ui.TargetColor[3];
-
-                break;
-
-            case ("MeleeView"):
-                if (newPosition.Team == curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.Action.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[1];
-                        }
-                break;
-
-            case ("MeleeTarget"):
-                if (newPosition.Team != curentPlayer)
-                    if (newPosition.MovePoint > 0)
-                        if (newPosition.ShotAction.Count > 0)
-                        {
-                            mesh.material = Ui.TargetColor[2];
-                        }
-                if (newPosition == curentCard)
-                    mesh.material = Ui.TargetColor[3];
-
-                break;
-        }
-    }
-
-    void LoadUiView(int line, string mood)
-    {// ViewArmy
-        Transform[] slots = null;
-        Slot[] hiroSlot = hiro[line].Slots;
-        // Slot newSlot = null;
-
-        if (line == 0)
-            slots = Ui.MySlot;
+        if (b == 0)
+            text = Ui.MyInfo;
         else
-            slots = Ui.EnemySlot;
+            text = Ui.EnemyInfo;
 
-        RealCard newPosition = null;
-        MeshRenderer mesh = null;
-        int a = slots.Length;
-        int b = 0;
-        for (int i = 0; i < a; i++)
-        {
-            b = 0;
-            newPosition = hiroSlot[i].Position[b];
-            if (newPosition != null)
-            {
-                mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                SlotView(newPosition, mesh, mood, b);
-            }
-            //else
-
-            b++;
-            newPosition = hiroSlot[i].Position[b];
-            if (newPosition != null)
-            {
-                mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                SlotView(newPosition, mesh, mood, b);
-            }
-
-        }
+        text.text = $"Hp: {newHiro.Hp}" +
+                $"\nCard: {newHiro.CardColod.Count - newHiro.NextCard}" +
+                $"\nMana: {newHiro.ManaCurent}/{newHiro.Mana}";
     }
 
-    void HiroUi()
+    void NewUiCard(Hiro newHiro, int a)
     {
+        GameObject GO = Instantiate(Ui.OrigCard);
+        int b = newHiro.Team;
+        if(b==0)
+            GO.transform.SetParent(Ui.MyHand);
+        else
+            GO.transform.SetParent(Ui.EnemyHand);
 
+        newHiro.CardColod[a].Body = GO.transform;
+
+        CardView.IViewCard(newHiro.CardColod[a], gameSetting);
+
+        if (b == 0)
+            GO.GetComponent<Button>().onClick.AddListener(() => GrabCard(a));
+        //GO.GetComponent<Button>();
+       
     }
     #endregion
 
 
     #region Stol
+    void CallTable(string mood)
+    {
+        CardView.LoadUiView(hiro[0], mood, gameSetting, curentCard, Ui.MySlot);
+        CardView.LoadUiView(hiro[1], mood, gameSetting, curentCard, Ui.EnemySlot);
+
+        //CardView.LoadUiView(hiro[0], mood, gameSetting, curentCard, Ui);
+        //CardView.LoadUiView(hiro[1], mood, gameSetting, curentCard, Ui);
+    }
 
     void GrabCard(int a)
     {
         Hiro newHiro = hiro[0];
-        a = newHiro.CardHand[a];
+      //  a = newHiro.CardHand[a];
         CardBase cardBase = newHiro.CardColod[a];
         int b = cardBase.Stat.Length - 1;
 
         if (newHiro.ManaCurent >= cardBase.Stat[b])
         {
             useCard = a;
+
+            Ui.UseCard.gameObject.active = true;
+            Transform trans = cardBase.Body;
+            cardBase.Body = Ui.UseCard;
+            CardView.IViewCard(cardBase, gameSetting);
+            cardBase.Body = trans;
+
+            CallTable("SetCard");
         }
     }
-
 
     void CardReset(Hiro newHiro)
     {
@@ -497,14 +475,11 @@ public class Stol : MonoBehaviour
 
         if (shotTime)
         {
-            LoadUiView(0, "ShotView");
-            LoadUiView(1, "ShotView");
+            CallTable("ShotView");
         }
         else
         {
-
-            LoadUiView(0, "MeleeView");
-            LoadUiView(1, "MeleeView");
+            CallTable("MeleeView");
         }
     }
     void SelectAction(int a)
@@ -523,14 +498,11 @@ public class Stol : MonoBehaviour
         }
         else if (shotTime)
         {
-            LoadUiView(0, "ShotTarget");
-            LoadUiView(1, "ShotTarget");
+            CallTable("ShotTarget");
         }
         else
         {
-
-            LoadUiView(0, "MeleeTarget");
-            LoadUiView(1, "MeleeTarget");
+            CallTable("MeleeTarget");
         }
     }
 
@@ -546,40 +518,47 @@ public class Stol : MonoBehaviour
     void MeleeTurn()
     {
         AddManaCanal(hiro[curentPlayer]);
+        AddCardInHand(hiro[curentPlayer], 1);
         shotTime = false;
+
+        Ui.ShotTurn.active = false;
+        Ui.MeleeTurn.active =  true;
         if (curentPlayer == 0)
         {
-            LoadUiView(0, "MeleeView");
-            LoadUiView(1, "MeleeView");
+            CallTable("MeleeView");
         }
         else
         {
-            LoadUiView(0, "Clear");
-            LoadUiView(1, "Clear");
+            CallTable("Clear");
+            NewTurn();
         }
         //LoadUIMelee
     }
     void ShotTurn()
     {
-
+        Debug.Log(curentPlayer);
         if (curentPlayer == 1)
             curentPlayer = 0;
         else
             curentPlayer = 1;
 
         shotTime = true;
-        if (curentPlayer == 0)
+        if (hiro[curentPlayer].ShotHiro < 0)
         {
-            LoadUiView(0, "ShotView");
-            LoadUiView(1, "ShotView");
+            Ui.ShotTurn.active = true;
+            Ui.MeleeTurn.active = false;
+            if (curentPlayer == 0)
+            {
+                CallTable("ShotView");
+            }
+            else
+            {
+                CallTable("Clear");
+            }
         }
         else
-        {
-            LoadUiView(0, "Clear");
-            LoadUiView(1, "Clear");
-        }
-        //  if (curentPlayer ==1)
-        // LoadUiShot();
+            NewTurn();
+
 
     }
 
@@ -599,9 +578,19 @@ public class Stol : MonoBehaviour
             if (hiro.NextCard < b)
             {
                 hiro.CardHand.Add(hiro.NextCard);
+
+                NewUiCard(hiro, hiro.NextCard);
+
                 hiro.NextCard++;
+                if (hiro.CardHand.Count > 10)
+                {
+                    Destroy(hiro.CardColod[hiro.CardHand[0]].Body.gameObject);
+                    hiro.CardHand.RemoveAt(0);
+                }
+
             }
         }
+        HiroUi(hiro);
 
     }
 
