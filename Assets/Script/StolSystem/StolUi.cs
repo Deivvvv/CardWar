@@ -1,16 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class StolUi : MonoBehaviour
 {
     public Transform[] MySlot;
     public Transform[] EnemySlot;
-
-    //public Transform[] MySlotUi;
-    //public Transform[] EnemySlotUi;
-    //public Transform[] MySlotUiArergard;
-    //public Transform[] EnemySlotUiArergard;
 
     public GameObject OrigAction;
     public GameObject OrigCase;
@@ -22,5 +19,11 @@ public class StolUi : MonoBehaviour
     public Material[] TargetColor;
 
     public Transform UseCard;
+    public Transform TargetCard;
 
+    public Transform MyHand;
+    public Transform EnemyHand;
+
+    public TMP_Text MyInfo;
+    public TMP_Text EnemyInfo;
 }

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Saver;
-
 using System.Linq;
+
+using Saver;
+using BattleTable;
+
 
 public class CardConstructor : MonoBehaviour
 {
@@ -34,55 +36,8 @@ public class CardConstructor : MonoBehaviour
 
     private string origPath = $"/Resources/Hiro";
 
-    void Reset()
-    {
-        int a = newCard.Count;
-        int b = 0;
-        for (int i = 0; i < a; i++)
-        {
-            b = newCard[i];
-            LocalCard[b] = oldCard[i];
-            ViewCardBase(b);
-        }
 
-        //Remove add LocalCard
-        a = LocalCard.Count;
-        if (oldAllCard < a)
-        {
-            a--;
-            for (int i = oldAllCard-1; i < a; i++)
-            {
-                Destroy(LocalCard[oldAllCard].Body.gameObject);
-                LocalCard.RemoveAt(oldAllCard);
-            }
-        }
-
-        //BlackList
-        a = gameData.BlackList.Count;
-        for(int i = 0; i < a; i++)
-        {
-            b = gameData.BlackList[i];
-            if (LocalCard.Count > b)
-            {
-                LocalCard[b].Body.gameObject.active = true;
-            }
-        }
-
-        TransfData(gameSetting.GlobalMyData, gameData);
-
-
-        a = gameData.BlackList.Count;
-        for (int i = 0; i < a; i++)
-        {
-            b = gameData.BlackList[i];
-            LocalCard[b].Body.gameObject.active = false;
-        }
-
-        //ResetData
-        newCard = new List<int>();
-        oldCard = new List<CardBase>();
-    }
-
+    #region Filtr System
     void GenerateFiltr()
     {
         int a = gameSetting.SellCount.Length + 1;
@@ -147,7 +102,8 @@ public class CardConstructor : MonoBehaviour
             item.Body.SetParent(Ui.BaseCard);
         }
     }
-
+    #endregion
+    #region IO card System
     void Enject()
     {
         CardBase card = new CardBase();
@@ -179,8 +135,10 @@ public class CardConstructor : MonoBehaviour
                 LocalCard[a].Body.gameObject.active = true;
                 card.Body = LocalCard[a].Body;
                 LocalCard[a] = card;
-                ViewCardBase(a);
-                
+
+                CardView.IViewCard(card, gameSetting);
+
+
                 gameData.BlackList.RemoveAt(0);
             }
             else
@@ -203,7 +161,8 @@ public class CardConstructor : MonoBehaviour
             AddEdit(curentNum, LocalCard[curentNum]);
 
             LocalCard[curentNum] = card;
-            ViewCardBase(curentNum);
+
+            CardView.IViewCard(card, gameSetting);
 
         }
 
@@ -253,6 +212,113 @@ public class CardConstructor : MonoBehaviour
         Ui.NameFlied.text = cardBase.Name;
         ViewCard();
     }
+    #endregion
+
+    #region Save/Reset/Load System(Data Control)
+
+    void PreLoad()
+    {
+
+        curentNum = -1;
+        // Delite();
+
+        LocalCard = new List<CardBase>();
+        newCard = new List<int>();
+        oldCard = new List<CardBase>();
+
+
+
+        GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
+        GO.GetComponent<Image>().color = Ui.SelectColor[0];
+        GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
+
+        Ui.EjectButton.onClick.AddListener(() => Enject());
+        Ui.InjectButton.onClick.AddListener(() => Inject());
+        Ui.DeliteButton.onClick.AddListener(() => Delite());
+
+        Ui.SaveButton.onClick.AddListener(() => Save());
+        Ui.ResetButton.onClick.AddListener(() => Reset());
+
+        gameData = gameSetting.ReservData;//= new GameData();
+                                          // gameData.AllCard = // = new List<string>();
+        gameData.BlackList = new List<int>();
+
+        oldAllCard = gameData.AllCard;
+
+        TransfData(gameSetting.GlobalMyData, gameData);
+
+
+        LoadBase();
+    }
+
+    void LoadBase()
+    {
+
+        string path = "";
+        int a = gameData.AllCard;
+        CardConstructor cardConstructor = gameObject.GetComponent<CardConstructor>();
+        for (int i = 0; i < a; i++)
+        {
+            path = Application.dataPath + origPath + $"{i}";
+            XMLSaver.ILoad(path, cardConstructor);
+            NewCard(i);
+        }
+
+        a = gameData.BlackList.Count;
+        for (int i = 0; i < a; i++)
+        {
+            LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
+        }
+    }
+
+    void Reset()
+    {
+        int a = newCard.Count;
+        int b = 0;
+        for (int i = 0; i < a; i++)
+        {
+            b = newCard[i];
+            LocalCard[b] = oldCard[i];
+            CardView.IViewCard(oldCard[i], gameSetting);
+        }
+
+        //Remove add LocalCard
+        a = LocalCard.Count;
+        if (oldAllCard < a)
+        {
+            a--;
+            for (int i = oldAllCard - 1; i < a; i++)
+            {
+                Destroy(LocalCard[oldAllCard].Body.gameObject);
+                LocalCard.RemoveAt(oldAllCard);
+            }
+        }
+
+        //BlackList
+        a = gameData.BlackList.Count;
+        for (int i = 0; i < a; i++)
+        {
+            b = gameData.BlackList[i];
+            if (LocalCard.Count > b)
+            {
+                LocalCard[b].Body.gameObject.active = true;
+            }
+        }
+
+        TransfData(gameSetting.GlobalMyData, gameData);
+
+
+        a = gameData.BlackList.Count;
+        for (int i = 0; i < a; i++)
+        {
+            b = gameData.BlackList[i];
+            LocalCard[b].Body.gameObject.active = false;
+        }
+
+        //ResetData
+        newCard = new List<int>();
+        oldCard = new List<CardBase>();
+    }
 
     void TransfData(GameData Data1, GameData Data2)
     {
@@ -291,14 +357,13 @@ public class CardConstructor : MonoBehaviour
         newCard.Add(a);
         oldCard.Add(card);
     }
-
     void Save()
     {
         gameData.AllCard = LocalCard.Count;
         TransfData(gameData, gameSetting.GlobalMyData);
         int b = 0;
         string path = "";
-        for (int i = 0; i < newCard.Count;i++)
+        for (int i = 0; i < newCard.Count; i++)
         {
             b = newCard[i];
             path = Application.dataPath + origPath + $"{b}";
@@ -309,7 +374,9 @@ public class CardConstructor : MonoBehaviour
         newCard = new List<int>();
         oldCard = new List<CardBase>();
     }
+    #endregion
 
+    #region Create UI
     void LoadUi()
     {
         GameObject GO = null;
@@ -333,6 +400,7 @@ public class CardConstructor : MonoBehaviour
         }
         // cardBase.Stat
     }
+
     void AddStatButton(bool plus, Button button, int a)
     {
         if (plus)
@@ -340,6 +408,31 @@ public class CardConstructor : MonoBehaviour
         else
             button.onClick.AddListener(() => StatDown(a));
     }
+    void SwitchCardButton(int a, Button button)
+    {
+        button.onClick.AddListener(() => SwitchCard(a));
+    }
+
+    void NewCard(int i)
+    {
+        int a = Ui.BaseCard.childCount - 1;
+        GameObject GO = Instantiate(Ui.OrigCard);// BaseCard.GetChild(a + 1).gameObject;
+        GO.transform.SetParent(Ui.BaseCard);
+
+        Button button = GO.GetComponent<Button>();
+        SwitchCardButton(a, button);
+
+        GO.GetComponent<Image>().color = Ui.SelectColor[1];
+
+        LocalCard[i].Body = GO.transform;
+        //  LocalCard.Add(new CardBase());
+        //  Save();
+
+        CardView.IViewCard(LocalCard[i], gameSetting);
+    }
+    #endregion
+
+    #region Ui Use
 
     void StatUp(int a)
     {
@@ -378,10 +471,17 @@ public class CardConstructor : MonoBehaviour
         cardBase.Stat[cardBase.Stat.Length - 1] = Mathf.CeilToInt(a / 4f);
         ViewCard();
     }
-    void SwitchCardButton(int a, Button button)
+
+    void ViewCard()
     {
-        button.onClick.AddListener(() => SwitchCard(a));
+        for (int i = 0; i < cardBase.Stat.Length - 1; i++)
+        {
+            Ui.StatCount[i].text = $"{cardBase.Stat[i]}";
+        }
+        Ui.ManaCount.text = $"Цена: {cardBase.Stat[cardBase.Stat.Length - 1]}";
+        // Ui.
     }
+
     void SwitchCard(int a)
     {
         //После появления метода сортировки перевести на локальный номер карты
@@ -401,81 +501,9 @@ public class CardConstructor : MonoBehaviour
             Ui.BaseCard.GetChild(0).gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
 
     }
-    void NewCard(int i)
-    {
-        int a = Ui.BaseCard.childCount - 1;
-        GameObject GO = Instantiate(Ui.OrigCard);// BaseCard.GetChild(a + 1).gameObject;
-        GO.transform.SetParent(Ui.BaseCard);
-
-        Button button = GO.GetComponent<Button>();
-        SwitchCardButton(a, button);
-
-        GO.GetComponent<Image>().color = Ui.SelectColor[1];
-
-        LocalCard[i].Body = GO.transform;
-      //  LocalCard.Add(new CardBase());
-      //  Save();
-
-        ViewCardBase(i);
-    }
-
-    void ViewCard()
-    {
-        for (int i = 0; i < cardBase.Stat.Length - 1; i++)
-        {
-            Ui.StatCount[i].text = $"{cardBase.Stat[i]}";
-        }
-        Ui.ManaCount.text = $"Цена: {cardBase.Stat[cardBase.Stat.Length - 1]}";
-        // Ui.
-    }
-    void ViewCardBase(int a)
-    {
-        if (a != -1)
-        {
-            CardBase card = LocalCard[a];
-               Transform trans = card.Body;
-
-            //trans.GetChild(1).//портреты
-
-            TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
-            text.text = card.Name;
-
-            text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
-            text.text = "";
-            for (int i = 0; i < card.Stat.Length-1; i++)
-            {
-                if (card.Stat[i] > 0) 
-                    text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
-            }
-            // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
+    #endregion
 
 
-            text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
-            text.text = ""+ card.Stat[card.Stat.Length-1];
-            //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
-        }
-        //  Ui.NameFlied.text = cardBase.Name;
-    }
-
-    void LoadBase()
-    {
-
-        string path = "";
-        int a = gameData.AllCard;
-        CardConstructor cardConstructor = gameObject.GetComponent<CardConstructor>();
-        for (int i = 0; i < a; i++)
-        {
-            path = Application.dataPath + origPath + $"{i}";
-            XMLSaver.ILoad(path, cardConstructor);
-            NewCard(i);
-        }
-
-        a = gameData.BlackList.Count;
-        for (int i = 0; i < a; i++)
-        {
-            LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
-        }
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -487,48 +515,12 @@ public class CardConstructor : MonoBehaviour
         cardBase.Trait = new string[5];
         PreLoad();
 
-
-        LoadBase();
-
         LoadUi();
         Inject();
 
         GenerateFiltr();
     }
 
-    void PreLoad()
-    {
-
-        curentNum = -1;
-       // Delite();
-
-        LocalCard = new List<CardBase>();
-        newCard = new List<int>();
-        oldCard = new List<CardBase>();
-
-
-
-        GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
-        GO.GetComponent<Image>().color = Ui.SelectColor[0];
-        GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
-
-        Ui.EjectButton.onClick.AddListener(() => Enject());
-        Ui.InjectButton.onClick.AddListener(() => Inject());
-        Ui.DeliteButton.onClick.AddListener(() => Delite());
-
-        Ui.SaveButton.onClick.AddListener(() => Save());
-        Ui.ResetButton.onClick.AddListener(() => Reset());
-
-        gameData = gameSetting.ReservData;//= new GameData();
-       // gameData.AllCard = // = new List<string>();
-        gameData.BlackList = new List<int>();
-
-        oldAllCard = gameData.AllCard;
-
-        TransfData( gameSetting.GlobalMyData, gameData);
-
-
-    }
 
 
 }

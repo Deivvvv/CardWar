@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 6839261333967012072}
   - component: {fileID: 6438775685008607463}
   - component: {fileID: 524335179837459150}
+  - component: {fileID: 2727931898321638644}
   m_Layer: 5
   m_Name: CardOrigin
   m_TagString: Untagged
@@ -449,6 +450,24 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &2727931898321638644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6839261333967012074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a976d0b902859ae4aa73b0071bb6326b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Avatar: {fileID: 2953962419830546703}
+  Name: {fileID: 3983844407262796133}
+  Stat: {fileID: 9131842679406939326}
+  Trait: {fileID: 0}
+  Mana: {fileID: 6644085501717321269}
+  Count: {fileID: 0}
 --- !u!1 &7632917578734040750
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ using System.IO;
 
 namespace Saver
 {
-    static class XMLSaver// : MonoBehaviour
+    static class XMLSaver
     {
         public static void ISaveGameData(CardBase cardBase, string path)
         {

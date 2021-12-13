@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.UI;
+using TMPro;
+
 namespace BattleTable
 {
- 
     public static class BattleSystem 
     {
 
@@ -55,6 +57,7 @@ namespace BattleTable
             hiro1.Army.Add(card);
             hiro2.Slots[slot].Position[pos] = card;
         }
+
         static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
             RealCard targetCard = hiro1.Slots[slot].Position[pos];
@@ -81,5 +84,32 @@ namespace BattleTable
          
 
         }//процедура определения задачи карты и возможности ее реализации
+    }
+
+    public static class CardView
+    {
+        public static void IViewCard(CardBase card, GameSetting gameSetting)
+        {
+            Transform trans = card.Body;
+            CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
+
+            // Ui.Avatar.sprite = ?;//портреты
+
+            Ui.Name.text = card.Name;
+
+            Ui.Stat.text = "";
+            for (int i = 0; i < card.Stat.Length - 1; i++)
+            {
+                if (card.Stat[i] > 0)
+                    Ui.Stat.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
+            }
+
+            //  Ui.Trait;
+
+            Ui.Mana.text = "" + card.Stat[card.Stat.Length - 1];
+
+            //if(Ui.Count != null)
+            //        Ui.Count.text;
+        }
     }
 }

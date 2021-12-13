@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+//using UnityEngine.UI;
+using TMPro;
 
 using BattleTable;
 using Saver;
@@ -445,6 +446,11 @@ public class Stol : MonoBehaviour
             }
 
         }
+    }
+
+    void HiroUi()
+    {
+
     }
     #endregion
 
