@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fa98a60e9d40de4984ea5206c8bff2f, type: 3}
+  m_Name: ActionLibrary
+  m_EditorClassIdentifier: 
+  Action:
+  - {fileID: 11400000, guid: d09e248de3f0f404887f3be38a2e7c4c, type: 2}
+  - {fileID: 11400000, guid: bd72837de35202d4e96e4f2bf9756809, type: 2}
