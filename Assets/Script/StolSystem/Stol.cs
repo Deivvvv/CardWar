@@ -123,7 +123,7 @@ public class Stol : MonoBehaviour
                     {
                         if (useCard == -1)
                         {
-                            Debug.Log("Ok");
+                           // Debug.Log("Ok");
                             if (curentCard == null)
                                 targetHiro.Play();
                             else if (action != -1)
@@ -141,11 +141,11 @@ public class Stol : MonoBehaviour
             }
             else if (Input.GetMouseButtonDown(1))
             {
+                Ui.UseCard.gameObject.active = false;
                 if (useCard != -1)
                 {
                     Debug.Log("Ok");
                     useCard = -1;
-                    Ui.UseCard.gameObject.active = false;
 
                     if (shotTime)
                     {
@@ -193,11 +193,9 @@ public class Stol : MonoBehaviour
         if (cardReal != null)
         {
             CardBase cardBase = hiro[line].CardColod[cardReal.Id];
-            Transform trans = cardBase.Body;
-            cardBase.Body = Ui.TargetCard;
-            CardView.IViewCard(cardBase, gameSetting);
-            cardBase.Body = trans;
-            //  CardView.IViewCard(hiro[line].CardColod[cardReal.Id], gameSetting);
+
+
+            CardView.IViewTargetCard(cardBase, Ui.TargetCard, gameSetting);
         }
         else
             Ui.TargetCard.gameObject.active = false;
@@ -208,6 +206,7 @@ public class Stol : MonoBehaviour
         Hiro newHiro = hiro[curentPlayer];
         TableRule.IUseCard(newHiro, hiro[line], useCard, slot, pos, gameSetting);
         HiroUi(newHiro);
+        useCard = -1;
         if (curentPlayer == 0)
         {
             CallTable("Clear");
@@ -381,7 +380,7 @@ public class Stol : MonoBehaviour
             hiro[0] = newHiro;
         }
 
-        AddManaCanal(newHiro);
+       // AddManaCanal(newHiro);
         LoadSet(newHiro, myCardSet);
 
         CreateSlots(enemy, newHiro);
@@ -490,11 +489,7 @@ public class Stol : MonoBehaviour
         {
             useCard = a;
 
-            Ui.UseCard.gameObject.active = true;
-            Transform trans = cardBase.Body;
-            cardBase.Body = Ui.UseCard;
-            CardView.IViewCard(cardBase, gameSetting);
-            cardBase.Body = trans;
+            CardView.IViewTargetCard(cardBase, Ui.UseCard, gameSetting);
 
             CallTable("SetCard");
         }
@@ -528,6 +523,9 @@ public class Stol : MonoBehaviour
         {
             CallTable("MeleeTarget");
         }
+
+
+        CardView.IViewTargetCard(hiro[0].CardColod[curentCard.Id], Ui.UseCard, gameSetting);
     }
 
 

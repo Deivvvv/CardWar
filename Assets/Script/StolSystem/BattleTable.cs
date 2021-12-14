@@ -422,5 +422,15 @@ namespace BattleTable
         {
 
         }
+        public static void IViewTargetCard(CardBase cardBase, Transform Ui, GameSetting gameSetting)
+        {
+
+            Ui.gameObject.active = true;
+            Transform trans = cardBase.Body;
+            cardBase.Body = Ui;
+            IViewCard(cardBase, gameSetting);
+            cardBase.Body = trans;
+        }
+
     }
 }

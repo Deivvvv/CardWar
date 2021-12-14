@@ -16,7 +16,6 @@ namespace AICore
             }
             else 
             {
-                Debug.Log(hiro.ManaCurent);
                 if (hiro.ManaCurent > 0)
                     IPalyCard(hiro, hiro.ManaCurent, stol);
             }
@@ -26,7 +25,6 @@ namespace AICore
         {
             int a = hiro.CardHand.Count;
 
-            Debug.Log(m);
             //  int m = hiro.ManaCurent;
             int s1 = -1;
             int s2 = 0;
@@ -54,7 +52,6 @@ namespace AICore
 
         static void ITableHandler(Hiro hiro, int b, Stol stol)
         {
-            Debug.Log(b);
             int a = 7;
             for(int i = 0; i < a; i++)
             {
