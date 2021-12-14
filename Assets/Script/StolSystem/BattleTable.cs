@@ -214,27 +214,34 @@ namespace BattleTable
                 card.ShotAction.Add(a);
             }
 
+            string traitCase = "";
             Trait trait = null;
             int b = 0;
             a = cardBase.Trait.Length;
             for(int i = 0; i < a; i++)
             {
-                b = gameSetting.Library.Action.FindIndex(x => x.Name == cardBase.Trait[i]);
-                trait = gameSetting.Library.Action[b];
-
-                switch (trait.ClassTayp)
+                traitCase = cardBase.Trait[i];
+                if (traitCase != "")
                 {
-                    case ("Action")://Action
-                        card.Action.Add(b);
-                        break;
+                    b = gameSetting.Library.Action.FindIndex(x => x.Name == traitCase);
+                    if (b == -1)
+                        Debug.Log(traitCase);
+                    trait = gameSetting.Library.Action[b];
 
-                    case ("ShotAction")://ShotAction
-                        card.ShotAction.Add(b);
-                        break;
+                    switch (trait.ClassTayp)
+                    {
+                        case ("Action")://Action
+                            card.Action.Add(b);
+                            break;
 
-                    case ("PasiveAction")://PasivAction
-                        card.PasiveAction.Add(b);
-                        break;
+                        case ("ShotAction")://ShotAction
+                            card.ShotAction.Add(b);
+                            break;
+
+                        case ("PasiveAction")://PasivAction
+                            card.PasiveAction.Add(b);
+                            break;
+                    }
                 }
             }
         }

@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+using AICore;
 using BattleTable;
 using Saver;
 
 public class Stol : MonoBehaviour
 {
+    public bool IsAI;
     [SerializeField]
     private Camera camera;
 
@@ -206,8 +208,11 @@ public class Stol : MonoBehaviour
         Hiro newHiro = hiro[curentPlayer];
         TableRule.IUseCard(newHiro, hiro[line], useCard, slot, pos, gameSetting);
         HiroUi(newHiro);
-        CallTable("Clear");
-        Ui.UseCard.gameObject.active = false;
+        if (curentPlayer == 0)
+        {
+            CallTable("Clear");
+            Ui.UseCard.gameObject.active = false;
+        }
     }
 
     public void SelectTarget(int line, int slot, int position)
@@ -264,6 +269,14 @@ public class Stol : MonoBehaviour
 
         if (!load)
             curentCard = null;
+    }
+    #endregion
+
+    #region AI Rule
+    public void AIUseCard(int line, int slot, int position, int card)
+    {
+        useCard = card;
+        UseCard(line, slot, position);
     }
     #endregion
 
@@ -540,8 +553,16 @@ public class Stol : MonoBehaviour
         }
         else
         {
-            CallTable("Clear");
-            NewTurn();
+          //  CallTable("Clear");
+            if (IsAI)
+            {
+                AIBase.AITurn(hiro[1], gameObject.GetComponent<Stol>(), shotTime);
+                NewTurn();
+            }
+            else
+            {
+                CallTable("Clear");
+            }
         }
         //LoadUIMelee
     }
@@ -550,7 +571,9 @@ public class Stol : MonoBehaviour
         if (curentPlayer == 1)
             curentPlayer = 0;
         else
+        {
             curentPlayer = 1;
+        }
 
         shotTime = true;
         if (hiro[curentPlayer].ShotHiro < 0)
@@ -563,7 +586,11 @@ public class Stol : MonoBehaviour
             }
             else
             {
-                CallTable("Clear");
+                if (IsAI)
+                {
+                    AIBase.AITurn(hiro[1], gameObject.GetComponent<Stol>(), shotTime);
+                }
+               // CallTable("Clear");
             }
         }
         else

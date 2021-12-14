@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7145f63d01b32c439c60af94a8368db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsAI: 1
   camera: {fileID: 287376385}
   Ui: {fileID: 95570021}
   gameSetting: {fileID: 11400000, guid: 147d8eaf1569c254998195b9fb6d2f4e, type: 2}
