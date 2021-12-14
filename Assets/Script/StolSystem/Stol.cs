@@ -461,8 +461,8 @@ public class Stol : MonoBehaviour
     #region Stol
     void CallTable(string mood)
     {
-        CardView.LoadUiView(hiro[0], mood, gameSetting, curentCard, Ui.MySlot);
-        CardView.LoadUiView(hiro[1], mood, gameSetting, curentCard, Ui.EnemySlot);
+        CardView.ILoadUiView(hiro[0], mood, gameSetting, curentCard, Ui.MySlot);
+        CardView.ILoadUiView(hiro[1], mood, gameSetting, curentCard, Ui.EnemySlot);
 
         //CardView.LoadUiView(hiro[0], mood, gameSetting, curentCard, Ui);
         //CardView.LoadUiView(hiro[1], mood, gameSetting, curentCard, Ui);

@@ -34,6 +34,8 @@ public class RealCard
     public List<int> ShotAction;
     public List<int> PasiveAction;
 
+    public List<Effect> Effect;
+
     public GameObject Body;
 
 }

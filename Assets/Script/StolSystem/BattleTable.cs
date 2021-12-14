@@ -18,10 +18,68 @@ namespace BattleTable
 
             card.HiroMain.Slots[card.Slot].Position[card.Position] = null;
         }
+
+        public static void IStun(RealCard card)
+        {
+            //Destroy(card.Body);
+            //card.HiroMain.Army.Remove(card);
+            //if (card.ShotDMG > 0)
+            //    card.HiroMain.ShotHiro--;
+
+            //card.HiroMain.Slots[card.Slot].Position[card.Position] = null;
+        }
     }
 
     public static class BattleSystem 
     {
+        public static void IStatys(RealCard card)
+        {
+            List<int> blackList = new List<int>();
+
+            int a = card.Effect.Count;
+            Effect effect = null;
+            for(int i = 0; i < a; i++)
+            {
+                effect = card.Effect[i];
+                effect.Size--;
+                switch (effect.Name)
+                {
+                    case ("Stun"):
+                        StatusSystem.IStun(card);
+                        break;
+                }
+                if (effect.Size <= 0)
+                    blackList.Add(i);
+            }
+
+            a = blackList.Count;
+            for (int i = a; i > 0; i--)
+            {
+                card.Effect.RemoveAt(blackList[i]);
+            }
+        }
+        static void IAddEffect(string name, int size, RealCard card)
+        {
+            int a = card.Effect.Count;
+            Effect effect = null;
+            for(int i = 0; i < a; i++)
+            {
+                effect = card.Effect[i];
+                if(effect.Name == name)
+                {
+                    effect.Size += size;
+                    if (effect.Size <= 0)
+                        card.Effect.RemoveAt(i);
+                    CardView.IViewEffect(card);
+                    return;
+                }
+            }
+
+            effect = new Effect();
+            effect.Name = name;
+            effect.Size = size;
+            card.Effect.Add(effect);
+        }
 
         static void ISlash(RealCard card1, RealCard card2)
         {
@@ -130,7 +188,7 @@ namespace BattleTable
             hiro1.CardHand.Remove(handNum);
 
             //прогрузка спосбностей
-            ILoadAction(card, gameSetting)
+            ILoadAction(card, gameSetting);
         }
 
         static void ILoadAction(RealCard card, GameSetting gameSetting)
@@ -196,7 +254,7 @@ namespace BattleTable
             //        Ui.Count.text;
         }
 
-        static void SlotView(RealCard newPosition, MeshRenderer mesh, string mood, int b, GameSetting gameSetting, int team, RealCard curentCard)
+        static void ISlotView(RealCard newPosition, MeshRenderer mesh, string mood, int b, GameSetting gameSetting, int team, RealCard curentCard)
         {
 
             mesh.material = gameSetting.TargetColor[0];
@@ -263,7 +321,7 @@ namespace BattleTable
                 }
         }
 
-        public static void LoadUiView(Hiro newHiro, string mood, GameSetting gameSetting, RealCard curentCard , Transform[] slots)
+        public static void ILoadUiView(Hiro newHiro, string mood, GameSetting gameSetting, RealCard curentCard , Transform[] slots)
         {
           //  Transform[] slots = null;
             Slot[] hiroSlot = newHiro.Slots;
@@ -288,7 +346,7 @@ namespace BattleTable
                 newPosition = hiroSlot[i].Position[b];
 
                 mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                SlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard);
+                ISlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard);
 
                 //if (newPosition != null)
                 //{
@@ -306,7 +364,7 @@ namespace BattleTable
                 newPosition = hiroSlot[i].Position[b];
 
                 mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                SlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard);
+                ISlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard);
                 //if (newPosition != null)
                 //{
                 //    mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
@@ -315,5 +373,9 @@ namespace BattleTable
             }
         }
 
+        public static void IViewEffect(RealCard card)
+        {
+
+        }
     }
 }
