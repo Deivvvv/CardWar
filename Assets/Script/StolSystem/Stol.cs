@@ -32,6 +32,7 @@ public class Stol : MonoBehaviour
 
     private int sizeSlot = 7;
 
+    private RealCard targetCard;
     private RealCard curentCard;
     private int action =-1;
 
@@ -212,14 +213,11 @@ public class Stol : MonoBehaviour
     public void SelectTarget(int line, int slot, int position)
     {
         bool load = true;
-        RealCard targetCard = hiro[line].Slots[slot].Position[position];
+        targetCard = hiro[line].Slots[slot].Position[position];
 
-        //action
+        //  curentCard.MovePoint -= gameSetting.Library.Action[action].MoveCost;
 
-        if (targetCard.Team == curentCard.Team)
-        {
-
-        }
+        BattleSystem.IUseAction(actionTayp, curentCard, targetCard, gameSetting);
     }
 
     public void ClickHiro(int line, int slot, int position)
@@ -496,32 +494,6 @@ public class Stol : MonoBehaviour
             newHiro.Army[i].MovePoint = 1;
     }// Временное решение
 
-
-    void UseAction()
-    {
-        curentCard.MovePoint -= gameSetting.Library.Action[action].MoveCost;
-        switch (actionTayp)
-        {
-            case ("Slash"):
-                break;
-            case ("Hit"):
-                break;
-            default:
-                Debug.Log(actionTayp);
-                break;
-        }
-        curentCard = null;
-        action = -1;
-
-        if (shotTime)
-        {
-            CallTable("ShotView");
-        }
-        else
-        {
-            CallTable("MeleeView");
-        }
-    }
     void SelectAction(int a)
     {
         action = a;
@@ -530,10 +502,9 @@ public class Stol : MonoBehaviour
 
         if (actionTayp == "avtoActiv")
         {
+            BattleSystem.IUseAction(actionTayp, curentCard, targetCard, gameSetting);
             action = -1;
             curentCard = null;
-            UseAction();
-            //Приписать расширение для авто активации соответвующих скилов
 
         }
         else if (shotTime)

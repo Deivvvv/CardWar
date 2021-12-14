@@ -9,4 +9,7 @@ public class Trait : ScriptableObject
     public int Count;
     public int MoveCost;
     public string Tayp;
+    public string ClassTayp;
+
+
 }

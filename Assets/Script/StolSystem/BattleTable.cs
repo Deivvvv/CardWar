@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace BattleTable 
+namespace BattleTable
 {
     class StatusSystem : MonoBehaviour
     {
@@ -106,7 +106,7 @@ namespace BattleTable
                 StatusSystem.IDie(card2);
         }
 
-        public static void IUseAction(string actionTayp, RealCard card1, RealCard card2)
+        public static void IUseAction(string actionTayp, RealCard card1, RealCard card2 , GameSetting gameSetting)
         {
             switch (actionTayp)
             {
@@ -130,8 +130,13 @@ namespace BattleTable
                     break;
                 default:
                     Debug.Log(actionTayp);
+                    return;
                     break;
             }
+
+           int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
+
+            card1.MovePoint -= gameSetting.Library.Action[b].MoveCost;
         }
     }
 
@@ -188,17 +193,50 @@ namespace BattleTable
             hiro1.CardHand.Remove(handNum);
 
             //прогрузка спосбностей
-            ILoadAction(card, gameSetting);
+            ILoadAction(card, cardBase, gameSetting);
         }
 
-        static void ILoadAction(RealCard card, GameSetting gameSetting)
+        static void ILoadAction(RealCard card, CardBase cardBase, GameSetting gameSetting)
         {
             card.Action = new List<int>();
             card.ShotAction = new List<int>();
             card.PasiveAction = new List<int>();
 
-            //if (card.MeleeDMG > 0)
-            //    card.Action.Add(gameSetting.Library.Action.IndexOf("Slash"));
+            int a = 0;
+            if (card.MeleeDMG > 0) 
+            {
+                a = gameSetting.Library.Action.FindIndex(x => x.Name == "Slash");//.Action.Find(x => x.Name == "Slash"));
+                card.Action.Add(a);
+            }
+            if (card.ShotDMG > 0)
+            {
+                a = gameSetting.Library.Action.FindIndex(x => x.Name == "Hit");
+                card.ShotAction.Add(a);
+            }
+
+            Trait trait = null;
+            int b = 0;
+            a = cardBase.Trait.Length;
+            for(int i = 0; i < a; i++)
+            {
+                b = gameSetting.Library.Action.FindIndex(x => x.Name == cardBase.Trait[i]);
+                trait = gameSetting.Library.Action[b];
+
+                switch (trait.ClassTayp)
+                {
+                    case ("Action")://Action
+                        card.Action.Add(b);
+                        break;
+
+                    case ("ShotAction")://ShotAction
+                        card.ShotAction.Add(b);
+                        break;
+
+                    case ("PasiveAction")://PasivAction
+                        card.PasiveAction.Add(b);
+                        break;
+                }
+            }
         }
 
         static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
