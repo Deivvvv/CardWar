@@ -5,6 +5,7 @@ using UnityEngine;
 public class Hiro
 {
     public int NextCard;
+    public Transform[] OrigSlots;
     public Slot[] Slots;
     public List<RealCard> Army;
 
@@ -23,4 +24,5 @@ public class Hiro
 public class Slot
 {
     public RealCard[] Position;
+    public MeshRenderer[] Mesh;
 }

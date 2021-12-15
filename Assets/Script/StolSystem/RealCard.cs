@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class RealCard
 {
@@ -28,6 +29,8 @@ public class RealCard
     public int Team;
     public int Id;
     public Hiro HiroMain;
+
+    public TMP_Text Ui;
 
     public int MovePoint;
     public List<int> Action;

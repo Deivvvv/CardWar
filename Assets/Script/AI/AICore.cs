@@ -17,13 +17,22 @@ namespace AICore
             else 
             {
                 if (hiro.ManaCurent > 0)
-                    IPalyCard(hiro, hiro.ManaCurent, stol);
+                {
+                    List<int> newHand = new List<int>();
+                    int a = hiro.CardHand.Count;
+                    for (int i = 0; i < a; i++)
+                    {
+                        newHand.Add(hiro.CardHand[i]);
+                    }
+
+                    IPalyCard(hiro, hiro.ManaCurent, stol, newHand);
+                }
             }
         }
 
-        static void IPalyCard(Hiro hiro, int m, Stol stol)
+        static void IPalyCard(Hiro hiro, int m, Stol stol, List<int> newHand)
         {
-            int a = hiro.CardHand.Count;
+            int a = newHand.Count;
 
             //  int m = hiro.ManaCurent;
             int s1 = -1;
@@ -40,13 +49,17 @@ namespace AICore
                     }
             }
 
+            Debug.Log(a);
             if (s1 != -1)
             {
                 m -= s3;
                 if (m > 0)
-                    IPalyCard(hiro, m, stol);
-
+                {
+                    newHand.RemoveAt(s1);
+                    IPalyCard(hiro, m, stol, newHand);
+                }
                 ITableHandler(hiro, hiro.CardHand[s1], stol);
+
             }
         }
 

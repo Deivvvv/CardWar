@@ -10,6 +10,8 @@ using Saver;
 
 public class Stol : MonoBehaviour
 {
+    private Stol stol;
+
     public bool IsAI;
     [SerializeField]
     private Camera camera;
@@ -43,10 +45,12 @@ public class Stol : MonoBehaviour
     private bool shotTime;
 
     private GameObject selectable;
-    // void LoadSlotButton
-    // Start is called before the first frame update
+
     void Start()
     {
+        Core.ILoadGameSetting(gameSetting);
+
+        stol = gameObject.GetComponent<Stol>();
         CreateHiro(false);
         CreateHiro(true);
 
@@ -78,7 +82,7 @@ public class Stol : MonoBehaviour
                     selectable = hit.transform.gameObject;
                     Ui.TargetCard.gameObject.active = true;
                     targetHiro.PreView();
-                   // CardView.IViewCard(newHiro.CardColod[a], gameSetting); 
+                   // CardView.IViewCard(newHiro.CardColod[a]); 
                 }
             }
             else
@@ -87,43 +91,13 @@ public class Stol : MonoBehaviour
 
         if (curentPlayer == 0)
         {
-
-            //if (Input.GetMouseButtonUp(0))
-            //{
-            //    if (useCard != -1)
-            //    {
-            //        if (useCard == -1)
-            //        {
-            //            int layerMask = 1 << 8;
-
-            //            // This would cast rays only against colliders in layer 8.
-            //            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-            //            layerMask = ~layerMask;
-            //            RaycastHit hit;
-            //            // Does the ray intersect any objects excluding the player layer
-            //            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
-            //            {
-            //                TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
-            //                if (targetHiro != null) 
-            //                { 
-            //                    targetHiro.CardLoad();
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
             if (Input.GetMouseButtonDown(0))
             {
-                // ray = camera.ScreenPointToRay(Input.mousePosition); 
-                //// RaycastHit hit;
-                // if (Physics.Raycast(ray, out hit, 100)) 
-                // { 
                 TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
                 if (targetHiro != null)
+                {
+                    if (useCard == -1)
                     {
-                        if (useCard == -1)
-                        {
-                        // Debug.Log("Ok");
                         if (curentCard == null)
                             targetHiro.Play();
                         else if (action != -1)
@@ -132,49 +106,12 @@ public class Stol : MonoBehaviour
                     else
                     {
                         targetHiro.CardLoad();
-                        //   IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
-                        //IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
-                        //   IPlayCard();
                     }
                 }
-                // }
             }
             else if (Input.GetMouseButtonDown(1))
             {
-                Ui.UseCard.gameObject.active = false;
-                if (useCard != -1)
-                {
-                    Debug.Log("Ok");
-                    useCard = -1;
-
-                    if (shotTime)
-                    {
-                        CallTable("ShotView");
-                    }
-                    else
-                    {
-                        CallTable("MeleeView");
-                    }
-                }
-                else if (action != -1)
-                {
-                    if (shotTime)
-                    {
-                        if (curentCard.ShotAction.Count < 2)
-                            curentCard = null;
-                        action = -1;
-                    }
-                    else
-                    {
-                        if (curentCard.Action.Count < 2)
-                            curentCard = null;
-                        action = -1;
-                    }
-                }
-                else if (curentCard != null)
-                {
-                    curentCard = null;
-                }
+                PostUse(false);
             }
         }
     }
@@ -182,20 +119,75 @@ public class Stol : MonoBehaviour
 
 
 
+    #region SubMetod
+
+    void CardNull()
+    {
+        curentCard = null;
+        Ui.UseCard.gameObject.active = false;
+    }
+
+    #endregion
 
     #region Public Metods
+    public void PostUse(bool fullUse)
+    {
+        if (!fullUse)
+        {
+            if (useCard != -1)
+            {
+                useCard = -1; 
+                CardNull();
+            }
+            else if (action != -1)
+            {
+                if (shotTime)
+                {
+                    if (curentCard.ShotAction.Count < 2)
+                        CardNull();
+                    action = -1;
+                }
+                else
+                {
+                    if (curentCard.Action.Count < 2)
+                        CardNull();
+                    action = -1;
+                }
+            }
+            else if (curentCard != null)
+            {
+                CardNull();
+            }
+        }
+        else
+        {
+            HiroUi(hiro[0]);
+            HiroUi(hiro[1]);
+            CardNull();
+            useCard = -1;
+            action = -1;
+        }
+
+        if (shotTime)
+        {
+            CallTable("ShotView");
+        }
+        else
+        {
+            CallTable("MeleeView");
+        }
+    }
 
     public void PreView(int line, int slot, int pos)
     {
         RealCard cardReal = hiro[line].Slots[slot].Position[pos];
-        // int a = hiro[line].Slots[slot].Position[pos].Id;
-        //   int team =
+
         if (cardReal != null)
         {
             CardBase cardBase = hiro[line].CardColod[cardReal.Id];
 
 
-            CardView.IViewTargetCard(cardBase, Ui.TargetCard, gameSetting);
+            CardView.IViewTargetCard(cardBase, Ui.TargetCard);
         }
         else
             Ui.TargetCard.gameObject.active = false;
@@ -204,14 +196,10 @@ public class Stol : MonoBehaviour
     public void UseCard(int line, int slot, int pos)
     {
         Hiro newHiro = hiro[curentPlayer];
-        TableRule.IUseCard(newHiro, hiro[line], useCard, slot, pos, gameSetting);
-        HiroUi(newHiro);
-        useCard = -1;
-        if (curentPlayer == 0)
-        {
-            CallTable("Clear");
-            Ui.UseCard.gameObject.active = false;
-        }
+        TableRule.IUseCard(newHiro, hiro[line], useCard, slot, pos, stol);
+        // PostUse(true);
+
+      //  HiroUi(newHiro);
     }
 
     public void SelectTarget(int line, int slot, int position)
@@ -221,7 +209,7 @@ public class Stol : MonoBehaviour
 
         //  curentCard.MovePoint -= gameSetting.Library.Action[action].MoveCost;
 
-        BattleSystem.IUseAction(actionTayp, curentCard, targetCard, gameSetting);
+        BattleSystem.IUseAction(actionTayp, curentCard, targetCard, stol);
     }
 
     public void ClickHiro(int line, int slot, int position)
@@ -301,7 +289,6 @@ public class Stol : MonoBehaviour
         GameObject GO = null;
         Transform trans = null;
         Vector3 v = new Vector3(0, 0, 0);
-        Stol stol = gameObject.GetComponent<Stol>();
 
         for (int i=0; i < a; i++)
         {
@@ -336,7 +323,7 @@ public class Stol : MonoBehaviour
         BufferColod = new List<CardBase>();
         int a = cardSet.OrigCard.Count;
         int b = 0;
-        Stol stol = gameObject.GetComponent<Stol>();
+
         for (int i = 0; i < a; i++)
         {
             b = cardSet.OrigCount[i];
@@ -362,29 +349,51 @@ public class Stol : MonoBehaviour
     {
         Hiro newHiro = new Hiro();
         newHiro.Slots = new Slot[sizeSlot];
-        int a = newHiro.Slots.Length;
-        for (int i = 0; i < a; i++)
-        {
-            newHiro.Slots[i] = new Slot();
-            newHiro.Slots[i].Position = new RealCard[2];
-        }
-        newHiro.Army = new List<RealCard>();
 
+        CreateSlots(enemy, newHiro);
+
+        Slot newSlot = null;
+        Transform[] newSlotTrans = null;
         if (enemy)
         {
+            newSlotTrans = Ui.EnemySlot;
             newHiro.Team = 1;
             hiro[1] = newHiro;
         }
         else
         {
+            newSlotTrans = Ui.MySlot;
             newHiro.Team = 0;
             hiro[0] = newHiro;
         }
+        newHiro.OrigSlots = newSlotTrans;
+
+
+        int a = newHiro.Slots.Length;
+        for (int i = 0; i < a; i++)
+        {
+            newSlot = new Slot();
+            newSlot.Position = new RealCard[2];
+            newSlot.Mesh = new MeshRenderer[2];
+            if (enemy)
+            {
+                newSlot.Mesh[0] = newSlotTrans[i].GetChild(0).gameObject.GetComponent<MeshRenderer>();
+                newSlot.Mesh[1] = newSlotTrans[i].GetChild(1).gameObject.GetComponent<MeshRenderer>();
+            }
+            else
+            {
+                newSlot.Mesh[0] = newSlotTrans[i].GetChild(0).gameObject.GetComponent<MeshRenderer>();
+                newSlot.Mesh[1] = newSlotTrans[i].GetChild(1).gameObject.GetComponent<MeshRenderer>();
+            }
+            newHiro.Slots[i] = newSlot;
+        }
+        newHiro.Army = new List<RealCard>();
+
+       
 
        // AddManaCanal(newHiro);
         LoadSet(newHiro, myCardSet);
 
-        CreateSlots(enemy, newHiro);
     }
     #endregion
 
@@ -459,7 +468,7 @@ public class Stol : MonoBehaviour
 
         newHiro.CardColod[a].Body = GO.transform;
 
-        CardView.IViewCard(newHiro.CardColod[a], gameSetting);
+        CardView.IViewCard(newHiro.CardColod[a]);
 
         if (b == 0)
             GO.GetComponent<Button>().onClick.AddListener(() => GrabCard(a));
@@ -472,11 +481,11 @@ public class Stol : MonoBehaviour
     #region Stol
     void CallTable(string mood)
     {
-        CardView.ILoadUiView(hiro[0], mood, gameSetting, curentCard, Ui.MySlot, curentPlayer);
-        CardView.ILoadUiView(hiro[1], mood, gameSetting, curentCard, Ui.EnemySlot, curentPlayer);
+        CardView.IViewLoadUi(hiro[0], mood, curentCard, Ui.MySlot, curentPlayer);
+        CardView.IViewLoadUi(hiro[1], mood, curentCard, Ui.EnemySlot, curentPlayer);
 
-        //CardView.LoadUiView(hiro[0], mood, gameSetting, curentCard, Ui);
-        //CardView.LoadUiView(hiro[1], mood, gameSetting, curentCard, Ui);
+        //CardView.LoadUiView(hiro[0], mood, curentCard, Ui);
+        //CardView.LoadUiView(hiro[1], mood, curentCard, Ui);
     }
 
     void GrabCard(int a)
@@ -490,7 +499,7 @@ public class Stol : MonoBehaviour
         {
             useCard = a;
 
-            CardView.IViewTargetCard(cardBase, Ui.UseCard, gameSetting);
+            CardView.IViewTargetCard(cardBase, Ui.UseCard);
 
             CallTable("SetCard");
         }
@@ -511,7 +520,7 @@ public class Stol : MonoBehaviour
 
         if (actionTayp == "avtoActiv")
         {
-            BattleSystem.IUseAction(actionTayp, curentCard, targetCard, gameSetting);
+            BattleSystem.IUseAction(actionTayp, curentCard, targetCard, stol);
             action = -1;
             curentCard = null;
 
@@ -526,7 +535,7 @@ public class Stol : MonoBehaviour
         }
 
 
-        CardView.IViewTargetCard(hiro[0].CardColod[curentCard.Id], Ui.UseCard, gameSetting);
+        CardView.IViewTargetCard(hiro[0].CardColod[curentCard.Id], Ui.UseCard);
     }
 
 
@@ -560,7 +569,7 @@ public class Stol : MonoBehaviour
             }
             else
             {
-                CallTable("Clear");
+                CallTable("MeleeView");
             }
         }
         //LoadUIMelee
@@ -591,7 +600,11 @@ public class Stol : MonoBehaviour
                 {
                     AIBase.AITurn(targetHiro, gameObject.GetComponent<Stol>(), shotTime);
                 }
-               // CallTable("Clear");
+                else
+                {
+                    CallTable("ShotView");
+                }
+                // CallTable("Clear");
             }
         }
         else

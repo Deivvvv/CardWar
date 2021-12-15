@@ -136,7 +136,7 @@ public class CardConstructor : MonoBehaviour
                 card.Body = LocalCard[a].Body;
                 LocalCard[a] = card;
 
-                CardView.IViewCard(card, gameSetting);
+                CardView.IViewCard(card);
 
 
                 gameData.BlackList.RemoveAt(0);
@@ -162,7 +162,7 @@ public class CardConstructor : MonoBehaviour
 
             LocalCard[curentNum] = card;
 
-            CardView.IViewCard(card, gameSetting);
+            CardView.IViewCard(card);
 
         }
 
@@ -218,6 +218,7 @@ public class CardConstructor : MonoBehaviour
 
     void PreLoad()
     {
+        Core.ILoadGameSetting(gameSetting);
 
         curentNum = -1;
         // Delite();
@@ -279,7 +280,7 @@ public class CardConstructor : MonoBehaviour
         {
             b = newCard[i];
             LocalCard[b] = oldCard[i];
-            CardView.IViewCard(oldCard[i], gameSetting);
+            CardView.IViewCard(oldCard[i]);
         }
 
         //Remove add LocalCard
@@ -428,7 +429,7 @@ public class CardConstructor : MonoBehaviour
         //  LocalCard.Add(new CardBase());
         //  Save();
 
-        CardView.IViewCard(LocalCard[i], gameSetting);
+        CardView.IViewCard(LocalCard[i]);
     }
     #endregion
 

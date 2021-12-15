@@ -204,7 +204,7 @@ MonoBehaviour:
   OrigAction: {fileID: 0}
   OrigCase: {fileID: 0}
   OrigSlot: {fileID: 3393841679706539865, guid: 15709daef00b823468b7d8b919aa189f, type: 3}
-  OrigSlotEnemy: {fileID: 3393841679706539865, guid: 15709daef00b823468b7d8b919aa189f, type: 3}
+  OrigSlotEnemy: {fileID: 919530750814134385, guid: 787e577dd2d448f4b8faaa1885d059ad, type: 3}
   OrigCard: {fileID: 6839261333967012074, guid: 1eaf97d091f58694791e7defc66fbdaf, type: 3}
   OrigHiro: {fileID: 0}
   UseCard: {fileID: 698328949}
@@ -449,8 +449,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -19.000244, y: 36}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 221.72565, y: -480.4118}
+  m_SizeDelta: {x: 193.4517, y: 83.1764}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &430133247
 MonoBehaviour:
