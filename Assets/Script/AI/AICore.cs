@@ -47,7 +47,7 @@ namespace AICore
                 cardList.Add(my.Army[i]);
             }
 
-                RealCard card = null;
+            RealCard card = null;
             for (int i = 0; i < a; i++)
             {
                 card = cardList[i];
@@ -99,6 +99,9 @@ namespace AICore
                     return;
                 }
             }
+
+            if (a == 0)
+                stol.AIClickHead(0, b, action);
         }
 
         static void PalyCard( int m, List<int> newHand)

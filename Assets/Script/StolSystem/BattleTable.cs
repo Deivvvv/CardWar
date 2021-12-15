@@ -95,6 +95,18 @@ namespace BattleTable
             card.Effect.Add(effect);
         }
 
+        #region Action Head
+        static void ISlashHead(RealCard card1, Hiro hiro)
+        {
+           
+        }
+
+        static void IShotHead(RealCard card1, Hiro hiro)
+        {
+           
+        }
+        #endregion
+        #region Action Card
         static void ISlash(RealCard card1, RealCard card2)
         {
           //  card1.MovePoint--;
@@ -128,15 +140,46 @@ namespace BattleTable
             else
                 CardView.IViewSlotUi(card2);
         }
+        #endregion
+
+        public static void IUseActionHead(string actionTayp, RealCard card1, Stol stol, Hiro hiro)
+        {
+            int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
+            int a = gameSetting.Library.Action[b].MoveCost;
+
+            if (card1.MovePoint >= a)
+            {
+                bool useAction = false;
+                switch (actionTayp)
+                {
+                    case ("Slash"):
+
+                        //ISlashHead
+                        useAction = true;
+                        break;
+                    case ("Hit"):
+                        //IShotHead
+                        useAction = true;
+                        break;
+                    default:
+                        Debug.Log(actionTayp);
+                        return;
+                        break;
+                }
+
+                if (useAction)
+                {
+                    card1.MovePoint -= a;
+                    stol.PostUse(true);
+                }
+            }
+        }
 
         public static void IUseAction(string actionTayp, RealCard card1, RealCard card2, Stol stol)
         {
-            Debug.Log(actionTayp);
             int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
-            Debug.Log(b);
             int a = gameSetting.Library.Action[b].MoveCost;
-            Debug.Log(a);
-            //   Debug.Log($"{card1.MovePoint} > {a}");
+
             if (card1.MovePoint >= a)
             {
                 bool useAction = false;

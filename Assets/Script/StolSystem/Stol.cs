@@ -260,6 +260,18 @@ public class Stol : MonoBehaviour
         if (!load)
             curentCard = null;
     }
+
+    public void ClickHead(int a)
+    {
+        if(useCard != -1)
+        {
+
+        }
+        else if (curentCard != null)
+            if (action != -1)
+                BattleSystem.IUseActionHead(actionTayp, curentCard, stol, hiro[a]);
+
+    }
     #endregion
 
     #region AI Rule
@@ -268,12 +280,17 @@ public class Stol : MonoBehaviour
         useCard = card;
         UseCard(line, slot, position);
     }
-
     public void AIUseArmy(int line, int slot, int position, int card, int newAction)
     {
         curentCard = hiro[1].Army[card];
         SelectAction(newAction);
         SelectTarget(line, slot, position);
+    }
+    public void AIClickHead(int a, int card, int newAction)
+    {
+        curentCard = hiro[1].Army[card];
+        SelectAction(newAction);
+        ClickHead(a);
     }
     #endregion
 
