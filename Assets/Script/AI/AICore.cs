@@ -8,39 +8,105 @@ namespace AICore
 {
     public class AIBase
     {
-        public static void AITurn(Hiro hiro, Stol stol, bool shotTime)
-        {
-            if (shotTime)
-            {
+        private static Hiro my;
+        private static Hiro enemy;
+        private static Stol stol;
 
-            }
-            else 
-            {
-                if (hiro.ManaCurent > 0)
+        public static void LoadCore(Hiro hiro, Hiro hiro2, Stol stol1)
+        {
+            my = hiro;
+            enemy = hiro2;
+            stol = stol1;
+    }
+
+
+        public static void AITurn( bool shotTime)
+        {
+            if (!shotTime)
+                if (my.ManaCurent > 0)
                 {
                     List<int> newHand = new List<int>();
-                    int a = hiro.CardHand.Count;
+                    int a = my.CardHand.Count;
                     for (int i = 0; i < a; i++)
                     {
-                        newHand.Add(hiro.CardHand[i]);
+                        newHand.Add(my.CardHand[i]);
                     }
 
-                    IPalyCard(hiro, hiro.ManaCurent, stol, newHand);
+                    PalyCard(my.ManaCurent, newHand);
+                }
+
+            UseArmy(shotTime);
+
+        }
+        static void UseArmy(bool shotTime)
+        {
+            int a = my.Army.Count;
+
+            RealCard card = null;
+            for (int i = 0; i < a; i++)
+            {
+                card = my.Army[i];
+                if(card.MovePoint>0)
+                    if (shotTime)
+                    {
+                        if (card.ShotAction.Count > 0)
+                            SelectAction(card.ShotAction,i, shotTime);
+                    }
+                    else
+                    {
+                        if (card.Action.Count > 0)
+                            SelectAction(card.ShotAction,i, shotTime);
+                    }
+            }
+        }
+        static void SelectAction(List<int> action, int a, bool shotTime)
+        {
+            int newAction = action[0];
+            SelectTarget(newAction, a, shotTime);
+          //  card.
+        }
+
+        static void SelectTarget( int action, int b, bool shotTime)
+        {
+            int line = 0;
+            int slot = 0;
+            int position = 0;
+            // enemy
+            int a = enemy.Army.Count;
+            RealCard card = null;
+            for (int i = 0; i < a; i++)
+            {
+                card = enemy.Army[i];
+                line = card.Line;
+                slot = card.Slot;
+                position = card.Position;
+                if (shotTime)
+                {
+                    if (card.Position == 0)
+                    {
+                        stol.AIUseArmy(line, slot, position, b, action);
+                        return;
+                    }
+                }
+                else
+                {
+                    stol.AIUseArmy(line, slot, position, b, action);
+                    return;
                 }
             }
         }
 
-        static void IPalyCard(Hiro hiro, int m, Stol stol, List<int> newHand)
+        static void PalyCard( int m, List<int> newHand)
         {
             int a = newHand.Count;
 
-            //  int m = hiro.ManaCurent;
+            //  int m = my.ManaCurent;
             int s1 = -1;
             int s2 = 0;
             int s3 = 0;
             for (int i = 0; i < a; i++)
             {
-                s3 = hiro.CardColod[hiro.CardHand[i]].Stat[12];
+                s3 = my.CardColod[my.CardHand[i]].Stat[12];
                 if (s3 <= m)
                     if (s3 > s2)
                     {
@@ -49,26 +115,25 @@ namespace AICore
                     }
             }
 
-            Debug.Log(a);
             if (s1 != -1)
             {
                 m -= s3;
                 if (m > 0)
                 {
                     newHand.RemoveAt(s1);
-                    IPalyCard(hiro, m, stol, newHand);
+                    PalyCard(m, newHand);
                 }
-                ITableHandler(hiro, hiro.CardHand[s1], stol);
+                ITableHandler( my.CardHand[s1]);
 
             }
         }
 
-        static void ITableHandler(Hiro hiro, int b, Stol stol)
+        static void ITableHandler( int b)
         {
             int a = 7;
             for(int i = 0; i < a; i++)
             {
-                if(hiro.Slots[i].Position[0] == null)
+                if(my.Slots[i].Position[0] == null)
                 {
                     stol.AIUseCard(1,i,0,b);
                     return;

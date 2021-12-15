@@ -203,6 +203,7 @@ namespace BattleTable
             card.Mana = cardBase.Stat[12];
 
 
+            card.Line = hiro2.Team;
             card.Slot = slot;
             card.Position = pos;
             card.Team = hiro1.Team;
@@ -313,7 +314,6 @@ namespace BattleTable
                     //  IPlayCard(hiro1, hiro2, handNum, slot, pos);//Временно заморожено
                     stol.PostUse(true);
                 }
-                Debug.Log(targetCard);
             }
          
 

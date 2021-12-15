@@ -65,6 +65,8 @@ public class Stol : MonoBehaviour
 
         HiroUi(hiro[0]);
         HiroUi(hiro[1]);
+
+        AIBase.LoadCore(hiro[1], hiro[0], stol);
     }
 
 
@@ -265,6 +267,13 @@ public class Stol : MonoBehaviour
     {
         useCard = card;
         UseCard(line, slot, position);
+    }
+
+    public void AIUseArmy(int line, int slot, int position, int card, int newAction)
+    {
+        curentCard = hiro[1].Army[card];
+        action = newAction;
+        SelectTarget(line, slot, position);
     }
     #endregion
 
@@ -564,7 +573,7 @@ public class Stol : MonoBehaviour
           //  CallTable("Clear");
             if (IsAI)
             {
-                AIBase.AITurn(hiro[1], gameObject.GetComponent<Stol>(), shotTime);
+                AIBase.AITurn(shotTime);
                 NewTurn();
             }
             else
@@ -598,7 +607,7 @@ public class Stol : MonoBehaviour
             {
                 if (IsAI)
                 {
-                    AIBase.AITurn(targetHiro, gameObject.GetComponent<Stol>(), shotTime);
+                    AIBase.AITurn(shotTime);
                 }
                 else
                 {

@@ -24,6 +24,7 @@ public class RealCard
 
     public int Mana;
 
+    public int Line;
     public int Slot;
     public int Position;
     public int Team;
