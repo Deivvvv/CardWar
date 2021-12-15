@@ -131,9 +131,12 @@ namespace BattleTable
 
         public static void IUseAction(string actionTayp, RealCard card1, RealCard card2, Stol stol)
         {
+            Debug.Log(actionTayp);
             int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
+            Debug.Log(b);
             int a = gameSetting.Library.Action[b].MoveCost;
-         //   Debug.Log($"{card1.MovePoint} > {a}");
+            Debug.Log(a);
+            //   Debug.Log($"{card1.MovePoint} > {a}");
             if (card1.MovePoint >= a)
             {
                 bool useAction = false;
@@ -164,6 +167,7 @@ namespace BattleTable
                         break;
                 }
 
+                Debug.Log(a);
                 if (useAction)
                 {
                     ////  int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);

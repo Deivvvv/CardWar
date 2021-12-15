@@ -17,7 +17,7 @@ namespace AICore
             my = hiro;
             enemy = hiro2;
             stol = stol1;
-    }
+        }
 
 
         public static void AITurn( bool shotTime)
@@ -40,22 +40,27 @@ namespace AICore
         }
         static void UseArmy(bool shotTime)
         {
+            List<RealCard> cardList = new List<RealCard>();
             int a = my.Army.Count;
-
-            RealCard card = null;
             for (int i = 0; i < a; i++)
             {
-                card = my.Army[i];
+                cardList.Add(my.Army[i]);
+            }
+
+                RealCard card = null;
+            for (int i = 0; i < a; i++)
+            {
+                card = cardList[i];
                 if(card.MovePoint>0)
                     if (shotTime)
                     {
                         if (card.ShotAction.Count > 0)
-                            SelectAction(card.ShotAction,i, shotTime);
+                            SelectAction(card.ShotAction, i, shotTime);
                     }
                     else
                     {
                         if (card.Action.Count > 0)
-                            SelectAction(card.ShotAction,i, shotTime);
+                            SelectAction(card.Action, i, shotTime);
                     }
             }
         }

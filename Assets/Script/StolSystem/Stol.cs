@@ -272,7 +272,7 @@ public class Stol : MonoBehaviour
     public void AIUseArmy(int line, int slot, int position, int card, int newAction)
     {
         curentCard = hiro[1].Army[card];
-        action = newAction;
+        SelectAction(newAction);
         SelectTarget(line, slot, position);
     }
     #endregion
@@ -527,24 +527,27 @@ public class Stol : MonoBehaviour
 
         actionTayp = gameSetting.Library.Action[action].Tayp;
 
-        if (actionTayp == "avtoActiv")
+        if (!IsAI)
         {
-            BattleSystem.IUseAction(actionTayp, curentCard, targetCard, stol);
-            action = -1;
-            curentCard = null;
+            if (actionTayp == "avtoActiv")
+            {
+                BattleSystem.IUseAction(actionTayp, curentCard, targetCard, stol);
+                action = -1;
+                curentCard = null;
 
-        }
-        else if (shotTime)
-        {
-            CallTable("ShotTarget");
-        }
-        else
-        {
-            CallTable("MeleeTarget");
-        }
+            }
+            else if (shotTime)
+            {
+                CallTable("ShotTarget");
+            }
+            else
+            {
+                CallTable("MeleeTarget");
+            }
 
 
-        CardView.IViewTargetCard(hiro[0].CardColod[curentCard.Id], Ui.UseCard);
+            CardView.IViewTargetCard(hiro[0].CardColod[curentCard.Id], Ui.UseCard);
+        }
     }
 
 
