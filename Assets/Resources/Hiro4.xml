@@ -1,11 +1,11 @@
 <root>
   <Name>Hiro5</Name>
   <Stat>13</Stat>
-  <Stat0>0</Stat0>
+  <Stat0>1</Stat0>
   <Stat1>0</Stat1>
   <Stat2>0</Stat2>
   <Stat3>0</Stat3>
-  <Stat4>1</Stat4>
+  <Stat4>2</Stat4>
   <Stat5>0</Stat5>
   <Stat6>0</Stat6>
   <Stat7>0</Stat7>
@@ -15,9 +15,9 @@
   <Stat11>0</Stat11>
   <Stat12>1</Stat12>
   <Trait>5</Trait>
-  <Trait0 />
-  <Trait1 />
-  <Trait2 />
-  <Trait3 />
-  <Trait4 />
+  <Trait0></Trait0>
+  <Trait1></Trait1>
+  <Trait2></Trait2>
+  <Trait3></Trait3>
+  <Trait4></Trait4>
 </root>

@@ -123,21 +123,21 @@ public class Stol : MonoBehaviour
                     {
                         if (useCard == -1)
                         {
-                           // Debug.Log("Ok");
-                            if (curentCard == null)
-                                targetHiro.Play();
-                            else if (action != -1)
-                                targetHiro.Target();
-                        }
-                        else
-                        {
-                            targetHiro.CardLoad();
-                         //   IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
-                         //IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
-                         //   IPlayCard();
-                        }
+                        // Debug.Log("Ok");
+                        if (curentCard == null)
+                            targetHiro.Play();
+                        else if (action != -1)
+                            targetHiro.Target();
                     }
-               // }
+                    else
+                    {
+                        targetHiro.CardLoad();
+                        //   IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
+                        //IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos, GameSetting gameSetting)
+                        //   IPlayCard();
+                    }
+                }
+                // }
             }
             else if (Input.GetMouseButtonDown(1))
             {
@@ -234,6 +234,7 @@ public class Stol : MonoBehaviour
                 load = true;
                 if (curentCard.MovePoint > 0)
                 {
+                    Ui.UseCard.gameObject.active = true;
                     if (shotTime)
                     {
                         if (curentCard.ShotAction.Count > 1)
@@ -471,8 +472,8 @@ public class Stol : MonoBehaviour
     #region Stol
     void CallTable(string mood)
     {
-        CardView.ILoadUiView(hiro[0], mood, gameSetting, curentCard, Ui.MySlot);
-        CardView.ILoadUiView(hiro[1], mood, gameSetting, curentCard, Ui.EnemySlot);
+        CardView.ILoadUiView(hiro[0], mood, gameSetting, curentCard, Ui.MySlot, curentPlayer);
+        CardView.ILoadUiView(hiro[1], mood, gameSetting, curentCard, Ui.EnemySlot, curentPlayer);
 
         //CardView.LoadUiView(hiro[0], mood, gameSetting, curentCard, Ui);
         //CardView.LoadUiView(hiro[1], mood, gameSetting, curentCard, Ui);
@@ -572,9 +573,11 @@ public class Stol : MonoBehaviour
         {
             curentPlayer = 1;
         }
+        Hiro targetHiro = hiro[curentPlayer];
+        CardReset(targetHiro);
 
         shotTime = true;
-        if (hiro[curentPlayer].ShotHiro < 0)
+        if (targetHiro.ShotHiro < 0)
         {
             Ui.ShotTurn.active = true;
             Ui.MeleeTurn.active = false;
@@ -586,7 +589,7 @@ public class Stol : MonoBehaviour
             {
                 if (IsAI)
                 {
-                    AIBase.AITurn(hiro[1], gameObject.GetComponent<Stol>(), shotTime);
+                    AIBase.AITurn(targetHiro, gameObject.GetComponent<Stol>(), shotTime);
                 }
                // CallTable("Clear");
             }

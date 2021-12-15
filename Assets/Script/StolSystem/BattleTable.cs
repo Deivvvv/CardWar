@@ -84,7 +84,6 @@ namespace BattleTable
         static void ISlash(RealCard card1, RealCard card2)
         {
             card1.MovePoint--;
-            card2.MovePoint--;
 
             card1.Hp -= card2.MeleeDMG;
             card2.Hp -= card1.MeleeDMG;
@@ -108,35 +107,44 @@ namespace BattleTable
 
         public static void IUseAction(string actionTayp, RealCard card1, RealCard card2 , GameSetting gameSetting)
         {
-            switch (actionTayp)
+            int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
+            if (card1.MovePoint > gameSetting.Library.Action[b].MoveCost)
             {
-                case ("Slash"):
-                    if (card1.Team != card2.Team)
-                        if (card2.Position != 1)
-                            ISlash(card1, card2);
-                        else 
-                            return;
-                    else
+                bool useAction = false;
+                switch (actionTayp)
+                {
+                    case ("Slash"):
+                        if (card2 != null)
+                            if (card1.Team != card2.Team)
+                                if (card2.Position != 1)
+                                {
+                                    ISlash(card1, card2);
+                                    useAction = true;
+                                }
+
+                        break;
+                    case ("Hit"):
+                        if (card2 != null)
+                            if (card1.Team != card2.Team)
+                                if (card1.ShotDMG > 0)
+                                {
+                                    IShot(card1, card2);
+                                    useAction = true;
+                                }
+                        break;
+                    default:
+                        Debug.Log(actionTayp);
                         return;
-                    break;
-                case ("Hit"):
-                    if (card1.Team != card2.Team)
-                        if (card1.ShotDMG > 0)
-                            IShot(card1, card2);
-                        else
-                            return;
-                    else
-                        return;
-                    break;
-                default:
-                    Debug.Log(actionTayp);
-                    return;
-                    break;
+                        break;
+                }
+
+                if (useAction)
+                {
+                   ////  int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
+
+                   // card1.MovePoint -= gameSetting.Library.Action[b].MoveCost;
+                }
             }
-
-           int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
-
-            card1.MovePoint -= gameSetting.Library.Action[b].MoveCost;
         }
     }
 
@@ -299,7 +307,7 @@ namespace BattleTable
             //        Ui.Count.text;
         }
 
-        static void ISlotView(RealCard newPosition, MeshRenderer mesh, string mood, int b, GameSetting gameSetting, int team, RealCard curentCard)
+        static void ISlotView(RealCard newPosition, MeshRenderer mesh, string mood, int b, GameSetting gameSetting, int team, RealCard curentCard, int line)
         {
 
             mesh.material = gameSetting.TargetColor[0];
@@ -356,17 +364,18 @@ namespace BattleTable
                 switch (mood)
                 {
                     case ("SetCard"):
-                        if(b == 0)
-                        {
-                            mesh.material = gameSetting.TargetColor[1];
-                        }
+                        if (line == team)
+                            if (b == 0)
+                            {
+                                mesh.material = gameSetting.TargetColor[1];
+                            }
                         break;
                     default:
                         break;
                 }
         }
 
-        public static void ILoadUiView(Hiro newHiro, string mood, GameSetting gameSetting, RealCard curentCard , Transform[] slots)
+        public static void ILoadUiView(Hiro newHiro, string mood, GameSetting gameSetting, RealCard curentCard, Transform[] slots, int line)
         {
           //  Transform[] slots = null;
             Slot[] hiroSlot = newHiro.Slots;
@@ -388,10 +397,13 @@ namespace BattleTable
             for (int i = 0; i < a; i++)
             {
                 b = 0;
+             //   Debug.Log($"{i}  {hiroSlot[i]} - {hiroSlot[i].Position[b]}");
                 newPosition = hiroSlot[i].Position[b];
+                if (newPosition != null) 
+                    Debug.Log($"{i}  {hiroSlot[i]} - {hiroSlot[i].Position[b]}");
 
                 mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                ISlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard);
+                ISlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard, line);
 
                 //if (newPosition != null)
                 //{
@@ -409,7 +421,7 @@ namespace BattleTable
                 newPosition = hiroSlot[i].Position[b];
 
                 mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
-                ISlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard);
+                ISlotView(newPosition, mesh, mood, b, gameSetting, team, curentCard, line);
                 //if (newPosition != null)
                 //{
                 //    mesh = slots[i].GetChild(b).gameObject.GetComponent<MeshRenderer>();
