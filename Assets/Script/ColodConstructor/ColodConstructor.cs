@@ -9,19 +9,20 @@ using TMPro;
 
 public class ColodConstructor : MonoBehaviour
 {
+    private ColodConstructor colodConstructor;
     [SerializeField]
     private GameSetting gameSetting;
     private GameData gameData;
     [SerializeField]
     private ColodConstructorUi Ui;
 
-    [SerializeField]
     private CardSet cardSet;
 
     private int allCard;
     private int maxCard = 40;
 
-    private string origPath = $"/Resources/Hiro";
+    private string origPath;
+    private string origPathAlt;
     public List<CardBase> LocalCard;
 
 
@@ -36,22 +37,31 @@ public class ColodConstructor : MonoBehaviour
         cardSet.OrigCard = new List<int>();
         cardSet.OrigCount = new List<int>();
         int a = origCard.Count;
-        for(int i = 0; i < a; i++)
+        for (int i = 0; i < a; i++)
         {
             cardSet.OrigCard.Add(origCard[i]);
             cardSet.OrigCount.Add(origCount[i]);
         }
+        XMLSaver.ISaveCardSet(cardSet, origPathAlt);
     }
 
     void Start()
     {
+        colodConstructor = gameObject.GetComponent<ColodConstructor>();
+        origPath = Application.dataPath + $"/Resources/Hiro";
+        origPathAlt = Application.dataPath + $"/Resources/CardSet";
         LoadBase();
         Calculation();
     }
 
+    public void TransfData(CardSet cardSet1)
+    {
+        cardSet = cardSet1;
+    }
+
     void LoadBase()
     {
-
+      //  cardSet =  new CardSet();
         //GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
         //GO.GetComponent<Image>().color = Ui.SelectColor[0];
         //GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
@@ -66,10 +76,10 @@ public class ColodConstructor : MonoBehaviour
         LocalCard = new List<CardBase>();
         int a = gameData.AllCard;
         string path = "";
-        ColodConstructor colodConstructor = gameObject.GetComponent<ColodConstructor>();
+
         for (int i = 0; i < a; i++)
         {
-            path = Application.dataPath + origPath + $"{i}";
+            path = origPath + $"{i}";
             XMLSaver.ILoad(path, colodConstructor);
             NewCard(i);
         }
@@ -79,7 +89,7 @@ public class ColodConstructor : MonoBehaviour
         {
             LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
         }
-
+        XMLSaver.ILoadCardSet(origPathAlt, colodConstructor);
 
         SetNewSet();
     }
