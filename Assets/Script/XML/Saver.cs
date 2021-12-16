@@ -186,6 +186,7 @@ string someString = Encoding.ASCII.GetString(bytes);
                     cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
 
+                //Load Image
                 string path1 = root.Element($"ImageSt").Value;
 
                 string[] subs = path1.Split('.');
@@ -194,20 +195,11 @@ string someString = Encoding.ASCII.GetString(bytes);
                 for (int i = 0; i < a; i++)
                 {
                     bat[i] = byte.Parse(subs[i]);
-                    //cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
                 cardBase.Image = bat;
-                //  byte[] bat = string[] subs;
-                // cardBase.Image = Encoding.ASCII.GetBytes(root.Element($"Image").Value);
-                // root.Add(new XElement("Image", cardBase.Image));
-                //if (a > -1)
-                //{
-                //    cardConstructor.LocalCard[a] = cardBase;
-                //}
-                //else
-                //{
+
+
                 cardConstructor.LocalCard.Add(cardBase);
-               // }
 
             }
         }
@@ -236,6 +228,19 @@ string someString = Encoding.ASCII.GetString(bytes);
                 {
                     cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
+
+
+                //Load Image
+                string path1 = root.Element($"ImageSt").Value;
+
+                string[] subs = path1.Split('.');
+                a = int.Parse(root.Element($"Image").Value);
+                byte[] bat = new byte[a];
+                for (int i = 0; i < a; i++)
+                {
+                    bat[i] = byte.Parse(subs[i]);
+                }
+                cardBase.Image = bat;
 
                 colodConstructor.LocalCard.Add(cardBase);
 
@@ -266,6 +271,19 @@ string someString = Encoding.ASCII.GetString(bytes);
                 {
                     cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
+
+
+                //Load Image
+                string path1 = root.Element($"ImageSt").Value;
+
+                string[] subs = path1.Split('.');
+                a = int.Parse(root.Element($"Image").Value);
+                byte[] bat = new byte[a];
+                for (int i = 0; i < a; i++)
+                {
+                    bat[i] = byte.Parse(subs[i]);
+                }
+                cardBase.Image = bat;
 
                 stol.BufferColod.Add(cardBase);
 
