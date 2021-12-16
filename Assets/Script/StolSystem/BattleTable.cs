@@ -375,7 +375,10 @@ namespace BattleTable
            // Transform trans = card.Body;
             CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
 
-            // Ui.Avatar.sprite = ?;//портреты
+            Texture2D texture = new Texture2D(100, 150);
+            texture.LoadImage(card.Image);
+            Ui.Avatar.sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+
             Ui.Name.text = card.Name;
 
             Ui.Stat.text = "";

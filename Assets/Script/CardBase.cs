@@ -10,4 +10,6 @@ public class CardBase
     public string[] Trait;
 
     public Transform Body;
+
+    public byte[] Image;
 }

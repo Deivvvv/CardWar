@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Xml;
 using System.Xml.Linq;
 using System.IO;
+using System.Text;
 
 namespace Saver
 {
@@ -120,17 +121,39 @@ namespace Saver
 
             root.Add(new XElement("Name", cardBase.Name));
 
-            root.Add(new XElement("Stat", cardBase.Stat.Length));
-            for (int i = 0; i < cardBase.Stat.Length; i++)
+            int a = cardBase.Stat.Length;
+            root.Add(new XElement("Stat", a));
+            for (int i = 0; i < a; i++)
             {
                 root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
             }
 
-            root.Add(new XElement("Trait", cardBase.Trait.Length));
-            for (int i = 0; i < cardBase.Trait.Length; i++)
+            a = cardBase.Trait.Length;
+            root.Add(new XElement("Trait", a));
+            for (int i = 0; i < a; i++)
             {
                 root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
             }
+
+            string path1 = "";
+            a = cardBase.Image.Length;
+            root.Add(new XElement("Image", a));
+            for (int i = 0; i < a; i++)
+            {
+                path1 += $"{cardBase.Image[i]}.";
+                // root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+            }
+            root.Add(new XElement("ImageSt", path1));
+
+            //string[] subs = path1.Split('.');
+            //byte[] = string[] subs
+
+            /*
+             byte[] bytes = Encoding.ASCII.GetBytes(someString);
+Вам нужно будет превратить его обратно в строку, подобную этой:
+
+string someString = Encoding.ASCII.GetString(bytes);
+             */
 
             XDocument saveDoc = new XDocument(root);
             File.WriteAllText($"{path}.xml", saveDoc.ToString());
@@ -147,29 +170,43 @@ namespace Saver
 
                 cardBase.Name = root.Element("Name").Value;
 
-
-                cardBase.Stat = new int[int.Parse(root.Element("Stat").Value)];
-                for (int i = 0; i < cardBase.Stat.Length; i++)
+                int a = int.Parse(root.Element("Stat").Value);
+                cardBase.Stat = new int[a];
+                for (int i = 0; i < a; i++)
                 {
                     cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
                 }
 
 
 
-
-                cardBase.Trait = new string[int.Parse(root.Element("Trait").Value)];
-                for (int i = 0; i < cardBase.Trait.Length; i++)
+                a = int.Parse(root.Element("Trait").Value);
+                cardBase.Trait = new string[a];
+                for (int i = 0; i < a; i++)
                 {
                     cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
 
+                string path1 = root.Element($"ImageSt").Value;
+
+                string[] subs = path1.Split('.');
+                a = int.Parse(root.Element($"Image").Value);
+                byte[] bat = new byte[a];
+                for (int i = 0; i < a; i++)
+                {
+                    bat[i] = byte.Parse(subs[i]);
+                    //cardBase.Trait[i] = root.Element($"Trait{i}").Value;
+                }
+                cardBase.Image = bat;
+                //  byte[] bat = string[] subs;
+                // cardBase.Image = Encoding.ASCII.GetBytes(root.Element($"Image").Value);
+                // root.Add(new XElement("Image", cardBase.Image));
                 //if (a > -1)
                 //{
                 //    cardConstructor.LocalCard[a] = cardBase;
                 //}
                 //else
                 //{
-                    cardConstructor.LocalCard.Add(cardBase);
+                cardConstructor.LocalCard.Add(cardBase);
                // }
 
             }

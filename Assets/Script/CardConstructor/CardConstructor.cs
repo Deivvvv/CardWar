@@ -39,6 +39,8 @@ public class CardConstructor : MonoBehaviour
     private string origPath;
     private string origPathAlt;
 
+    public RenderTexture rTex;
+    public Camera captureCamera;
 
     #region Filtr System
     void GenerateFiltr()
@@ -124,6 +126,24 @@ public class CardConstructor : MonoBehaviour
             card.Trait[i] = cardBase.Trait[i];
         }
 
+        int width = 100;
+        int height = 150;
+        Texture2D texture = new Texture2D(width, height);
+
+        RenderTexture targetTexture = RenderTexture.GetTemporary(width, height);
+        targetTexture.depth = 2;
+
+        captureCamera.targetTexture = targetTexture;
+        captureCamera.Render();
+        RenderTexture.active = targetTexture;
+
+        Rect rect = new Rect(0, 0, width, height);
+        texture.ReadPixels(rect, 0, 0);
+        texture.Apply();
+        captureCamera.targetTexture = rTex;
+
+        card.Image = texture.EncodeToPNG();
+
         if (curentNum < 0)
         {
           //  string path = "";
@@ -194,6 +214,7 @@ public class CardConstructor : MonoBehaviour
                 cardBase.Trait[i] = card.Trait[i];
             }
 
+            //Р’С‹РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РІ СЂРµРґР°РєС‚РѕСЂ РіРµСЂРѕРµРІ
         }
         ReCalculate();
     }
@@ -221,12 +242,13 @@ public class CardConstructor : MonoBehaviour
 
     void PreLoad()
     {
+        origPath = Application.dataPath + $"/Resources/Hiro";
+        origPathAlt = Application.dataPath + $"/Resources/Data";
+
         Core.ILoadGameSetting(gameSetting);
         cardConstructor = gameObject.GetComponent<CardConstructor>();
 
-
-        origPath = Application.dataPath + $"/Resources/Hiro";
-        origPathAlt = Application.dataPath + $"/Resources/Data";
+       // MakeScrenshot();
         
         curentNum = -1;
         // Delite();
@@ -508,13 +530,13 @@ public class CardConstructor : MonoBehaviour
         {
             Ui.StatCount[i].text = $"{cardBase.Stat[i]}";
         }
-        Ui.ManaCount.text = $"Цена: {cardBase.Stat[cardBase.Stat.Length - 1]}";
+        Ui.ManaCount.text = $"Р¦РµРЅР°: {cardBase.Stat[cardBase.Stat.Length - 1]}";
         // Ui.
     }
 
     void SwitchCard(int a)
     {
-        //После появления метода сортировки перевести на локальный номер карты
+        //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         if (curentNum != -1)
         {
             if (curentNum < gameData.AllCard)
