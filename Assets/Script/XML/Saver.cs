@@ -213,18 +213,18 @@ string someString = Encoding.ASCII.GetString(bytes);
 
                 cardBase.Name = root.Element("Name").Value;
 
-
-                cardBase.Stat = new int[int.Parse(root.Element("Stat").Value)];
-                for (int i = 0; i < cardBase.Stat.Length; i++)
+                int a = int.Parse(root.Element("Stat").Value);
+                cardBase.Stat = new int[a];
+                for (int i = 0; i < a; i++)
                 {
                     cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
                 }
 
 
 
-
-                cardBase.Trait = new string[int.Parse(root.Element("Trait").Value)];
-                for (int i = 0; i < cardBase.Trait.Length; i++)
+                a = int.Parse(root.Element("Trait").Value);
+                cardBase.Trait = new string[a];
+                for (int i = 0; i < a; i++)
                 {
                     cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
@@ -256,18 +256,18 @@ string someString = Encoding.ASCII.GetString(bytes);
 
                 cardBase.Name = root.Element("Name").Value;
 
-
-                cardBase.Stat = new int[int.Parse(root.Element("Stat").Value)];
-                for (int i = 0; i < cardBase.Stat.Length; i++)
+                int a = int.Parse(root.Element("Stat").Value);
+                cardBase.Stat = new int[a];
+                for (int i = 0; i < a; i++)
                 {
                     cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
                 }
 
 
 
-
-                cardBase.Trait = new string[int.Parse(root.Element("Trait").Value)];
-                for (int i = 0; i < cardBase.Trait.Length; i++)
+                a = int.Parse(root.Element("Trait").Value);
+                cardBase.Trait = new string[a];
+                for (int i = 0; i < a; i++)
                 {
                     cardBase.Trait[i] = root.Element($"Trait{i}").Value;
                 }
