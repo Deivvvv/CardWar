@@ -128,7 +128,7 @@ namespace Saver
                 root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
             }
 
-            a = cardBase.Trait.Length;
+            a = cardBase.Trait.Count;
             root.Add(new XElement("Trait", a));
             for (int i = 0; i < a; i++)
             {
@@ -180,10 +180,10 @@ string someString = Encoding.ASCII.GetString(bytes);
 
 
                 a = int.Parse(root.Element("Trait").Value);
-                cardBase.Trait = new string[a];
+                cardBase.Trait = new List<string>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Trait[i] = root.Element($"Trait{i}").Value;
+                    cardBase.Trait.Add(root.Element($"Trait{i}").Value);
                 }
 
                 //Load Image
@@ -223,10 +223,10 @@ string someString = Encoding.ASCII.GetString(bytes);
 
 
                 a = int.Parse(root.Element("Trait").Value);
-                cardBase.Trait = new string[a];
+                cardBase.Trait = new List<string>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Trait[i] = root.Element($"Trait{i}").Value;
+                    cardBase.Trait.Add(root.Element($"Trait{i}").Value);
                 }
 
 
@@ -266,10 +266,10 @@ string someString = Encoding.ASCII.GetString(bytes);
 
 
                 a = int.Parse(root.Element("Trait").Value);
-                cardBase.Trait = new string[a];
+                cardBase.Trait = new List<string>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Trait[i] = root.Element($"Trait{i}").Value;
+                    cardBase.Trait.Add(root.Element($"Trait{i}").Value);
                 }
 
 

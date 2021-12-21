@@ -7,9 +7,11 @@ public class CardBase
     public string Name;
 
     public int[] Stat;
-    public string[] Trait;
+    public List<string> Trait;
 
     public Transform Body;
 
     public byte[] Image;
+
+    public string Class;
 }

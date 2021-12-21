@@ -15,11 +15,37 @@ namespace BattleTable
             TableRule.gameSetting = gameSetting;
             CardView.gameSetting = gameSetting;
         }
+        public static void ISetStol(Stol stol)
+        {
+            BattleSystem.stol = stol;
+            TableRule.stol = stol;
+        }
     }
 
     class StatusSystem : MonoBehaviour
     {
+        public static void IAddEffect(string name, int size, RealCard card)
+        {
+            int a = card.Effect.Count;
+            Effect effect = null;
+            for (int i = 0; i < a; i++)
+            {
+                effect = card.Effect[i];
+                if (effect.Name == name)
+                {
+                    effect.Size += size;
+                    if (effect.Size <= 0)
+                        card.Effect.RemoveAt(i);
+                    CardView.IViewEffect(card);
+                    return;
+                }
+            }
 
+            effect = new Effect();
+            effect.Name = name;
+            effect.Size = size;
+            card.Effect.Add(effect);
+        }
         public static void IDie(RealCard card)
         {
             Destroy(card.Body);
@@ -45,6 +71,7 @@ namespace BattleTable
 
     public static class BattleSystem
     {
+        public static Stol stol;
         public static GameSetting gameSetting;
         public static void IStatys(RealCard card)
         {
@@ -71,28 +98,6 @@ namespace BattleTable
             {
                 card.Effect.RemoveAt(blackList[i]);
             }
-        }
-        static void IAddEffect(string name, int size, RealCard card)
-        {
-            int a = card.Effect.Count;
-            Effect effect = null;
-            for(int i = 0; i < a; i++)
-            {
-                effect = card.Effect[i];
-                if(effect.Name == name)
-                {
-                    effect.Size += size;
-                    if (effect.Size <= 0)
-                        card.Effect.RemoveAt(i);
-                    CardView.IViewEffect(card);
-                    return;
-                }
-            }
-
-            effect = new Effect();
-            effect.Name = name;
-            effect.Size = size;
-            card.Effect.Add(effect);
         }
 
         #region Action Head
@@ -142,40 +147,45 @@ namespace BattleTable
         }
         #endregion
 
-        public static void IUseActionHead(string actionTayp, RealCard card1, Stol stol, Hiro hiro)
+        public static void IUseActionHead(string actionTayp, RealCard card, Hiro hiro)
         {
-            int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
-            int a = gameSetting.Library.Action[b].MoveCost;
+            int b = card.Effect.FindIndex(x => x.Name == "NoHead");
 
-            if (card1.MovePoint >= a)
-            {
-                bool useAction = false;
-                switch (actionTayp)
+            if (b == -1) 
+            { 
+                b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
+                int a = gameSetting.Library.Action[b].MoveCost;
+
+                if (card.MovePoint >= a)
                 {
-                    case ("Slash"):
+                    bool useAction = false;
+                    switch (actionTayp)
+                    {
+                        case ("Slash"):
 
-                        //ISlashHead
-                        useAction = true;
-                        break;
-                    case ("Hit"):
-                        //IShotHead
-                        useAction = true;
-                        break;
-                    default:
-                        Debug.Log(actionTayp);
-                        return;
-                        break;
-                }
+                            //ISlashHead
+                            useAction = true;
+                            break;
+                        case ("Hit"):
+                            //IShotHead
+                            useAction = true;
+                            break;
+                        default:
+                            Debug.Log(actionTayp);
+                            return;
+                            break;
+                    }
 
-                if (useAction)
-                {
-                    card1.MovePoint -= a;
-                    stol.PostUse(true);
+                    if (useAction)
+                    {
+                        card.MovePoint -= a;
+                        stol.PostUse(true);
+                    }
                 }
             }
         }
 
-        public static void IUseAction(string actionTayp, RealCard card1, RealCard card2, Stol stol)
+        public static void IUseAction(string actionTayp, RealCard card1, RealCard card2)
         {
             int b = gameSetting.Library.Action.FindIndex(x => x.Name == actionTayp);
             int a = gameSetting.Library.Action[b].MoveCost;
@@ -220,10 +230,33 @@ namespace BattleTable
                 }
             }
         }
+
+       public static void NewTurn(Hiro hiro)
+        {
+            RealCard card = null;
+            int a = hiro.Army.Count;
+            for(int i = 0; i < a; i++)
+            {
+                card = hiro.Army[i];
+                CloseMetod.IRestoreMP(card);
+              //  card.MovePoint = 1;
+            }
+        }
+
     }
+    class CloseMetod 
+    {
+        public static void IRestoreMP(RealCard card)
+        {
+            card.MovePoint = 1;
+        }
+
+    }
+
 
     public class TableRule : MonoBehaviour
     {
+        public static Stol stol;
         public static GameSetting gameSetting;
         static void ICreateCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
@@ -292,6 +325,7 @@ namespace BattleTable
             card.Action = new List<int>();
             card.ShotAction = new List<int>();
             card.PasiveAction = new List<int>();
+            card.Trait = new List<string>();
 
             int a = 0;
             if (card.MeleeDMG > 0) 
@@ -308,10 +342,11 @@ namespace BattleTable
             string traitCase = "";
             Trait trait = null;
             int b = 0;
-            a = cardBase.Trait.Length;
+            a = cardBase.Trait.Count;
             for(int i = 0; i < a; i++)
             {
                 traitCase = cardBase.Trait[i];
+                card.Trait.Add(traitCase);
                 if (traitCase != "")
                 {
                     b = gameSetting.Library.Action.FindIndex(x => x.Name == traitCase);
@@ -335,32 +370,75 @@ namespace BattleTable
                     }
                 }
             }
-        }
 
+            //load post special action
+            if (a > 0)
+            {
+                b = card.Trait.FindIndex(x => x == "Dash");
+                if (b == -1)
+                    CloseMetod.IRestoreMP(card);
+
+                b = card.Trait.FindIndex(x => x == "Rush");
+                if (b == -1)
+                {
+                    CloseMetod.IRestoreMP(card);
+                    StatusSystem.IAddEffect("NoHead", 1, card);
+                }
+            }
+
+        }
         static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
-            RealCard targetCard = hiro2.Slots[slot].Position[pos];
-            if (targetCard == null)
-            {
-                ICreateCard(hiro1, hiro2, handNum, slot, pos);
-            }
-        }//порцелура инициализации логики карты после предварительной расшифровки
-
-        public static void IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos,Stol stol)
-        {
             int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Length - 1];
+            hiro1.ManaCurent -= b;
+
+            ICreateCard(hiro1, hiro2, handNum, slot, pos);
+            stol.PostUse(true);
+        }
+
+        public static void IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
+        {
+            CardBase card = hiro1.CardColod[handNum];
+            int b = card.Stat[card.Stat.Length - 1];
             if (hiro1.ManaCurent >= b)
             {
+                bool targetHiro = false;
                 RealCard targetCard = hiro2.Slots[slot].Position[pos];
-                if (targetCard == null)
+                if (targetCard != null) 
+                    targetHiro = true;
+
+                if (!targetHiro)
                 {
-                    hiro1.ManaCurent -= b;
+                    if(hiro1.Team == hiro2.Team)
+                    {
+                        if(pos == 1)
+                        {
+                            b = card.Trait.FindIndex(x => x == "ArGuard");
+                            if (b != -1)
+                            {
+                                targetCard = hiro2.Slots[slot].Position[0];
+                                if (targetCard != null)
+                                {
+                                    b = targetCard.Trait.FindIndex(x => x == "AvGuard");
+                                    if (b != -1)
+                                        IPlayCard(hiro1, hiro2, handNum, slot, pos);
+                                }
+                                else
+                                    IPlayCard(hiro1, hiro2, handNum, slot, pos);
+                            }
+                        }
+                        else
+                        {
+                            IPlayCard(hiro1, hiro2, handNum, slot, pos);
+                        }
+                    }
 
-                    ICreateCard(hiro1, hiro2, handNum, slot, pos);
+                   // ICreateCard(hiro1, hiro2, handNum, slot, pos);
 
-                    //  IPlayCard(hiro1, hiro2, handNum, slot, pos);//Временно заморожено
-                    stol.PostUse(true);
+                    //IPlayCard(hiro1, hiro2, handNum, slot, pos);//Временно заморожено
+                    //stol.PostUse(true);
                 }
+               // switch(targetCard)
             }
          
 
@@ -406,7 +484,7 @@ namespace BattleTable
                 {
                     case ("ShotView"):
                         if (newPosition.Team == line)
-                                if (newPosition.MovePoint > 0)
+                            if (newPosition.MovePoint > 0)
                                 if (newPosition.ShotAction.Count > 0)
                                 {
                                     mesh.material = gameSetting.TargetColor[1];

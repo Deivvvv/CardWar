@@ -113,7 +113,7 @@ public class CardConstructor : MonoBehaviour
     {
         CardBase card = new CardBase();
         card.Stat = new int[cardBase.Stat.Length];
-        card.Trait = new string[cardBase.Trait.Length ];
+        card.Trait = new List<string>();
         card.Name = Ui.NameFlied.text;
 
         for (int i = 0; i < cardBase.Stat.Length; i++)
@@ -121,7 +121,7 @@ public class CardConstructor : MonoBehaviour
             card.Stat[i] = cardBase.Stat[i];
         }
 
-        for (int i = 0; i < cardBase.Trait.Length; i++)
+        for (int i = 0; i < cardBase.Trait.Count; i++)
         {
             card.Trait[i] = cardBase.Trait[i];
         }
@@ -209,7 +209,7 @@ public class CardConstructor : MonoBehaviour
                 cardBase.Stat[i] = card.Stat[i];
             }
 
-            for (int i = 0; i < cardBase.Trait.Length; i++)
+            for (int i = 0; i < cardBase.Trait.Count; i++)
             {
                 cardBase.Trait[i] = card.Trait[i];
             }
@@ -231,7 +231,7 @@ public class CardConstructor : MonoBehaviour
 
         cardBase.Name = "New Hiro";
         cardBase.Stat = new int[13];
-        cardBase.Trait = new string[5];
+        cardBase.Trait = new List<string>();
         cardBase.Stat[4] = 1;
         Ui.NameFlied.text = cardBase.Name;
         ViewCard();
@@ -564,7 +564,7 @@ public class CardConstructor : MonoBehaviour
 
         cardBase.Name = "New Hiro";
         cardBase.Stat = new int[13];
-        cardBase.Trait = new string[5];
+        cardBase.Trait = new List<string>();
         PreLoad();
 
         LoadUi();

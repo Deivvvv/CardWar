@@ -48,9 +48,10 @@ public class Stol : MonoBehaviour
 
     void Start()
     {
-        Core.ILoadGameSetting(gameSetting);
-
         stol = gameObject.GetComponent<Stol>();
+        Core.ILoadGameSetting(gameSetting);
+        Core.ISetStol(stol);
+
         CreateHiro(false);
         CreateHiro(true);
 
@@ -198,7 +199,7 @@ public class Stol : MonoBehaviour
     public void UseCard(int line, int slot, int pos)
     {
         Hiro newHiro = hiro[curentPlayer];
-        TableRule.IUseCard(newHiro, hiro[line], useCard, slot, pos, stol);
+        TableRule.IUseCard(newHiro, hiro[line], useCard, slot, pos);
         // PostUse(true);
 
       //  HiroUi(newHiro);
@@ -211,7 +212,7 @@ public class Stol : MonoBehaviour
 
         //  curentCard.MovePoint -= gameSetting.Library.Action[action].MoveCost;
 
-        BattleSystem.IUseAction(actionTayp, curentCard, targetCard, stol);
+        BattleSystem.IUseAction(actionTayp, curentCard, targetCard);
     }
 
     public void ClickHiro(int line, int slot, int position)
@@ -269,7 +270,7 @@ public class Stol : MonoBehaviour
         }
         else if (curentCard != null)
             if (action != -1)
-                BattleSystem.IUseActionHead(actionTayp, curentCard, stol, hiro[a]);
+                BattleSystem.IUseActionHead(actionTayp, curentCard, hiro[a]);
 
     }
     #endregion
@@ -357,8 +358,89 @@ public class Stol : MonoBehaviour
                 XMLSaver.ILoad(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
         }
 
+        //random generate
         a = cardSet.AllCard;
         int r = 0;
+
+        CardBase card = null;
+
+        List<int> fastCard = new List<int>();
+        List<int> slowCard = new List<int>();
+        //scan fast and slow card
+        for (int i = a - 1; i > -1; i--)
+        {
+            card = BufferColod[i];
+            if (card.Trait.Count > 0)
+            {
+                b = card.Trait.FindIndex(x => x == "Fast");
+                if (b != -1)
+                {
+                    fastCard.Add(i);
+                    BufferColod.RemoveAt(i);
+                }
+                else
+                {
+                    b = card.Trait.FindIndex(x => x == "Slow");
+                    if (b != -1)
+                    {
+                        slowCard.Add(i);
+                        BufferColod.RemoveAt(i);
+                    }
+                }
+            }
+        }
+        //pre generation
+        a = fastCard.Count;
+        if (a > 0)
+        {
+            if (a > 5)
+            {
+                for (int i = a; i > 0; i--)
+                {
+                    r = Random.Range(0, i);
+                    b = fastCard[r];
+                    hiro.CardColod.Add(BufferColod[b]);
+                    BufferColod.RemoveAt(b);
+                    fastCard.RemoveAt(r);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < a; i++)
+                {
+                    b = fastCard[i];
+                    hiro.CardColod.Add(BufferColod[b]);
+                    BufferColod.RemoveAt(b);
+                }
+            }
+        }
+        //post generation
+        a = slowCard.Count;
+        if (a > 0)
+        {
+            if (hiro.CardColod.Count < 7)
+            {
+                b = 7 - a;
+                for (int i = b; i > -1; i--)
+                {
+                    r = Random.Range(0, i);
+                    hiro.CardColod.Add(BufferColod[r]);
+                    BufferColod.RemoveAt(r);
+                }
+            }
+
+
+            for (int i = a; i > 0; i--)
+            {
+                r = Random.Range(0, i);
+                b = slowCard[r];
+                hiro.CardColod.Add(BufferColod[b]);
+                BufferColod.RemoveAt(b);
+                slowCard.RemoveAt(r);
+            }
+        }
+
+        a = BufferColod.Count;
         for (int i = a; i > 0; i--)
         {
             r = Random.Range(0, i);
@@ -548,7 +630,7 @@ public class Stol : MonoBehaviour
         {
             if (actionTayp == "avtoActiv")
             {
-                BattleSystem.IUseAction(actionTayp, curentCard, targetCard, stol);
+                BattleSystem.IUseAction(actionTayp, curentCard, targetCard);
                 action = -1;
                 curentCard = null;
 
