@@ -40,7 +40,11 @@ namespace BattleTable
                     return;
                 }
             }
-
+            /*
+             гибкость 3 существо при выходе получает авангард арьергард или +1\+1
+             
+             
+             */
             effect = new Effect();
             effect.Name = name;
             effect.Size = size;
@@ -114,15 +118,32 @@ namespace BattleTable
         #region Action Card
         static void ISlash(RealCard card1, RealCard card2)
         {
-          //  card1.MovePoint--;
+            //  card1.MovePoint--;
+
 
             card1.Hp -= card2.MeleeDMG;
             card2.Hp -= card1.MeleeDMG;
 
             if (card1.Hp <= 0)
                 StatusSystem.IDie(card1);
-            else
+            else 
+            {
                 CardView.IViewSlotUi(card1);
+                int a = card2.Hp;
+                if (a < 0)
+                {
+                    int b = card1.Trait.FindIndex(x => x == "Piercing");
+                    if (b != -1) 
+                    {
+                        Hiro hiro = card2.HiroMain;
+                        hiro.Hp -= a;
+                        stol.HiroUi(hiro);
+
+                        // if(hiro.Hp<=0){}
+
+                    }
+                }
+            }
 
             if (card2.Hp <= 0)
                 StatusSystem.IDie(card2);
@@ -192,16 +213,35 @@ namespace BattleTable
 
             if (card1.MovePoint >= a)
             {
+                a = card2.HiroMain.Provacator.Count;
                 bool useAction = false;
                 switch (actionTayp)
                 {
                     case ("Slash"):
                         if (card2 != null)
                             if (card1.Team != card2.Team)
-                                if (card2.Position != 1)
+                                if (card2.Position == 0)
                                 {
-                                    ISlash(card1, card2);
-                                    useAction = true;
+                                    if( a > 0)
+                                    {
+                                        RealCard card3 = null;
+                                        for (int i = 0; i < a; i++)
+                                        {
+                                            card3 = card2.HiroMain.Provacator[i];
+                                            if (card3.Slot == card2.Slot)
+                                            {
+                                                i = a;
+                                                useAction = true;
+                                            }
+                                        }
+                                    }
+                                    else
+                                        useAction = true;
+
+                                    if (useAction)
+                                    {
+                                        ISlash(card1, card2);
+                                    }
                                 }
 
                         break;
@@ -210,8 +250,29 @@ namespace BattleTable
                             if (card1.Team != card2.Team)
                                 if (card1.ShotDMG > 0)
                                 {
-                                    IShot(card1, card2);
-                                    useAction = true;
+                                    if (a > 0)
+                                    {
+                                        if (card2.Position == 0)
+                                        {
+                                            RealCard card3 = null;
+                                            for (int i = 0; i < a; i++)
+                                            {
+                                                card3 = card2.HiroMain.Provacator[i];
+                                                if (card3.Slot == card2.Slot)
+                                                {
+                                                    i = a;
+                                                    useAction = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                        useAction = true;
+
+                                    if (useAction)
+                                    {
+                                        IShot(card1, card2); 
+                                    }
                                 }
                         break;
                     default:
@@ -239,6 +300,7 @@ namespace BattleTable
             {
                 card = hiro.Army[i];
                 CloseMetod.IRestoreMP(card);
+                IStatys(card);
               //  card.MovePoint = 1;
             }
         }
@@ -326,6 +388,7 @@ namespace BattleTable
             card.ShotAction = new List<int>();
             card.PasiveAction = new List<int>();
             card.Trait = new List<string>();
+            card.Effect = new List<Effect>();
 
             int a = 0;
             if (card.MeleeDMG > 0) 

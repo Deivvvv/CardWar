@@ -31,6 +31,8 @@ public class RealCard
     public int Id;
     public Hiro HiroMain;
 
+    public RealCard Twin;
+
     public TMP_Text Ui;
 
     public int MovePoint;

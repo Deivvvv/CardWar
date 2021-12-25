@@ -550,7 +550,7 @@ public class Stol : MonoBehaviour
     //    }
     //}
 
-    void HiroUi(Hiro newHiro)
+    public void HiroUi(Hiro newHiro)
     {
         int b = newHiro.Team;
         TMP_Text text = null;
@@ -613,12 +613,6 @@ public class Stol : MonoBehaviour
         }
     }
 
-    void CardReset(Hiro newHiro)
-    {
-        int a = newHiro.Army.Count;
-        for (int i = 0; i < a; i++)
-            newHiro.Army[i].MovePoint = 1;
-    }// Временное решение
 
     void SelectAction(int a)
     {
@@ -694,7 +688,7 @@ public class Stol : MonoBehaviour
             curentPlayer = 1;
         }
         Hiro targetHiro = hiro[curentPlayer];
-        CardReset(targetHiro);
+        BattleSystem.NewTurn(targetHiro);
 
         shotTime = true;
         if (targetHiro.ShotHiro < 0)

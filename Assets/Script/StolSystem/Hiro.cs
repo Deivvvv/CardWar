@@ -8,6 +8,7 @@ public class Hiro
     public Transform[] OrigSlots;
     public Slot[] Slots;
     public List<RealCard> Army;
+    public List<RealCard> Provacator;
 
 
     public List<CardBase> CardColod;
