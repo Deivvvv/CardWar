@@ -214,6 +214,20 @@ public class Stol : MonoBehaviour
 
         BattleSystem.IUseAction(actionTayp, curentCard, targetCard);
     }
+    public void RandomClickHiro(int line)
+    {
+        Hiro hiroTarget = hiro[line];
+        int a = hiroTarget.Slots.Length;
+        for(int i = 0; i < a; i++)
+        {
+            if(hiroTarget.Slots[i].Position[1]== null)
+                if (hiroTarget.Slots[i].Position[0] == null)
+                {
+                    ClickHiro(line, i, 0);
+                    return;
+                }
+        }
+    }
 
     public void ClickHiro(int line, int slot, int position)
     {
@@ -273,6 +287,27 @@ public class Stol : MonoBehaviour
                 BattleSystem.IUseActionHead(actionTayp, curentCard, hiro[a]);
 
     }
+
+    #endregion
+
+    #region UI Support
+    public void SelectCardSpellTarget(int action, RealCard card)
+    {
+        curentCard = card;
+        SelectAction(action);
+        //if (shot)
+        //{
+
+        //}
+        //else
+        //{
+        //    SelectAction(action);
+        //}
+    }
+    #endregion
+
+    #region ALT Public Metods
+
     #endregion
 
     #region AI Rule
@@ -591,9 +626,6 @@ public class Stol : MonoBehaviour
     {
         CardView.IViewLoadUi(hiro[0], mood, curentCard, Ui.MySlot, curentPlayer);
         CardView.IViewLoadUi(hiro[1], mood, curentCard, Ui.EnemySlot, curentPlayer);
-
-        //CardView.LoadUiView(hiro[0], mood, curentCard, Ui);
-        //CardView.LoadUiView(hiro[1], mood, curentCard, Ui);
     }
 
     void GrabCard(int a)

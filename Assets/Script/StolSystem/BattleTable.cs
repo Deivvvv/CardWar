@@ -125,24 +125,34 @@ namespace BattleTable
             card2.Hp -= card1.MeleeDMG;
 
             if (card1.Hp <= 0)
-                StatusSystem.IDie(card1);
-            else 
             {
+
+                StatusSystem.IDie(card1);
+            }
+            else
+            {
+                //string action = "";
+                //int a = card1.PasiveAction.Count;
+                //int c = 0;
+                //int d = 0;
+                //for (int i = 0; i < a; i++)
+                //{
+                //    c = card1.PasiveAction[i];
+                //    action = gameSetting.Library.Action[c].Name;
+                //    switch (action)
+                //    {
+                //        case("Piercing");
+                //            d = card2.Hp;
+                //            if (d < 0)
+                //            {
+                //                Hiro hiro = card2.HiroMain;
+                //                hiro.Hp -= d;
+                //                stol.HiroUi(hiro);
+                //            }
+                //            break;
+                //    }
+                //}
                 CardView.IViewSlotUi(card1);
-                int a = card2.Hp;
-                if (a < 0)
-                {
-                    int b = card1.Trait.FindIndex(x => x == "Piercing");
-                    if (b != -1) 
-                    {
-                        Hiro hiro = card2.HiroMain;
-                        hiro.Hp -= a;
-                        stol.HiroUi(hiro);
-
-                        // if(hiro.Hp<=0){}
-
-                    }
-                }
             }
 
             if (card2.Hp <= 0)
@@ -431,21 +441,36 @@ namespace BattleTable
                             card.PasiveAction.Add(b);
                             break;
                     }
-                }
-            }
 
-            //load post special action
-            if (a > 0)
-            {
-                b = card.Trait.FindIndex(x => x == "Dash");
-                if (b == -1)
-                    CloseMetod.IRestoreMP(card);
+                    // b = card.Trait.FindIndex(x => x == "Dash");
+                    switch (traitCase)
+                    {
+                        case ("Dash"):
+                            CloseMetod.IRestoreMP(card);
+                            break;
 
-                b = card.Trait.FindIndex(x => x == "Rush");
-                if (b == -1)
-                {
-                    CloseMetod.IRestoreMP(card);
-                    StatusSystem.IAddEffect("NoHead", 1, card);
+                        case ("Rush"):
+                            CloseMetod.IRestoreMP(card);
+                            StatusSystem.IAddEffect("NoHead", 1, card);
+                            break;
+
+                        case ("Provacator"):
+                            if (card.Position == 0)
+                                card.HiroMain.Provacator.Add(card);
+                            break;
+
+                        case ("BodyGuard"):
+                           // b = gameSetting.Library.Action.FindIndex(x => x.Name == traitCase);
+                            stol.SelectCardSpellTarget(b, card);
+                            //if (card.Position == 0)
+                            //    card.HiroMain.Provacator.Add(card);
+                            break;
+
+                        //case ("Provacator"):
+                        //    if (card.Position == 0)
+                        //        card.HiroMain.Provacator.Add(card);
+                        //    break;
+                    }
                 }
             }
 

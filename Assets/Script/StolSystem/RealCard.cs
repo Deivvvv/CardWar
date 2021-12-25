@@ -31,14 +31,13 @@ public class RealCard
     public int Id;
     public Hiro HiroMain;
 
-    public RealCard Twin;
-
     public TMP_Text Ui;
 
     public int MovePoint;
     public List<int> Action;
-    public List<int> ShotAction;
     public List<int> PasiveAction;
+    public List<int> ShotAction;
+    public List<int> PasiveShotAction;
 
     public List<string> Trait;
 
@@ -47,4 +46,7 @@ public class RealCard
 
     public GameObject Body;
 
+
+    //HideData
+    //Int AtackRange
 }
