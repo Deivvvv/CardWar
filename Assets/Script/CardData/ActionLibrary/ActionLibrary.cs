@@ -6,5 +6,6 @@ using UnityEngine;
 //[System.Serializable]
 public class ActionLibrary : ScriptableObject
 {
-    public List<Trait> Action;
+    public List<Constant> Constants;
+    public List<Trait> Action; 
 }
