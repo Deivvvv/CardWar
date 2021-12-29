@@ -15,21 +15,3 @@ public class Constant : ScriptableObject
     public string AntiConstant;//свойства с отрицанием
     public string TwinConstant;//своиства исколючения, в одной карте они не могут быть установленны
 }
-
-public class CivilianGroup 
-{
-    public string Name;//имя группы - дворянство
-
-    public List<string> Titul;
-    public List<int> TitulCost;
-
-    public List<string> Сonstant;
-    public List<int> СonstantModifer;
-}
-
-/*
- Civilian Group
-public string
-
- 
- */
