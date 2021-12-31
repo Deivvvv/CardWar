@@ -73,6 +73,7 @@ public class RuleConstructor : MonoBehaviour
     private List<string> Mood;
     private List<string> TargetPalyer;
     private List<string> TargetTime;
+    private List<string> IfString;
 
     [SerializeField]
     private Color[] colors;
@@ -192,6 +193,36 @@ public class RuleConstructor : MonoBehaviour
             default:
 
                 string[] com = stringMood.Split('_');
+                //  string text1 = com[1];
+                TriggerAction triggerAction = triggerActions[int.Parse(com[0])];
+                i = int.Parse(text);
+                if (i != null)
+                {
+                    if (com.Length > 1)
+                    {
+                        int i1 = int.Parse(com[2]);
+                        switch (com[1])
+                        {
+                            case ("Plus"):
+                                triggerAction.PlusAction[i1].Prioritet = i;
+                                break;
+
+                            case ("Minus"):
+                                triggerAction.MinusAction[i1].Prioritet = i;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        triggerAction.Id = i;
+                        TextReStruct();
+                    }
+                }
+                //switch (com[2])
+                //{
+                //    case ("Plus"):
+                //        break;
+                //}
                 break;
         }
 
@@ -226,6 +257,19 @@ public class RuleConstructor : MonoBehaviour
         else
             IAddLink(-1, 0, color1, "Switch_Player", $"\nУровень доступа - Игрок");
     }
+    void TextReStruct()
+    {
+        int a = triggerActions.Count;
+        for(int i = 0; i < a; i++)
+        {
+            TriggerMainText(i);
+            TriggerPlusText(i);
+            TriggerMinusText(i);
+            TriggerActionText(i);
+            TriggerRootText(i);
+        }
+        LoadAllText();
+    }
 
     void AddIf(int a, bool plus)
     {
@@ -244,26 +288,36 @@ public class RuleConstructor : MonoBehaviour
         TriggerRootText(a);
         LoadAllText();
     }
+
+    void DelIf(int a, bool plus, int b)
+    {
+        TriggerAction triggerAction = triggerActions[a];
+        if (plus)
+        {
+            triggerAction.PlusAction.RemoveAt(b);
+            TriggerPlusText(a);
+        }
+        else
+        {
+            triggerAction.MinusAction.RemoveAt(b);
+            TriggerMinusText(a);
+        }
+        TriggerRootText(a);
+        LoadAllText();
+    }
     void AddTrigger()
     {
         TriggerAction triggerAction = new TriggerAction();
-        triggerAction.Id =0;
-        triggerAction.Mood = Mood[0];//All. Shot. Melee
-        triggerAction.TargetPalyer = TargetPalyer[0];//All. My. Enemy
-        triggerAction.TargetTime = TargetTime[0];//Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
-
-        //triggerAction.RootText;
-        //triggerAction.MainText;
-        //triggerAction.PlusText;
-        //triggerAction.MinusText;
-        //triggerAction.ActionText;
-
+        triggerAction.Id =-1;
+        triggerAction.Mood = 0;// Mood[0];//All. Shot. Melee
+        triggerAction.TargetPalyer = 0;//TargetPalyer[0];//All. My. Enemy
+        triggerAction.TargetTime = 0;//TargetTime[0];//Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
 
         triggerAction.PlusAction = new List<IfAction>();
         triggerAction.MinusAction = new List<IfAction>();
-        triggerAction.Only = false;
 
         int a = triggerActions.Count;
+        triggerAction.LocalId = a;
         triggerActions.Add(triggerAction);
         
         TriggerMainText(a);
@@ -271,17 +325,24 @@ public class RuleConstructor : MonoBehaviour
         TriggerMinusText(a);
         TriggerActionText(a);
         TriggerRootText(a);
+        LoadAllText();
     }
+    void DelTrigger(int a)
+    {
+        triggerActions.RemoveAt(a);
+        TextReStruct();
+    }
+
     #region Trigger Text
     void TriggerMainText(int a)
     {
         TriggerAction triggerAction = triggerActions[a];
         triggerAction.MainText = "\n------";
-        triggerAction.MainText += $"<link=Add_{a}_PlusIf><color=green>-Удалить триггер</color></link>";
+        triggerAction.MainText += $"<link=Trigger_{a}_Del><color=green>-Удалить триггер</color></link>";
         IAddLink(a, 0, "green", $"Trigger_{a}_Id", $"\n-ID({triggerAction.Id})");
-        IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {triggerAction.Mood}");
-        IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {triggerAction.TargetPalyer}");
-        IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {triggerAction.TargetTime}");
+        IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {Mood[triggerAction.Mood]}");
+        IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {TargetPalyer[triggerAction.TargetPalyer]}");
+        IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {TargetTime[triggerAction.TargetTime]}");
       //  IAddLink(a, 0, "green", $"Trigger_{a}_Only", $"\n-Одиночный режим работы {triggerAction.Only}");
 
         // triggerAction.MainText = "";
@@ -294,10 +355,11 @@ public class RuleConstructor : MonoBehaviour
         int b = triggerAction.PlusAction.Count;
         for (int i = 0; i < b; i++)
         {
-            text += "--Data";
-            IAddLink(a, 1, "green", $"Trigger_{a}_PlusIf_{i}", text);
+            triggerAction.PlusText += $"\n\n<link=Trigger_{a}_PlusDel_{i}><color=green>-Удалить Условие</color></link>";
+            text = "\n--Data";
+            IAddLink(a, 1, "green", $"Trigger_{a}_Plus_{i}", text);
         }
-        triggerAction.PlusText += $"\n<link=Add_{a}_PlusIf><color=green>-Добавить Условие</color></link>";
+        triggerAction.PlusText += $"\n\n<link=Trigger_{a}_PlusAdd><color=green>-Добавить Условие</color></link>";
     }
     void TriggerMinusText(int a)
     {
@@ -389,28 +451,94 @@ public class RuleConstructor : MonoBehaviour
                         break;
                 }
                 break;
-            //case ("If"):
-            //    switch (text) 
-            //    {
-            //        case ("Add"):
-            //            text = com[2];
-            //            break;
+            case ("Trigger"):
+                int i = int.Parse(text);
+                if (i != null)
+                {
+                    int b = 0;
+                    TriggerAction triggerAction = triggerActions[i];
+                    switch (com[2])
+                    {
+                        case ("Del"):
+                            DelTrigger(i);
+                            break;
 
-            //        case ("Plus"):
+                        case ("PlusDel"):
+                            b = int.Parse(com[3]);
+                            DelIf(i, true, b);
+                            break;
 
-            //            break;
+                        case ("MinusDel"):
+                            b = int.Parse(com[3]);
+                            DelIf(i, false, b);
+                            break;
 
-            //        case ("Minus"):
+                        case ("PlusAdd"):
+                            AddIf(i, true);
+                            break;
 
-            //            break;
-            //    }
-            //    break;
+                        case ("MinusAdd"):
+                            AddIf(i, false);
+                            break;
+
+                        case ("Id"):
+                            LoadTextWindowData($"{triggerAction.Id}", $"{i}");
+                            break;
+
+                        case ("Mood"):
+                            b = triggerAction.Mood;
+                            b++;
+                            if (b == Mood.Count)
+                                b = 0;
+                            triggerAction.Mood = b;
+
+                            TriggerMainText(i);
+                            TriggerRootText(i);
+                            LoadAllText();
+                            break;
+
+                        case ("TargetPalyer"):
+                            b = triggerAction.TargetPalyer;
+                            b++;
+                            if (b == TargetPalyer.Count)
+                                b = 0;
+                            triggerAction.TargetPalyer = b;
+
+                            TriggerMainText(i);
+                            TriggerRootText(i);
+                            LoadAllText();
+                            break;
+
+                        case ("TargetTime"):
+                            Debug.Log("Ok");
+                            stringMood = $"{i}";
+                            Ui.SelectorsMain[0].active = true;
+                            //b = triggerAction.Mood;
+                            //b++;
+                            //if (b > Mood.Count)
+                            //    b == 0;
+                            //triggerAction.Mood = b;
+
+                            //TriggerMainText(i);
+                            //TriggerRootText(i);
+                            //LoadAllText();
+                            break;
+                            /*
+                              $"Trigger_{a}_Id", $"\n-ID({triggerAction.Id})");
+        IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {Mood[triggerAction.Mood]}");
+        IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {TargetPalyer[triggerAction.TargetPalyer]}");
+        IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {TargetTime[triggerAction.TargetTime]}");
+                             
+                             */
+                    }
+                }
+
+                break;
             case ("Add"):
                 switch (text)
                 {
                     case ("Trigger"):
                         AddTrigger();
-                        LoadAllText();
                         break;
                 }
 
@@ -418,11 +546,20 @@ public class RuleConstructor : MonoBehaviour
             default:
                 int a = int.Parse(text);
                 // TriggerAction triggerAction = triggerActions{ }
-                switch (text)
-                { 
+                //switch (text)
+                //{ 
                 
-                }
+                //}
                 break;
+        }
+    }
+
+    void HideSelector()
+    {
+        int a = Ui.Selectors.Count;
+        for(int i = 0; i < a; i++)
+        {
+            Ui.SelectorsMain[i].active = false;
         }
     }
 
@@ -431,7 +568,11 @@ public class RuleConstructor : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
             PointerClick();
         if (Input.GetMouseButtonDown(1))
+        {
             Ui.TextWindow.active = false;
+            HideSelector();
+           // Ui.TextWindow.active = false;
+        }
     }
     void Start()
     {
@@ -443,16 +584,63 @@ public class RuleConstructor : MonoBehaviour
         //AddActionIf();
         LoadAllText();
 
-    //mainField = new List<InputField>();
-    //AddField(0, "Name");
-    //AddField(0, "Cost");
-    //AddField(0, "CostExtend");
-    //AddField(0, "LevelCap");
-    //AddField(0, "CostMovePoint");
-    //AddField(0, "Player");
-}
+    }
 
+    void CreateListButton(int b)
+    {
+        GameObject GO = null;
+        int a = 0; switch (b)
+        {
+            case (0):
+                a = TargetTime.Count;
+                break;
 
+            case (1):
+                a = library.Legions.Count;
+                break;
+
+            case (2):
+                a = library.CivilianGroups.Count;
+                break;
+
+            case (3):
+                a = library.Constants.Count;
+                break;
+
+            case (4):
+                a = library.Effects.Count;
+                break;
+        }
+        // int a = TargetTime.Count;
+        for (int i = 0; i < a; i++)
+        {
+            GO = Instantiate(Ui.ButtonOrig);
+            GO.transform.SetParent(Ui.Selectors[b]);
+            switch (b)
+            {
+                case (0):
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = TargetTime[i];
+                    break;
+
+                case (1):
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Legions[i].Name;
+                    break;
+
+                case (2):
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.CivilianGroups[i].Name;
+                    break;
+
+                case (3):
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Constants[i].Name;
+                    break;
+
+                case (4):
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Effects[i].Name;
+                    break;
+            }
+            ButtonSelector(b, i, GO.GetComponent<Button>());
+        }
+    }
     void LoadBase()
     {
         Ui.TextWindowButton.onClick.AddListener(() => LoadData());
@@ -483,17 +671,131 @@ public class RuleConstructor : MonoBehaviour
         TargetTime.Add("PostDeadTurn");
         //Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
 
+
+        IfString = new List<string>();
+
+        IfString.Add("Проверить текущее существо");//0-Creature
+        IfString.Add("Проверить кол-во существ");//1-Creatures
+        IfString.Add("Проверить Всех существ");//2-AllCreatures
+        IfString.Add("Проверить голову");//3-Head
+        IfString.Add("Проверить выбранное существо - для функции действие");//4-TargetCreature
+        IfString.Add("Проверить эффекты стола");//5-Stol
+        IfString.Add("Проверить использованную карту");//6-UseCard
+
+
         triggerActions = new List<TriggerAction>();
+
+
+
+        GameObject GO = null;
+        Ui.SelectorsMain = new List<GameObject>();
+        Ui.Selectors = new List<Transform>();
+
+        for (int i = 0; i < 5; i++)
+        {
+            GO = Instantiate(Ui.SelectorMain);
+            GO.transform.SetParent(Ui.Canvas);
+            GO.transform.position = Ui.SelectorMain.transform.position;
+            Ui.SelectorsMain.Add(GO);
+            Ui.Selectors.Add(GO.transform.GetChild(0).GetChild(0));
+            CreateListButton(i);
+        }
+
+        /*
+         * проверить текущеее существо
+         * 
+         проверить кол-во существ
+        кого проверяем
+        кол-во существ в на указанном столе больше меньше равно
+            признак - (значение больше меньше равно)
+                параметр 
+        или
+        ле
+        группа или легион  
+         
+         */
+    }
+    void ButtonSelector(int b,int a, Button button)
+    {
+        switch (b)
+        {
+            case (0):
+                button.onClick.AddListener(() => SwitchTargetTime(a));
+                break;
+            default:
+                b--;
+                button.onClick.AddListener(() => SwitchLibrary(a, b));
+                break;
+        }
+    }
+    void SwitchLibrary(int a, int b)
+    {
+        string text = "";
+        switch (b) 
+        {
+            case (0):
+                text = library.Legions[a].Name;
+                break;
+
+            case (1):
+                text = library.CivilianGroups[a].Name;
+                break;
+
+            case (2):
+                text = library.Constants[a].Name;
+                break;
+
+            case (3):
+                text = library.Effects[a].Name;
+                break;
+        }
+
+        string[] com = stringMood.Split('_');
+        //0-trigger     1-if & else & action     2- IfAction num     3-string num
+
+        int i = int.Parse(com[3]);
+        TriggerAction triggerAction = triggerActions[int.Parse(com[0])];
+        switch (int.Parse(com[1])) 
+        {
+            case (0):
+                IfAction ifAction = triggerAction.PlusAction[int.Parse(com[2])];
+                ifAction.TextData[i] = text;
+                ifAction.IntData[i] = a;
+                break;
+
+            case (1):
+                ifAction = triggerAction.MinusAction[int.Parse(com[2])];
+                ifAction.TextData[i] = text;
+                ifAction.IntData[i] = a;
+                break;
+
+            case (2):
+
+                break;
+        }
+
+    }
+
+
+    void SwitchTargetTime(int a)
+    {
+        int i = int.Parse(stringMood);
+        triggerActions[i].TargetTime = a;
+        HideSelector();
+        TriggerMainText(i);
+        TriggerRootText(i);
+        LoadAllText();
     }
     #endregion
 
 }
 public class TriggerAction
 {
+    public int LocalId;
     public int Id;
-    public string Mood;//All. Shot. Melee
-    public string TargetPalyer;//All. My. Enemy
-    public string TargetTime;//Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
+    public int Mood;//All. Shot. Melee
+    public int TargetPalyer;//All. My. Enemy
+    public int TargetTime;//Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
 
     public string RootText;
     public string MainText;
