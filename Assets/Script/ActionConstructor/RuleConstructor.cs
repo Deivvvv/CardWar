@@ -7,6 +7,9 @@ using TMPro;
 public class RuleConstructor : MonoBehaviour
 {
     [SerializeField]
+    private RuleMainFrame frame;
+   
+    [SerializeField]
     private ActionLibrary library;
     [SerializeField]
     private RuleConstructorUi Ui;
@@ -73,7 +76,9 @@ public class RuleConstructor : MonoBehaviour
     private List<string> Mood;
     private List<string> TargetPalyer;
     private List<string> TargetTime;
-    private List<string> IfString;
+
+    private List<string> IfString_L0;
+    private List<string> IfString_L1;
 
     [SerializeField]
     private Color[] colors;
@@ -194,35 +199,38 @@ public class RuleConstructor : MonoBehaviour
 
                 string[] com = stringMood.Split('_');
                 //  string text1 = com[1];
-                TriggerAction triggerAction = triggerActions[int.Parse(com[0])];
+                int c = int.Parse(com[0]);
+                TriggerAction triggerAction = triggerActions[c];
                 i = int.Parse(text);
                 if (i != null)
                 {
                     if (com.Length > 1)
                     {
                         int i1 = int.Parse(com[2]);
+                        int b1 = int.Parse(com[3]);
                         switch (com[1])
                         {
                             case ("Plus"):
-                                if (com.Length > 3)
+                                if (b1 == -1)
                                 {
-                                    int b1= int.Parse(com[3]);
-                                    triggerAction.PlusAction[i1].IntData[b1] = i;
+                                    triggerAction.PlusAction[i1].Prioritet = i;
                                 }
                                 else
-                                    triggerAction.PlusAction[i1].Prioritet = i;
+                                    triggerAction.PlusAction[i1].IntData[b1] = i;
+
+                                TriggerPlusText(c);
                                 break;
 
                             case ("Minus"):
-                                if (com.Length > 3)
-                                {
-                                    int b1 = int.Parse(com[3]);
-                                    triggerAction.MinusAction[i1].IntData[b1] = i;
-                                }
-                                else
+                                if (b1 == -1)
                                     triggerAction.MinusAction[i1].Prioritet = i;
+                                else
+                                    triggerAction.MinusAction[i1].IntData[b1] = i;
+
+                                TriggerMinusText(c);
                                 break;
                         }
+                        TriggerRootText(c);
                     }
                     else
                     {
@@ -287,15 +295,17 @@ public class RuleConstructor : MonoBehaviour
     {
         TriggerAction triggerAction = triggerActions[a];
         IfAction ifAction = new IfAction();
-        ifAction.TextData = new List<string>();
-        ifAction.IntData = new List<int>();
 
-        int b = 5;
-        for (int i = 0; i < b; i++)
-        {
-            ifAction.TextData.Add("None");
-            ifAction.IntData.Add(-1);
-        }
+        // int b = 5;
+        // for (int i = 0; i < b; i++)
+        //  {
+        //ifAction.TextData.Add("None");
+        //ifAction.IntData.Add(-1);
+        // }
+
+
+        CoreLableIfAction(ifAction, 0, 0);
+        SwitchLableIfAction(ifAction, 2, 0);
 
         if (plus)
         {
@@ -313,6 +323,7 @@ public class RuleConstructor : MonoBehaviour
 
     void DelIf(int a, bool plus, int b)
     {
+        Ui.TextWindow.active = false;
         TriggerAction triggerAction = triggerActions[a];
         if (plus)
         {
@@ -361,10 +372,11 @@ public class RuleConstructor : MonoBehaviour
         triggerAction.MainText = "\n------";
         triggerAction.MainText += $"<link=Trigger_{a}_Del><color=green>-Удалить триггер</color></link>";
         IAddLink(a, 0, "green", $"Trigger_{a}_Id", $"\n-ID({triggerAction.Id})");
-        IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {Mood[triggerAction.Mood]}");
-        IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {TargetPalyer[triggerAction.TargetPalyer]}");
-        IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {TargetTime[triggerAction.TargetTime]}");
-      //  IAddLink(a, 0, "green", $"Trigger_{a}_Only", $"\n-Одиночный режим работы {triggerAction.Only}");
+        //IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {Mood[triggerAction.Mood]}");
+        //IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {TargetPalyer[triggerAction.TargetPalyer]}");
+        //IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {TargetTime[triggerAction.TargetTime]}");
+     
+        //  IAddLink(a, 0, "green", $"Trigger_{a}_Only", $"\n-Одиночный режим работы {triggerAction.Only}");
 
         // triggerAction.MainText = "";
     }
@@ -376,7 +388,7 @@ public class RuleConstructor : MonoBehaviour
         int b = triggerAction.PlusAction.Count;
         for (int i = 0; i < b; i++)
         {
-            IfActionText(true, triggerAction, a, i);
+        //    IfActionText(true, triggerAction, a, i);
             //triggerAction.PlusText += $"\n\n<link=Trigger_{a}_PlusDel_{i}><color=green>-Удалить Условие</color></link>";
             //text = "\n--Data";
             //IAddLink(a, 1, "green", $"Trigger_{a}_Plus_{i}", text);
@@ -391,8 +403,8 @@ public class RuleConstructor : MonoBehaviour
         int b = triggerAction.MinusAction.Count;
         for (int i = 0; i < b; i++)
         {
-            text += "--Data";
-            IAddLink(a, 2, "green", $"Trigger_{a}_PlusIf_{i}", text);
+            //text += "--Data";
+            //IAddLink(a, 2, "green", $"Trigger_{a}_PlusIf_{i}", text);
         }
 
         triggerAction.MinusText += $"\n<link=Trigger_{a}_MinusAdd><color=green>-Добавить Исключение</color></link>";
@@ -429,6 +441,127 @@ public class RuleConstructor : MonoBehaviour
         // plusText = text;
     }
 
+    void CoreLableIfAction(IfAction ifAction, int a, int b)
+    {
+        ifAction.TextData = new List<string>();
+        ifAction.IntData = new List<int>();
+        ifAction.Core = new List<int>();
+
+        ifAction.Core.Add(a);
+        ifAction.Core.Add(b);
+
+        Debug.Log(frame.AllTriggers[a].Name);
+        Debug.Log(frame.AllTriggers[a].Form[b].Name);
+
+        ifAction.Form = frame.AllTriggers[a].Form[b];
+    }
+    void SwitchLableIfAction(IfAction ifAction, int c, int d)
+    {
+        int b = ifAction.Core.Count;
+        if (c >= b)
+        {
+            ifAction.Core.Add(d);
+        }
+        else
+        {
+            ifAction.Core[c] = d;
+            b = ifAction.Core.Count;
+            for (int i = c; i < b; i++)
+            {
+                ifAction.Core.RemoveAt(c + 1);
+            }
+            b = ifAction.Core.Count;
+        }
+
+        ifAction.TextData = new List<string>();
+        ifAction.IntData = new List<int>();
+
+        ifAction.TextData.Add(frame.AllTriggers[ifAction.Core[0]].Name);
+        ifAction.TextData.Add(frame.AllTriggers[ifAction.Core[1]].Name);
+
+        //b = ifAction.Form.Form[0].Id;
+        ////   b = ifAction.Form.Form[0].Form[0].Text;//Rule
+        //b = ifAction.Form.Form.Count;
+
+
+        //b = ifAction.Core.Count - 2;
+        //int b1 = 0;
+        //int a = 0;
+        //int a1 = 0;
+        //RuleFarmeMacroCase form = null; 
+        //string t = "";
+        //string t1 = "";
+
+        //Debug.Log(b);
+        //for (int i = 0; i < b; i++)
+        //{
+        //    a = ifAction.Core[2 + i];
+
+        //    form = ifAction.Form.Form[a];
+
+        //    a1 = form.Id;
+        //    b1 = form.Form.Length;
+        //    t1 += "/n";
+        //    for (int i1 = 0; i1 < a; i1++)
+        //    {
+        //        for (int i2 = 0; i2 < a1; i2++)
+        //        {
+        //            t1 += "a    ";
+        //        }
+        //        t1 += "-" + form.Form[i1].Rule;
+        //    }
+        //}
+
+        //mainText += t1;
+        //LoadAllText();
+
+
+       // Debug.Log(t1);
+        //ifAction.TextData.Add(frame.AllTriggers[a].Name);
+        //ifAction.IntData.Add(a);
+        //ifAction.TextData.Add(frame.AllTriggers[a].Form[b].Name);
+        //ifAction.IntData.Add(b);
+
+        // RuleFrame form = frame.AllTriggers[a].Form[b];
+
+
+        //RuleFrame form = ifAction.Form;// = form;
+        //int a = ifAction.Form.Count;
+
+        //int iCurent = 0;
+        //int iMax = 0;
+        //for (int i = 0; i < a; i++)
+        //{
+
+        //}
+    }
+
+
+    void NewMethod(IfAction ifAction)
+    {
+        string text = "";
+        int a = frame.AllTriggers.FindIndex(x => x.Name == ifAction.TextData[0]);
+        if (a == -1)
+        {
+            a = 0;
+        }
+
+        RuleBaseFrame altFrame = frame.AllTriggers[a];
+
+     //   a = altFrame.Form.FindIndex(x => x.Name == text);
+     
+        int b = altFrame.Form.FindIndex(x => x.Name == ifAction.TextData[1]);
+        if (b == -1)
+            b = 0;
+
+        RuleFrame form = frame.AllTriggers[a].Form[b];
+        a = form.Form.Count;
+        for (int i = 0; i < a; i++)
+        {
+
+        }
+    }
+
     void IfActionText(bool plus, TriggerAction triggerAction, int a, int i)
     {
         IfAction ifAction = triggerAction.PlusAction[i];
@@ -452,13 +585,13 @@ public class RuleConstructor : MonoBehaviour
         text1 += $"\n\n-Приоритет({ifAction.Prioritet})  ";
         if (plus)
         {
-            textLink = $"Trigger_{a}_Switch_{i}_Plus";
+            textLink = $"Trigger_{a}_Switch_{i}_-1_Plus";
             IAddLink(a, 1, "green", textLink, text1);
             IAddLink(a, 1, "red", $"Trigger_{a}_PlusDel_{i}", "-Удалить Условие");
         }
         else
         {
-            textLink = $"Trigger_{a}_Switch_{i}_Minus";
+            textLink = $"Trigger_{a}_Switch_{i}_-1_Minus";
             IAddLink(a, 2, "green", textLink, text1);
             IAddLink(a, 2, "red", $"Trigger_{a}_MinusDel_{i}", "-Удалить Исключение");
         }
@@ -470,30 +603,53 @@ public class RuleConstructor : MonoBehaviour
 
         //0-trigger     1-if & else & action     2- IfAction num     3-string num  com[5] =libray(Legion)
         //stringMood = $"{i}_0_{com[3]}_{com[4]}";
-      //  интегрирывать вызов доступной библиотеки на основе класса тригера
+
+        //  интегрирывать вызов доступной библиотеки на основе класса тригера
+
+
+        //frame.AllTiggers
+
+
         text1 = $"\n-Проверить: {text}";
         if(plus)
             textLink = $"Trigger_{a}_Plus_{i}_0_Select";
         else
             textLink = $"Trigger_{a}_Minus_{i}_0_Select";
 
-      //  textLink = $"Trigger_{a}_Minus_{i}_0_{text}";
 
+
+
+        //  textLink = $"Trigger_{a}_Minus_{i}_0_{text}";
         IAddLink(a, 1, "green", textLink, text1);
         switch (text)
         {
 
             case ("Creature")://Проверить текущее существо
                 text = ifAction.TextData[1];
+
+                text1 = $"\nПроверяемая категория: {text}";
+
+                if (plus)
+                    textLink = $"Trigger_{a}_Plus_{i}_1_Select";
+                else
+                    textLink = $"Trigger_{a}_Minus_{i}_1_Select";
+
+                IAddLink(a, 1, "green", textLink, text1);
                 switch (text)
                 {
                     case ("Legion"):
-                        //textLink = $"Trigger_{a}_Plus_{i}_SelectTarget_2";
-                        text1 = $"Проверяемая категория: Легион:";
+                        if (plus)
+                            textLink = $"Trigger_{a}_Plus_{i}_2_SwitchBool";
+                        else
+                            textLink = $"Trigger_{a}_Minus_{i}_2_Select";
+                        text1 = $" {ifAction.TextData[2]}";
                         IAddLink(a, 1, "green", textLink, text1);
-                        text1 = $" (равен/неравен)";
-                        IAddLink(a, 1, "green", textLink, text1);
-                       // text1 = $" {ifAction.TextData[2]}";
+                        if (plus)
+                            textLink = $"Trigger_{a}_Plus_{i}_3_Select";
+                        else
+                            textLink = $"Trigger_{a}_Minus_{i}_3_Select";
+                        text1 = $" {ifAction.TextData[3]}";
+                        // text1 = $" {ifAction.TextData[2]}";
                         IAddLink(a, 1, "green", textLink, text1);
                         // triggerAction.PlusText += "Проверяемая категория: Легион (равен\неравен) {ifAction.TextData[2]}";
                         // if(ifAction.TextData[2] ="")
@@ -506,7 +662,8 @@ public class RuleConstructor : MonoBehaviour
                         break;
 
                     default:
-                        triggerAction.PlusText += "\nПроверяемая категория";//$"\n<link={textLink}><color=green>-Проверить: {text}</color></link>";
+                      //  text1 = "\nПроверяемая категория";
+                      //  IAddLink(a, 1, "green", textLink, text1);
                         break;
                 }
                 /*
@@ -704,31 +861,62 @@ public class RuleConstructor : MonoBehaviour
                             break;
 
                         case ("Plus"):
+                            b = int.Parse(com[3]);
+                            int b1 = int.Parse(com[4]);
                             //0-trigger     1-if & else & action     2- IfAction num     3-string num  com[5] =libray(Legion)
                             stringMood = $"{i}_0_{com[3]}_{com[4]}";
-                            OpenSelector(com[5]);
+                            PreSelectorStringIF(triggerActions[i].PlusAction[b], b1);
+                           // OpenSelector(com[5]);
                             break;
 
                         case ("Minus"):
+                            b = int.Parse(com[3]);
+                            b1 = int.Parse(com[4]);
+                            //0-trigger     1-if & else & action     2- IfAction num     3-string num  com[5] =libray(Legion)
                             stringMood = $"{i}_1_{com[3]}_{com[4]}";
-                            OpenSelector(com[5]);
+                            PreSelectorStringIF(triggerActions[i].PlusAction[b], b1);
                             break;
 
                         case ("Switch"):
                             b = int.Parse(com[3]);
-                            int b1 = int.Parse(com[4]);
+                            b1 = int.Parse(com[4]);
+
+
                             stringMood = $"{i}_{com[5]}_{b}_{b1}";
 
                             Ui.TextWindow.active = true;
+
                             switch (com[5])
                             {
                                 case ("Plus"):
-                                    Ui.TextInput.text = "" + triggerAction.PlusAction[b].IntData[b1];
+                                    if (b1 == -1)
+                                        Ui.TextInput.text = "" + triggerAction.PlusAction[b].Prioritet;
+                                    else
+                                        Ui.TextInput.text = "" + triggerAction.PlusAction[b].IntData[b1];
                                     break;
                                 case ("Minus"):
-                                    Ui.TextInput.text = "" + triggerAction.MinusAction[b].IntData[b1];
+                                    if (b1 == -1)
+                                        Ui.TextInput.text = "" + triggerAction.MinusAction[b].Prioritet;
+                                    else
+                                        Ui.TextInput.text = "" + triggerAction.MinusAction[b].IntData[b1];
                                     break;
                             }
+                            break;
+
+                        case ("PlusBool"):
+                            TriggerBool(triggerActions[i].PlusAction[b], int.Parse(com[3]), int.Parse(com[4]));
+                            break;
+
+                        case ("MinusBool"):
+                            TriggerBool(triggerActions[i].MinusAction[b], int.Parse(com[3]), int.Parse(com[4]));
+                            break;
+
+                        case ("PlusElseIf"):
+                            TriggerBool(triggerActions[i].PlusAction[b], int.Parse(com[3]), int.Parse(com[4]));
+                            break;
+
+                        case ("MinusElseIf"):
+                            TriggerBool(triggerActions[i].MinusAction[b], int.Parse(com[3]), int.Parse(com[4]));
                             break;
                     }
                 }
@@ -744,7 +932,7 @@ public class RuleConstructor : MonoBehaviour
 
                 break;
             default:
-                int a = int.Parse(text);
+              //  int a = int.Parse(text);
                 // TriggerAction triggerAction = triggerActions{ }
                 //switch (text)
                 //{ 
@@ -752,6 +940,52 @@ public class RuleConstructor : MonoBehaviour
                 //}
                 break;
         }
+    }
+
+    #region Add Function 
+    void TriggerBool(IfAction ifAction, int b, int b1)
+    {
+        int a = ifAction.IntData[b1];
+        string text = "";
+
+        a++;
+        if (a > 1)
+            a = 0;
+
+        if (a == 1)
+            text = "=/=";
+        else
+            text = "==";
+        ifAction.IntData[b1] = a;
+        ifAction.TextData[b1] = text;
+    }
+
+    void TriggerElseIf(IfAction ifAction, int b, int b1)
+    {
+        int a = ifAction.IntData[b1];
+        string text = "";
+
+        a++;
+        if (a > 2)
+            a = 0;
+
+        switch (a)
+        {
+            case (0):
+                text = " = ";
+                break;
+
+            case (1):
+                text = " > ";
+                break;
+
+            case (2):
+                text = " < ";
+                break;
+        }
+
+        ifAction.IntData[b1] = a;
+        ifAction.TextData[b1] = text;
     }
 
     void HideSelector()
@@ -762,7 +996,7 @@ public class RuleConstructor : MonoBehaviour
             Ui.SelectorsMain[i].active = false;
         }
     }
-
+    #endregion
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -789,10 +1023,11 @@ public class RuleConstructor : MonoBehaviour
     void CreateListButton(int b)
     {
         GameObject GO = null;
-        int a = 0; switch (b)
+        int a = 0; 
+        switch (b)
         {
             case (0):
-                a = TargetTime.Count;
+                a =frame.Trigger.Length; //TargetTime.Count;
                 break;
 
             case (1):
@@ -811,7 +1046,10 @@ public class RuleConstructor : MonoBehaviour
                 a = library.Effects.Count;
                 break;
             case (5):
-                a = IfString.Count;
+                a = IfString_L0.Count;
+                break;
+            case (6):
+                a = IfString_L1.Count;
                 break;
         }
         // int a = TargetTime.Count;
@@ -842,7 +1080,11 @@ public class RuleConstructor : MonoBehaviour
                     break;
 
                 case (5):
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = IfString[i];
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = IfString_L0[i];
+                    break;
+
+                case (6):
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = IfString_L1[i];
                     break;
             }
             ButtonSelector(b, i, GO.GetComponent<Button>());
@@ -854,47 +1096,53 @@ public class RuleConstructor : MonoBehaviour
 
         Name = "Благочестие";//Название
 
-        Mood = new List<string>();
-        Mood.Add("All");
-        Mood.Add("Shot");
-        Mood.Add("Melee");
+        //Mood = new List<string>();
+        //Mood.Add("All");
+        //Mood.Add("Shot");
+        //Mood.Add("Melee");
 
-        TargetPalyer = new List<string>();
-        TargetPalyer.Add("All");
-        TargetPalyer.Add("My");
-        TargetPalyer.Add("Enemy");
-
-
-        TargetTime = new List<string>();
-        TargetTime.Add("Action");
-        TargetTime.Add("Start Turn");
-        TargetTime.Add("End Turn");
-        TargetTime.Add("PreAction");
-        TargetTime.Add("PostAction");
-        TargetTime.Add("PlayCard");
-        TargetTime.Add("DeadCard");
-        TargetTime.Add("DeadAnotherCard");
-        TargetTime.Add("PlayAnotherCard");
-        TargetTime.Add("PostDeadTurn");
-        //Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
+        //TargetPalyer = new List<string>();
+        //TargetPalyer.Add("All");
+        //TargetPalyer.Add("My");
+        //TargetPalyer.Add("Enemy");
 
 
-        IfString = new List<string>();
+        //TargetTime = new List<string>();
+        //TargetTime.Add("Action");
+        //TargetTime.Add("Start Turn");
+        //TargetTime.Add("End Turn");
+        //TargetTime.Add("PreAction");
+        //TargetTime.Add("PostAction");
+        //TargetTime.Add("PlayCard");
+        //TargetTime.Add("DeadCard");
+        //TargetTime.Add("DeadAnotherCard");
+        //TargetTime.Add("PlayAnotherCard");
+        //TargetTime.Add("PostDeadTurn");
+        ////Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
 
-        IfString.Add("Creature");
-        IfString.Add("Creatures");
-        IfString.Add("AllCreatures");
-        IfString.Add("Head");
-        IfString.Add("TargetCreature");
-        IfString.Add("Stol");
-        IfString.Add("UseCard");
-        //IfString.Add("Проверить текущее существо");//0-Creature
-        //IfString.Add("Проверить кол-во существ");//1-Creatures
-        //IfString.Add("Проверить Всех существ");//2-AllCreatures
-        //IfString.Add("Проверить голову");//3-Head
-        //IfString.Add("Проверить выбранное существо - для функции действие");//4-TargetCreature
-        //IfString.Add("Проверить эффекты стола");//5-Stol
-        //IfString.Add("Проверить использованную карту");//6-UseCard
+
+        //IfString_L0 = new List<string>();
+
+        //IfString_L0.Add("Creature");
+        //IfString_L0.Add("Creatures");
+        //IfString_L0.Add("AllCreatures");
+        //IfString_L0.Add("Head");
+        //IfString_L0.Add("TargetCreature");
+        //IfString_L0.Add("Stol");
+        //IfString_L0.Add("UseCard");
+
+        //IfString_L1 = new List<string>();
+
+        //IfString_L1.Add("Creature");
+        //IfString_L1.Add("Legion");
+        //IfString_L1.Add("Constant");
+        ////IfString.Add("Проверить текущее существо");//0-Creature
+        ////IfString.Add("Проверить кол-во существ");//1-Creatures
+        ////IfString.Add("Проверить Всех существ");//2-AllCreatures
+        ////IfString.Add("Проверить голову");//3-Head
+        ////IfString.Add("Проверить выбранное существо - для функции действие");//4-TargetCreature
+        ////IfString.Add("Проверить эффекты стола");//5-Stol
+        ////IfString.Add("Проверить использованную карту");//6-UseCard
 
 
         triggerActions = new List<TriggerAction>();
@@ -905,14 +1153,14 @@ public class RuleConstructor : MonoBehaviour
         Ui.SelectorsMain = new List<GameObject>();
         Ui.Selectors = new List<Transform>();
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 7; i++)
         {
             GO = Instantiate(Ui.SelectorMain);
             GO.transform.SetParent(Ui.Canvas);
             GO.transform.position = Ui.SelectorMain.transform.position;
             Ui.SelectorsMain.Add(GO);
             Ui.Selectors.Add(GO.transform.GetChild(0).GetChild(0));
-            CreateListButton(i);
+         //   CreateListButton(i);
         }
     }
     void ButtonSelector(int b,int a, Button button)
@@ -950,7 +1198,10 @@ public class RuleConstructor : MonoBehaviour
                 break;
 
             case (4):
-                text = IfString[a];
+                text = IfString_L0[a];
+                break;
+            case (5):
+                text = IfString_L1[a];
                 break;
         }
         Debug.Log(stringMood);
@@ -964,9 +1215,10 @@ public class RuleConstructor : MonoBehaviour
         switch (int.Parse(com[1])) 
         {
             case (0):
-                //if (i == 0)
-                //    SwitchLibraryExtend(triggerAction, i2, text, false);
                 IfAction ifAction = triggerAction.PlusAction[i2];
+
+                PostSelectorStringIF(ifAction, i2, text);
+
                 ifAction.TextData[i] = text;
                 ifAction.IntData[i] = a;
 
@@ -978,6 +1230,9 @@ public class RuleConstructor : MonoBehaviour
                 //    SwitchLibraryExtend(triggerAction, i2,text, false);
 
                 ifAction = triggerAction.MinusAction[i2];
+
+                PostSelectorStringIF(ifAction, i2, text);
+
                 ifAction.TextData[i] = text;
                 ifAction.IntData[i] = a;
 
@@ -994,27 +1249,226 @@ public class RuleConstructor : MonoBehaviour
         LoadAllText();
     }
 
-    void SwitchLibraryExtend(TriggerAction triggerAction, int b, string text, bool plus)
+    void UnHideSelectorButton(Transform transform, string text, int l)
     {
-        IfAction ifAction = null;
-        if(plus)
-            ifAction = triggerAction.PlusAction[b];
-        else
-            ifAction = triggerAction.MinusAction[b];
-        switch (text)
+        int a = 0;
+        switch (l)
         {
-            case ("Legion"):
-                int a = 3;
-                ifAction.TextData = new List<string>();
-                ifAction.IntData  = new List<int>();
-                for (int i = 0; i < a; i++)
+            case (0):
+                a = IfString_L0.FindIndex(x => x == text);
+                break;
+            case (1):
+                a = IfString_L1.FindIndex(x => x == text);
+                break;
+        }
+        Debug.Log(a);
+        if (a != -1)
+            transform.GetChild(a).gameObject.active = false;
+
+    }
+
+    void PostSelectorStringIF(IfAction ifAction, int l, string text)
+    {
+        switch (l)
+        {
+            case (0):
+                //ifAction.TextData = new List<string>;
+                //ifAction.IntData = new List<int>;
+
+                ifAction.TextData.Add(text);
+                ifAction.IntData.Add(0);
+
+                break;
+
+            case (1):
+                switch (text) 
                 {
-                    ifAction.TextData.Add("");
+                    case ("Legion"):
+                        break;
+                }
+
+                break;
+
+            default:
+                if (ifAction.TextData.Count <= l)
+                {
+                    ifAction.TextData.Add("None");
                     ifAction.IntData.Add(0);
                 }
                 break;
         }
+
+        //else
+        //{
+
+        //}
+      //  HideSelector();
+       
     }
+
+
+    void PreSelectorStringIF(IfAction ifAction, int l)
+    {
+        Ui.TextWindow.active = false;
+        int c= 0;
+        l++;
+        //if (l != 0) 
+            c = 4 + l;
+
+        Ui.SelectorsMain[c].active = true;
+        string text = ifAction.TextData[l]; 
+        Transform transform = Ui.Selectors[c];
+        int a = transform.childCount;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    transform.GetChild(i).gameObject.active = false;
+        //}
+        //switch (l)
+        //{
+        //    case (0):
+        //        UnHideSelectorButton(transform, "Creature", l);
+        //        break;
+
+
+        //    case (1):
+        //        string text1 = ifAction.TextData[0];
+        //        switch (text1)
+        //        {
+        //            //global
+        //            case ("Creature")://Проверить текущее существ
+
+        //                UnHideSelectorButton(transform, "Legion", l);
+        //                UnHideSelectorButton(transform, "Creature", l);
+        //                UnHideSelectorButton(transform, "Constant", l);
+
+        //                break;
+        //            case ("Creatures")://Проверить кол-во существ
+
+        //                UnHideSelectorButton(transform, "Legion", l);
+        //                UnHideSelectorButton(transform, "Creature", l);
+        //                UnHideSelectorButton(transform, "Constant", l);
+
+        //                break;
+        //            case ("AllCreatures")://Проверить Всех существ
+
+        //                UnHideSelectorButton(transform, "Legion", l);
+        //                UnHideSelectorButton(transform, "Creature", l);
+        //                UnHideSelectorButton(transform, "Constant", l);
+
+        //                break;
+
+        //            case ("Head")://Проверить голову
+        //                break;
+
+        //            case ("TargetCreature")://Проверить выбранное существо
+        //                break;
+        //            case ("Stol")://Проверить эффекты стола
+        //                break;
+
+        //            case ("UseCard")://Проверить использованную карту
+        //                break;
+        //        }
+        //        break;
+
+        //    case (2):
+        //        text1 = ifAction.TextData[1];
+        //        switch (text)
+        //        {
+        //            case ("Legion"):
+        //                //UnHideSelectorButton(transform, "Legion", l);
+        //                //UnHideSelectorButton(transform, "Creature", l);
+        //                //UnHideSelectorButton(transform, "Constant", l);
+
+        //                break;
+        //            case ("Creature"):
+        //                break;
+        //            case ("Constant"): 
+        //                break;
+        //        }
+        //        break;
+        //}
+    }
+
+    //void SwitchLibraryExtend(TriggerAction triggerAction, int b, string text, bool plus)
+    //{
+    //    int c = 0;
+    //    IfAction ifAction = null;
+    //    if(plus)
+    //        ifAction = triggerAction.PlusAction[b];
+    //    else
+    //        ifAction = triggerAction.MinusAction[b];
+
+    //    switch (text)
+    //    {
+    //        //global
+    //        case ("Creature")://Проверить текущее существ
+    //            /*
+    //            Объласть проерки: параметр, легион, существо
+    //               если легион
+    //                   выбрать название легиона
+    //               если существо
+    //                   выбрать группу 
+    //                       (доп)Выбрать звание
+    //                           больше, меньше, равно(по умолчанию)
+    //               если параметр
+    //                   относительный или точный
+    //                       если точный
+    //                           то 
+    //                           парметр
+    //                           больше, меньше, равно
+    //                           значение
+    //                           параметр (по умолчанию идентично)
+
+    //            */
+
+    //            c = IfString.FindIndex(x => x == "Legion");
+    //            if (c != -1)
+    //                UnHideSelectorButton(Ui.Selectors[4], c);
+
+    //            c = IfString.FindIndex(x => x == "Creature");
+    //            if (c != -1)
+    //                UnHideSelectorButton(Ui.Selectors[4], c);
+    //            //int c = card.Trait.FindIndex(x => x == "Fast");
+    //            //text1 = $"Проверяемая категория: Легион:";
+    //            //IAddLink(a, 1, "green", textLink, text1);
+    //            //text1 = $" (равен/неравен)";
+    //            //IAddLink(a, 1, "green", textLink, text1);
+    //            //// text1 = $" {ifAction.TextData[2]}";
+    //            //IAddLink(a, 1, "green", textLink, text1);
+    //            //// triggerAction.PlusText += "Проверяемая категория: Легион (равен\неравен) {ifAction.TextData[2]}";
+    //            //// if(ifAction.TextData[2] ="")
+    //            break;
+    //        case ("Creatures")://Проверить кол-во существ
+
+    //            break;
+    //        case ("AllCreatures")://Проверить Всех существ
+
+    //            break;
+
+    //        case ("Head")://Проверить голову
+    //            break;
+
+    //        case ("TargetCreature")://Проверить выбранное существо
+    //            break;
+    //        case ("Stol")://Проверить эффекты стола
+    //            break;
+
+    //        case ("UseCard")://Проверить использованную карту
+    //            break;
+
+    //            //local
+    //        case ("Legion"):
+    //            int a = 3;
+    //            ifAction.TextData = new List<string>();
+    //            ifAction.IntData  = new List<int>();
+    //            for (int i = 0; i < a; i++)
+    //            {
+    //                ifAction.TextData.Add("");
+    //                ifAction.IntData.Add(0);
+    //            }
+    //            break;
+    //    }
+    //}
 
 
     void SwitchTargetTime(int a)
@@ -1053,6 +1507,9 @@ public class IfAction
     public int Prioritet = 10;//приоритет действия
     public List<string> TextData;//текстовые поля
     public List<int> IntData;//числительные поля
+    public List<int> Core;
+
+    public RuleFrame Form;
     /*Проверяемое условие 
      Action.- нанесено н-ое кол-во урона, получено урона
 
