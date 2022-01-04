@@ -372,10 +372,10 @@ public class RuleConstructor : MonoBehaviour
         triggerAction.MainText = "\n------";
         triggerAction.MainText += $"<link=Trigger_{a}_Del><color=green>-Удалить триггер</color></link>";
         IAddLink(a, 0, "green", $"Trigger_{a}_Id", $"\n-ID({triggerAction.Id})");
-        //IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {Mood[triggerAction.Mood]}");
-        //IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {TargetPalyer[triggerAction.TargetPalyer]}");
-        //IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {TargetTime[triggerAction.TargetTime]}");
-     
+        IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {frame.TurnString[triggerAction.Mood]}");
+        IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {frame.PlayerString[triggerAction.TargetPalyer]}");
+        IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {frame.Trigger[triggerAction.TargetTime]}");
+
         //  IAddLink(a, 0, "green", $"Trigger_{a}_Only", $"\n-Одиночный режим работы {triggerAction.Only}");
 
         // triggerAction.MainText = "";
@@ -388,6 +388,7 @@ public class RuleConstructor : MonoBehaviour
         int b = triggerAction.PlusAction.Count;
         for (int i = 0; i < b; i++)
         {
+            triggerAction.PlusText += triggerAction.PlusAction[i].Text;
         //    IfActionText(true, triggerAction, a, i);
             //triggerAction.PlusText += $"\n\n<link=Trigger_{a}_PlusDel_{i}><color=green>-Удалить Условие</color></link>";
             //text = "\n--Data";
@@ -484,56 +485,40 @@ public class RuleConstructor : MonoBehaviour
         //b = ifAction.Form.Form.Count;
 
 
-        //b = ifAction.Core.Count - 2;
-        //int b1 = 0;
-        //int a = 0;
-        //int a1 = 0;
-        //RuleFarmeMacroCase form = null; 
-        //string t = "";
-        //string t1 = "";
+        b = ifAction.Core.Count - 2;
+        int b1 = 0;
+        int a = 0;
+        int a1 = 0;
+        RuleFarmeMacroCase form = null;
+        string t = "";
+        string t1 = "";
 
-        //Debug.Log(b);
-        //for (int i = 0; i < b; i++)
-        //{
-        //    a = ifAction.Core[2 + i];
+        for (int i = 0; i < b; i++)
+        {
+            a = ifAction.Core[2 + i];
 
-        //    form = ifAction.Form.Form[a];
+            form = ifAction.Form.Form[a];
 
-        //    a1 = form.Id;
-        //    b1 = form.Form.Length;
-        //    t1 += "/n";
-        //    for (int i1 = 0; i1 < a; i1++)
-        //    {
-        //        for (int i2 = 0; i2 < a1; i2++)
-        //        {
-        //            t1 += "a    ";
-        //        }
-        //        t1 += "-" + form.Form[i1].Rule;
-        //    }
-        //}
+            a1 = form.Id;
+            b1 = form.Form.Length;
+            t1 += "\n";
+            for (int i1 = 0; i1 < b1; i1++)
+            {
+                for (int i2 = 0; i2 < a1; i2++)
+                {
+                    t1 += "    ";
+                }
+                t1 += "-{" + form.Form[i1].Rule + "} " + form.Form[i1].Text;
 
-        //mainText += t1;
-        //LoadAllText();
+              //  switch(){}
+            }
+            
+        }
+        ifAction.Text = t1;
+        //plusText +=
+        //  mainText += t1;
+        //  LoadAllText();
 
-
-       // Debug.Log(t1);
-        //ifAction.TextData.Add(frame.AllTriggers[a].Name);
-        //ifAction.IntData.Add(a);
-        //ifAction.TextData.Add(frame.AllTriggers[a].Form[b].Name);
-        //ifAction.IntData.Add(b);
-
-        // RuleFrame form = frame.AllTriggers[a].Form[b];
-
-
-        //RuleFrame form = ifAction.Form;// = form;
-        //int a = ifAction.Form.Count;
-
-        //int iCurent = 0;
-        //int iMax = 0;
-        //for (int i = 0; i < a; i++)
-        //{
-
-        //}
     }
 
 
@@ -738,24 +723,24 @@ public class RuleConstructor : MonoBehaviour
         switch (text)
         {
             case ("Legion"):
-                Ui.SelectorsMain[1].active = true;
+                Ui.SelectorMainLegion.active = true;
                 break;
 
             case ("CivilianGroups"):
-                Ui.SelectorsMain[2].active = true;
+                Ui.SelectorMainCivilianGroups.active = true;
                 break;
 
             case ("Constants"):
-                Ui.SelectorsMain[3].active = true;
+                Ui.SelectorMainConstants.active = true;
                 break;
 
             case ("Effects"):
-                Ui.SelectorsMain[4].active = true;
+                Ui.SelectorMainEffects.active = true;
                 break;
 
             case ("Select"):
              //   LoadSelector();
-                Ui.SelectorsMain[5].active = true;
+              //  Ui.SelectorsMain[5].active = true;
                 break;
         }
     }
@@ -834,7 +819,7 @@ public class RuleConstructor : MonoBehaviour
                         case ("Mood"):
                             b = triggerAction.Mood;
                             b++;
-                            if (b == Mood.Count)
+                            if (b == frame.TurnString.Length)
                                 b = 0;
                             triggerAction.Mood = b;
 
@@ -846,7 +831,7 @@ public class RuleConstructor : MonoBehaviour
                         case ("TargetPalyer"):
                             b = triggerAction.TargetPalyer;
                             b++;
-                            if (b == TargetPalyer.Count)
+                            if (b == frame.TurnString.Length)
                                 b = 0;
                             triggerAction.TargetPalyer = b;
 
@@ -856,8 +841,17 @@ public class RuleConstructor : MonoBehaviour
                             break;
 
                         case ("TargetTime"):
-                            stringMood = $"{i}";
-                            Ui.SelectorsMain[0].active = true;
+                          //  stringMood = $"{i}";
+                            b = triggerAction.TargetTime;
+                            b++;
+                            if (b == frame.Trigger.Length)
+                                b = 0;
+                            triggerAction.TargetTime = b;
+
+                            TriggerMainText(i);
+                            TriggerRootText(i);
+                            LoadAllText();
+                            // Ui.SelectorsMain[0].active = true;
                             break;
 
                         case ("Plus"):
@@ -990,11 +984,15 @@ public class RuleConstructor : MonoBehaviour
 
     void HideSelector()
     {
-        int a = Ui.Selectors.Count;
-        for(int i = 0; i < a; i++)
-        {
-            Ui.SelectorsMain[i].active = false;
-        }
+        Ui.SelectorMainLegion.active = false;
+        Ui.SelectorMainCivilianGroups.active = false;
+        Ui.SelectorMainConstants.active = false;
+        Ui.SelectorMainEffects.active = false;
+        //int a = Ui.Selectors.Count;
+        //for(int i = 0; i < a; i++)
+        //{
+        //    Ui.SelectorsMain[i].active = false;
+        //}
     }
     #endregion
     void Update()
@@ -1010,84 +1008,64 @@ public class RuleConstructor : MonoBehaviour
     }
     void Start()
     {
+        Application.targetFrameRate = 30;
+
         LoadBase();
 
         LoadMainText();
-       // AddPlusIf();
-        //AddMinusIf();
-        //AddActionIf();
         LoadAllText();
 
     }
 
-    void CreateListButton(int b)
+    void CreateListButton(string text)
     {
         GameObject GO = null;
         int a = 0; 
-        switch (b)
+        switch (text)
         {
-            case (0):
-                a =frame.Trigger.Length; //TargetTime.Count;
-                break;
-
-            case (1):
+            case ("Legion"):
                 a = library.Legions.Count;
                 break;
 
-            case (2):
+            case ("CivilianGroups"):
                 a = library.CivilianGroups.Count;
                 break;
 
-            case (3):
+            case ("Constants"):
                 a = library.Constants.Count;
                 break;
 
-            case (4):
+            case ("Effects"):
                 a = library.Effects.Count;
                 break;
-            case (5):
-                a = IfString_L0.Count;
-                break;
-            case (6):
-                a = IfString_L1.Count;
-                break;
         }
-        // int a = TargetTime.Count;
+
         for (int i = 0; i < a; i++)
         {
             GO = Instantiate(Ui.ButtonOrig);
-            GO.transform.SetParent(Ui.Selectors[b]);
-            switch (b)
+            switch (text)
             {
-                case (0):
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = TargetTime[i];
-                    break;
-
-                case (1):
+                case ("Legion"):
+                    GO.transform.SetParent(Ui.SelectorLegion);
                     GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Legions[i].Name;
                     break;
 
-                case (2):
+                case ("CivilianGroups"):
+                    GO.transform.SetParent(Ui.SelectorCivilianGroups);
                     GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.CivilianGroups[i].Name;
                     break;
 
-                case (3):
+                case ("Constants"):
+                    GO.transform.SetParent(Ui.SelectorConstants);
                     GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Constants[i].Name;
                     break;
 
-                case (4):
+                case ("Effects"):
+                    GO.transform.SetParent(Ui.SelectorEffects);
                     GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Effects[i].Name;
                     break;
-
-                case (5):
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = IfString_L0[i];
-                    break;
-
-                case (6):
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = IfString_L1[i];
-                    break;
             }
-            ButtonSelector(b, i, GO.GetComponent<Button>());
+            ButtonSelector(text, i, GO.GetComponent<Button>());
         }
     }
     void LoadBase()
@@ -1096,115 +1074,89 @@ public class RuleConstructor : MonoBehaviour
 
         Name = "Благочестие";//Название
 
-        //Mood = new List<string>();
-        //Mood.Add("All");
-        //Mood.Add("Shot");
-        //Mood.Add("Melee");
-
-        //TargetPalyer = new List<string>();
-        //TargetPalyer.Add("All");
-        //TargetPalyer.Add("My");
-        //TargetPalyer.Add("Enemy");
-
-
-        //TargetTime = new List<string>();
-        //TargetTime.Add("Action");
-        //TargetTime.Add("Start Turn");
-        //TargetTime.Add("End Turn");
-        //TargetTime.Add("PreAction");
-        //TargetTime.Add("PostAction");
-        //TargetTime.Add("PlayCard");
-        //TargetTime.Add("DeadCard");
-        //TargetTime.Add("DeadAnotherCard");
-        //TargetTime.Add("PlayAnotherCard");
-        //TargetTime.Add("PostDeadTurn");
-        ////Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
-
-
-        //IfString_L0 = new List<string>();
-
-        //IfString_L0.Add("Creature");
-        //IfString_L0.Add("Creatures");
-        //IfString_L0.Add("AllCreatures");
-        //IfString_L0.Add("Head");
-        //IfString_L0.Add("TargetCreature");
-        //IfString_L0.Add("Stol");
-        //IfString_L0.Add("UseCard");
-
-        //IfString_L1 = new List<string>();
-
-        //IfString_L1.Add("Creature");
-        //IfString_L1.Add("Legion");
-        //IfString_L1.Add("Constant");
-        ////IfString.Add("Проверить текущее существо");//0-Creature
-        ////IfString.Add("Проверить кол-во существ");//1-Creatures
-        ////IfString.Add("Проверить Всех существ");//2-AllCreatures
-        ////IfString.Add("Проверить голову");//3-Head
-        ////IfString.Add("Проверить выбранное существо - для функции действие");//4-TargetCreature
-        ////IfString.Add("Проверить эффекты стола");//5-Stol
-        ////IfString.Add("Проверить использованную карту");//6-UseCard
-
-
         triggerActions = new List<TriggerAction>();
 
 
 
         GameObject GO = null;
-        Ui.SelectorsMain = new List<GameObject>();
-        Ui.Selectors = new List<Transform>();
+        //Ui.SelectorsMain = new List<GameObject>();
+        //Ui.Selectors = new List<Transform>();
 
-        for (int i = 0; i < 7; i++)
+        string[] text = new string[] {"Legion", "CivilianGroups", "Constants", "Effects" };
+        int a = text.Length;
+        for (int i = 0; i < a; i++)
         {
             GO = Instantiate(Ui.SelectorMain);
             GO.transform.SetParent(Ui.Canvas);
             GO.transform.position = Ui.SelectorMain.transform.position;
-            Ui.SelectorsMain.Add(GO);
-            Ui.Selectors.Add(GO.transform.GetChild(0).GetChild(0));
-         //   CreateListButton(i);
+           // Ui.SelectorsMain.Add(GO);
+          //  Ui.Selectors.Add(GO.transform.GetChild(0).GetChild(0));
+            CreateListButton(text[i]);
+
+            switch (text[i]) 
+            {
+                case ("Legion"):
+                    Ui.SelectorMainLegion = GO;
+                    Ui.SelectorLegion = GO.transform.GetChild(0).GetChild(0);
+                    break;
+
+                case ("CivilianGroups"):
+                    Ui.SelectorMainCivilianGroups = GO;
+                    Ui.SelectorCivilianGroups = GO.transform.GetChild(0).GetChild(0);
+                    break;
+
+                case ("Constants"):
+                    Ui.SelectorMainConstants = GO;
+                    Ui.SelectorConstants = GO.transform.GetChild(0).GetChild(0);
+                    break;
+
+                case ("Effects"):
+                    Ui.SelectorMainEffects = GO;
+                    Ui.SelectorEffects = GO.transform.GetChild(0).GetChild(0);
+                    break;
+            }
+            
         }
     }
-    void ButtonSelector(int b,int a, Button button)
+    void ButtonSelector(string text, int a, Button button)
     {
-        switch (b)
-        {
-            case (0):
-                button.onClick.AddListener(() => SwitchTargetTime(a));
-                break;
-            default:
-                b--;
-                button.onClick.AddListener(() => SwitchLibrary(a, b));
-                break;
-        }
+        button.onClick.AddListener(() => SwitchLibrary(a, text));
+
+
+
+        //switch (b)
+        //{
+        //    case (0):
+        //        button.onClick.AddListener(() => SwitchTargetTime(a));
+        //        break;
+        //    default:
+        //        b--;
+        //        button.onClick.AddListener(() => SwitchLibrary(a, b));
+        //        break;
+        //}
     }
-    void SwitchLibrary(int a, int b)
+    void SwitchLibrary(int a, switch text1)
     {
         string text = "";
-        switch (b) 
+        switch (text1)
         {
-            case (0):
+            case ("Legion"):
                 text = library.Legions[a].Name;
                 break;
 
-            case (1):
+            case ("CivilianGroups"):
                 text = library.CivilianGroups[a].Name;
                 break;
 
-            case (2):
+            case ("Constants"):
                 text = library.Constants[a].Name;
                 break;
 
-            case (3):
+            case ("Effects"):
                 text = library.Effects[a].Name;
                 break;
-
-            case (4):
-                text = IfString_L0[a];
-                break;
-            case (5):
-                text = IfString_L1[a];
-                break;
         }
-        Debug.Log(stringMood);
+
         string[] com = stringMood.Split('_');
         //0-trigger     1-if & else & action     2- IfAction num     3-string num
 
@@ -1212,7 +1164,7 @@ public class RuleConstructor : MonoBehaviour
         int i2 = int.Parse(com[2]);
         int i = int.Parse(com[3]);
         TriggerAction triggerAction = triggerActions[i1];
-        switch (int.Parse(com[1])) 
+        switch (int.Parse(com[1]))
         {
             case (0):
                 IfAction ifAction = triggerAction.PlusAction[i2];
@@ -1315,9 +1267,9 @@ public class RuleConstructor : MonoBehaviour
         //if (l != 0) 
             c = 4 + l;
 
-        Ui.SelectorsMain[c].active = true;
+     //   Ui.SelectorsMain[c].active = true;
         string text = ifAction.TextData[l]; 
-        Transform transform = Ui.Selectors[c];
+    //    Transform transform = Ui.Selectors[c];
         int a = transform.childCount;
         //for (int i = 0; i < a; i++)
         //{
@@ -1507,9 +1459,11 @@ public class IfAction
     public int Prioritet = 10;//приоритет действия
     public List<string> TextData;//текстовые поля
     public List<int> IntData;//числительные поля
+    public List<int> MainCore;
     public List<int> Core;
 
     public RuleFrame Form;
+    public string Text;
     /*Проверяемое условие 
      Action.- нанесено н-ое кол-во урона, получено урона
 

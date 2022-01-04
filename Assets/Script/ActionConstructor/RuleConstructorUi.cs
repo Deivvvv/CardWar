@@ -18,10 +18,23 @@ public class RuleConstructorUi : MonoBehaviour
     public GameObject SelectorMain;
 
     [HideInInspector]
-    public List<GameObject> SelectorsMain;
+    public GameObject SelectorMainLegion;
+    [HideInInspector]
+    public GameObject SelectorMainCivilianGroups;
+    [HideInInspector]
+    public GameObject SelectorMainConstants;
+    [HideInInspector]
+    public GameObject SelectorMainEffects;
+
 
     [HideInInspector]
-    public List<Transform> Selectors;
+    public Transform SelectorLegion;
+    [HideInInspector]
+    public Transform SelectorCivilianGroups;
+    [HideInInspector]
+    public Transform SelectorConstants;
+    [HideInInspector]
+    public Transform SelectorEffects;
 
 
     public Transform IfSelector;

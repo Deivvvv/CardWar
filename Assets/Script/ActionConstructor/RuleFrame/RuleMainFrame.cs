@@ -7,6 +7,8 @@ public class RuleMainFrame : ScriptableObject
 {
     public string[] BoolString;
     public string[] EqualString;
+    public string[] TurnString;
+    public string[] PlayerString;
 
     [Space(10)]
     public string[] Trigger;
