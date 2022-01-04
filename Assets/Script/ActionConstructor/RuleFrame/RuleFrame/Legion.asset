@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Legion
   Form:
-  - Id: 0
+  - Use: 0
+    Id: 0
     Form:
-    - Text: "\u0412\u044B\u0431\u0440\u0430\u043D\u0430 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F
-        {Rule}"
+    - Text: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u041B\u0435\u0433\u0438\u043E\u043D
+        = {Rule}"
       Rule: Legion
-    - Text: 
+    - Text: '{Rule}'
       Rule: Bool

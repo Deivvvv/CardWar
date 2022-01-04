@@ -208,29 +208,33 @@ public class RuleConstructor : MonoBehaviour
                     {
                         int i1 = int.Parse(com[2]);
                         int b1 = int.Parse(com[3]);
-                        switch (com[1])
+
+                        text = com[1];
+                        IfAction ifAction = null;
+
+                        switch (text)
                         {
                             case ("Plus"):
-                                if (b1 == -1)
-                                {
-                                    triggerAction.PlusAction[i1].Prioritet = i;
-                                }
-                                else
-                                    triggerAction.PlusAction[i1].IntData[b1] = i;
+                                ifAction = triggerAction.PlusAction[i1];
 
-                                TriggerPlusText(c);
+                                if (b1 == -1)
+                                    ifAction.Prioritet = i;
+                                else
+                                    ifAction.IntData[b1] = i;
                                 break;
 
                             case ("Minus"):
-                                if (b1 == -1)
-                                    triggerAction.MinusAction[i1].Prioritet = i;
-                                else
-                                    triggerAction.MinusAction[i1].IntData[b1] = i;
+                                ifAction = triggerAction.MinusAction[i1];
 
-                                TriggerMinusText(c);
+                                if (b1 == -1)
+                                    ifAction.Prioritet = i;
+                                else
+                                    ifAction.IntData[b1] = i;
                                 break;
                         }
-                        TriggerRootText(c);
+
+                        LableIfAction(ifAction, text, c);
+                        // TriggerRootText(c);
                     }
                     else
                     {
@@ -305,20 +309,21 @@ public class RuleConstructor : MonoBehaviour
 
 
         CoreLableIfAction(ifAction, 0, 0);
-        SwitchLableIfAction(ifAction, 2, 0);
 
         if (plus)
         {
+            ifAction.LocalId = triggerAction.PlusAction.Count;
             triggerAction.PlusAction.Add(ifAction);
-            TriggerPlusText(a);
+            SwitchLableIfAction(ifAction, 2, 0,"Plus", a);
         }
         else
         {
+            ifAction.LocalId = triggerAction.MinusAction.Count;
             triggerAction.MinusAction.Add(ifAction);
-            TriggerMinusText(a);
+            SwitchLableIfAction(ifAction, 2, 0, "Minus",a);
         }
-        TriggerRootText(a);
-        LoadAllText();
+        //TriggerRootText(a);
+        //LoadAllText();
     }
 
     void DelIf(int a, bool plus, int b)
@@ -388,9 +393,10 @@ public class RuleConstructor : MonoBehaviour
         int b = triggerAction.PlusAction.Count;
         for (int i = 0; i < b; i++)
         {
+            triggerAction.PlusText += $"\n\n<link=Trigger_{a}_PlusDel_{i}><color=green>-Удалить Условие</color></link>";
             triggerAction.PlusText += triggerAction.PlusAction[i].Text;
-        //    IfActionText(true, triggerAction, a, i);
-            //triggerAction.PlusText += $"\n\n<link=Trigger_{a}_PlusDel_{i}><color=green>-Удалить Условие</color></link>";
+         //   IfActionText(true, triggerAction, a, i);
+          //  triggerAction.PlusText += $"\n\n<link=Trigger_{a}_PlusDel_{i}><color=green>-Удалить Условие</color></link>";
             //text = "\n--Data";
             //IAddLink(a, 1, "green", $"Trigger_{a}_Plus_{i}", text);
         }
@@ -448,20 +454,47 @@ public class RuleConstructor : MonoBehaviour
         ifAction.IntData = new List<int>();
         ifAction.Core = new List<int>();
 
-        ifAction.Core.Add(a);
-        ifAction.Core.Add(b);
+        ifAction.MainCore[0] = a;
+        ifAction.MainCore[1] = b;
+        //ifAction.Core.Add(a);
+        //ifAction.Core.Add(b);
 
-        Debug.Log(frame.AllTriggers[a].Name);
-        Debug.Log(frame.AllTriggers[a].Form[b].Name);
+        //Debug.Log(frame.AllTriggers[a].Name);
+        //Debug.Log(frame.AllTriggers[a].Form[b].Name);
 
         ifAction.Form = frame.AllTriggers[a].Form[b];
     }
-    void SwitchLableIfAction(IfAction ifAction, int c, int d)
+    void SwitchLableIfAction(IfAction ifAction, int c, int d, string ifText, int t)
     {
         int b = ifAction.Core.Count;
         if (c >= b)
         {
             ifAction.Core.Add(d);
+
+            RuleFarmeMacroCase form = ifAction.Form.Form[d];
+
+            b = form.Form.Length;
+            for(int i = 0; i < b; i++)
+            {
+                switch (form.Form[i].Rule)
+                {
+                    case ("Legion"):
+                        ifAction.TextData.Add(library.Legions[0].Name);
+                        break;
+
+                    case ("Bool"):
+                        ifAction.TextData.Add(frame.BoolString[0]);
+                        break;
+
+                    case ("Equal"):
+                        ifAction.TextData.Add(frame.EqualString[0]);
+                        break;
+                }
+
+                ifAction.IntData.Add(0);
+            }
+            //ifAction.TextData = new List<string>();
+            //ifAction.IntData = new List<int>();
         }
         else
         {
@@ -471,81 +504,150 @@ public class RuleConstructor : MonoBehaviour
             {
                 ifAction.Core.RemoveAt(c + 1);
             }
-            b = ifAction.Core.Count;
         }
 
-        ifAction.TextData = new List<string>();
-        ifAction.IntData = new List<int>();
+        LableIfAction(ifAction, ifText,t);
+        //ifAction.TextData = new List<string>();
+        //ifAction.IntData = new List<int>();
+    }
+    void LableIfAction(IfAction ifAction, string ifText, int t)
+    {
+        string linkText = "";
+        string colorText = "#F4FF04";
 
-        ifAction.TextData.Add(frame.AllTriggers[ifAction.Core[0]].Name);
-        ifAction.TextData.Add(frame.AllTriggers[ifAction.Core[1]].Name);
 
-        //b = ifAction.Form.Form[0].Id;
-        ////   b = ifAction.Form.Form[0].Form[0].Text;//Rule
-        //b = ifAction.Form.Form.Count;
-
-
-        b = ifAction.Core.Count - 2;
+        int b = ifAction.Core.Count;
         int b1 = 0;
-        int a = 0;
-        int a1 = 0;
+        int a = ifAction.MainCore[0];
+        int a1 = ifAction.MainCore[1];
+        int a2 = 0;
         RuleFarmeMacroCase form = null;
-        string t = "";
-        string t1 = "";
+        string text = "";
+        string text1 = "";
+        string text2 = "";
+
+
+        Debug.Log(t);
+        linkText = $"Trigger_{t}_Switch_{ifAction.LocalId}_-1_{ifText}";
+
+        text2 += $"\n\n-Приоритет({ifAction.Prioritet})  ";
+
+        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+        ////switch (ifText)
+        ////{
+        ////    case ("Plus"):
+        ////        linkText = $"Trigger_{a}_Switch_{t}_-1_{ifText}";
+        ////        text =
+        ////        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+        ////        //  text1 += "\nЦель проверки: " + frame.AllTriggers[a].Name;
+        ////        TriggerPlusText(t);
+        ////        break;
+        ////    case ("Minus"):
+        ////        linkText = "";
+        ////        break; 
+        ////}
+        //        textLink = $"Trigger_{a}_Switch_{i}_-1_Plus";
+        //    IAddLink(a, 1, "green", textLink, text1);
+        //    IAddLink(a, 1, "red", $"Trigger_{a}_PlusDel_{i}", "-Удалить Условие");
+        //}
+        //else
+        //{
+        //    textLink = $"Trigger_{a}_Switch_{i}_-1_Minus";
+        //    IAddLink(a, 2, "green", textLink, text1);
+        //    IAddLink(a, 2, "red", $"Trigger_{a}_MinusDel_{i}", "-Удалить Исключение");
+        //}
+
+
+
+        text1 +="\nЦель проверки: " + frame.AllTriggers[a].Name;
+        text1 +="\nПроверяемый параметр: " + frame.AllTriggers[a].Form[a1].Name;
+
+
+      //  string linkInfo = ""; 
 
         for (int i = 0; i < b; i++)
         {
-            a = ifAction.Core[2 + i];
+            a = ifAction.Core[i];
 
             form = ifAction.Form.Form[a];
 
             a1 = form.Id;
             b1 = form.Form.Length;
-            t1 += "\n";
+            text1 += "\n";
+            for (int i1 = 0; i1 < a1; i1++)
+            {
+                text1 += "    ";
+            }
+
+
             for (int i1 = 0; i1 < b1; i1++)
             {
-                for (int i2 = 0; i2 < a1; i2++)
-                {
-                    t1 += "    ";
-                }
-                t1 += "-{" + form.Form[i1].Rule + "} " + form.Form[i1].Text;
+                text1 += "---";
+                text = form.Form[i1].Rule;
 
+                linkText = $"Trigger_{t}_{text}_{ifAction.LocalId}_{a2}_{ifText}";
+
+                text = ifAction.TextData[a2];
+
+                //   string text = $"<link={linkText}><color={colorText}>{text2}</color></link>";
+                text2 = form.Form[i1].Text;
+
+                text2 = text2.Replace("{Rule}", $" {text} ");
+
+
+                text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+               // text1 += "-{" + form.Form[i1].Rule + "} " + text2;
+                a2++;
               //  switch(){}
             }
             
         }
-        ifAction.Text = t1;
+        ifAction.Text = text1;
         //plusText +=
         //  mainText += t1;
         //  LoadAllText();
 
+        Debug.Log(ifText);
+        Debug.Log(t);
+        switch (ifText)
+        {
+            case ("Plus"):
+                TriggerPlusText(t);
+                break;
+            case ("Minus"):
+                TriggerMinusText(t);
+                break;
+        }
+        TriggerRootText(t);
+        LoadAllText();
+
     }
 
 
-    void NewMethod(IfAction ifAction)
-    {
-        string text = "";
-        int a = frame.AllTriggers.FindIndex(x => x.Name == ifAction.TextData[0]);
-        if (a == -1)
-        {
-            a = 0;
-        }
+    //void NewMethod(IfAction ifAction)
+    //{
+    //    string text = "";
+    //    int a = frame.AllTriggers.FindIndex(x => x.Name == ifAction.TextData[0]);
+    //    if (a == -1)
+    //    {
+    //        a = 0;
+    //    }
 
-        RuleBaseFrame altFrame = frame.AllTriggers[a];
+    //    RuleBaseFrame altFrame = frame.AllTriggers[a];
 
-     //   a = altFrame.Form.FindIndex(x => x.Name == text);
+    // //   a = altFrame.Form.FindIndex(x => x.Name == text);
      
-        int b = altFrame.Form.FindIndex(x => x.Name == ifAction.TextData[1]);
-        if (b == -1)
-            b = 0;
+    //    int b = altFrame.Form.FindIndex(x => x.Name == ifAction.TextData[1]);
+    //    if (b == -1)
+    //        b = 0;
 
-        RuleFrame form = frame.AllTriggers[a].Form[b];
-        a = form.Form.Count;
-        for (int i = 0; i < a; i++)
-        {
+    //    RuleFrame form = frame.AllTriggers[a].Form[b];
+    //    a = form.Form.Count;
+    //    for (int i = 0; i < a; i++)
+    //    {
 
-        }
-    }
+    //    }
+    //}
 
     void IfActionText(bool plus, TriggerAction triggerAction, int a, int i)
     {
@@ -787,7 +889,25 @@ public class RuleConstructor : MonoBehaviour
                 if (i != null)
                 {
                     int b = 0;
+                    int b1 = 0;
                     TriggerAction triggerAction = triggerActions[i];
+
+                    IfAction ifAction = null;
+                    if (com.Length > 5)
+                    {
+                        b = int.Parse(com[3]);
+                        b1 = int.Parse(com[4]);
+                        switch (com[5])
+                        {
+                            case ("Plus"):
+                                ifAction = triggerActions[i].PlusAction[b];
+                                break;
+
+                            case ("Minus"):
+                                ifAction = triggerActions[i].MinusAction[b];
+                                break;
+                        }
+                    }
                     switch (com[2])
                     {
                         case ("Del"):
@@ -795,12 +915,10 @@ public class RuleConstructor : MonoBehaviour
                             break;
 
                         case ("PlusDel"):
-                            b = int.Parse(com[3]);
                             DelIf(i, true, b);
                             break;
 
                         case ("MinusDel"):
-                            b = int.Parse(com[3]);
                             DelIf(i, false, b);
                             break;
 
@@ -854,26 +972,58 @@ public class RuleConstructor : MonoBehaviour
                             // Ui.SelectorsMain[0].active = true;
                             break;
 
-                        case ("Plus"):
-                            b = int.Parse(com[3]);
-                            int b1 = int.Parse(com[4]);
-                            //0-trigger     1-if & else & action     2- IfAction num     3-string num  com[5] =libray(Legion)
-                            stringMood = $"{i}_0_{com[3]}_{com[4]}";
-                            PreSelectorStringIF(triggerActions[i].PlusAction[b], b1);
-                           // OpenSelector(com[5]);
+
+                        case ("Bool"):
+                            int a = ifAction.IntData[b1];
+                            text = "";
+
+                            a++;
+                            if (a >= frame.BoolString.Length)
+                                a = 0;
+
+                            text = frame.BoolString[a];
+                            ifAction.IntData[b1] = a;
+                            ifAction.TextData[b1] = text;
+                            LableIfAction(ifAction, com[5],i);
+
+                            break;
+                        case ("Equal"):
+                            a = ifAction.IntData[b1];
+                            text = "";
+
+                            a++;
+                            if (a >= frame.EqualString.Length)
+                                a = 0;
+
+                            text = frame.EqualString[a];
+                            ifAction.IntData[b1] = a;
+                            ifAction.TextData[b1] = text;
+                            LableIfAction(ifAction, com[5],i);
                             break;
 
-                        case ("Minus"):
-                            b = int.Parse(com[3]);
-                            b1 = int.Parse(com[4]);
-                            //0-trigger     1-if & else & action     2- IfAction num     3-string num  com[5] =libray(Legion)
-                            stringMood = $"{i}_1_{com[3]}_{com[4]}";
-                            PreSelectorStringIF(triggerActions[i].PlusAction[b], b1);
+                        case ("Legion"):
+                            stringMood = $"{i}_{com[5]}_{com[3]}_{com[4]}";
+                            Ui.SelectorMainLegion.active = true;
                             break;
+
+
+
+
+
+                        //case ("Plus"):
+                        //    //0-trigger     1-if & else & action     2- IfAction num     3-string num  com[5] =libray(Legion)
+                        //    stringMood = $"{i}_{com[5]}_{com[3]}_{com[4]}";
+                        //    PreSelectorStringIF(triggerActions[i].PlusAction[b], b1);
+                        //   // OpenSelector(com[5]);
+                        //    break;
+
+                        //case ("Minus"):
+                        //    //0-trigger     1-if & else & action     2- IfAction num     3-string num  com[5] =libray(Legion)
+                        //    stringMood = $"{i}_1_{com[3]}_{com[4]}";
+                        //    PreSelectorStringIF(triggerActions[i].PlusAction[b], b1);
+                        //    break;
 
                         case ("Switch"):
-                            b = int.Parse(com[3]);
-                            b1 = int.Parse(com[4]);
 
 
                             stringMood = $"{i}_{com[5]}_{b}_{b1}";
@@ -897,21 +1047,6 @@ public class RuleConstructor : MonoBehaviour
                             }
                             break;
 
-                        case ("PlusBool"):
-                            TriggerBool(triggerActions[i].PlusAction[b], int.Parse(com[3]), int.Parse(com[4]));
-                            break;
-
-                        case ("MinusBool"):
-                            TriggerBool(triggerActions[i].MinusAction[b], int.Parse(com[3]), int.Parse(com[4]));
-                            break;
-
-                        case ("PlusElseIf"):
-                            TriggerBool(triggerActions[i].PlusAction[b], int.Parse(com[3]), int.Parse(com[4]));
-                            break;
-
-                        case ("MinusElseIf"):
-                            TriggerBool(triggerActions[i].MinusAction[b], int.Parse(com[3]), int.Parse(com[4]));
-                            break;
                     }
                 }
 
@@ -937,50 +1072,9 @@ public class RuleConstructor : MonoBehaviour
     }
 
     #region Add Function 
-    void TriggerBool(IfAction ifAction, int b, int b1)
-    {
-        int a = ifAction.IntData[b1];
-        string text = "";
+ 
 
-        a++;
-        if (a > 1)
-            a = 0;
-
-        if (a == 1)
-            text = "=/=";
-        else
-            text = "==";
-        ifAction.IntData[b1] = a;
-        ifAction.TextData[b1] = text;
-    }
-
-    void TriggerElseIf(IfAction ifAction, int b, int b1)
-    {
-        int a = ifAction.IntData[b1];
-        string text = "";
-
-        a++;
-        if (a > 2)
-            a = 0;
-
-        switch (a)
-        {
-            case (0):
-                text = " = ";
-                break;
-
-            case (1):
-                text = " > ";
-                break;
-
-            case (2):
-                text = " < ";
-                break;
-        }
-
-        ifAction.IntData[b1] = a;
-        ifAction.TextData[b1] = text;
-    }
+ 
 
     void HideSelector()
     {
@@ -1091,7 +1185,6 @@ public class RuleConstructor : MonoBehaviour
             GO.transform.position = Ui.SelectorMain.transform.position;
            // Ui.SelectorsMain.Add(GO);
           //  Ui.Selectors.Add(GO.transform.GetChild(0).GetChild(0));
-            CreateListButton(text[i]);
 
             switch (text[i]) 
             {
@@ -1115,7 +1208,8 @@ public class RuleConstructor : MonoBehaviour
                     Ui.SelectorEffects = GO.transform.GetChild(0).GetChild(0);
                     break;
             }
-            
+
+            CreateListButton(text[i]);
         }
     }
     void ButtonSelector(string text, int a, Button button)
@@ -1135,7 +1229,7 @@ public class RuleConstructor : MonoBehaviour
         //        break;
         //}
     }
-    void SwitchLibrary(int a, switch text1)
+    void SwitchLibrary(int a, string text1)
     {
         string text = "";
         switch (text1)
@@ -1160,45 +1254,36 @@ public class RuleConstructor : MonoBehaviour
         string[] com = stringMood.Split('_');
         //0-trigger     1-if & else & action     2- IfAction num     3-string num
 
+        text1 = com[1];
+
         int i1 = int.Parse(com[0]);
         int i2 = int.Parse(com[2]);
         int i = int.Parse(com[3]);
         TriggerAction triggerAction = triggerActions[i1];
-        switch (int.Parse(com[1]))
+        IfAction ifAction = null;
+        switch (text1)
         {
-            case (0):
-                IfAction ifAction = triggerAction.PlusAction[i2];
-
-                PostSelectorStringIF(ifAction, i2, text);
-
-                ifAction.TextData[i] = text;
-                ifAction.IntData[i] = a;
-
-                TriggerPlusText(i1);
+            case ("Plus"):
+                ifAction = triggerAction.PlusAction[i2];
                 break;
 
-            case (1):
-                //if (i == 0)
-                //    SwitchLibraryExtend(triggerAction, i2,text, false);
-
+            case ("Minus"):
                 ifAction = triggerAction.MinusAction[i2];
-
-                PostSelectorStringIF(ifAction, i2, text);
-
-                ifAction.TextData[i] = text;
-                ifAction.IntData[i] = a;
-
-                TriggerMinusText(i1);
                 break;
 
-            case (2):
+            //case (2):
 
-                break;
+            //    break;
         }
 
+        ifAction.TextData[i] = text;
+        ifAction.IntData[i] = a;
+
+
         HideSelector();
-        TriggerRootText(i1);
-        LoadAllText();
+        LableIfAction(ifAction, text1, i1);
+        //TriggerRootText(i1);
+        //LoadAllText();
     }
 
     void UnHideSelectorButton(Transform transform, string text, int l)
@@ -1456,10 +1541,11 @@ public class TriggerAction
 }
 public class IfAction 
 {
+    public int LocalId;
     public int Prioritet = 10;//приоритет действия
     public List<string> TextData;//текстовые поля
     public List<int> IntData;//числительные поля
-    public List<int> MainCore;
+    public int[] MainCore = new int[2];
     public List<int> Core;
 
     public RuleFrame Form;

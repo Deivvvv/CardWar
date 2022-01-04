@@ -7,6 +7,7 @@ public class RuleMainFrame : ScriptableObject
 {
     public string[] BoolString;
     public string[] EqualString;
+
     public string[] TurnString;
     public string[] PlayerString;
 
@@ -14,7 +15,9 @@ public class RuleMainFrame : ScriptableObject
     public string[] Trigger;
     public List<RuleBaseFrame> AllTriggers;//цели для тригеров
 
-   // public string[] AllTriggersTayp;
+    //public string[] RuleColor;
+    //public string[] Color;
+    // public string[] AllTriggersTayp;
     /*
 
  "Creature"
