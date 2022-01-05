@@ -40,3 +40,4 @@ MonoBehaviour:
   - PostDeadTurn
   AllTriggers:
   - {fileID: 11400000, guid: 19ee2d2bbf1eaee4c8e15340ea6475dc, type: 2}
+  - {fileID: 11400000, guid: 6d60aa6d4b329574b93028813782746a, type: 2}

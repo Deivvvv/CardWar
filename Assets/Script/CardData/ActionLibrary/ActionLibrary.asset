@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Legions:
   - {fileID: 11400000, guid: 4f3221af9fe33364290397432f81a51d, type: 2}
+  - {fileID: 11400000, guid: f66e1d335ead3ab428dc01d2a5b1973d, type: 2}
   CivilianGroups:
   - {fileID: 11400000, guid: cac32af5143e8b449affca80d46d4732, type: 2}
   Constants:

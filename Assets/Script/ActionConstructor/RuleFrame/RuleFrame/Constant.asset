@@ -13,4 +13,9 @@ MonoBehaviour:
   m_Name: Constant
   m_EditorClassIdentifier: 
   Name: Constant
-  Form: []
+  Form:
+  - Use: 0
+    Id: 0
+    Form:
+    - Text: "\u0422\u0435\u0445\u0442{Rule}"
+      Rule: Constant

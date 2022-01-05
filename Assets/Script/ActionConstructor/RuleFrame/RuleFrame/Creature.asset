@@ -18,34 +18,35 @@ MonoBehaviour:
     Id: 0
     Form:
     - Text: "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u0441\u043E\u0446\u0438\u0430\u043B\u044C\u043D\u0443\u044E
-        \u0433\u0440\u0443\u043F\u043F\u0443"
+        \u0433\u0440\u0443\u043F\u043F\u0443 {Rule}"
       Rule: Group
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Bool
   - Use: 0
     Id: 1
     Form:
-    - Text: 
+    - Text: " \u0423\u0440\u043E\u0432\u0435\u043D\u044C \u0433\u0440\u0443\u043F\u043F\u044B
+        {Rule}"
       Rule: GroupLevel
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Equal
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Int
   - Use: 0
     Id: 0
     Form:
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Constant
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Equal
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Constant
   - Use: 0
     Id: 0
     Form:
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Constant
     - Text: 
       Rule: Equal
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Int

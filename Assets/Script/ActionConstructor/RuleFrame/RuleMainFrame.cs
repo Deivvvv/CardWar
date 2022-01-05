@@ -44,7 +44,7 @@ public class RuleFarmeMacroCase
 [System.Serializable]
 public class RuleFarmeCase
 {
-    public string Text;//текст
+    public string Text = " {Rule}";//текст
    // public int Num;//номер
     public string Rule;//указывающие слово
 

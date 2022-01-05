@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5d90a96d164a554b89a70e1e080c5c4, type: 3}
   m_Name: Dead
   m_EditorClassIdentifier: 
-  Name: 
+  Name: Dead
   CivilianGroups: []
   Effect: []
