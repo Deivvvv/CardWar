@@ -12,6 +12,6 @@ public class Constant : ScriptableObject
     public string IconName;
     public int Cost;
 
-    public string AntiConstant;//свойства с отрицанием
-    public string TwinConstant;//своиства исколючения, в одной карте они не могут быть установленны
+    public List<Constant> AntiConstant;//свойства с отрицанием
+    public List<Constant> TwinConstant;//своиства исколючения, в одной карте они не могут быть установленны
 }

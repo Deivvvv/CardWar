@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Creature
   Form:
-  - Use: 0
+  - Text: "\u041A\u043E\u0440\u0435\u043D\u044C"
     Id: 0
     Form:
     - Text: "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u0441\u043E\u0446\u0438\u0430\u043B\u044C\u043D\u0443\u044E
@@ -22,18 +22,37 @@ MonoBehaviour:
       Rule: Group
     - Text: ' {Rule}'
       Rule: Bool
-  - Use: 0
+  - Text: 
     Id: 1
     Form:
-    - Text: " \u0423\u0440\u043E\u0432\u0435\u043D\u044C \u0433\u0440\u0443\u043F\u043F\u044B
+    - Text: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C \u0441\u043E\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0433\u043E
+        \u0441\u0442\u0430\u0442\u0443\u0441\u0430 \u0432 \u0433\u0440\u0443\u043F\u043F\u0435
         {Rule}"
       Rule: GroupLevel
     - Text: ' {Rule}'
       Rule: Equal
+  - Text: 
+    Id: 0
+    Form:
+    - Text: ' {Rule}'
+      Rule: Constant
+    - Text: ' {Rule}'
+      Rule: Equal
+    - Text: ' {Rule}'
+      Rule: Constant
+  - Text: 
+    Id: 0
+    Form:
+    - Text: ' {Rule}'
+      Rule: Constant
+    - Text: ' {Rule}'
+      Rule: Equal
+    - Text: ' {Rule}'
+      Rule: Constant
     - Text: ' {Rule}'
       Rule: Int
-  - Use: 0
-    Id: 0
+  - Text: 
+    Id: 1
     Form:
     - Text: ' {Rule}'
       Rule: Constant
@@ -41,12 +60,38 @@ MonoBehaviour:
       Rule: Equal
     - Text: ' {Rule}'
       Rule: Constant
-  - Use: 0
-    Id: 0
+    - Text: ' {Rule}'
+      Rule: Int
+  - Text: 
+    Id: 1
     Form:
     - Text: ' {Rule}'
       Rule: Constant
-    - Text: 
+    - Text: ' {Rule}'
       Rule: Equal
+    - Text: ' {Rule}'
+      Rule: Constant
+    - Text: ' {Rule}'
+      Rule: Int
+  - Text: 
+    Id: 2
+    Form:
+    - Text: ' {Rule}'
+      Rule: Constant
+    - Text: ' {Rule}'
+      Rule: Equal
+    - Text: ' {Rule}'
+      Rule: Constant
+    - Text: ' {Rule}'
+      Rule: Int
+  - Text: 
+    Id: 1
+    Form:
+    - Text: ' {Rule}'
+      Rule: Constant
+    - Text: ' {Rule}'
+      Rule: Equal
+    - Text: ' {Rule}'
+      Rule: Constant
     - Text: ' {Rule}'
       Rule: Int

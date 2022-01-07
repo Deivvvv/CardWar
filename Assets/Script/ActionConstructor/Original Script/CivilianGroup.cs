@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CivilianGroup", menuName = "ScriptableObjects/CivilianGroup", order = 1)]
 public class CivilianGroup : ScriptableObject
 {
-    public Legion Legions;
+    public List<Legion> Legions;
    // public string Legion;//легион в котором состо€т
 
     public string Name;//им€ группы - двор€нство

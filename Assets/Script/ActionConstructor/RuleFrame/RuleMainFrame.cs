@@ -36,7 +36,8 @@ public class RuleMainFrame : ScriptableObject
 [System.Serializable]
 public class RuleFarmeMacroCase
 {
-    public bool Use;
+    //public bool Use;
+    public string Text;
     public int Id;
     public RuleFarmeCase[] Form;
 }

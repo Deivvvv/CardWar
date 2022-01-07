@@ -12,12 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fd155ed60c62c744b00c17c136e1e76, type: 3}
   m_Name: Monarch
   m_EditorClassIdentifier: 
-  Legions: {fileID: 11400000, guid: 4f3221af9fe33364290397432f81a51d, type: 2}
+  Legions:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 4f3221af9fe33364290397432f81a51d, type: 2}
   Name: "\u0414\u0432\u043E\u0440\u044F\u043D\u0435"
   Tituls:
-  - Name: 
+  - Name: "\u041A\u0440\u0435\u0441\u0442\u044C\u044F\u043D\u0438\u043D"
     Cost: 0
     Effect: []
+  - Name: "\u041E\u0445\u0440\u0430\u043D\u0438\u043A"
+    Cost: 5
+    Effect: []
+  - Name: "\u0414\u0432\u043E\u0440\u044F\u043D\u0438\u043D"
+    Cost: 10
+    Effect: []
   "\u0421onstant":
-  - Name: {fileID: 11400000, guid: 16b17babea5e41f4999fa9609c02b882, type: 2}
+  - Name: {fileID: 11400000, guid: d44d89e217dabf243841dc17d6f96e81, type: 2}
     Cost: 1

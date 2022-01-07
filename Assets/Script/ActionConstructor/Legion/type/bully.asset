@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5d90a96d164a554b89a70e1e080c5c4, type: 3}
-  m_Name: Dead
+  m_Name: bully
   m_EditorClassIdentifier: 
-  Name: Dead
+  Name: bully
   CivilianGroups: []
-  Effect: []
+  Effect:
+  - 
