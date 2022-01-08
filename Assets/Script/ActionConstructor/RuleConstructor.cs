@@ -159,7 +159,7 @@ public class RuleConstructor : MonoBehaviour
         string text = Ui.TextInput.text;
         switch (stringMood) 
         {
-            case ("Name"):
+            case ("RuleName"):
                 Name = text;
                 break;
             case ("Cost"):
@@ -223,7 +223,8 @@ public class RuleConstructor : MonoBehaviour
                                     ifAction.IntData[b1] = i;
                                 break;
                         }
-                        Debug.Log($"{b1} == {i}");
+                      //  Debug.Log($"{b1} == {i}");
+                        PreLableIfAction(ifAction);
                         LableIfAction(ifAction, text, c);
                         // TriggerRootText(c);
                       //  TextReStruct(); 
@@ -546,8 +547,8 @@ public class RuleConstructor : MonoBehaviour
                         break;
 
                     case ("Int"):
-                        ifAction.TextData[a2] = "0";
-                        ifAction.IntData[a2] = 0;
+                        ifAction.TextData[a2] = $"{ ifAction.IntData[a2]}";
+                    //    ifAction.IntData[a2] = 0;
                         break;
 
                     case ("Bool"):
