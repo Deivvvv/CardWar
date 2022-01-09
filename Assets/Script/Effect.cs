@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ActionLibrary", menuName = "ScriptableObjects/ActionLibrary", order = 1)]
+[CreateAssetMenu(fileName = "Effect", menuName = "ScriptableObjects/Effect", order = 1)]
 public class Effect : ScriptableObject
 {
     public string Name;

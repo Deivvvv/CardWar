@@ -201,33 +201,47 @@ public class RuleConstructor : MonoBehaviour
                         int b1 = int.Parse(com[3]);
 
                         text = com[1];
-                        IfAction ifAction = null;
 
-                        switch (text)
+                        if (text != "Action")
                         {
-                            case ("Plus"):
-                                ifAction = triggerAction.PlusAction[i1];
+                            RuleAction action = triggerAction.Action[i1];
 
-                                if (b1 == -1)
-                                    ifAction.Prioritet = i;
-                                else
-                                    ifAction.IntData[b1] = i;
-                                break;
+                            action.IntData = i;
 
-                            case ("Minus"):
-                                ifAction = triggerAction.MinusAction[i1];
+                            CreateActionText(c, i1);
+                            TriggerActionText(c);
+                            TriggerRootText(c);
+                            LoadAllText();
+                        } 
+                        else
+                        {
+                            IfAction ifAction = null;
 
-                                if (b1 == -1)
-                                    ifAction.Prioritet = i;
-                                else
-                                    ifAction.IntData[b1] = i;
-                                break;
+                            switch (text)
+                            {
+                                case ("Plus"):
+                                    ifAction = triggerAction.PlusAction[i1];
+
+                                    if (b1 == -1)
+                                        ifAction.Prioritet = i;
+                                    else
+                                        ifAction.IntData[b1] = i;
+                                    break;
+
+                                case ("Minus"):
+                                    ifAction = triggerAction.MinusAction[i1];
+
+                                    if (b1 == -1)
+                                        ifAction.Prioritet = i;
+                                    else
+                                        ifAction.IntData[b1] = i;
+                                    break;
+                            }
+
+                            PreLableIfAction(ifAction);
+                            LableIfAction(ifAction, text, c);
+
                         }
-                      //  Debug.Log($"{b1} == {i}");
-                        PreLableIfAction(ifAction);
-                        LableIfAction(ifAction, text, c);
-                        // TriggerRootText(c);
-                      //  TextReStruct(); 
                     }
                     else
                     {
@@ -288,6 +302,32 @@ public class RuleConstructor : MonoBehaviour
         LoadAllText();
     }
 
+    void AddAction(int a)
+    {
+        TriggerAction triggerAction = triggerActions[a];
+        RuleAction action = new RuleAction();
+        int b = triggerAction.Action.Count;
+
+        triggerAction.Action.Add(action);
+        CreateActionText(a,b);
+
+        TriggerActionText(a);
+        TriggerRootText(a);
+        LoadAllText();
+
+    }
+    void DelAction(int a, int b)
+    {
+        Ui.TextWindow.active = false;
+        TriggerAction triggerAction = triggerActions[a];
+
+        triggerAction.Action.RemoveAt(b);
+        TriggerActionText(a);
+        TriggerRootText(a);
+        LoadAllText();
+    }
+
+
     void AddIf(int a, bool plus)
     {
         TriggerAction triggerAction = triggerActions[a];
@@ -317,7 +357,6 @@ public class RuleConstructor : MonoBehaviour
         Ui.TextWindow.active = false;
         TriggerAction triggerAction = triggerActions[a];
 
-        Debug.Log(b);
         if (plus)
         {
             triggerAction.PlusAction.RemoveAt(b);
@@ -341,6 +380,7 @@ public class RuleConstructor : MonoBehaviour
 
         triggerAction.PlusAction = new List<IfAction>();
         triggerAction.MinusAction = new List<IfAction>();
+        triggerAction.Action = new List<RuleAction>();
 
         int a = triggerActions.Count;
         triggerActions.Add(triggerAction);
@@ -364,7 +404,7 @@ public class RuleConstructor : MonoBehaviour
         TriggerAction triggerAction = triggerActions[a];
         triggerAction.MainText = "\n------";
         triggerAction.MainText += $"<link=Trigger_{a}_Del><color=green>-Удалить триггер</color></link>";
-        IAddLink(a, 0, "green", $"Trigger_{a}_Id", $"\n-ID({triggerAction.Id})");
+     //   IAddLink(a, 0, "green", $"Trigger_{a}_Id", $"\n-ID({triggerAction.Id})");
         IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {frame.TurnString[triggerAction.Mood]}");
         IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {frame.PlayerString[triggerAction.TargetPalyer]}");
         IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {frame.Trigger[triggerAction.TargetTime]}");
@@ -406,15 +446,93 @@ public class RuleConstructor : MonoBehaviour
         TriggerAction triggerAction = triggerActions[a];
         triggerAction.ActionText = "\n\n-Действия";
         string text = "";
-        //int b = triggerAction.Action.Count;
-        //for (int i = 0; i < b; i++)
-        //{
-        //    text += "--Data";
-        //    IAddLink(a, 1, "green", $"Trigger_{a}_PlusIf_{i}", text);
-        //}
+        int b = triggerAction.Action.Count;
+        int c = 0;
+        RuleAction action = null;
+        for (int i = 0; i < b; i++)
+        {
+            action = triggerAction.Action[a];
+            text = "\n-Удалить Действие";
+            IAddLink(a, 3, "green", $"Trigger_{a}_ActionDel_{i}", text);
 
-        triggerAction.ActionText += $"\n<link=Add_{a}_PlusIf><color=green>-Добавить Действие</color></link>";
+
+            triggerAction.ActionText += action.RootText;
+        }
+
+        triggerAction.ActionText += $"\n<link=Trigger_{a}_ActionAdd><color=green>-Добавить Действие</color></link>";
     }
+    void CreateActionText( int a, int i)
+    {
+
+        string linkText = "";
+        string colorText = "#F4FF04";
+
+        TriggerAction triggerAction = triggerActions[a];
+
+        Debug.Log($"{a}  {i}");
+        string text1 = "";
+        string text2 = "";
+        int c = 0;
+        int d = 0;
+        RuleAction action = triggerAction.Action[i];
+
+
+        linkText = $"Trigger_{a}_Action_{i}_Mood_Action";
+        text2 = $"\n-Цель {frame.AllTriggers[action.Mood].Name}";
+
+        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+        Debug.Log(d);
+
+        linkText = $"Trigger_{a}_Action_{i}_TargetPalyer_Action";
+        text2 = $"\n-Целевой игрок {frame.PlayerString[action.TargetPalyer]}";
+
+        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+
+
+        Debug.Log(d);
+        c = action.EffectData;
+        linkText = $"Trigger_{a}_Effects_{i}_{d}_Action";
+        text2 = $"\n-Эффект {library.Effects[c].Name}";
+        d++;
+
+        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+
+        Debug.Log(d);
+        c = action.RelizeConstant;
+        linkText = $"Trigger_{a}_Constant_{i}_{d}_Action";
+        text2 = $"\n-Целевой парметр {library.Constants[c].Name}";
+        d++;
+
+        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+
+
+        Debug.Log(d);
+        c = action.TargetConstant;
+        linkText = $"Trigger_{a}_Constant_{i}_{d}_Action";
+        if (c != -1)
+        {
+            text2 = $"\n-Параметр от которого зависит: {library.Constants[c].Name}";
+        }
+        else
+            text2 = $"\n-Параметр от которого зависит: Нету";
+        d++;
+
+        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+
+
+        c = action.IntData;
+        linkText = $"Trigger_{a}_Switch_{i}_{d}_Action";
+        text2 = $"\n-Добавочное число {c}";
+        d++;
+
+        Debug.Log(d);
+        text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+
+
+
+        action.RootText = text1;
+    }
+
     void TriggerRootText(int a)
     {
         TriggerAction triggerAction = triggerActions[a];
@@ -425,12 +543,6 @@ public class RuleConstructor : MonoBehaviour
         text += triggerAction.MinusText;
         text += triggerAction.ActionText;
         triggerAction.RootText = text;
-        //string text = $"\n\nТригеры";
-        // IAddLink(0, "Green", "Switch_LevelCap", $"+++");
-
-
-        // IAddLink()
-        // plusText = text;
     }
 
     void CoreLableIfAction(IfAction ifAction, int a, int b)
@@ -487,7 +599,7 @@ public class RuleConstructor : MonoBehaviour
         int a2 = 0;
         int a3 = 0;
         int b1 = 0;
-        //  for (int i = 0; i < b; i++)
+
         for (int i = 0; i < b; i++)
         {
             form = ifAction.Form.Form[ifAction.Core[i]];
@@ -829,7 +941,8 @@ public class RuleConstructor : MonoBehaviour
                     {
 
                      //   b = int.Parse(com[3]);
-                        b1 = int.Parse(com[4]);
+                        if(com[5] != "Action")
+                            b1 = int.Parse(com[4]);
                         //Debug.Log()
 
                         switch (com[5])
@@ -1058,13 +1171,16 @@ public class RuleConstructor : MonoBehaviour
                             break;
 
                         case ("Constant"):
-                            //stringMood = $"{i}_{com[5]}_{com[3]}_{com[4]}";
                             Ui.SelectorMainConstants.active = true;
                             break;
                         case ("Group"):
-                            //stringMood = $"{i}_{com[5]}_{com[3]}_{com[4]}";
                             Ui.SelectorMainCivilianGroups.active = true;
                             break;
+
+                        case ("Effects"):
+                            Ui.SelectorMainEffects.active = true;
+                            break;
+
 
                         case ("GroupLevel"):
                             a = ifAction.IntData[b1];
@@ -1082,6 +1198,53 @@ public class RuleConstructor : MonoBehaviour
                             LableIfAction(ifAction, com[5], i);
                             break;
 
+
+
+
+                        case ("ActionDel"):
+                            DelAction(i, b);
+                            break;
+                        case ("ActionAdd"):
+                            AddAction(i);
+                            break;
+
+
+                        case ("Action"):
+                           int  b2 = b;
+                            RuleAction action = triggerActions[i].Action[b2];
+                            switch (com[4])
+                            {
+                                case ("Mood"):
+                                    b = action.Mood;
+                                    b++;
+                                    if (b == frame.AllTriggers.Count)
+                                        b = 0;
+                                    action.Mood = b;
+                                    break;
+                                case ("TargetPalyer"):
+                                    b = action.TargetPalyer;
+                                    b++;
+                                    if (b == frame.PlayerString.Length)
+                                        b = 0;
+                                    action.TargetPalyer = b;
+                                    break;
+                                   
+                            }
+
+                            CreateActionText(i, b2);
+
+                            TriggerActionText(i);
+                            TriggerRootText(i);
+                            LoadAllText();
+                            //linkText = $"Trigger_{a}_Action_{i}_Mood_Action";
+                            //text2 = $"\n-Цель {action.Mood}";
+
+                            //text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
+
+
+                            //linkText = $"Trigger_{a}_Action_{i}_TargetPalyer_Action";
+                            //AddAction(i);
+                            break;
 
                     }
                 }
@@ -1271,28 +1434,60 @@ public class RuleConstructor : MonoBehaviour
         int i2 = int.Parse(com[2]);
         int i = int.Parse(com[3]);
         TriggerAction triggerAction = triggerActions[i1];
-        IfAction ifAction = null;
-        switch (text1)
+        if (text1 != "Action")
         {
-            case ("Plus"):
-                ifAction = triggerAction.PlusAction[i2];
-                break;
+            IfAction ifAction = null;
+            switch (text1)
+            {
+                case ("Plus"):
+                    ifAction = triggerAction.PlusAction[i2];
+                    break;
 
-            case ("Minus"):
-                ifAction = triggerAction.MinusAction[i2];
-                break;
+                case ("Minus"):
+                    ifAction = triggerAction.MinusAction[i2];
+                    break;
 
-            //case (2):
+                    //case (2):
 
-            //    break;
+                    //    break;
+
+            }
+
+            ifAction.TextData[i] = text;
+            ifAction.IntData[i] = a;
+
+            LableIfAction(ifAction, text1, i1);
+        }
+        else
+        {
+            RuleAction action = triggerAction.Action[i2];
+            switch (i)
+            {
+                case (0):
+                    action.EffectData = a;
+                    break;
+                case (1):
+                    action.RelizeConstant = a;
+                    break;
+                case (2):
+                    action.TargetConstant = a;
+                    break;
+                //case (3):
+
+                //    action.IntData = a;
+
+                //    break;
+            }
+            //ifAction.TextData[i] = text;
+            //ifAction.IntData[i] = a;
+
+            CreateActionText(i1, i2);
+            TriggerActionText(i1);
+            TriggerRootText(i1);
+            LoadAllText();
         }
 
-        ifAction.TextData[i] = text;
-        ifAction.IntData[i] = a;
-
-
         HideSelector();
-        LableIfAction(ifAction, text1, i1);
     }
 
 
@@ -1318,7 +1513,8 @@ public class TriggerAction
     
     public List<IfAction> PlusAction;
     public List<IfAction> MinusAction;
-   // public List<Action> Action;
+
+    public List<RuleAction> Action;
 }
 public class IfAction 
 {
@@ -1333,3 +1529,26 @@ public class IfAction
     public string Text;
 }
 
+public class RuleAction
+{//
+    public string RootText;
+
+    public int Mood;
+    public int TargetPalyer;
+
+
+    //3:дать эффект (Эффект)// параметр для наследования свойств эффекта // Выбрать параметр для наследования свойств или оставить пустым для использования числа// указать добавочное число
+
+    public int EffectData;//Effect  дать эффект (Эффект)
+    public int RelizeConstant;//Constant параметр для наследования свойств эффекта 
+    public int TargetConstant =-1;//Constant Выбрать параметр для наследования свойств или оставить пустым для использования числа
+
+    public int IntData;
+
+
+    //public List<int> EffectData;//Effect  дать эффект (Эффект)
+    //public List<int> RelizeConstant;//Constant параметр для наследования свойств эффекта 
+    //public List<int> TargetConstant;//Constant Выбрать параметр для наследования свойств или оставить пустым для использования числа
+
+    //public List<int> IntData;
+}

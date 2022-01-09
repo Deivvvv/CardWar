@@ -15,7 +15,6 @@ public class RuleMainFrame : ScriptableObject
     public string[] Trigger;
     public List<RuleBaseFrame> AllTriggers;//цели для тригеров
 
-    public List<RuleBaseFrame> ActionTriggers;//цели для тригеров
     //public string[] RuleColor;
     //public string[] Color;
     // public string[] AllTriggersTayp;
