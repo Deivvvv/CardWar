@@ -49,8 +49,14 @@ public class RuleConstructorUi : MonoBehaviour
 
 
 
-    public Transform IfSelector;
-    public Transform ActionSelector;
+    //public Transform IfSelector;
+    //public Transform ActionSelector;
+
+
+
+    public Transform SelectorLibrary;
+    public Button SaveButton;
+    public Button NewRuleButton;
 
     public GameObject ButtonOrig;
 }

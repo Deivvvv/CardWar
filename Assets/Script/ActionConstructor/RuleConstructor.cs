@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Saver;
 
 public class RuleConstructor : MonoBehaviour
 {
+    private RuleConstructor ruleConstructor;
     [SerializeField]
     private RuleMainFrame frame;
    
@@ -53,7 +55,7 @@ public class RuleConstructor : MonoBehaviour
      Накладываемый эффект
      */
     #region Base
-    private int sysMood=-1;
+  //  private int sysMood=-1;
 
     public string Name = "Благочестие";//Название
     public string Info;//Описание
@@ -80,14 +82,14 @@ public class RuleConstructor : MonoBehaviour
     private string allText;
     private string mainText;
 
-    private string plusText;
-    private string minusText;
+    //private string plusText;
+    //private string minusText;
 
-    private string actionText;
+    //private string actionText;
 
     [SerializeField]
     private TextMeshProUGUI TT;
-    #region Main
+    #region Rule Constructor
 
     void PointerClick()
     {
@@ -201,8 +203,8 @@ public class RuleConstructor : MonoBehaviour
                         int b1 = int.Parse(com[3]);
 
                         text = com[1];
-
-                        if (text != "Action")
+                      //  Debug.Log(com[1] == "Action");
+                        if (text == "Action")
                         {
                             RuleAction action = triggerAction.Action[i1];
 
@@ -405,7 +407,7 @@ public class RuleConstructor : MonoBehaviour
         triggerAction.MainText = "\n------";
         triggerAction.MainText += $"<link=Trigger_{a}_Del><color=green>-Удалить триггер</color></link>";
      //   IAddLink(a, 0, "green", $"Trigger_{a}_Id", $"\n-ID({triggerAction.Id})");
-        IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {frame.TurnString[triggerAction.Mood]}");
+     //   IAddLink(a, 0, "green", $"Trigger_{a}_Mood", $"\n-Фаза хода: {frame.TurnString[triggerAction.Mood]}");
         IAddLink(a, 0, "green", $"Trigger_{a}_TargetPalyer", $"\n-Проверяемый игрок: {frame.PlayerString[triggerAction.TargetPalyer]}");
         IAddLink(a, 0, "green", $"Trigger_{a}_TargetTime", $"\n-Условие проверки: {frame.Trigger[triggerAction.TargetTime]}");
 
@@ -521,7 +523,7 @@ public class RuleConstructor : MonoBehaviour
 
 
         c = action.IntData;
-        linkText = $"Trigger_{a}_Switch_{i}_{d}_Action";
+        linkText = $"Trigger_{a}_Int_{i}_{d}_Action";
         text2 = $"\n-Добавочное число {c}";
         d++;
 
@@ -1167,6 +1169,9 @@ public class RuleConstructor : MonoBehaviour
                                     else
                                         Ui.TextInput.text = "" + triggerAction.MinusAction[b].IntData[b1];
                                     break;
+                                case ("Action"):
+                                        Ui.TextInput.text = "" + triggerAction.Action[b].IntData;
+                                    break;
                             }
                             break;
 
@@ -1264,10 +1269,6 @@ public class RuleConstructor : MonoBehaviour
         }
     }
 
-    #region Add Function 
- 
-
- 
 
     void HideSelector()
     {
@@ -1275,13 +1276,8 @@ public class RuleConstructor : MonoBehaviour
         Ui.SelectorMainCivilianGroups.active = false;
         Ui.SelectorMainConstants.active = false;
         Ui.SelectorMainEffects.active = false;
-        //int a = Ui.Selectors.Count;
-        //for(int i = 0; i < a; i++)
-        //{
-        //    Ui.SelectorsMain[i].active = false;
-        //}
     }
-    #endregion
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -1295,13 +1291,19 @@ public class RuleConstructor : MonoBehaviour
     }
     void Start()
     {
+        ruleConstructor = GetComponent<RuleConstructor>();
         Application.targetFrameRate = 30;
 
         LoadBase();
+      //  SaveCore();
+        CoreLoad();
+        CoreLoadRule();
+
 
         LoadMainText();
         LoadAllText();
 
+      //  SaveCore();
     }
 
     void CreateListButton(string text)
@@ -1358,6 +1360,8 @@ public class RuleConstructor : MonoBehaviour
     void LoadBase()
     {
         Ui.TextWindowButton.onClick.AddListener(() => LoadData());
+        Ui.SaveButton.onClick.AddListener(() => CreateRule());
+        Ui.NewRuleButton.onClick.AddListener(() => NewRule());
 
         Name = "Благочестие";//Название
 
@@ -1496,6 +1500,164 @@ public class RuleConstructor : MonoBehaviour
 
     #endregion
 
+    #region Library Rule
+
+    private int curentRule =-1;
+    public int RuleCount;
+    public List<string> RuleName;
+
+    void NewRule()
+    {
+        curentRule = -1;
+    }
+    void LoadRule(int i)
+    {
+        curentRule = i;
+        XMLSaver.LoadRule(ruleConstructor, i);
+    }
+
+    public void SetRule(List<string> mainRule, List<TriggerAction> triggerAction) 
+    {
+        triggerActions = triggerAction;
+
+        int b = 0;
+
+        Name = mainRule[b];
+        b++;
+
+
+        Cost = int.Parse(mainRule[b]);
+        b++;
+        CostExtend = int.Parse(mainRule[b]);
+        b++;
+        LevelCap = int.Parse(mainRule[b]);
+        b++;
+        CostMovePoint = int.Parse(mainRule[b]);
+        b++;
+        Player = bool.Parse(mainRule[b]);
+        b++;
+
+        LoadMainText();
+
+        TriggerAction triggerAction1 = null;
+        IfAction ifAction = null;
+      //  RuleAction ruleAction = null;
+
+        b = triggerAction.Count;
+        int b1 = 0;
+        for (int i = 0; i < b; i++)
+        {
+            triggerAction1 = triggerActions[i];
+            TriggerMainText(i);
+
+            b1 = triggerAction1.PlusAction.Count;
+            for (int i1 = 0; i1 < b1; i1++)
+            {
+                ifAction = triggerAction1.PlusAction[i1];
+                ifAction.LocalId = i;
+
+                ifAction.Form = frame.AllTriggers[ifAction.MainCore[0]].Form[ifAction.MainCore[1]];
+
+                PreLableIfAction(ifAction);
+                LableIfAction(ifAction, "Plus", i);
+            }
+            TriggerPlusText(i);
+
+
+            b1 = triggerAction1.MinusAction.Count;
+            for (int i1 = 0; i1 < b1; i1++)
+            {
+                ifAction = triggerAction1.MinusAction[i1];
+                ifAction.LocalId = i;
+
+                ifAction.Form = frame.AllTriggers[ifAction.MainCore[0]].Form[ifAction.MainCore[1]];
+
+                PreLableIfAction(ifAction);
+                LableIfAction(ifAction, "Minus", i);
+            }
+            TriggerMinusText(i);
+
+            b1 = triggerAction1.Action.Count;
+            for (int i1 = 0; i1 < b1; i1++)
+            {
+               // ruleAction = triggerAction1.Action[i1];
+                CreateActionText(i, i1);
+            }
+            TriggerActionText(i);
+
+            TriggerRootText(i);
+        }
+
+     //   TextReStruct();
+        LoadAllText();
+    }
+
+    void SaveRule(int i)
+    {
+        List<string> mainRule = new List<string>();
+
+        mainRule.Add(Name);
+        mainRule.Add($"{Cost}");
+        mainRule.Add($"{CostExtend}");
+        mainRule.Add($"{LevelCap}");
+        mainRule.Add($"{CostMovePoint}");
+        mainRule.Add($"{Player}");
+
+        XMLSaver.SaveRule(mainRule, triggerActions, i);
+    }
+
+    void SaveCore()
+    {
+        XMLSaver.SaveMainRule(ruleConstructor);
+    }
+
+    void CoreLoad()
+    {
+        XMLSaver.LoadMainRule(ruleConstructor);
+    }
+
+    void CreateRule()
+    {
+        if(curentRule != -1)
+        {
+            RuleName[curentRule] = Name;
+            Ui.SelectorLibrary.GetChild(curentRule+1).GetChild(0).gameObject.GetComponent<Text>().text = Name;
+        }
+        else
+        {
+            curentRule = RuleCount;
+            RuleName.Add(Name);
+            // RuleCount++;
+            AddRuleButton(RuleCount, Name);
+            RuleCount++;
+        }
+        SaveRule(curentRule);
+        SaveCore();
+    }
+
+    public void CoreLoadRule()
+    {
+        GameObject GO = null;
+
+        for(int i =0; i< RuleCount; i++)
+        {
+            AddRuleButton(i, RuleName[i]);
+        }
+    }
+    void AddRuleButton(int i, string text)
+    {
+        GameObject GO = Instantiate(Ui.ButtonOrig);
+        GO.transform.SetParent(Ui.SelectorLibrary);
+        GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = text;
+        GO.GetComponent<Button>().onClick.AddListener(() => LoadRule(i));
+    }
+
+    //void LoadRuleButton(Button button, int i)
+    //{
+    //    button.onClick.AddListener(() => LoadRule( i));
+    //}
+   // private List<string> libraryRule;
+    #endregion
 }
 public class TriggerAction
 {

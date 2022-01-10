@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 309b40e129fc7b94294548dbc6311793, type: 3}
   m_Name: Effect
   m_EditorClassIdentifier: 
-  Name: 
+  Name: AddConstant
   Size: 0

@@ -42,7 +42,7 @@ public class ColodConstructor : MonoBehaviour
             cardSet.OrigCard.Add(origCard[i]);
             cardSet.OrigCount.Add(origCount[i]);
         }
-        XMLSaver.ISaveCardSet(cardSet, origPathAlt);
+        XMLSaver.SaveCardSet(cardSet, origPathAlt);
     }
 
     void Start()
@@ -80,7 +80,7 @@ public class ColodConstructor : MonoBehaviour
         for (int i = 0; i < a; i++)
         {
             path = origPath + $"{i}";
-            XMLSaver.ILoad(path, colodConstructor);
+            XMLSaver.Load(path, colodConstructor);
             NewCard(i);
         }
 
@@ -89,7 +89,7 @@ public class ColodConstructor : MonoBehaviour
         {
             LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
         }
-        XMLSaver.ILoadCardSet(origPathAlt, colodConstructor);
+        XMLSaver.LoadCardSet(origPathAlt, colodConstructor);
 
         SetNewSet();
     }

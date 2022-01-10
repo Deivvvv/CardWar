@@ -390,7 +390,7 @@ public class Stol : MonoBehaviour
         {
             b = cardSet.OrigCount[i];
             for (int i1 = 0; i1 < b; i1++)
-                XMLSaver.ILoad(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
+                XMLSaver.Load(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
         }
 
         //random generate

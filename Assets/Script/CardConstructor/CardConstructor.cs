@@ -277,7 +277,7 @@ public class CardConstructor : MonoBehaviour
         oldAllCard = gameData.AllCard;
 
         // TransfData(gameSetting.GlobalMyData, gameData);
-        XMLSaver.ILoadGameData(origPathAlt, cardConstructor);
+        XMLSaver.LoadGameData(origPathAlt, cardConstructor);
 
         LoadBase();
     }
@@ -307,7 +307,7 @@ public class CardConstructor : MonoBehaviour
         for (int i = 0; i < a; i++)
         {
             path = origPath + $"{i}";
-            XMLSaver.ILoad(path, cardConstructor);
+            XMLSaver.Load(path, cardConstructor);
             NewCard(i);
         }
 
@@ -418,10 +418,10 @@ public class CardConstructor : MonoBehaviour
         {
             b = newCard[i];
             path =  origPath + $"{b}";
-            XMLSaver.ISave(LocalCard[b], path);
+            XMLSaver.Save(LocalCard[b], path);
         }
 
-        XMLSaver.ISaveGameData(gameData,  origPathAlt);
+        XMLSaver.SaveGameData(gameData,  origPathAlt);
         oldAllCard = gameData.AllCard;
         newCard = new List<int>();
         oldCard = new List<CardBase>();
