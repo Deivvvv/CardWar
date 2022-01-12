@@ -14,8 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Constant
   Form:
-  - Use: 0
+  - Text: 
     Id: 0
     Form:
-    - Text: "\u0422\u0435\u0445\u0442{Rule}"
+    - Text: "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440
+        {Rule}"
       Rule: Constant
+    - Text: '{Rule}'
+      Rule: Equal
+    - Text: "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440
+        {Rule}"
+      Rule: Constant
+    - Text: '{Rule}'
+      Rule: Int

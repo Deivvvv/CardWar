@@ -15,4 +15,5 @@ MonoBehaviour:
   Text: "\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u043D\u0430\u044F
     \u043A\u0430\u0440\u0442\u0430"
   Name: UseCard
-  Form: []
+  Form:
+  - {fileID: 11400000, guid: 41438379a323d6241ba90c0fa79cc85f, type: 2}

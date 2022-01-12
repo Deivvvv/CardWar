@@ -10,6 +10,8 @@ public class CivilianGroup : ScriptableObject
 
     public string Name;//имя группы - дворянство
 
+    public Constant CoreStat;
+
     public List<Titul> Tituls;
 
     public List<StringCase> Сonstant;

@@ -252,7 +252,7 @@ public class ColodConstructor : MonoBehaviour
 
         text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
         text.text = "";
-        for (int i = 0; i < card.Stat.Length - 1; i++)
+        for (int i = 0; i < card.Stat.Count - 1; i++)
         {
             if (card.Stat[i] > 0)
                 text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
@@ -261,7 +261,7 @@ public class ColodConstructor : MonoBehaviour
 
 
         text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = "" + card.Stat[card.Stat.Length - 1];
+        text.text = "" + card.Stat[card.Stat.Count - 1];
         //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
     }
     void ViewCardTable(int a)
@@ -295,7 +295,7 @@ public class ColodConstructor : MonoBehaviour
 
         text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
         text.text = "";
-        for (int i = 0; i < card.Stat.Length - 1; i++)
+        for (int i = 0; i < card.Stat.Count - 1; i++)
         {
             if (card.Stat[i] > 0)
                 text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
@@ -305,7 +305,7 @@ public class ColodConstructor : MonoBehaviour
      //   Debug.Log(a);
 
         text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = "" + card.Stat[card.Stat.Length - 1];
+        text.text = "" + card.Stat[card.Stat.Count - 1];
 
         trans.GetChild(4).GetChild(0).gameObject.GetComponent<Text>().text = $"X{origCount[a]}";
       //  text.text = $"X{origCount[a]}";

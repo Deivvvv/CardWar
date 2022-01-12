@@ -1,0 +1,21 @@
+<root>
+  <MainRuleCount>6</MainRuleCount>
+  <MainRule0>первый удар</MainRule0>
+  <MainRule1>4</MainRule1>
+  <MainRule2>0</MainRule2>
+  <MainRule3>1</MainRule3>
+  <MainRule4>0</MainRule4>
+  <MainRule5>True</MainRule5>
+  <TriggerActionCount>1</TriggerActionCount>
+  <TargetPalyer0>0</TargetPalyer0>
+  <TargetTime0>11</TargetTime0>
+  <PlusActionCount0>0</PlusActionCount0>
+  <MinusActionCount0>0</MinusActionCount0>
+  <ActionCount0>1</ActionCount0>
+  <Trigger0Action0Mood>0</Trigger0Action0Mood>
+  <Trigger0Action0TargetPalyer>0</Trigger0Action0TargetPalyer>
+  <Trigger0Action0EffectData>0</Trigger0Action0EffectData>
+  <Trigger0Action0RelizeConstant>3</Trigger0Action0RelizeConstant>
+  <Trigger0Action0TargetConstant>-1</Trigger0Action0TargetConstant>
+  <Trigger0Action0IntData>1</Trigger0Action0IntData>
+</root>

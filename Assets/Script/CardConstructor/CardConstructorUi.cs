@@ -24,6 +24,7 @@ public class CardConstructorUi : MonoBehaviour
     public GameObject OrigStat;
     public GameObject OrigCard;
     public GameObject OrigFiltr;
+    public GameObject OrigButton;
 
     //public Sprite[] Icon;
     //public string[] StatName;
@@ -38,4 +39,11 @@ public class CardConstructorUi : MonoBehaviour
     public Button ResetButton;
 
     public Color[] SelectColor;
+
+
+    public Transform ConstantSelectorMain;
+    public Transform RuleSelectorMain;
+
+    public Transform ConstantSelector;
+    public Transform RuleSelector;
 }

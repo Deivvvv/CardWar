@@ -6,8 +6,11 @@ public class CardBase
 {
     public string Name;
 
-    public int[] Stat;
+    public List<int> Stat;
     public List<string> Trait;
+
+    public List<string> Rule;
+
 
     public Transform Body;
 

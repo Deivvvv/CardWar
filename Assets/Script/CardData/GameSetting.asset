@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: GameSetting
   m_EditorClassIdentifier: 
   Library: {fileID: 11400000, guid: 6450eba1d97923e4aa556c41f7c46209, type: 2}
-  ReservData: {fileID: 11400000, guid: f3cabbf0cc8bb6c49ab3bf7516b7eb72, type: 2}
+  ReservData: {fileID: 0}
   GlobalMyData: {fileID: 11400000, guid: 8c283ae78cc7dad4d9e55d2ea27299cb, type: 2}
   LocalMyData: {fileID: 0}
-  ReservPlayerData: {fileID: 11400000, guid: 87d98fc44137376419d723b2573252eb, type: 2}
+  ReservPlayerData: {fileID: 0}
   GlobalPlayerData: {fileID: 11400000, guid: deffde4e2c79e4f4db9fd1353ef8e171, type: 2}
   LocalPlayerData: {fileID: 0}
   Icon:
@@ -60,7 +60,7 @@ MonoBehaviour:
   - Stat10
   - Stat11
   - Stat12
-  origPath: /Resources/Hiro
+  origPath: /Resources/Data/Hiro
   TargetColor:
   - {fileID: 2100000, guid: 27fb64f7add8ac946bb4f0d13b9fddc9, type: 2}
   - {fileID: 2100000, guid: d4b280f132511204e807baef7817683d, type: 2}

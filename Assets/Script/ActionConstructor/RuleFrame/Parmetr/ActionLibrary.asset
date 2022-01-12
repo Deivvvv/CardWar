@@ -17,11 +17,24 @@ MonoBehaviour:
   CivilianGroups:
   - {fileID: 11400000, guid: cac32af5143e8b449affca80d46d4732, type: 2}
   Constants:
+  - {fileID: 11400000, guid: 3b05ed8a6966f474f995033fa3a0cb19, type: 2}
+  - {fileID: 11400000, guid: ccc3827ee84e9b44a958efb788cf3de2, type: 2}
+  - {fileID: 11400000, guid: 2a133a2dc63d02c409bcf48d984c7403, type: 2}
+  - {fileID: 11400000, guid: 54a8662960c8a3f4d9583ee4b2112828, type: 2}
   - {fileID: 11400000, guid: d44d89e217dabf243841dc17d6f96e81, type: 2}
   - {fileID: 11400000, guid: 9401bb222c8ac8e4fb5112b929532f01, type: 2}
+  - {fileID: 11400000, guid: 1384650ef0fcd2c408cf798158ec63a3, type: 2}
   - {fileID: 11400000, guid: 16b17babea5e41f4999fa9609c02b882, type: 2}
+  - {fileID: 11400000, guid: 2f1b6f85344fa3b46ad00f9d4a47187f, type: 2}
+  - {fileID: 11400000, guid: 065c84027d5bdfa498e6ccc0535fd02e, type: 2}
+  - {fileID: 11400000, guid: 1306ef1596e24244197eb800d48d7479, type: 2}
+  - {fileID: 11400000, guid: 9ac3b8f2d51e142459286049200ce410, type: 2}
   Effects:
   - {fileID: 11400000, guid: 6b2991ef6a22d6846b4b35bf439af38c, type: 2}
+  - {fileID: 11400000, guid: f2aba4f49361b024cbf61e739fc6b3ca, type: 2}
+  - {fileID: 11400000, guid: 331fbbe9408c04f4dbec7745bf818585, type: 2}
+  - {fileID: 11400000, guid: a57eac89fd8a8134584b301a70bdc54c, type: 2}
+  - {fileID: 11400000, guid: fd28fcbde4080af4db891b8637140f32, type: 2}
   Action:
   - {fileID: 11400000, guid: d09e248de3f0f404887f3be38a2e7c4c, type: 2}
   - {fileID: 11400000, guid: bd72837de35202d4e96e4f2bf9756809, type: 2}

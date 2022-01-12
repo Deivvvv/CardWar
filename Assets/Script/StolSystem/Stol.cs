@@ -633,7 +633,7 @@ public class Stol : MonoBehaviour
         Hiro newHiro = hiro[0];
       //  a = newHiro.CardHand[a];
         CardBase cardBase = newHiro.CardColod[a];
-        int b = cardBase.Stat.Length - 1;
+        int b = cardBase.Stat.Count - 1;
 
         if (newHiro.ManaCurent >= cardBase.Stat[b])
         {

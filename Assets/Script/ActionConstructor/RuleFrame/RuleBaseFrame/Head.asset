@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: "\u0413\u043E\u043B\u043E\u0432\u0430"
   Name: Head
-  Form: []
+  Form:
+  - {fileID: 11400000, guid: 41438379a323d6241ba90c0fa79cc85f, type: 2}

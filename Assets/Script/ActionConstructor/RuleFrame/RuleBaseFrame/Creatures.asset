@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Text: "\u0421\u0443\u0449\u0435\u0441\u0442\u0432\u0430"
   Name: Creatures
-  Form: []
+  Form:
+  - {fileID: 11400000, guid: 41438379a323d6241ba90c0fa79cc85f, type: 2}
+  - {fileID: 11400000, guid: b2aa98ee9ac77944b850bbb7f85a5e57, type: 2}
+  - {fileID: 11400000, guid: 4deeb3316022fb54791a580deb516663, type: 2}

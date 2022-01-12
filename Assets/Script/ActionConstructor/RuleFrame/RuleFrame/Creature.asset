@@ -41,18 +41,10 @@ MonoBehaviour:
     - Text: ' {Rule}'
       Rule: Constant
   - Text: 
-    Id: 0
-    Form:
-    - Text: ' {Rule}'
-      Rule: Constant
-    - Text: ' {Rule}'
-      Rule: Equal
-    - Text: ' {Rule}'
-      Rule: Constant
-    - Text: ' {Rule}'
-      Rule: Int
-  - Text: 
     Id: 1
+    Form: []
+  - Text: 
+    Id: 0
     Form:
     - Text: ' {Rule}'
       Rule: Constant
@@ -85,13 +77,11 @@ MonoBehaviour:
     - Text: ' {Rule}'
       Rule: Int
   - Text: 
-    Id: 1
+    Id: 0
     Form:
     - Text: ' {Rule}'
       Rule: Constant
     - Text: ' {Rule}'
       Rule: Equal
-    - Text: ' {Rule}'
-      Rule: Constant
     - Text: ' {Rule}'
       Rule: Int

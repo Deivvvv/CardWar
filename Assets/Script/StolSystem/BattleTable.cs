@@ -477,7 +477,7 @@ namespace BattleTable
         }
         static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
-            int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Length - 1];
+            int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Count - 1];
             hiro1.ManaCurent -= b;
 
             ICreateCard(hiro1, hiro2, handNum, slot, pos);
@@ -487,7 +487,7 @@ namespace BattleTable
         public static void IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
             CardBase card = hiro1.CardColod[handNum];
-            int b = card.Stat[card.Stat.Length - 1];
+            int b = card.Stat[card.Stat.Count - 1];
             if (hiro1.ManaCurent >= b)
             {
                 bool targetHiro = false;
@@ -548,7 +548,7 @@ namespace BattleTable
             Ui.Name.text = card.Name;
 
             Ui.Stat.text = "";
-            for (int i = 0; i < card.Stat.Length - 1; i++)
+            for (int i = 0; i < card.Stat.Count - 1; i++)
             {
                 if (card.Stat[i] > 0)
                     Ui.Stat.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
@@ -556,7 +556,7 @@ namespace BattleTable
 
             //  Ui.Trait;
 
-            Ui.Mana.text = "" + card.Stat[card.Stat.Length - 1];
+            Ui.Mana.text = "" + card.Stat[card.Stat.Count - 1];
 
             //if(Ui.Count != null)
             //        Ui.Count.text;

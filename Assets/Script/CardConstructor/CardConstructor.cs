@@ -11,6 +11,23 @@ using BattleTable;
 
 public class CardConstructor : MonoBehaviour
 {
+    /*
+     * Раса - Легион
+     * Легион - Легион
+     * Выбрать социальную группу
+     * 
+     * на основе социальной группы Фиксирывать корневой парметр, его утрата приведет к смерти армии
+     * Добавить три любых иных парметра
+     * 
+     * Вывести правила(черты, которые карта наследует от выше перечисленных групп), 
+     * их стоимость не указывается внутри системы т.к. они наследуются от выше стоящих источников
+     * Выбрать до 5 правил как дополнительно
+     */
+
+
+    private List<Constant> constants;
+    private int curentConstant;
+
     //ResetSystem
     private CardConstructor cardConstructor;
     private int oldAllCard;
@@ -112,11 +129,11 @@ public class CardConstructor : MonoBehaviour
     void Enject()
     {
         CardBase card = new CardBase();
-        card.Stat = new int[cardBase.Stat.Length];
+        card.Stat = new List<int>();
         card.Trait = new List<string>();
         card.Name = Ui.NameFlied.text;
 
-        for (int i = 0; i < cardBase.Stat.Length; i++)
+        for (int i = 0; i < cardBase.Stat.Count; i++)
         {
             card.Stat[i] = cardBase.Stat[i];
         }
@@ -204,7 +221,7 @@ public class CardConstructor : MonoBehaviour
             cardBase.Name = card.Name; 
             Ui.NameFlied.text = cardBase.Name;
 
-            for (int i = 0; i < cardBase.Stat.Length; i++)
+            for (int i = 0; i < cardBase.Stat.Count; i++)
             {
                 cardBase.Stat[i] = card.Stat[i];
             }
@@ -230,7 +247,7 @@ public class CardConstructor : MonoBehaviour
         cardBase = new CardBase();
 
         cardBase.Name = "New Hiro";
-        cardBase.Stat = new int[13];
+        cardBase.Stat =  new List<int>();
         cardBase.Trait = new List<string>();
         cardBase.Stat[4] = 1;
         Ui.NameFlied.text = cardBase.Name;
@@ -242,7 +259,7 @@ public class CardConstructor : MonoBehaviour
 
     void PreLoad()
     {
-        origPath = Application.dataPath + $"/Resources/Hiro";
+        origPath = Application.dataPath + $"/Resources/Data/Hiro";
         origPathAlt = Application.dataPath + $"/Resources/Data";
 
         Core.ILoadGameSetting(gameSetting);
@@ -270,7 +287,7 @@ public class CardConstructor : MonoBehaviour
         Ui.SaveButton.onClick.AddListener(() => Save());
         Ui.ResetButton.onClick.AddListener(() => Reset());
 
-        gameData = gameSetting.ReservData;//= new GameData();
+        gameData = new GameData();
                                           // gameData.AllCard = // = new List<string>();
         gameData.BlackList = new List<int>();
 
@@ -429,18 +446,18 @@ public class CardConstructor : MonoBehaviour
     #endregion
 
     #region Create UI
-    void LoadUi()
+    void CreateStatButton()
     {
         GameObject GO = null;
-        Ui.StatCount = new Text[cardBase.Stat.Length - 1];
-        for (int i = 0; i < cardBase.Stat.Length - 1; i++)
+      //  Ui.StatCount = new Text[cardBase.Stat.Count - 1];
+        for (int i = 0; i < 4; i++)
         {
             GO = Instantiate(Ui.OrigStat);
             GO.transform.SetParent(Ui.StatCard);
 
-            GO.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = gameSetting.Icon[i];
-            GO.transform.GetChild(1).gameObject.GetComponent<Text>().text = $"{gameSetting.SellCount[i]}/4";
-            GO.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text = $"{gameSetting.StatName[i]}";
+            //GO.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = gameSetting.Icon[i];
+            //GO.transform.GetChild(1).gameObject.GetComponent<Text>().text = $"{gameSetting.SellCount[i]}/4";
+            //GO.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text = $"{gameSetting.StatName[i]}";
 
             Button newButton = GO.transform.GetChild(3).gameObject.GetComponent<Button>();
             AddStatButton(false, newButton, i);
@@ -448,10 +465,32 @@ public class CardConstructor : MonoBehaviour
             AddStatButton(true, newButton, i);
 
             Ui.StatCount[i] = GO.transform.GetChild(5).gameObject.GetComponent<Text>();
-            Ui.StatCount[i].text = $"{cardBase.Stat[i]}";
+            //Ui.StatCount[i].text = $"{cardBase.Stat[i]}";
         }
         // cardBase.Stat
+
     }
+    void LoadStatUI(int a, Constant constant)
+    {
+        GameObject GO = Ui.StatCard.GetChild(a).gameObject;
+        if (constant != null)
+        {
+            GO.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = constant.Icon;
+            GO.transform.GetChild(1).gameObject.GetComponent<Text>().text = $"{constant.Cost}/4";
+            GO.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text = constant.NameLocalization;
+
+            Ui.StatCount[a].text = $"{cardBase.Stat[a]}";
+        }
+        else
+        {
+            GO.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = null;
+            GO.transform.GetChild(1).gameObject.GetComponent<Text>().text = "";
+            GO.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text = "Выберете параметр";
+
+            Ui.StatCount[a].text = "";
+        }
+    }
+
 
     void AddStatButton(bool plus, Button button, int a)
     {
@@ -477,11 +516,47 @@ public class CardConstructor : MonoBehaviour
         GO.GetComponent<Image>().color = Ui.SelectColor[1];
 
         LocalCard[i].Body = GO.transform;
-        //  LocalCard.Add(new CardBase());
-        //  Save();
 
         CardView.IViewCard(LocalCard[i]);
     }
+
+    #region Constant
+
+    void CreateConstantSeclector()
+    {
+        GameObject GO = null;
+        constants = gameSetting.Library.Constants;
+
+        for (int i = 0; i < constants.Count; i++)
+        {
+            GO = Instantiate(Ui.OrigButton);
+            GO.transform.SetParent(Ui.ConstantSelector);
+
+            LoadConstantButton(GO.GetComponent<Button>(), i);
+
+            GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = constants[i].NameLocalization;
+        }
+    }
+
+    void LoadConstantButton(Button button, int a)
+    {
+        button.onClick.AddListener(() => LoadConstant(a));
+    }
+
+    void LoadConstant( int a)
+    {
+        cardBase.Stat[curentConstant] = a;
+
+        LoadStatUI(curentConstant, constants[a]);
+    }
+
+    #endregion
+
+
+    #region Rule
+
+    #endregion
+
     #endregion
 
     #region Ui Use
@@ -516,27 +591,26 @@ public class CardConstructor : MonoBehaviour
     void ReCalculate()
     {
         int a = 0;
-        for (int i = 0; i < cardBase.Stat.Length - 1; i++)
+        for (int i = 0; i < cardBase.Stat.Count - 1; i++)
         {
             a += cardBase.Stat[i] * gameSetting.SellCount[i];
         }
-        cardBase.Stat[cardBase.Stat.Length - 1] = Mathf.CeilToInt(a / 4f);
+        cardBase.Stat[cardBase.Stat.Count - 1] = Mathf.CeilToInt(a / 4f);
         ViewCard();
     }
 
     void ViewCard()
     {
-        for (int i = 0; i < cardBase.Stat.Length - 1; i++)
+        for (int i = 0; i < cardBase.Stat.Count - 1; i++)
         {
             Ui.StatCount[i].text = $"{cardBase.Stat[i]}";
         }
-        Ui.ManaCount.text = $"Цена: {cardBase.Stat[cardBase.Stat.Length - 1]}";
+        Ui.ManaCount.text = $"Цена: {cardBase.Stat[cardBase.Stat.Count - 1]}";
         // Ui.
     }
 
     void SwitchCard(int a)
     {
-        //����� ��������� ������ ���������� ��������� �� ��������� ����� �����
         if (curentNum != -1)
         {
             if (curentNum < gameData.AllCard)
@@ -560,19 +634,24 @@ public class CardConstructor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cardBase = new CardBase();
+        NewCard();
 
-        cardBase.Name = "New Hiro";
-        cardBase.Stat = new int[13];
-        cardBase.Trait = new List<string>();
         PreLoad();
 
-        LoadUi();
+        CreateStatButton();
         Inject();
 
         GenerateFiltr();
     }
 
+    void NewCard()
+    {
+        cardBase = new CardBase();
+
+        cardBase.Name = "New Hiro";
+        cardBase.Stat = new List<int>();
+        cardBase.Trait = new List<string>();
+    }
 
 
 }

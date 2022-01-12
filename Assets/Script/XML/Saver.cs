@@ -113,7 +113,7 @@ namespace Saver
             }
         }
 
-        //Card
+        # region Card
         public static void Save(CardBase cardBase, string path)
         {
 
@@ -121,18 +121,19 @@ namespace Saver
 
             root.Add(new XElement("Name", cardBase.Name));
 
-            int a = cardBase.Stat.Length;
+            int a = cardBase.Stat.Count;
             root.Add(new XElement("Stat", a));
             for (int i = 0; i < a; i++)
             {
                 root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
+                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
             }
 
             a = cardBase.Trait.Count;
-            root.Add(new XElement("Trait", a));
+            root.Add(new XElement("Rule", a));
             for (int i = 0; i < a; i++)
             {
-                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+                root.Add(new XElement("Rule" + i, cardBase.Rule[i]));
             }
 
             string path1 = "";
@@ -171,10 +172,10 @@ string someString = Encoding.ASCII.GetString(bytes);
                 cardBase.Name = root.Element("Name").Value;
 
                 int a = int.Parse(root.Element("Stat").Value);
-                cardBase.Stat = new int[a];
+                cardBase.Stat = new List<int>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
+                    cardBase.Stat.Add( int.Parse(root.Element($"Stat{i}").Value));
                 }
 
 
@@ -214,10 +215,10 @@ string someString = Encoding.ASCII.GetString(bytes);
                 cardBase.Name = root.Element("Name").Value;
 
                 int a = int.Parse(root.Element("Stat").Value);
-                cardBase.Stat = new int[a];
+                cardBase.Stat = new List<int>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
+                    cardBase.Stat.Add(int.Parse(root.Element($"Stat{i}").Value));
                 }
 
 
@@ -257,10 +258,10 @@ string someString = Encoding.ASCII.GetString(bytes);
                 cardBase.Name = root.Element("Name").Value;
 
                 int a = int.Parse(root.Element("Stat").Value);
-                cardBase.Stat = new int[a];
+                cardBase.Stat = new List<int>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Stat[i] = int.Parse(root.Element($"Stat{i}").Value);
+                    cardBase.Stat.Add(int.Parse(root.Element($"Stat{i}").Value));
                 }
 
 
@@ -289,11 +290,11 @@ string someString = Encoding.ASCII.GetString(bytes);
 
             }
         }
+        #endregion
 
 
 
-
-        //Rule
+        #region Rule
         public static void LoadMainRule(RuleConstructor ruleConstructor)
         {
             string path = Application.dataPath + $"/Resources/Data/Rule/MainRule"; ;
@@ -583,5 +584,6 @@ string someString = Encoding.ASCII.GetString(bytes);
 
             }
         }
+        #endregion
     }
 }
