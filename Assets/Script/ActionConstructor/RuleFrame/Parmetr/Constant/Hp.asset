@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 881bce58566f20547998b67d7bfdfccc, type: 3}
   m_Name: Hp
   m_EditorClassIdentifier: 
-  NameLocalization: 
+  NameLocalization: Hp
   Name: Hp
-  Icon: {fileID: 0}
-  IconName: 
-  Cost: 0
-  AntiConstant: 
-  TwinConstant: 
+  Icon: {fileID: 8802722911165090788, guid: 9a1e5d2af59607545afd327dc74a1180, type: 3}
+  IconName: Hp
+  Cost: 1
+  Group: 0
+  CombineConstant: 0
+  AntiConstant: []
+  TwinConstant: []
+  Effect: []

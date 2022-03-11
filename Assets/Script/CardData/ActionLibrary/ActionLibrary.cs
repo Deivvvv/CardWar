@@ -6,10 +6,13 @@ using UnityEngine;
 //[System.Serializable]
 public class ActionLibrary : ScriptableObject
 {
+    public List<Guild> Guilds;
 
     public List<Legion> Legions;
     public List<CivilianGroup> CivilianGroups;
     public List<Constant> Constants;
     public List<Effect> Effects;
-    public List<Trait> Action; 
+    public List<Trait> Action;
+
+    public List<string> RuleName;
 }

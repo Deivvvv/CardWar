@@ -15,45 +15,7 @@ public class RuleConstructor : MonoBehaviour
     private ActionLibrary library;
     [SerializeField]
     private RuleConstructorUi Ui;
-    /*Тело--
-     Название
-    описание
-    Стоимость
-    Стоимость очков действий
-    Доп стоймость за последующие очки навыка
-     
-    уровень доступа - разработчик, игрок:
-    *МакроДействие++
-     */
 
-    /*МакроДействие--
-    Время в которое работает способность - Стрельба, бой, оба
-    За кем следим - Я, враг, оба
-    класс действия - Начало хода, конец хода, является используемой способностью. перед атакой, после атаки, при установке карты, при возвращении карты в руку, при смерти карты
-     Условия Дейстивия положительные++
-    условвия Дейстивия исключения++
-     */
-
-    /*УсловиеДейстивия--
-     * охват - любой, все, несколько (2)
-     * группа - все, друзья, враги
-     * 
-     * приоритет условия в цифровом эквиваленте, если цифра совпадает, то необходимо выполнение обоих условий //группа условия - и, или, , несколько (2и более), не более, только
-    
-
-    проверяемое событие
-     условие - меньше, равно, больше
-    
-    проверяемые характеристики
-    цель условия
-     
-     */
-
-    /*Действие--
-     * на кого действует - все, враги, друзья
-     Область действия - цель, я, все
-     Накладываемый эффект
-     */
     #region Base
   //  private int sysMood=-1;
 
@@ -1608,25 +1570,27 @@ public class RuleConstructor : MonoBehaviour
 
     void SaveCore()
     {
-        XMLSaver.SaveMainRule(ruleConstructor);
+        XMLSaver.SaveMainRule(library);
     }
 
     void CoreLoad()
     {
-        XMLSaver.LoadMainRule(ruleConstructor);
+        XMLSaver.LoadMainRule(library);
+        ruleConstructor.RuleCount = library.RuleName.Count;
+        RuleName = library.RuleName;
     }
 
     void CreateRule()
     {
         if(curentRule != -1)
         {
-            RuleName[curentRule] = Name;
+            library.RuleName[curentRule] = Name;
             Ui.SelectorLibrary.GetChild(curentRule+1).GetChild(0).gameObject.GetComponent<Text>().text = Name;
         }
         else
         {
             curentRule = RuleCount;
-            RuleName.Add(Name);
+            library.RuleName.Add(Name);
             // RuleCount++;
             AddRuleButton(RuleCount, Name);
             RuleCount++;

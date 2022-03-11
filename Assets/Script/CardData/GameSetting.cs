@@ -8,13 +8,9 @@ public class GameSetting : ScriptableObject
 {
     public ActionLibrary Library;
 
-    public GameData ReservData;
     public GameData GlobalMyData;
-    public GameData LocalMyData;
 
-    public GameData ReservPlayerData;
     public GameData GlobalPlayerData;
-    public GameData LocalPlayerData;
 
     public Sprite[] Icon;
     public string[] StatName;
@@ -25,5 +21,8 @@ public class GameSetting : ScriptableObject
 
     public Material[] TargetColor;
     public GameObject OrigHiro;
+
+    public int StatSize = 4;
+    public int RuleSize = 5;
     // public Color[] SelectColor; ??
 }

@@ -11,6 +11,30 @@ namespace Saver
 {
     static class XMLSaver
     {
+        private static GameSetting gameSetting;
+        private static CardConstructor cardConstructor;
+        private static ColodConstructor colodConstructor;
+        private static Stol stol;
+
+
+        public static void SetCardConstructor(CardConstructor _cardConstructor)
+        {
+            cardConstructor = _cardConstructor;
+        }
+        public static void SetColodConstructor(ColodConstructor _colodConstructor)
+        {
+            colodConstructor = _colodConstructor;
+        }
+        public static void SetStol(Stol _stol)
+        {
+            stol = _stol;
+        }
+        public static void SetGameSetting(GameSetting _gameSetting)
+        {
+            gameSetting = _gameSetting;
+        }
+
+
         //GameData
         public static void SaveGameData(GameData gameData, string path)
         {
@@ -121,19 +145,32 @@ namespace Saver
 
             root.Add(new XElement("Name", cardBase.Name));
 
+            root.Add(new XElement("Guild", cardBase.Guilds.Name));
+
+            root.Add(new XElement("Races", cardBase.Races.Name));
+            root.Add(new XElement("Legions", cardBase.Legions.Name));
+            root.Add(new XElement("CivilianGroups", cardBase.CivilianGroups.Name));
+
+            root.Add(new XElement("Mana", cardBase.Mana));
             int a = cardBase.Stat.Count;
             root.Add(new XElement("Stat", a));
             for (int i = 0; i < a; i++)
             {
-                root.Add(new XElement("Stat" + i, cardBase.Stat[i]));
-                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+                if(cardBase.Stat[i] != null)
+                    root.Add(new XElement("Stat" + i, cardBase.Stat[i].Name));
+                else
+                    root.Add(new XElement("Stat" + i, " "));
+
+                root.Add(new XElement("StatSize" + i, cardBase.StatSize[i]));
+                //root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
             }
 
             a = cardBase.Trait.Count;
-            root.Add(new XElement("Rule", a));
+            root.Add(new XElement("Trait", a));
             for (int i = 0; i < a; i++)
             {
-                root.Add(new XElement("Rule" + i, cardBase.Rule[i]));
+                root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
+                root.Add(new XElement("TraitSize" + i, cardBase.TraitSize[i]));
             }
 
             string path1 = "";
@@ -161,7 +198,9 @@ string someString = Encoding.ASCII.GetString(bytes);
 
         }
 
-        public static void Load(string path, CardConstructor cardConstructor)
+
+
+        public static void Load(string path, string mood)
         {
             if (path != "")
             {
@@ -171,20 +210,71 @@ string someString = Encoding.ASCII.GetString(bytes);
 
                 cardBase.Name = root.Element("Name").Value;
 
-                int a = int.Parse(root.Element("Stat").Value);
-                cardBase.Stat = new List<int>();
+                string data = root.Element("Guild").Value;
+                int a = gameSetting.Library.Guilds.FindIndex(x => x.Name == data);
+                if (a < 0)
+                    Debug.Log(data);
+                cardBase.Guilds = gameSetting.Library.Guilds[a];
+
+                data = root.Element("Races").Value;
+                a = cardBase.Guilds.Races.FindIndex(x => x.Name == data);
+                if (a < 0)
+                    Debug.Log(data);
+                cardBase.Races = cardBase.Guilds.Races[a];
+
+                data = root.Element("Legions").Value;
+                a = cardBase.Guilds.Legions.FindIndex(x => x.Name == data);
+                if (a < 0)
+                    Debug.Log(data);
+                cardBase.Legions = cardBase.Guilds.Legions[a];
+
+                data = root.Element("CivilianGroups").Value;
+                a = cardBase.Legions.CivilianGroups.FindIndex(x => x.Name == data);
+                if (a < 0)
+                    Debug.Log(data);
+                cardBase.CivilianGroups = cardBase.Legions.CivilianGroups[a];
+
+
+                cardBase.Mana = int.Parse(root.Element("Mana").Value);
+
+
+                data = " ";
+                a = int.Parse(root.Element("Stat").Value);
+                int b = 0;
+                cardBase.Stat = new List<Constant>();
+                cardBase.StatSize = new List<int>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Stat.Add( int.Parse(root.Element($"Stat{i}").Value));
+                    cardBase.Stat.Add(null);
+                    cardBase.StatSize.Add(0);
+                    //cardBase.StatSize[i];
+
+                    data = root.Element($"Stat{i}").Value;
+                    if (data != "")
+                    {
+                        b = gameSetting.Library.Constants.FindIndex(x => x.Name == data);
+                        if (b >= 0)
+                        {
+                            cardBase.Stat[i] = gameSetting.Library.Constants[b];
+                            cardBase.StatSize[i] = int.Parse(root.Element($"StatSize{i}").Value);
+                        }
+                    }
+
+                    //else
+                    //    Debug.Log(data);
+
+                    //  cardBase.Stat.Add( int.Parse(root.Element($"Stat{cardBase.Stat.name}").Value));
                 }
 
 
 
                 a = int.Parse(root.Element("Trait").Value);
                 cardBase.Trait = new List<string>();
+                cardBase.TraitSize = new List<int>();
                 for (int i = 0; i < a; i++)
                 {
                     cardBase.Trait.Add(root.Element($"Trait{i}").Value);
+                    cardBase.TraitSize.Add(int.Parse(root.Element($"TraitSize{i}").Value));
                 }
 
                 //Load Image
@@ -200,93 +290,22 @@ string someString = Encoding.ASCII.GetString(bytes);
                 cardBase.Image = bat;
 
 
-                cardConstructor.LocalCard.Add(cardBase);
-
-            }
-        }
-        public static void Load(string path, ColodConstructor colodConstructor)
-        {
-            if (path != "")
-            {
-                XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
-
-                CardBase cardBase = new CardBase();
-
-                cardBase.Name = root.Element("Name").Value;
-
-                int a = int.Parse(root.Element("Stat").Value);
-                cardBase.Stat = new List<int>();
-                for (int i = 0; i < a; i++)
+                switch (mood) 
                 {
-                    cardBase.Stat.Add(int.Parse(root.Element($"Stat{i}").Value));
+                    case ("Card"):
+                        cardConstructor.LocalCard.Add(cardBase);
+                        break;
+
+                    case ("Colod"):
+                        colodConstructor.LocalCard.Add(cardBase);
+                        break;
+
+
+                    case ("Stol"):
+                        stol.BufferColod.Add(cardBase);
+                        break;
                 }
 
-
-
-                a = int.Parse(root.Element("Trait").Value);
-                cardBase.Trait = new List<string>();
-                for (int i = 0; i < a; i++)
-                {
-                    cardBase.Trait.Add(root.Element($"Trait{i}").Value);
-                }
-
-
-                //Load Image
-                string path1 = root.Element($"ImageSt").Value;
-
-                string[] subs = path1.Split('.');
-                a = int.Parse(root.Element($"Image").Value);
-                byte[] bat = new byte[a];
-                for (int i = 0; i < a; i++)
-                {
-                    bat[i] = byte.Parse(subs[i]);
-                }
-                cardBase.Image = bat;
-
-                colodConstructor.LocalCard.Add(cardBase);
-
-            }
-        }
-        public static void Load(string path, Stol stol)
-        {
-            if (path != "")
-            {
-                XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
-
-                CardBase cardBase = new CardBase();
-
-                cardBase.Name = root.Element("Name").Value;
-
-                int a = int.Parse(root.Element("Stat").Value);
-                cardBase.Stat = new List<int>();
-                for (int i = 0; i < a; i++)
-                {
-                    cardBase.Stat.Add(int.Parse(root.Element($"Stat{i}").Value));
-                }
-
-
-
-                a = int.Parse(root.Element("Trait").Value);
-                cardBase.Trait = new List<string>();
-                for (int i = 0; i < a; i++)
-                {
-                    cardBase.Trait.Add(root.Element($"Trait{i}").Value);
-                }
-
-
-                //Load Image
-                string path1 = root.Element($"ImageSt").Value;
-
-                string[] subs = path1.Split('.');
-                a = int.Parse(root.Element($"Image").Value);
-                byte[] bat = new byte[a];
-                for (int i = 0; i < a; i++)
-                {
-                    bat[i] = byte.Parse(subs[i]);
-                }
-                cardBase.Image = bat;
-
-                stol.BufferColod.Add(cardBase);
 
             }
         }
@@ -295,7 +314,7 @@ string someString = Encoding.ASCII.GetString(bytes);
 
 
         #region Rule
-        public static void LoadMainRule(RuleConstructor ruleConstructor)
+        public static void LoadMainRule( ActionLibrary library)
         {
             string path = Application.dataPath + $"/Resources/Data/Rule/MainRule"; ;
             if (path != "")
@@ -303,32 +322,33 @@ string someString = Encoding.ASCII.GetString(bytes);
                 XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
 
                 int b = int.Parse(root.Element("RuleCount").Value);//= 0;
-                ruleConstructor.RuleCount = b;
-             //  RuleCount = int.Parse(mainRule[b]);
-              //  b++;
+                //if(ruleConstructor != null)
+                //    ruleConstructor.RuleCount = b;
+
                 List<string> text = new List<string>();
-                //b = int.Parse(root.Element("RuleCount").Value);//= 0;
                 for(int i = 0; i < b; i++)
                 {
                     text.Add(root.Element($"RuleName{i}").Value);
                 }
-                ruleConstructor.RuleName = text;
+               // if (ruleConstructor != null)
+                //    ruleConstructor.RuleName = text;
+               library.RuleName = text;
             }
         }
-        public static void SaveMainRule(RuleConstructor ruleConstructor)
+        public static void SaveMainRule( ActionLibrary library)
         {
             string path = Application.dataPath + $"/Resources/Data/Rule/MainRule"; ;
             if (path != "")
             {
                 XElement root = new XElement("root");
 
-                int b = ruleConstructor.RuleCount;
+                int b = library.RuleName.Count;
 
                 root.Add(new XElement("RuleCount", b));
 
                 for(int i = 0; i < b; i++)
                 {
-                    root.Add(new XElement($"RuleName{i}", ruleConstructor.RuleName[i]));
+                    root.Add(new XElement($"RuleName{i}", library.RuleName[i]));
                 }
 
 

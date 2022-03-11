@@ -9,7 +9,27 @@ public class CardConstructorUi : MonoBehaviour
 {
     public InputField NameFlied;
 
+    public Image GuildBanner;
+    public GameObject GuildSelector;
     public Transform BaseCard;
+
+    public Button GuildButton;
+
+    public Button RaceButton;
+    public Text RaceText;
+
+    public Button LegionButton;
+    public Text LegionText;
+
+    public Button CivilianButton;
+    public Text CivilianText;
+
+    public List<StatCaseUi> StatUi;
+    public List<StatCaseUi> RuleUi;
+    //public Button[] StatButtons;
+    //public Button[] RuleButtons;
+
+
 
     public Transform StatCard;
     public Transform TraitCard;
@@ -25,6 +45,8 @@ public class CardConstructorUi : MonoBehaviour
     public GameObject OrigCard;
     public GameObject OrigFiltr;
     public GameObject OrigButton;
+    public GameObject OrigButtonBanner;
+    public GameObject SelectorOrigin;
 
     //public Sprite[] Icon;
     //public string[] StatName;
@@ -42,8 +64,9 @@ public class CardConstructorUi : MonoBehaviour
 
 
     public Transform ConstantSelectorMain;
-    public Transform RuleSelectorMain;
 
     public Transform ConstantSelector;
+
+    public GameObject RuleSelectorMain;
     public Transform RuleSelector;
 }

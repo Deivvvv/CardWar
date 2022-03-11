@@ -41,5 +41,5 @@ public class Effect2
 //    public string Action;
     public Constant TargetConstant;
     public int Int;
-    public bool Plus;
+    public bool Plus = true;
 }

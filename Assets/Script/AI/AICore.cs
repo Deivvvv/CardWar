@@ -114,7 +114,7 @@ namespace AICore
             int s3 = 0;
             for (int i = 0; i < a; i++)
             {
-                s3 = my.CardColod[my.CardHand[i]].Stat[12];
+            //Allert    s3 = my.CardColod[my.CardHand[i]].Stat[12];
                 if (s3 <= m)
                     if (s3 > s2)
                     {

@@ -80,7 +80,7 @@ public class ColodConstructor : MonoBehaviour
         for (int i = 0; i < a; i++)
         {
             path = origPath + $"{i}";
-            XMLSaver.Load(path, colodConstructor);
+            XMLSaver.Load(origPathAlt, "Colod");
             NewCard(i);
         }
 
@@ -89,7 +89,7 @@ public class ColodConstructor : MonoBehaviour
         {
             LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
         }
-        XMLSaver.LoadCardSet(origPathAlt, colodConstructor);
+        //XMLSaver.LoadCardSet(origPathAlt, "Colod");
 
         SetNewSet();
     }
@@ -254,7 +254,7 @@ public class ColodConstructor : MonoBehaviour
         text.text = "";
         for (int i = 0; i < card.Stat.Count - 1; i++)
         {
-            if (card.Stat[i] > 0)
+            //if (card.Stat[i] > 0)
                 text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
         }
         // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
@@ -297,7 +297,7 @@ public class ColodConstructor : MonoBehaviour
         text.text = "";
         for (int i = 0; i < card.Stat.Count - 1; i++)
         {
-            if (card.Stat[i] > 0)
+           // if (card.Stat[i] > 0)
                 text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
         }
         // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;

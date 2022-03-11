@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: UnDead
   m_EditorClassIdentifier: 
   Name: Undead
-  CivilianGroups: []
+  CivilianGroups:
+  - {fileID: 11400000, guid: ead9d1b5e67bbb14a8442f11b8394d5a, type: 2}
   Effect: []

@@ -36,7 +36,7 @@ namespace BattleTable
                     effect.Size += size;
                     if (effect.Size <= 0)
                         card.Effect.RemoveAt(i);
-                    CardView.IViewEffect(card);
+                    CardView.ViewEffect(card);
                     return;
                 }
             }
@@ -58,7 +58,7 @@ namespace BattleTable
                 card.HiroMain.ShotHiro--;
 
             
-            CardView.IViewSlotClear(card);
+            CardView.ViewSlotClear(card);
             card.HiroMain.Slots[card.Slot].Position[card.Position] = null;
         }
 
@@ -152,13 +152,13 @@ namespace BattleTable
                 //            break;
                 //    }
                 //}
-                CardView.IViewSlotUi(card1);
+                CardView.ViewSlotUi(card1);
             }
 
             if (card2.Hp <= 0)
                 StatusSystem.IDie(card2);
             else
-                CardView.IViewSlotUi(card2);
+                CardView.ViewSlotUi(card2);
         }
 
         static void IShot(RealCard card1, RealCard card2)
@@ -174,7 +174,7 @@ namespace BattleTable
             if (card2.Hp <= 0)
                 StatusSystem.IDie(card2);
             else
-                CardView.IViewSlotUi(card2);
+                CardView.ViewSlotUi(card2);
         }
         #endregion
 
@@ -337,22 +337,22 @@ namespace BattleTable
 
             card.Name = cardBase.Name;
 
-            card.MeleeDMG = cardBase.Stat[0];
-            card.ShotDMG = cardBase.Stat[1];
-            card.NoArmorDMG = cardBase.Stat[2];
-            card.ArmorBreakerDMG = cardBase.Stat[3];
+            //card.MeleeDMG = cardBase.Stat[0];
+            //card.ShotDMG = cardBase.Stat[1];
+            //card.NoArmorDMG = cardBase.Stat[2];
+            //card.ArmorBreakerDMG = cardBase.Stat[3];
 
-            card.Hp = cardBase.Stat[4];
-            card.Helmet = cardBase.Stat[5];
-            card.Shild = cardBase.Stat[6];
-            card.Armor = cardBase.Stat[7];
+            //card.Hp = cardBase.Stat[4];
+            //card.Helmet = cardBase.Stat[5];
+            //card.Shild = cardBase.Stat[6];
+            //card.Armor = cardBase.Stat[7];
 
-            card.Agility1 = cardBase.Stat[8];
-            card.Agility2 = cardBase.Stat[9];
-            card.Agility3 = cardBase.Stat[10];
-            card.Agility4 = cardBase.Stat[11];
+            //card.Agility1 = cardBase.Stat[8];
+            //card.Agility2 = cardBase.Stat[9];
+            //card.Agility3 = cardBase.Stat[10];
+            //card.Agility4 = cardBase.Stat[11];
 
-            card.Mana = cardBase.Stat[12];
+            //card.Mana = cardBase.Stat[12];
 
 
             card.Line = hiro2.Team;
@@ -388,11 +388,11 @@ namespace BattleTable
             hiro1.CardHand.Remove(handNum);
 
             //прогрузка спосбностей
-            ILoadAction(card, cardBase);
-            CardView.IViewSlotUi(card);
+            LoadAction(card, cardBase);
+            CardView.ViewSlotUi(card);
         }
 
-        static void ILoadAction(RealCard card, CardBase cardBase)
+        static void LoadAction(RealCard card, CardBase cardBase)
         {
             card.Action = new List<int>();
             card.ShotAction = new List<int>();
@@ -477,8 +477,8 @@ namespace BattleTable
         }
         static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
-            int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Count - 1];
-            hiro1.ManaCurent -= b;
+          //  int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Count - 1];
+          //  hiro1.ManaCurent -= b;
 
             ICreateCard(hiro1, hiro2, handNum, slot, pos);
             stol.PostUse(true);
@@ -487,7 +487,7 @@ namespace BattleTable
         public static void IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
         {
             CardBase card = hiro1.CardColod[handNum];
-            int b = card.Stat[card.Stat.Count - 1];
+            int b = 0;// card.Stat[card.Stat.Count - 1];
             if (hiro1.ManaCurent >= b)
             {
                 bool targetHiro = false;
@@ -536,7 +536,7 @@ namespace BattleTable
     public static class CardView
     {
         public static GameSetting gameSetting;
-        public static void IViewCard(CardBase card)
+        public static void ViewCard(CardBase card)
         {
            // Transform trans = card.Body;
             CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
@@ -548,21 +548,31 @@ namespace BattleTable
             Ui.Name.text = card.Name;
 
             Ui.Stat.text = "";
-            for (int i = 0; i < card.Stat.Count - 1; i++)
+            for (int i = 0; i < card.Stat.Count; i++)
             {
-                if (card.Stat[i] > 0)
-                    Ui.Stat.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
+                if (card.StatSize[i] > 0)
+                {
+                    Ui.Stat.text += $"<sprite name={card.Stat[i].IconName}>{card.StatSize[i]} \n";
+                }
+                //Ui.Stat.text += $"{card.Stat[i].IconName} {card.StatSize[i]} ";
+            }
+            Ui.Trait.text = "";
+            for (int i = 0; i < card.Trait.Count; i++)
+            {
+                if (card.Trait[i] != "")
+                    Ui.Trait.text += $"{card.Trait[i]} \n";
+                //Ui.Stat.text += $"{card.Stat[i].IconName} {card.StatSize[i]} ";
             }
 
             //  Ui.Trait;
 
-            Ui.Mana.text = "" + card.Stat[card.Stat.Count - 1];
+            Ui.Mana.text = "" + card.Mana;
 
             //if(Ui.Count != null)
             //        Ui.Count.text;
         }
 
-        static void IViewSlot(RealCard newPosition, MeshRenderer mesh, string mood, int b, int team, RealCard curentCard, int line)
+        static void ViewSlot(RealCard newPosition, MeshRenderer mesh, string mood, int b, int team, RealCard curentCard, int line)
         {
 
             mesh.material = gameSetting.TargetColor[0];
@@ -627,7 +637,7 @@ namespace BattleTable
                 }
         }
 
-        public static void IViewLoadUi(Hiro newHiro, string mood, RealCard curentCard, Transform[] slots, int line)
+        public static void ViewLoadUi(Hiro newHiro, string mood, RealCard curentCard, Transform[] slots, int line)
         {
           //  Transform[] slots = null;
             Slot[] hiroSlot = newHiro.Slots;
@@ -652,33 +662,33 @@ namespace BattleTable
                 newSlot = hiroSlot[i];
 
                 b = 0;
-                IViewSlot(newSlot.Position[b], newSlot.Mesh[b], mood, b, team, curentCard, line);
+                ViewSlot(newSlot.Position[b], newSlot.Mesh[b], mood, b, team, curentCard, line);
 
                 b++;
-                IViewSlot(newSlot.Position[b], newSlot.Mesh[b], mood, b, team, curentCard, line);
+                ViewSlot(newSlot.Position[b], newSlot.Mesh[b], mood, b, team, curentCard, line);
             }
         }
 
-        public static void IViewEffect(RealCard card)
+        public static void ViewEffect(RealCard card)
         {
 
         }
-        public static void IViewTargetCard(CardBase cardBase, Transform Ui)
+        public static void ViewTargetCard(CardBase cardBase, Transform Ui)
         {
 
             Ui.gameObject.active = true;
             Transform trans = cardBase.Body;
             cardBase.Body = Ui;
-            IViewCard(cardBase);
+            ViewCard(cardBase);
             cardBase.Body = trans;
         }
 
-        static void IViewSlotHandler(int a, int b, TMP_Text text)
+        static void ViewSlotHandler(int a, int b, TMP_Text text)
         {
             if (a > 0)
                 text.text += $"<sprite name={gameSetting.NameIcon[b]}>{a} ";
         }
-        public static void IViewSlotUi(RealCard card)
+        public static void ViewSlotUi(RealCard card)
         {
             TMP_Text text = card.Ui;
             text.text = "";
@@ -704,14 +714,14 @@ namespace BattleTable
             int a = stat.Length;
             for (int i = 0; i < a; i++)
             {
-                IViewSlotHandler(stat[i], i, text);
+                ViewSlotHandler(stat[i], i, text);
             }
 
 
 
 
         }
-        public static void IViewSlotClear(RealCard card)
+        public static void ViewSlotClear(RealCard card)
         {
             card.Ui.text = "";
         }

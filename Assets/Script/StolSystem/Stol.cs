@@ -190,7 +190,7 @@ public class Stol : MonoBehaviour
             CardBase cardBase = hiro[line].CardColod[cardReal.Id];
 
 
-            CardView.IViewTargetCard(cardBase, Ui.TargetCard);
+            CardView.ViewTargetCard(cardBase, Ui.TargetCard);
         }
         else
             Ui.TargetCard.gameObject.active = false;
@@ -390,7 +390,7 @@ public class Stol : MonoBehaviour
         {
             b = cardSet.OrigCount[i];
             for (int i1 = 0; i1 < b; i1++)
-                XMLSaver.Load(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", stol);
+                XMLSaver.Load(Application.dataPath + gameSetting.origPath + $"{cardSet.OrigCard[i]}", "Stol");
         }
 
         //random generate
@@ -611,7 +611,7 @@ public class Stol : MonoBehaviour
 
         newHiro.CardColod[a].Body = GO.transform;
 
-        CardView.IViewCard(newHiro.CardColod[a]);
+        CardView.ViewCard(newHiro.CardColod[a]);
 
         if (b == 0)
             GO.GetComponent<Button>().onClick.AddListener(() => GrabCard(a));
@@ -624,8 +624,8 @@ public class Stol : MonoBehaviour
     #region Stol
     void CallTable(string mood)
     {
-        CardView.IViewLoadUi(hiro[0], mood, curentCard, Ui.MySlot, curentPlayer);
-        CardView.IViewLoadUi(hiro[1], mood, curentCard, Ui.EnemySlot, curentPlayer);
+        CardView.ViewLoadUi(hiro[0], mood, curentCard, Ui.MySlot, curentPlayer);
+        CardView.ViewLoadUi(hiro[1], mood, curentCard, Ui.EnemySlot, curentPlayer);
     }
 
     void GrabCard(int a)
@@ -635,14 +635,14 @@ public class Stol : MonoBehaviour
         CardBase cardBase = newHiro.CardColod[a];
         int b = cardBase.Stat.Count - 1;
 
-        if (newHiro.ManaCurent >= cardBase.Stat[b])
-        {
-            useCard = a;
+        //if (newHiro.ManaCurent >= cardBase.Stat[b])
+        //{
+        //    useCard = a;
 
-            CardView.IViewTargetCard(cardBase, Ui.UseCard);
+        //    CardView.IViewTargetCard(cardBase, Ui.UseCard);
 
-            CallTable("SetCard");
-        }
+        //    CallTable("SetCard");
+        //}
     }
 
 
@@ -671,7 +671,7 @@ public class Stol : MonoBehaviour
             }
 
 
-            CardView.IViewTargetCard(hiro[0].CardColod[curentCard.Id], Ui.UseCard);
+            CardView.ViewTargetCard(hiro[0].CardColod[curentCard.Id], Ui.UseCard);
         }
     }
 
