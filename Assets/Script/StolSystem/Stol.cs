@@ -49,17 +49,17 @@ public class Stol : MonoBehaviour
     void Start()
     {
         stol = gameObject.GetComponent<Stol>();
-        Core.ILoadGameSetting(gameSetting);
-        Core.ISetStol(stol);
+        Core.LoadGameSetting(gameSetting);
+        Core.SetStol(stol);
 
         CreateHiro(false);
         CreateHiro(true);
 
-        int r = Random.Range(0, 2);
-        if (r == 0)
-            curentPlayer = 0;
-        else
-            curentPlayer = 1;
+        //int r = Random.Range(0, 2);
+        //if (r == 0)
+        //    curentPlayer = 0;
+        //else
+        //    curentPlayer = 1;
         curentPlayer = 1;
         NewTurn();
         Ui.NextTurn.onClick.AddListener(() => NewTurn());

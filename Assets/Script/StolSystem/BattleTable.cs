@@ -9,18 +9,46 @@ namespace BattleTable
 {
     public class Core
     {
-        public static void ILoadGameSetting(GameSetting gameSetting)
+        public static void LoadGameSetting(GameSetting gameSetting)
         {
             BattleSystem.gameSetting = gameSetting;
             TableRule.gameSetting = gameSetting;
             CardView.gameSetting = gameSetting;
+            GameEventSystem.gameSetting = gameSetting;
         }
-        public static void ISetStol(Stol stol)
+        public static void SetStol(Stol stol)
         {
             BattleSystem.stol = stol;
             TableRule.stol = stol;
+            GameEventSystem.stol = stol;
         }
     }
+
+    class GameEventSystem
+    {
+        public static GameSetting gameSetting;
+        public static Stol stol;
+
+        /*
+         ¬ чей ход выполн€етс€ эффект
+        в какую фазу выполн€ем условие
+         
+        три базовых действи€
+
+        возможность разыграть карту
+        действие атаки
+        действие смерти
+         */
+        private void Test()
+        {
+            //List<>
+        }
+
+
+
+    }
+
+
 
     class StatusSystem : MonoBehaviour
     {

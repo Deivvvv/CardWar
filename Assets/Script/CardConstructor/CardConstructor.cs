@@ -299,7 +299,7 @@ public class CardConstructor : MonoBehaviour
         origPath = Application.dataPath + $"/Resources/Data/Hiro";
         origPathAlt = Application.dataPath + $"/Resources/Data";
 
-        Core.ILoadGameSetting(gameSetting);
+        Core.LoadGameSetting(gameSetting);
         cardConstructor = gameObject.GetComponent<CardConstructor>();
 
 

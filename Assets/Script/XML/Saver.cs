@@ -13,6 +13,7 @@ namespace Saver
     {
         private static GameSetting gameSetting;
         private static CardConstructor cardConstructor;
+        private static RuleConstructor ruleConstructor;
         private static ColodConstructor colodConstructor;
         private static Stol stol;
 
@@ -357,6 +358,77 @@ string someString = Encoding.ASCII.GetString(bytes);
             }
         }
 
+
+
+        private static XElement SaveRuleRoot(IfAction ifAction, XElement root, string text)
+        {
+            IfCore ifCore = null;
+
+            root.Add(new XElement($"{text}Prioritet", ifAction.Prioritet));
+
+            root.Add(new XElement($"{text}MainCore1", ifAction.MainCore[0]));
+            root.Add(new XElement($"{text}MainCore2", ifAction.MainCore[1]));
+
+
+            root.Add(new XElement($"{text}CoreCount", ifAction.Core.Count));
+            string str = "";// + b2 = ifAction.Core.; 
+            for (int i2 = 0; i2 < ifAction.Core.Count; i2++)
+            {
+                ifCore = ifAction.Core[i2];
+                str = "" + ifCore.Core;
+                for (int i3 = 0; i3 < ifCore.IntData.Count; i3++)
+                {
+                    str += $"_{ifCore.IntData[i3]}";
+                }
+                root.Add(new XElement($"{text}Core{i2}", str));
+            }
+            return root;
+        }
+
+        private static IfAction LoadRuleRoot(XElement root, string text)
+        {
+
+            IfCore ifCore = null;
+            IfAction ifAction = new IfAction();
+            //ifAction.LocalId = i;
+            //Debug.Log(ifAction.LocalId);
+
+            ifAction.Prioritet = int.Parse(root.Element($"{text}Prioritet").Value);
+
+            ifAction.MainCore[0] = int.Parse(root.Element($"{text}MainCore1").Value);
+            ifAction.MainCore[1] = int.Parse(root.Element($"{text}MainCore2").Value);
+
+
+            ifAction.Core = new List<IfCore>();
+            //ifCore = ruleConstructor.NewIfCore();
+            int b2 = int.Parse(root.Element($"{text}CoreCount").Value);
+
+            for (int i2 = 0; i2 < b2; i2++)
+            {
+                ifCore = new IfCore();
+                ifCore.TextData = new List<string>();
+                ifCore.IntData = new List<int>();
+                string str = root.Element($"{text}Core{i2}").Value;
+
+                string[] number = str.Split('_');
+
+                ifCore.Core = int.Parse(number[0]);
+
+                for (int i3 = 1; i3 < number.Length; i3++)
+                {
+                    ifCore.TextData.Add("");
+                    ifCore.IntData.Add(int.Parse(number[i3]));
+                }
+
+                //ifAction.Core.Add(int.Parse(root.Element($"{text}Core{i2}").Value));
+                ifAction.Core.Add(ifCore);
+
+                //ruleConstructor.PreLableIfAction(ifAction, ifCore);
+
+            }
+            return ifAction;
+        }
+
         public static void SaveRule(List<string> mainRule, List<TriggerAction> triggerAction,int a)
         {
             string path = Application.dataPath + $"/Resources/Data/Rule/Rule{a}"; ;
@@ -385,6 +457,7 @@ string someString = Encoding.ASCII.GetString(bytes);
                 string text = "";
                 int b1 = 0;
                 int b2 = 0;
+
                 for (int i = 0; i < b; i++)
                 {
                     triggerAction1 = triggerAction[i];
@@ -398,27 +471,7 @@ string someString = Encoding.ASCII.GetString(bytes);
                     {
                         ifAction = triggerAction[i].PlusAction[i1];
                         text = $"Trigger{i}PlusAction{i1}";
-
-                        root.Add(new XElement($"{text}Prioritet", ifAction.Prioritet));
-
-                        b2 = ifAction.IntData.Count;
-                        root.Add(new XElement($"{text}IntDataCount", b2));
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            root.Add(new XElement($"{text}IntData{i2}", ifAction.IntData[i2]));
-                        }
-
-                        root.Add(new XElement($"{text}MainCore1", ifAction.MainCore[0]));
-                        root.Add(new XElement($"{text}MainCore2", ifAction.MainCore[1]));
-
-
-                        b2 = ifAction.Core.Count;
-                        root.Add(new XElement($"{text}CoreCount", b2));
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            root.Add(new XElement($"{text}Core{i2}", ifAction.Core[i2]));
-                        }
-
+                        SaveRuleRoot(ifAction, root, text);
 
                     }
 
@@ -430,28 +483,7 @@ string someString = Encoding.ASCII.GetString(bytes);
                     {
                         ifAction = triggerAction[i].MinusAction[i1];
                         text = $"Trigger{i}MinusAction{i1}";
-
-                        root.Add(new XElement($"{text}Prioritet", ifAction.Prioritet));
-
-                        b2 = ifAction.IntData.Count;
-                        root.Add(new XElement($"{text}IntDataCount", b2));
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            root.Add(new XElement($"{text}IntData{i2}", ifAction.IntData[i2]));
-                        }
-
-                        root.Add(new XElement($"{text}MainCore1", ifAction.MainCore[0]));
-                        root.Add(new XElement($"{text}MainCore2", ifAction.MainCore[1]));
-
-
-                        b2 = ifAction.Core.Count;
-                        root.Add(new XElement($"{text}CoreCount", b2));
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            root.Add(new XElement($"{text}Core{i2}", ifAction.Core[i2]));
-                        }
-
-
+                        SaveRuleRoot(ifAction, root, text);
                     }
 
 
@@ -478,9 +510,10 @@ string someString = Encoding.ASCII.GetString(bytes);
                 File.WriteAllText($"{path}.xml", saveDoc.ToString());
             }
         }
-        public static void LoadRule(RuleConstructor ruleConstructor, int a)
+        public static void LoadRule(RuleConstructor _ruleConstructor, int a)
         {
-            string path = Application.dataPath + $"/Resources/Data/Rule/Rule{a}"; ;
+            ruleConstructor = _ruleConstructor;
+            string path = Application.dataPath + $"/Resources/Data/Rule/Rule{a}";
             if (path != "")
             {
                 List<string> mainRule = new List<string>();
@@ -519,63 +552,21 @@ string someString = Encoding.ASCII.GetString(bytes);
                     triggerAction1.TargetTime = int.Parse(root.Element($"TargetTime{i}").Value);
 
                     b1 = int.Parse(root.Element($"PlusActionCount{i}").Value);
+                    Debug.Log(b1);
                     for (int i1 = 0; i1 < b1; i1++)
                     {
-                        ifAction = new IfAction();
                         text = $"Trigger{i}PlusAction{i1}";
+                        triggerAction1.PlusAction.Add(LoadRuleRoot(root, text));
 
-                        ifAction.Prioritet = int.Parse(root.Element($"{text}Prioritet").Value);
-
-                        b2 = int.Parse(root.Element($"{text}IntDataCount").Value);
-                        ifAction.IntData = new List<int>();
-                        ifAction.TextData = new List<string>();
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            ifAction.TextData.Add("");
-                            ifAction.IntData.Add(int.Parse(root.Element($"{text}IntData{i2}").Value));
-                        }
-
-                        ifAction.MainCore[0] = int.Parse(root.Element($"{text}MainCore1").Value);
-                        ifAction.MainCore[1] = int.Parse(root.Element($"{text}MainCore2").Value);
-
-
-                        ifAction.Core = new List<int>();
-                        b2 = int.Parse(root.Element($"{text}CoreCount").Value);
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            ifAction.Core.Add(int.Parse(root.Element($"{text}Core{i2}").Value));
-                        }
-                        triggerAction1.PlusAction.Add(ifAction);
+                        //ruleConstructor.LableIfAction(ifAction, "Plus", i);
                     }
 
                     b1 = int.Parse(root.Element($"MinusActionCount{i}").Value);
                     for (int i1 = 0; i1 < b1; i1++)
                     {
-                        ifAction = new IfAction();
                         text = $"Trigger{i}MinusAction{i1}";
-
-                        ifAction.Prioritet = int.Parse(root.Element($"{text}Prioritet").Value);
-
-                        b2 = int.Parse(root.Element($"{text}IntDataCount").Value);
-                        ifAction.IntData = new List<int>();
-                        ifAction.TextData = new List<string>();
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            ifAction.TextData.Add("");
-                            ifAction.IntData.Add(int.Parse(root.Element($"{text}IntData{i2}").Value));
-                        }
-
-                        ifAction.MainCore[0] = int.Parse(root.Element($"{text}MainCore1").Value);
-                        ifAction.MainCore[1] = int.Parse(root.Element($"{text}MainCore2").Value);
-
-
-                        ifAction.Core = new List<int>();
-                        b2 = int.Parse(root.Element($"{text}CoreCount").Value);
-                        for (int i2 = 0; i2 < b2; i2++)
-                        {
-                            ifAction.Core.Add(int.Parse(root.Element($"{text}Core{i2}").Value));
-                        }
-                        triggerAction1.MinusAction.Add(ifAction);
+                        triggerAction1.MinusAction.Add(LoadRuleRoot(root, text));
+                        //ruleConstructor.LableIfAction(ifAction, "Minus", i);
                     }
 
                     b1 = int.Parse(root.Element($"ActionCount{i}").Value);

@@ -163,6 +163,7 @@ public class RuleConstructor : MonoBehaviour
                     {
                         int i1 = int.Parse(com[2]);
                         int b1 = int.Parse(com[3]);
+                        int b2 = int.Parse(com[4]);
 
                         text = com[1];
                       //  Debug.Log(com[1] == "Action");
@@ -185,25 +186,25 @@ public class RuleConstructor : MonoBehaviour
                             {
                                 case ("Plus"):
                                     ifAction = triggerAction.PlusAction[i1];
-
-                                    if (b1 == -1)
-                                        ifAction.Prioritet = i;
-                                    else
-                                        ifAction.IntData[b1] = i;
                                     break;
 
                                 case ("Minus"):
                                     ifAction = triggerAction.MinusAction[i1];
-
-                                    if (b1 == -1)
-                                        ifAction.Prioritet = i;
-                                    else
-                                        ifAction.IntData[b1] = i;
                                     break;
                             }
 
-                            PreLableIfAction(ifAction);
-                            LableIfAction(ifAction, text, c);
+                            if (b1 == -1)
+                                ifAction.Prioritet = i;
+                            else
+                            {
+                                IfCore ifCore = ifAction.Core[b2];
+
+                                ifCore.IntData[b1] = i;
+                                SwitchRuleText(ifCore, b1, "Int");
+
+                                //PreLableIfAction(ifAction, ifCore);
+                                LableIfAction(ifAction, text, c);
+                            }
 
                         }
                     }
@@ -245,7 +246,7 @@ public class RuleConstructor : MonoBehaviour
             IAddLink(-1, 0, color1, "Switch_LevelCap", $"\nМаксимальный уровень - {LevelCap}");
 
 
-        IAddLink(-1, 0, color1, "Switch_CostMovePoint", $"\nОчков хода за применение (? - может сделать в блоке действий или макро действий?) {CostMovePoint}");
+       // IAddLink(-1, 0, color1, "Switch_CostMovePoint", $"\nОчков хода за применение (? - может сделать в блоке действий или макро действий?) {CostMovePoint}");
 
         if (!Player)
             IAddLink(-1, 0, color1, "Switch_Player", $"\nУровень доступа - Разработчик");
@@ -433,7 +434,7 @@ public class RuleConstructor : MonoBehaviour
 
         TriggerAction triggerAction = triggerActions[a];
 
-        Debug.Log($"{a}  {i}");
+     //   Debug.Log($"{a}  {i}");
         string text1 = "";
         string text2 = "";
         int c = 0;
@@ -445,7 +446,7 @@ public class RuleConstructor : MonoBehaviour
         text2 = $"\n-Цель {frame.AllTriggers[action.Mood].Name}";
 
         text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
-        Debug.Log(d);
+      //  Debug.Log(d);
 
         linkText = $"Trigger_{a}_Action_{i}_TargetPalyer_Action";
         text2 = $"\n-Целевой игрок {frame.PlayerString[action.TargetPalyer]}";
@@ -453,7 +454,7 @@ public class RuleConstructor : MonoBehaviour
         text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
 
 
-        Debug.Log(d);
+       // Debug.Log(d);
         c = action.EffectData;
         linkText = $"Trigger_{a}_Effects_{i}_{d}_Action";
         text2 = $"\n-Эффект {library.Effects[c].Name}";
@@ -461,7 +462,7 @@ public class RuleConstructor : MonoBehaviour
 
         text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
 
-        Debug.Log(d);
+       // Debug.Log(d);
         c = action.RelizeConstant;
         linkText = $"Trigger_{a}_Constant_{i}_{d}_Action";
         text2 = $"\n-Целевой парметр {library.Constants[c].Name}";
@@ -470,7 +471,7 @@ public class RuleConstructor : MonoBehaviour
         text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
 
 
-        Debug.Log(d);
+       // Debug.Log(d);
         c = action.TargetConstant;
         linkText = $"Trigger_{a}_Constant_{i}_{d}_Action";
         if (c != -1)
@@ -489,7 +490,7 @@ public class RuleConstructor : MonoBehaviour
         text2 = $"\n-Добавочное число {c}";
         d++;
 
-        Debug.Log(d);
+       // Debug.Log(d);
         text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
 
 
@@ -509,11 +510,19 @@ public class RuleConstructor : MonoBehaviour
         triggerAction.RootText = text;
     }
 
+    public IfCore NewIfCore()
+    {
+        IfCore ifCore = new IfCore();
+        ifCore.TextData = new List<string>();
+        ifCore.IntData = new List<int>();
+
+        return ifCore;
+    }
+
     void CoreLableIfAction(IfAction ifAction, int a, int b)
     {
-        ifAction.TextData = new List<string>();
-        ifAction.IntData = new List<int>();
-        ifAction.Core = new List<int>();
+        ifAction.Core = new List<IfCore>();
+        ifAction.Core.Add( NewIfCore());
 
         ifAction.MainCore[0] = a;
         ifAction.MainCore[1] = b;
@@ -529,7 +538,8 @@ public class RuleConstructor : MonoBehaviour
 
         if (cAlt > b)
         {
-            ifAction.Core.Add(d);
+            ifAction.Core.Add(NewIfCore());
+            ifAction.Core[b].Core = d;
         }
         else 
         {
@@ -540,7 +550,7 @@ public class RuleConstructor : MonoBehaviour
                 }
 
 
-            ifAction.Core[c] = d;
+            ifAction.Core[c].Core = d;
 
         }
 
@@ -551,116 +561,79 @@ public class RuleConstructor : MonoBehaviour
                 return;
             }
 
+        SwicthIfCore(ifAction, c);
 
-        PreLableIfAction(ifAction);
+        PreLableIfAction(ifAction, ifAction.Core[c]);
 
         LableIfAction(ifAction, ifText,t);
     }
-    void PreLableIfAction(IfAction ifAction)
+
+    void SwitchRuleText(IfCore ifCore, int a, string rule)
     {
-        RuleFarmeMacroCase form = null;
-        int b = ifAction.Core.Count;
-        int a2 = 0;
-        int a3 = 0;
-        int b1 = 0;
-
-        for (int i = 0; i < b; i++)
+        int b = ifCore.IntData[a];
+       // ifCore.IntData[a] = b;
+        string str = "";
+        switch (rule)
         {
-            form = ifAction.Form.Form[ifAction.Core[i]];
+            case ("Legion"):
+                str = library.Legions[b].Name;
+                break;
+            case ("Constant"):
+                str = library.Constants[b].Name;
+                break;
+            case ("Group"):
+                str = library.CivilianGroups[b].Name;
+                break;
+            case ("GroupLevel"):
+                Debug.Log($"!Erorr! {rule}");
+                //library.CivilianGroups[b].Tituls[a].Name;
+                // str = library.CivilianGroups[b].Name;// need fix it
+                break;
+            case ("Int"):
+                str = $"{b}";
+                break;
+            case ("Bool"):
+                str = frame.BoolString[b];
+                break;
+            case ("Equal"):
+                str = frame.EqualString[b];
+                break;
+            default:
+                Debug.Log($"!Erorr! {rule}");
+                break;
+        }
+        ifCore.TextData[a] = str;
+    }
 
-            b1 = form.Form.Length;
-            for (int i1 = 0; i1 < b1; i1++)
-            {
-                if(a2 <= ifAction.IntData.Count)
-                {
-                    ifAction.IntData.Add(0);
-                    ifAction.TextData.Add("");
-                }
+    void SwicthIfCore(IfAction ifAction, int a)
+    {
 
-                a3 = ifAction.IntData[a2];
-                switch (form.Form[i1].Rule)
-                {
-                    case ("Legion"):
-                        if (a3 <= library.Legions.Count)
-                        {
-                           // Debug.Log(a3);
-                            ifAction.IntData[a2] = 0;
-                            ifAction.TextData[a2] = library.Legions[0].Name;
-                        }
-                        else
-                            ifAction.TextData[a2] = library.Legions[a3].Name;
-                        break;
-                    case ("Constant"):
-                        if (a3 <= library.Constants.Count)
-                        {
-                         //   Debug.Log(a3);
-                            ifAction.IntData[a2] = 0;
-                            ifAction.TextData[a2] = library.Constants[0].Name;
-                        }
-                        else
-                            ifAction.TextData[a2] = library.Constants[a3].Name;
-                        break;
+        IfCore ifCore = ifAction.Core[a];
+        RuleFarmeMacroCase form = ifAction.Form.Form[ifCore.Core];
 
-                    case ("Group"):
-                        if (a3 <= library.CivilianGroups.Count)
-                        {
-                           // Debug.Log(a3);
-                            ifAction.IntData[a2] = 0;
-                            ifAction.TextData[a2] = library.CivilianGroups[0].Name;
-                        }
-                        else
-                            ifAction.TextData[a2] = library.CivilianGroups[a3].Name;
-                        break;
+        ifCore = NewIfCore();
+        for (int i = 0; i < form.Form.Length; i++)
+        {
+            ifCore.IntData.Add(0);
+            ifCore.TextData.Add("");
+        }
+        ifAction.Core[a] = ifCore;
+        PreLableIfAction(ifAction, ifCore);
+    }
 
-                    case ("GroupLevel"):
-                        if (a3 <= library.CivilianGroups.Count)
-                        {
-                            ifAction.IntData[a2] = 0;
-                            ifAction.TextData[a2] = library.CivilianGroups[0].Name;
-                        }
-                        else
-                            ifAction.TextData[a2] = library.CivilianGroups[a3].Name;
-                        break;
+    public void PreLableIfAction(IfAction ifAction , IfCore ifCore)
+    {
+        RuleFarmeMacroCase form = ifAction.Form.Form[ifCore.Core];
 
-                    case ("Int"):
-                        ifAction.TextData[a2] = $"{ ifAction.IntData[a2]}";
-                    //    ifAction.IntData[a2] = 0;
-                        break;
 
-                    case ("Bool"):
-                        if (a3 <= frame.BoolString.Length)
-                        {
-                         //   Debug.Log(a3);
-                            ifAction.IntData[a2] = 0;
-                            ifAction.TextData[a2] = frame.BoolString[0];
-                        }
-                        else
-                            ifAction.TextData[a2] = frame.BoolString[a3];
-                        break;
-
-                    case ("Equal"):
-                        if (a3 <= frame.EqualString.Length)
-                        {
-                          //  Debug.Log(a3);
-                            ifAction.IntData[a2] = 0;
-                            ifAction.TextData[a2] = frame.EqualString[0];
-                        }
-                        else
-                            ifAction.TextData[a2] = frame.EqualString[a3];
-                        break;
-                    default:
-                        Debug.Log($"!Erorr! {form.Form[i].Rule}");
-                        break;
-                }
-
-                a2++;
-            }
-
+        for(int i =0; i < ifCore.IntData.Count; i++)
+        {
+            SwitchRuleText(ifCore, i, form.Form[i].Rule);
         }
     }
 
 
-    void LableIfAction(IfAction ifAction, string ifText, int t)
+    public void LableIfAction(IfAction ifAction, string ifText, int t)
     {
         string linkText = "";
         string colorText = "#F4FF04";
@@ -671,11 +644,13 @@ public class RuleConstructor : MonoBehaviour
         int a1 = ifAction.MainCore[1];
         int a2 = 0;
         RuleFarmeMacroCase form = null;
+        IfCore ifCore = null;
         string text = "";
         string text1 = "";
         string text2 = "";
 
 
+        Debug.Log(ifAction.LocalId);
         linkText = $"Trigger_{t}_Int_{ifAction.LocalId}_-1_{ifText}";
 
         text2 = $"\n\n-Приоритет({ifAction.Prioritet})  ";
@@ -708,10 +683,12 @@ public class RuleConstructor : MonoBehaviour
         int l = ifAction.LocalId;
         for (int i = 0; i < b; i++)
         {
+            a2 = 0;
             int a3 = -1;
             int a4 = -1;
 
-            a = ifAction.Core[i];
+            ifCore = ifAction.Core[i];
+            a = ifCore.Core;
 
             form = ifAction.Form.Form[a];
 
@@ -731,9 +708,10 @@ public class RuleConstructor : MonoBehaviour
                 if (a1 == ifAction.Form.Form[i - 1].Id)
                     a4 = 0;
 
-
             for (int i1 = i; i1 < a4; i1++)
             {
+               // Debug.Log(i);
+                //  Debug.Log(a4);
                 //  Debug.Log($"{a} {ifAction.Form.Form.Count - 1} {i1} {b1}");
                 if (a1 > ifAction.Form.Form[i1].Id)
                     i1 = a4;
@@ -747,9 +725,11 @@ public class RuleConstructor : MonoBehaviour
                         }
                         else if (a1 != ifAction.Form.Form[i1 - 1].Id)
                         {
+                           // Debug.Log(ifAction.Form.Form[i1].Id);
+                           // Debug.Log(ifAction.Form.Form[i1 - 1].Id);
                             //  Debug.Log($"i1_{i1}");
                             text2 = $"Далее - \n";
-                            linkText = $"Trigger_{t}_NextData_{l}_{i}_{ifText}";
+                            linkText = $"Trigger_{t}_NextData_{l}_{i}_{ifText}_{i1}";
                             text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
                             //   Debug.Log($"Ok");
                             i1 = a4;
@@ -758,29 +738,32 @@ public class RuleConstructor : MonoBehaviour
             }
 
 
-
             //    NextData
+            //for()
             for (int i1 = 0; i1 < b1; i1++)
             {
                 text1 += "---";
                 text = form.Form[i1].Rule;
 
-                linkText = $"Trigger_{t}_{text}_{l}_{a2}_{ifText}";
-
-                text = ifAction.TextData[a2];
-
+                linkText = $"Trigger_{t}_{text}_{l}_{a2}_{ifText}_{i}";
+                //Debug.Log(linkText);
+                //Debug.Log(ifCore.TextData.Count);
+                //Debug.Log(i1);
+                text = ifCore.TextData[i1];
                 text2 = form.Form[i1].Text;
-
                 text2 = text2.Replace("{Rule}", $" {text} ");
 
 
                 text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
 
+               // Debug.Log(linkText);
                 a2++;
             }
+           // Debug.Log(linkText);
 
         }
 
+        //Debug.Log(ifText);
         if (a < ifAction.Form.Form.Count-1)
             if (ifAction.Form.Form[a].Id < ifAction.Form.Form[a+1].Id)
                 if(ifAction.Form.Form[a + 1].Form.Length>0)
@@ -790,6 +773,7 @@ public class RuleConstructor : MonoBehaviour
                     text1 += $"<link={linkText}><color={colorText}>{text2}</color></link>";
                 }
 
+       // Debug.Log(ifText);
 
         ifAction.Text = text1;
 
@@ -894,6 +878,7 @@ public class RuleConstructor : MonoBehaviour
                     TriggerAction triggerAction = triggerActions[i];
 
                     IfAction ifAction = null;
+                    IfCore ifCore = null;
 
                     if (com.Length > 3)
                     {
@@ -920,7 +905,14 @@ public class RuleConstructor : MonoBehaviour
                                 break;
                         }
 
-                        stringMood = $"{i}_{com[5]}_{com[3]}_{com[4]}";
+                        if (com.Length > 6)
+                        {
+                            ifCore = ifAction.Core[int.Parse(com[6])];
+
+                            stringMood = $"{i}_{com[5]}_{com[3]}_{com[4]}_{com[6]}";
+                        }
+                        else
+                            stringMood = $"{i}_{com[5]}_{com[3]}_{com[4]}";
                     }
                     switch (com[2])
                     {
@@ -988,31 +980,29 @@ public class RuleConstructor : MonoBehaviour
 
 
                         case ("Bool"):
-                            int a = ifAction.IntData[b1];
-                            text = "";
+                            int a = ifCore.IntData[b1];
 
                             a++;
                             if (a >= frame.BoolString.Length)
                                 a = 0;
 
-                            text = frame.BoolString[a];
-                            ifAction.IntData[b1] = a;
-                            ifAction.TextData[b1] = text;
+                            ifCore.IntData[b1] =a;
+                            PreLableIfAction(ifAction, ifCore);
+
                             LableIfAction(ifAction, com[5],i);
 
                             break;
                         case ("Equal"):
-                            a = ifAction.IntData[b1];
-                            text = "";
+                            a = ifCore.IntData[b1];
 
                             a++;
                             if (a >= frame.EqualString.Length)
                                 a = 0;
 
-                            text = frame.EqualString[a];
-                            ifAction.IntData[b1] = a;
-                            ifAction.TextData[b1] = text;
-                            LableIfAction(ifAction, com[5],i);
+                            ifCore.IntData[b1] = a;
+                            PreLableIfAction(ifAction, ifCore);
+
+                            LableIfAction(ifAction, com[5], i);
                             break;
 
                         case ("Core1"):
@@ -1042,7 +1032,7 @@ public class RuleConstructor : MonoBehaviour
 
                         case ("NextData"):
 
-                            a = ifAction.Core[b1];
+                            a = ifAction.Core[b1].Core;
                             int a1 = ifAction.Form.Form[a].Id;
                             bool load = false;
                             int a4 = ifAction.Form.Form.Count;
@@ -1099,7 +1089,7 @@ public class RuleConstructor : MonoBehaviour
 
                         case ("NewData"):
                             a = ifAction.Core.Count;
-                            a = 1 + ifAction.Core[a - 1];
+                            a = 1 + ifAction.Core[a - 1].Core;
                             SwitchLableIfAction(ifAction,  b1,a, com[5], i);
 
                             break;
@@ -1121,15 +1111,15 @@ public class RuleConstructor : MonoBehaviour
                             {
                                 case ("Plus"):
                                     if (b1 == -1)
-                                        Ui.TextInput.text = "" + triggerAction.PlusAction[b].Prioritet;
+                                        Ui.TextInput.text = "" + ifAction.Prioritet;
                                     else
-                                        Ui.TextInput.text = "" + triggerAction.PlusAction[b].IntData[b1];
+                                        Ui.TextInput.text = "" + ifCore.IntData[b1];
                                     break;
                                 case ("Minus"):
                                     if (b1 == -1)
-                                        Ui.TextInput.text = "" + triggerAction.MinusAction[b].Prioritet;
+                                        Ui.TextInput.text = "" + ifAction.Prioritet;
                                     else
-                                        Ui.TextInput.text = "" + triggerAction.MinusAction[b].IntData[b1];
+                                        Ui.TextInput.text = "" + ifCore.IntData[b1];
                                     break;
                                 case ("Action"):
                                         Ui.TextInput.text = "" + triggerAction.Action[b].IntData;
@@ -1150,18 +1140,18 @@ public class RuleConstructor : MonoBehaviour
 
 
                         case ("GroupLevel"):
-                            a = ifAction.IntData[b1];
-                            b = ifAction.IntData[b1-2];
-                            text = "";
 
+                            a = ifCore.IntData[b1];
+                            b = ifCore.IntData[b1-2];
+                            text = "";
 
                             a++;
                             if (a >= library.CivilianGroups[b].Tituls.Count)
                                 a = 0;
 
                             text = library.CivilianGroups[b].Tituls[a].Name;///frame.EqualString[a];
-                            ifAction.IntData[b1] = a;
-                            ifAction.TextData[b1] = text;
+                            ifCore.IntData[b1] = a;
+                            ifCore.TextData[b1] = text;
                             LableIfAction(ifAction, com[5], i);
                             break;
 
@@ -1372,25 +1362,25 @@ public class RuleConstructor : MonoBehaviour
     }
     void SwitchLibrary(int a, string text1)
     {
-        string text = "";
-        switch (text1)
-        {
-            case ("Legion"):
-                text = library.Legions[a].Name;
-                break;
+       // string text = "";
+        //switch (text1)
+        //{
+        //    case ("Legion"):
+        //        text = library.Legions[a].Name;
+        //        break;
 
-            case ("CivilianGroups"):
-                text = library.CivilianGroups[a].Name;
-                break;
+        //    case ("CivilianGroups"):
+        //        text = library.CivilianGroups[a].Name;
+        //        break;
 
-            case ("Constants"):
-                text = library.Constants[a].Name;
-                break;
+        //    case ("Constants"):
+        //        text = library.Constants[a].Name;
+        //        break;
 
-            case ("Effects"):
-                text = library.Effects[a].Name;
-                break;
-        }
+        //    case ("Effects"):
+        //        text = library.Effects[a].Name;
+        //        break;
+        //}
 
         string[] com = stringMood.Split('_');
 
@@ -1418,10 +1408,11 @@ public class RuleConstructor : MonoBehaviour
                     //    break;
 
             }
-
-            ifAction.TextData[i] = text;
-            ifAction.IntData[i] = a;
-
+            i2 = int.Parse(com[4]);
+            IfCore ifCore = ifAction.Core[i2];
+            //ifAction.CoreTextData[i] = text;
+            ifCore.IntData[i] = a;
+            PreLableIfAction(ifAction, ifCore);
             LableIfAction(ifAction, text1, i1);
         }
         else
@@ -1516,11 +1507,15 @@ public class RuleConstructor : MonoBehaviour
             for (int i1 = 0; i1 < b1; i1++)
             {
                 ifAction = triggerAction1.PlusAction[i1];
-                ifAction.LocalId = i;
+                ifAction.LocalId = i1;
 
                 ifAction.Form = frame.AllTriggers[ifAction.MainCore[0]].Form[ifAction.MainCore[1]];
+                int b2 = ifAction.Core.Count;
+                for (int i2 = 0; i2 < b2; i2++)
+                {
+                    PreLableIfAction(ifAction, ifAction.Core[i2]);
+                }
 
-                PreLableIfAction(ifAction);
                 LableIfAction(ifAction, "Plus", i);
             }
             TriggerPlusText(i);
@@ -1530,11 +1525,14 @@ public class RuleConstructor : MonoBehaviour
             for (int i1 = 0; i1 < b1; i1++)
             {
                 ifAction = triggerAction1.MinusAction[i1];
-                ifAction.LocalId = i;
+                ifAction.LocalId = i1;
 
                 ifAction.Form = frame.AllTriggers[ifAction.MainCore[0]].Form[ifAction.MainCore[1]];
 
-                PreLableIfAction(ifAction);
+                for (int i2 = 0; i2 < ifAction.Core.Count; i2++)
+                {
+                    PreLableIfAction(ifAction, ifAction.Core[i2]);
+                }
                 LableIfAction(ifAction, "Minus", i);
             }
             TriggerMinusText(i);
@@ -1542,7 +1540,7 @@ public class RuleConstructor : MonoBehaviour
             b1 = triggerAction1.Action.Count;
             for (int i1 = 0; i1 < b1; i1++)
             {
-               // ruleAction = triggerAction1.Action[i1];
+                // ruleAction = triggerAction1.Action[i1];
                 CreateActionText(i, i1);
             }
             TriggerActionText(i);
@@ -1550,7 +1548,7 @@ public class RuleConstructor : MonoBehaviour
             TriggerRootText(i);
         }
 
-     //   TextReStruct();
+
         LoadAllText();
     }
 
@@ -1620,9 +1618,10 @@ public class RuleConstructor : MonoBehaviour
     //{
     //    button.onClick.AddListener(() => LoadRule( i));
     //}
-   // private List<string> libraryRule;
+    // private List<string> libraryRule;
     #endregion
 }
+[System.Serializable]
 public class TriggerAction
 {
     public int Id;
@@ -1642,18 +1641,27 @@ public class TriggerAction
 
     public List<RuleAction> Action;
 }
+
+[System.Serializable]
 public class IfAction 
 {
     public int LocalId;
     public int Prioritet = 10;
-    public List<string> TextData;
-    public List<int> IntData;
     public int[] MainCore = new int[2];
-    public List<int> Core;
+    public List<IfCore> Core;
 
     public RuleFrame Form;
     public string Text;
 }
+
+public class IfCore
+{
+    public int Core;
+    public List<string> TextData;
+    public List<int> IntData;
+}
+
+
 
 public class RuleAction
 {//

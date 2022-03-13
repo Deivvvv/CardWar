@@ -1,6 +1,6 @@
 <root>
   <MainRuleCount>6</MainRuleCount>
-  <MainRule0>микири</MainRule0>
+  <MainRule0>микири1</MainRule0>
   <MainRule1>6</MainRule1>
   <MainRule2>0</MainRule2>
   <MainRule3>1</MainRule3>
@@ -11,64 +11,15 @@
   <TargetTime0>3</TargetTime0>
   <PlusActionCount0>1</PlusActionCount0>
   <Trigger0PlusAction0Prioritet>10</Trigger0PlusAction0Prioritet>
-  <Trigger0PlusAction0IntDataCount>53</Trigger0PlusAction0IntDataCount>
+  <Trigger0PlusAction0IntDataCount>4</Trigger0PlusAction0IntDataCount>
   <Trigger0PlusAction0IntData0>0</Trigger0PlusAction0IntData0>
   <Trigger0PlusAction0IntData1>0</Trigger0PlusAction0IntData1>
-  <Trigger0PlusAction0IntData2>1</Trigger0PlusAction0IntData2>
-  <Trigger0PlusAction0IntData3>2</Trigger0PlusAction0IntData3>
-  <Trigger0PlusAction0IntData4>0</Trigger0PlusAction0IntData4>
-  <Trigger0PlusAction0IntData5>0</Trigger0PlusAction0IntData5>
-  <Trigger0PlusAction0IntData6>0</Trigger0PlusAction0IntData6>
-  <Trigger0PlusAction0IntData7>0</Trigger0PlusAction0IntData7>
-  <Trigger0PlusAction0IntData8>0</Trigger0PlusAction0IntData8>
-  <Trigger0PlusAction0IntData9>0</Trigger0PlusAction0IntData9>
-  <Trigger0PlusAction0IntData10>0</Trigger0PlusAction0IntData10>
-  <Trigger0PlusAction0IntData11>0</Trigger0PlusAction0IntData11>
-  <Trigger0PlusAction0IntData12>0</Trigger0PlusAction0IntData12>
-  <Trigger0PlusAction0IntData13>0</Trigger0PlusAction0IntData13>
-  <Trigger0PlusAction0IntData14>0</Trigger0PlusAction0IntData14>
-  <Trigger0PlusAction0IntData15>0</Trigger0PlusAction0IntData15>
-  <Trigger0PlusAction0IntData16>0</Trigger0PlusAction0IntData16>
-  <Trigger0PlusAction0IntData17>0</Trigger0PlusAction0IntData17>
-  <Trigger0PlusAction0IntData18>0</Trigger0PlusAction0IntData18>
-  <Trigger0PlusAction0IntData19>0</Trigger0PlusAction0IntData19>
-  <Trigger0PlusAction0IntData20>0</Trigger0PlusAction0IntData20>
-  <Trigger0PlusAction0IntData21>0</Trigger0PlusAction0IntData21>
-  <Trigger0PlusAction0IntData22>0</Trigger0PlusAction0IntData22>
-  <Trigger0PlusAction0IntData23>0</Trigger0PlusAction0IntData23>
-  <Trigger0PlusAction0IntData24>0</Trigger0PlusAction0IntData24>
-  <Trigger0PlusAction0IntData25>0</Trigger0PlusAction0IntData25>
-  <Trigger0PlusAction0IntData26>0</Trigger0PlusAction0IntData26>
-  <Trigger0PlusAction0IntData27>0</Trigger0PlusAction0IntData27>
-  <Trigger0PlusAction0IntData28>0</Trigger0PlusAction0IntData28>
-  <Trigger0PlusAction0IntData29>0</Trigger0PlusAction0IntData29>
-  <Trigger0PlusAction0IntData30>0</Trigger0PlusAction0IntData30>
-  <Trigger0PlusAction0IntData31>0</Trigger0PlusAction0IntData31>
-  <Trigger0PlusAction0IntData32>0</Trigger0PlusAction0IntData32>
-  <Trigger0PlusAction0IntData33>0</Trigger0PlusAction0IntData33>
-  <Trigger0PlusAction0IntData34>0</Trigger0PlusAction0IntData34>
-  <Trigger0PlusAction0IntData35>0</Trigger0PlusAction0IntData35>
-  <Trigger0PlusAction0IntData36>0</Trigger0PlusAction0IntData36>
-  <Trigger0PlusAction0IntData37>0</Trigger0PlusAction0IntData37>
-  <Trigger0PlusAction0IntData38>0</Trigger0PlusAction0IntData38>
-  <Trigger0PlusAction0IntData39>0</Trigger0PlusAction0IntData39>
-  <Trigger0PlusAction0IntData40>0</Trigger0PlusAction0IntData40>
-  <Trigger0PlusAction0IntData41>0</Trigger0PlusAction0IntData41>
-  <Trigger0PlusAction0IntData42>0</Trigger0PlusAction0IntData42>
-  <Trigger0PlusAction0IntData43>0</Trigger0PlusAction0IntData43>
-  <Trigger0PlusAction0IntData44>0</Trigger0PlusAction0IntData44>
-  <Trigger0PlusAction0IntData45>0</Trigger0PlusAction0IntData45>
-  <Trigger0PlusAction0IntData46>0</Trigger0PlusAction0IntData46>
-  <Trigger0PlusAction0IntData47>0</Trigger0PlusAction0IntData47>
-  <Trigger0PlusAction0IntData48>0</Trigger0PlusAction0IntData48>
-  <Trigger0PlusAction0IntData49>0</Trigger0PlusAction0IntData49>
-  <Trigger0PlusAction0IntData50>0</Trigger0PlusAction0IntData50>
-  <Trigger0PlusAction0IntData51>0</Trigger0PlusAction0IntData51>
-  <Trigger0PlusAction0IntData52>0</Trigger0PlusAction0IntData52>
-  <Trigger0PlusAction0MainCore1>6</Trigger0PlusAction0MainCore1>
+  <Trigger0PlusAction0IntData2>0</Trigger0PlusAction0IntData2>
+  <Trigger0PlusAction0IntData3>0</Trigger0PlusAction0IntData3>
+  <Trigger0PlusAction0MainCore1>2</Trigger0PlusAction0MainCore1>
   <Trigger0PlusAction0MainCore2>0</Trigger0PlusAction0MainCore2>
   <Trigger0PlusAction0CoreCount>1</Trigger0PlusAction0CoreCount>
-  <Trigger0PlusAction0Core0>7</Trigger0PlusAction0Core0>
+  <Trigger0PlusAction0Core0>0</Trigger0PlusAction0Core0>
   <MinusActionCount0>0</MinusActionCount0>
   <ActionCount0>1</ActionCount0>
   <Trigger0Action0Mood>0</Trigger0Action0Mood>
