@@ -41,7 +41,7 @@ namespace BattleTable
          */
         private void Test()
         {
-            //List<>
+            //List<TriggerAction> triggerActions;
         }
 
 
