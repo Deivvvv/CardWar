@@ -12,21 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 043ed8662342d2b40a96c80a1c8e6509, type: 3}
   m_Name: Rule1
   m_EditorClassIdentifier: 
-  BoolString:
-  - ==
-  - =/=
   EqualString:
-  - ' > '
-  - ' = '
-  - ' < '
-  TurnString:
-  - AllTurn
-  - ShotTurn
-  - MeleeTurn
+  - ' ='
+  - ' !='
+  - ' >'
+  - ' <'
   PlayerString:
   - All
   - My
   - Enemy
+  CardString:
+  - Null
+  - Card1
+  - Card2
+  StatTayp:
+  - Legion
+  - Stat
+  - Effects
+  - Rule
+  - StatTayp
+  - CivilianGroups
+  - Null
   Trigger:
   - Action
   - Start Turn
@@ -40,11 +46,3 @@ MonoBehaviour:
   - PostDeadTurn
   - Select
   - PlayThisCard
-  AllTriggers:
-  - {fileID: 11400000, guid: 19ee2d2bbf1eaee4c8e15340ea6475dc, type: 2}
-  - {fileID: 11400000, guid: 6d60aa6d4b329574b93028813782746a, type: 2}
-  - {fileID: 11400000, guid: dac86a8b810d3a946bc39f65f36b0567, type: 2}
-  - {fileID: 11400000, guid: 454a3bd73e2b0e74e8156cb6b801746e, type: 2}
-  - {fileID: 11400000, guid: 09d491ac4edea1a4a809708e7b6129cc, type: 2}
-  - {fileID: 11400000, guid: 3d15c344eb22f874891a98d5109692d5, type: 2}
-  - {fileID: 11400000, guid: bdc5285d2b1dee643b2e45db4a3805c1, type: 2}

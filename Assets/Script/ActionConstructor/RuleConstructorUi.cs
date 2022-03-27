@@ -27,6 +27,8 @@ public class RuleConstructorUi : MonoBehaviour
     public GameObject SelectorMainEffects;
     [HideInInspector]
     public GameObject SelectorMainAltRule;
+    [HideInInspector]
+    public GameObject SelectorMainStatTayp;
 
     //[HideInInspector]
     //public GameObject SelectorMainIfCore1;
@@ -45,6 +47,8 @@ public class RuleConstructorUi : MonoBehaviour
     public Transform SelectorEffects;
     [HideInInspector]
     public Transform SelectorAltRule;
+    [HideInInspector]
+    public Transform SelectorStatTayp;
 
     //[HideInInspector]
     //public GameObject SelectorIfCore1;

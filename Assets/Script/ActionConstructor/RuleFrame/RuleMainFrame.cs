@@ -5,15 +5,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RuleMainFrame", menuName = "ScriptableObjects/RuleMainFrame", order = 1)]
 public class RuleMainFrame : ScriptableObject
 {
-    public string[] BoolString;
+    //public string[] BoolString;
     public string[] EqualString;
 
-    public string[] TurnString;
     public string[] PlayerString;
+    public string[] CardString;
+    public string[] StatTayp;
 
     [Space(10)]
     public string[] Trigger;
-    public List<RuleBaseFrame> AllTriggers;//цели для тригеров
+    //public List<RuleBaseFrame> AllTriggers;//цели для тригеров
 
     //public string[] RuleColor;
     //public string[] Color;

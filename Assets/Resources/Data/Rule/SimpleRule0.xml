@@ -1,0 +1,28 @@
+<root>
+  <HeadName>Благочестие</HeadName>
+  <HeadCost>0</HeadCost>
+  <HeadCostExtend>0</HeadCostExtend>
+  <HeadLevelCap>0</HeadLevelCap>
+  <HeadPlayer>false</HeadPlayer>
+  <HeadNeedRuleCount>0</HeadNeedRuleCount>
+  <HeadEnemyRuleCount>0</HeadEnemyRuleCount>
+  <TriggerActionCount>1</TriggerActionCount>
+  <TargetPalyer0>0</TargetPalyer0>
+  <PlusActionCount0>2</PlusActionCount0>
+  <Trigger0PlusAction0Prioritet>10</Trigger0PlusAction0Prioritet>
+  <Trigger0PlusAction0AttributeCount>1</Trigger0PlusAction0AttributeCount>
+  <Trigger0PlusAction0Attribute0>Constant_Equal_Constant_Int</Trigger0PlusAction0Attribute0>
+  <Trigger0PlusAction0Target0>armor_=_armor_0</Trigger0PlusAction0Target0>
+  <Trigger0PlusAction1Prioritet>10</Trigger0PlusAction1Prioritet>
+  <Trigger0PlusAction1AttributeCount>2</Trigger0PlusAction1AttributeCount>
+  <Trigger0PlusAction1Attribute0>Group_Bool</Trigger0PlusAction1Attribute0>
+  <Trigger0PlusAction1Target0>Дворяне_False</Trigger0PlusAction1Target0>
+  <Trigger0PlusAction1Attribute1>Group_BoolGroup_Bool</Trigger0PlusAction1Attribute1>
+  <Trigger0PlusAction1Target1>Дворяне_FalseДворяне_False</Trigger0PlusAction1Target1>
+  <MinusActionCount0>1</MinusActionCount0>
+  <Trigger0MinusAction0Prioritet>10</Trigger0MinusAction0Prioritet>
+  <Trigger0MinusAction0AttributeCount>1</Trigger0MinusAction0AttributeCount>
+  <Trigger0MinusAction0Attribute0>Legion_Bool</Trigger0MinusAction0Attribute0>
+  <Trigger0MinusAction0Target0>Undead_False</Trigger0MinusAction0Target0>
+  <ActionCount0>0</ActionCount0>
+</root>

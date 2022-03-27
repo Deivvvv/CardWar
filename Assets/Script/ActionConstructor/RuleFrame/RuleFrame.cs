@@ -7,7 +7,7 @@ public class RuleFrame : ScriptableObject
 {
     //Служит для Создания формы под конкретный комплекс правил
     public string Name; //название формы правила
-    public List<RuleFarmeMacroCase> Form;
+    public List<RuleFarmeMacroCase> Form;//Text Rule
     /*
      * RuleFarmeMacroCase - указывает на конструкцию оудного утверждения и выражает максимальный уровень условий
      * 

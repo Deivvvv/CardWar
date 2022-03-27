@@ -28,6 +28,7 @@ namespace BattleTable
     {
         public static GameSetting gameSetting;
         public static Stol stol;
+        public static CardBase card1, card2;
 
         /*
          В чей ход выполняется эффект
@@ -38,14 +39,368 @@ namespace BattleTable
         возможность разыграть карту
         действие атаки
         действие смерти
+
+        все триггеры событий
+        карта есть в колоде
+        карта есть в руке
+        карта пришла в руку
+        карта была разыгранна
+        карта лежит на столе в конце хода
+        карта умерла
+        карта атаковала
+        карта получила урон и не умерла
+        карта получила баф(внешний, иначе поулчится цикл)
          */
-        private void Test()
+        //List<TriggerAction> triggerActions = new List<TriggerAction>();
+        //List<CardBase> cardBases = new List<CardBase>();
+        //List<int> colod = new List<int>();
+        //List<int> hand = new List<int>();
+
+        private static int FindInt(string attribute, CardBase cardBase)
         {
-            //List<TriggerAction> triggerActions;
+            string[] comAttribute = attribute.Split('_');
+            int sum = -1;
+            switch (comAttribute[0])
+            {
+                case ("Legion"):
+                    if (cardBase.Legions.Name == comAttribute[1])
+                        sum = 0;
+                    break;
+                case ("Guilds"):
+                    if (cardBase.Guilds.Name == comAttribute[1])
+                        sum = 0;
+                    break;
+                case ("Stat"):
+                    switch (comAttribute[1])
+                    {
+                        case ("Null"):
+                            //sum = 0;
+                            return -1;
+                            break;
+                        case ("One"):
+                            sum = 1;
+                            break;
+                        default:
+                            for(int i=0; i< cardBase.Stat.Count; i++)
+                            {
+                                if(cardBase.Stat[i].Name == comAttribute[1])
+                                {
+                                    sum = cardBase.StatSize[i];
+                                    i = cardBase.Stat.Count;
+                                }
+                            }
+                            break;
+                    }
+
+                    sum *= int.Parse(comAttribute[2]);
+                    sum += int.Parse(comAttribute[3]);
+                    break;
+                case ("Trait"):
+                    for (int i = 0; i < cardBase.Trait.Count; i++)
+                    {
+                        if (cardBase.Trait[i] == comAttribute[1])
+                        {
+                            sum = 0;
+                            i = cardBase.Trait.Count;
+                        }
+                    }
+
+                    break;
+                    //Guilds Races Legions CivilianGroups StatSize Mana Trait TraitSize
+            }
+
+            return sum;
+        }
+        private static bool FindMenager(string attribute)
+        {
+            string[] mainAttribute = attribute.Split('/');
+            int sum1 =-1, sum2 =0;
+            string[] comAttribute = mainAttribute[0].Split('_');
+
+            switch (comAttribute[1])
+            {
+                case ("0"):
+                    sum1 = FindInt(mainAttribute[1], card1);
+                    break;
+                case ("1"):
+                    sum1 = FindInt(mainAttribute[1], card2);
+                    break;
+            }
+            switch (comAttribute[2])
+            {
+                case ("0"):
+                    sum2 = FindInt(mainAttribute[2], card1);
+                    break;
+                case ("1"):
+                    sum2 = FindInt(mainAttribute[2], card2);
+                    break;
+                case ("-1"):
+                    if(sum1 > -1)
+                        sum2 = sum1;
+                    break;
+            }
+
+            switch (comAttribute[0])
+            {
+                case (" ="):
+                    return (sum1 == sum2);
+                    break;
+                case (" !="):
+                    return (sum1 != sum2);
+                    break;
+                case (" >"):
+                    return (sum1 > sum2);
+                    break;
+                case (" <"):
+                    return (sum1 < sum2);
+                    break;
+            }
+
+            Debug.Log(attribute);
+            return false;
+        } 
+
+
+        public static void PreCall(HeadSimpleTrigger head, CardBase _card1, CardBase _card2)
+        {
+            card1 = _card1;
+            card2 = _card2;
+            //SimpleTrigger simpleTrigger = null;
+            for (int i = 0; i < head.SimpleTriggers.Count; i++)
+            {
+                Call(head.SimpleTriggers[i]);
+            }
+        }
+        private static void Call(SimpleTrigger simpleTrigger)
+        {//HeadSimpleTrigger simpleTrigger
+
+            int noUse, use;
+            noUse = CallSub(simpleTrigger.MinusPrior, simpleTrigger.CountMod);
+            use = CallSub(simpleTrigger.PlusPrior, simpleTrigger.CountMod);
+
+            SimpleAction action = null;
+            if (simpleTrigger.CountModExtend)
+            {
+                int sum = use - noUse;
+                for (int i = 0; i < simpleTrigger.Action.Count; i++)
+                {
+                    action = simpleTrigger.Action[i];
+                    if (action.MinPoint <= sum && action.MaxPoint >= sum)
+                        PreUseEffect(action.Action, action.ActionFull);
+                   // PreUseCommand(simpleTrigger.Action[i].Action);
+                }
+            }
+            else if (use > noUse)
+            {
+                for (int i = 0; i < simpleTrigger.Action.Count; i++)
+                {
+                    action = simpleTrigger.Action[i];
+                    PreUseEffect(action.Action, action.ActionFull);
+                }
+            }
+
+        }
+        private static int CallSub(List<SimpleIfCore> simpleIfCore, bool extend)
+        {
+            int sum=0;
+            SimpleIfCore simpleIf = null;
+            for (int i = 0; i < simpleIfCore.Count; i++)
+            {
+                simpleIf = simpleIfCore[i];
+
+                if (FindMenager(simpleIf.Attribute))
+                {
+                    if(i+1 < simpleIfCore.Count)
+                    {
+                        if(simpleIfCore[i+1].Prioritet != simpleIf.Prioritet)
+                        {
+                            i = simpleIfCore.Count;
+                            sum = simpleIf.Point;
+                        }
+                    }
+                    else
+                        sum = simpleIf.Point;
+                }
+            }
+            return sum;
         }
 
+        private static void PreUseEffect(string action, string actionFull)
+        {
+           // string[] com = str.Split('/');
+            //string[] com1 = com[0].Split('_');
 
+            CardBase local1 = card1;
+            CardBase local2 = card2;
+            switch (action)
+            {
+                case ("TargetCreature"):
+                    UseEffect(actionFull, local1, local2);
+                    //com[1] All  My Enemy
+                    break;
+                case ("NewTargetCreature"):
+                    //CallNewTarget(); UseEffect(str)
+                    break;
+                case ("AllCreature"):
+                    break;
+            }
+            /*
+             * 
+             * 
+             * 
+             * mood me,enemy,all
+             TargetCreature
+             AllCreature
+             
+            метамарфозы статов
+             */
+        }
 
+        static void UseEffect(string actionFull, CardBase local1, CardBase local2)
+        {
+            string[] com = actionFull.Split('/');
+            string[] com1 = com[0].Split('|');
+
+            switch (com1[0]) 
+            {
+                case ("AddStat"):
+                    AddStat("Local", com[1], local1, local2);//All-Max-Local
+                    break;
+
+                case ("AddEffect"):
+
+                    TestEffect newEffect = new TestEffect();
+                    newEffect.Name = com1[1];
+
+                    if(com1[2] == "Eternal")
+                    {
+                        local2.InfinityEffect.Add(newEffect);
+                    }
+                    else
+                    {
+                        local2.Effect.Add(newEffect);
+                        com1 = com[1].Split('|');
+                        newEffect.Turn = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
+                    }
+
+                    com1 = com[2].Split('|');
+                    newEffect.Power = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
+
+                    com1 = com[3].Split('|');
+                    newEffect.Prioritet = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
+
+                    newEffect.Target = local2;
+                    break;
+
+                case ("Die"):
+                    //Die(local2);
+                    break;
+                case ("Guard"):
+                    local2.Guard.Add(local1);
+                    break;
+                //case ("Support"):
+                //    local2.Support.Add(local1);
+                //    break;
+            }
+
+        }
+        static void MelleAction()
+        {
+
+        }
+
+        static void AddStat(string mood, string actionFull, CardBase local1, CardBase local2)
+        {
+            string[] com = actionFull.Split('|');
+            int sum = FindInt(com[0], local1) / int.Parse(com[1]) + int.Parse(com[2]);
+            int a = local2.Stat.FindIndex(x => x.Name == com[3]);
+            if(a == -1 && mood != "Local")
+            {
+                a = gameSetting.Library.Constants.FindIndex(x => x.Name == com[3]);
+                local2.Stat.Add(gameSetting.Library.Constants[a]);
+                switch (mood)
+                {
+                    case ("All"):
+                        local2.StatSize.Add(sum);
+                        local2.StatSizeLocal.Add(sum);
+                        break;
+                    case ("Max"):
+                        local2.StatSize.Add(sum);
+                        local2.StatSizeLocal.Add(0);
+                        break;
+                    case ("LocalForse"):
+                        local2.StatSize.Add(0);
+                        local2.StatSizeLocal.Add(sum);
+                        break;
+
+                }
+            }
+            //else  if (local1.Team != local2.Team)
+            //{
+
+            //}
+            else
+            {
+                switch (mood) 
+                {
+                    case ("All"):
+                        local2.StatSize[a] += sum;
+                        local2.StatSizeLocal[a] += sum;
+                        break;
+                    case ("Max"):
+                        local2.StatSize[a] += sum;
+                        break;
+                    case ("Local"):
+                        local2.StatSizeLocal[a] += sum;
+                        if (local2.StatSizeLocal[a] > local2.StatSize[a])
+                            local2.StatSizeLocal[a] = local2.StatSize[a];
+                        break;
+                    case ("LocalForse"):
+                        local2.StatSizeLocal[a] += sum;
+                        break;
+
+                }
+
+            }
+        }
+
+        //void CollectToken(string statOrig, CardBase card1)
+        //{
+        //    /*
+        //           стат1 - тот который передаем цели
+        //          стат2 - донор, его параметр конвертируеться
+
+        //          объявляется иницаторы событий
+        //          карата 1 и карта 2
+        //          карта 2 может задействоаать телохранителей и защитников
+        //          телохранители принмают на себя урон, прикрывая цель, 
+        //          защитники бьют карту 1 без ответа
+
+        //          List<Constant> stat;
+        //          List<string> statSize;
+
+        //          AddPreEffect();
+        //          AddPostEffect();
+        //           */
+        //    int a = gameSetting.Constatnt.FindIndex(x => x.Name == statOrig);
+        //    Constatnt stat = gameSetting.Constatnt[a];
+        //    int sum = 0;
+        //    if (stat.Group)
+        //    {
+        //        for (int i=0;i< stat.TwinConstant.Count)
+        //        {
+        //            a = card1.Stat.FindIndex(x => x.Name == stat.TwinConstant[i].Name);
+        //            if (a > -1)
+        //                sum += card1.StatSize[a];
+        //        }
+        //    }
+        //    else
+        //    {
+        //        a = card1.Stat.FindIndex(x => x.Name == stat);
+        //        if (a > -1)
+        //            sum = card1.StatSize[a];
+        //    }
+        //}
     }
 
 

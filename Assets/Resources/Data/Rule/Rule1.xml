@@ -4,8 +4,27 @@
   <HeadCostExtend>0</HeadCostExtend>
   <HeadLevelCap>0</HeadLevelCap>
   <HeadPlayer>false</HeadPlayer>
-  <HeadNeedRuleCount>1</HeadNeedRuleCount>
-  <HeadNeedRule0>Благочестие</HeadNeedRule0>
+  <HeadNeedRuleCount>0</HeadNeedRuleCount>
   <HeadEnemyRuleCount>0</HeadEnemyRuleCount>
-  <TriggerActionCount>0</TriggerActionCount>
+  <TriggerActionCount>1</TriggerActionCount>
+  <TargetPalyer0>0</TargetPalyer0>
+  <Trigger0>0</Trigger0>
+  <PlusActionCount0>1</PlusActionCount0>
+  <Trigger0PlusAction0Result>0</Trigger0PlusAction0Result>
+  <Trigger0PlusAction0Prioritet>10</Trigger0PlusAction0Prioritet>
+  <Trigger0PlusAction0Point>10</Trigger0PlusAction0Point>
+  <Trigger0PlusAction0CoreCount>2</Trigger0PlusAction0CoreCount>
+  <Trigger0PlusAction0Core0>0_Null_Null_1_0</Trigger0PlusAction0Core0>
+  <Trigger0PlusAction0Core1>0_Null_Null_1_00_Null_Null_1_0</Trigger0PlusAction0Core1>
+  <MinusActionCount0>0</MinusActionCount0>
+  <ActionCount0>1</ActionCount0>
+  <Trigger0Action0Point>0|0</Trigger0Action0Point>
+  <Trigger0Action0ActionMood />
+  <Trigger0Action0Action />
+  <Trigger0Action0Num>0</Trigger0Action0Num>
+  <Trigger0Action0Target>0</Trigger0Action0Target>
+  <Trigger0Action0CoreCount>3</Trigger0Action0CoreCount>
+  <Trigger0Action0Core0>0_Null_Null_1_0</Trigger0Action0Core0>
+  <Trigger0Action0Core1>0_Null_Null_1_00_Null_Null_1_0</Trigger0Action0Core1>
+  <Trigger0Action0Core2>0_Null_Null_1_00_Null_Null_1_00_Null_Null_1_0</Trigger0Action0Core2>
 </root>

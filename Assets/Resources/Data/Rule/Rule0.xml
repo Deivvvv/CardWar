@@ -9,7 +9,22 @@
   <TriggerActionCount>1</TriggerActionCount>
   <TargetPalyer0>0</TargetPalyer0>
   <TargetTime0>0</TargetTime0>
-  <PlusActionCount0>0</PlusActionCount0>
-  <MinusActionCount0>0</MinusActionCount0>
+  <PlusActionCount0>2</PlusActionCount0>
+  <Trigger0PlusAction0Prioritet>10</Trigger0PlusAction0Prioritet>
+  <Trigger0PlusAction0MainCore1>0</Trigger0PlusAction0MainCore1>
+  <Trigger0PlusAction0MainCore2>0</Trigger0PlusAction0MainCore2>
+  <Trigger0PlusAction0CoreCount>1</Trigger0PlusAction0CoreCount>
+  <Trigger0PlusAction0Core0>0_0_0</Trigger0PlusAction0Core0>
+  <Trigger0PlusAction1Prioritet>10</Trigger0PlusAction1Prioritet>
+  <Trigger0PlusAction1MainCore1>0</Trigger0PlusAction1MainCore1>
+  <Trigger0PlusAction1MainCore2>0</Trigger0PlusAction1MainCore2>
+  <Trigger0PlusAction1CoreCount>1</Trigger0PlusAction1CoreCount>
+  <Trigger0PlusAction1Core0>0_0_0</Trigger0PlusAction1Core0>
+  <MinusActionCount0>1</MinusActionCount0>
+  <Trigger0MinusAction0Prioritet>10</Trigger0MinusAction0Prioritet>
+  <Trigger0MinusAction0MainCore1>0</Trigger0MinusAction0MainCore1>
+  <Trigger0MinusAction0MainCore2>0</Trigger0MinusAction0MainCore2>
+  <Trigger0MinusAction0CoreCount>1</Trigger0MinusAction0CoreCount>
+  <Trigger0MinusAction0Core0>0_0_0</Trigger0MinusAction0Core0>
   <ActionCount0>0</ActionCount0>
 </root>
