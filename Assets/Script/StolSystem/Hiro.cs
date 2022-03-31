@@ -7,12 +7,13 @@ public class Hiro
     public int NextCard;
     public Transform[] OrigSlots;
     public Slot[] Slots;
-    public List<RealCard> Army;
-    public List<RealCard> Provacator;
 
 
-    public List<CardBase> CardColod;
-    public List<int> CardHand;
+    public List<CardBase> CardColod = new List<CardBase>();
+    public List<int> CardHandFull = new List<int>();
+    public List<int> CardHand = new List<int>();
+
+    public List<CardBase> PlayColod = new List<CardBase>();
 
     public int ManaMax = 10;
     public int Mana;
@@ -24,6 +25,6 @@ public class Hiro
 }
 public class Slot
 {
-    public RealCard[] Position;
+    //public RealCard[] Position;
     public MeshRenderer[] Mesh;
 }

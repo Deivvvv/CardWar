@@ -27,7 +27,4 @@ public class StolUi : MonoBehaviour
     public TMP_Text EnemyInfo;
 
     public Button NextTurn;
-
-    public GameObject MeleeTurn;
-    public GameObject ShotTurn;
 }

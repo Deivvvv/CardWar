@@ -137,32 +137,6 @@ public class CardConstructor : MonoBehaviour
     #region IO card System
     void Enject()
     {
-        CardBase card = new CardBase();
-        card.Stat = new List<Constant>();
-        card.StatSize = new List<int>();
-
-        card.Trait = new List<string>();
-        card.TraitSize= new List<int>();
-
-        card.Name = Ui.NameFlied.text;
-
-        card.Guilds = cardBase.Guilds;
-        card.Races = cardBase.Races;
-        card.Legions = cardBase.Legions;
-        card.CivilianGroups = cardBase.CivilianGroups;
-
-        card.Mana = cardBase.Mana;
-        for (int i = 0; i < cardBase.Stat.Count; i++)
-        {
-            card.Stat.Add(cardBase.Stat[i]);
-            card.StatSize.Add(cardBase.StatSize[i]);
-        }
-
-        for (int i = 0; i < cardBase.Trait.Count; i++)
-        {
-            card.Trait.Add(cardBase.Trait[i]);
-            card.TraitSize.Add(cardBase.TraitSize[i]);
-        }
 
         {
             int width = 100;
@@ -181,8 +155,14 @@ public class CardConstructor : MonoBehaviour
             texture.Apply();
             captureCamera.targetTexture = rTex;
 
-            card.Image = texture.EncodeToPNG();
+           // cardBase.Image = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+            cardBase.Image = texture.EncodeToPNG();
         }
+
+        cardBase.Name = Ui.NameFlied.text;
+
+        CardBase card = Core.CardClone(cardBase);
+
 
         if (curentNum < 0)
         {
@@ -359,7 +339,7 @@ public class CardConstructor : MonoBehaviour
         for (int i = 0; i < a; i++)
         {
             path = origPath + $"{i}";
-            XMLSaver.Load(path, "Card");
+            LocalCard.Add(XMLSaver.Load(path));
             NewCard(i);
         }
 

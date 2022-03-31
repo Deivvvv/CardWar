@@ -47,7 +47,9 @@ public class ColodConstructor : MonoBehaviour
 
     void Start()
     {
-        colodConstructor = gameObject.GetComponent<ColodConstructor>();
+        XMLSaver.SetGameSetting(gameSetting);
+        XMLSaver.SetColodConstructor(colodConstructor);
+           colodConstructor = gameObject.GetComponent<ColodConstructor>();
         origPath = Application.dataPath + $"/Resources/Hiro";
         origPathAlt = Application.dataPath + $"/Resources/CardSet";
         LoadBase();
@@ -72,7 +74,7 @@ public class ColodConstructor : MonoBehaviour
 
         Ui.SaveButton.onClick.AddListener(() => Save());
 
-        gameData = gameSetting.GlobalMyData;
+        gameData = new GameData();
         LocalCard = new List<CardBase>();
         int a = gameData.AllCard;
         string path = "";
@@ -80,7 +82,7 @@ public class ColodConstructor : MonoBehaviour
         for (int i = 0; i < a; i++)
         {
             path = origPath + $"{i}";
-            XMLSaver.Load(origPathAlt, "Colod");
+            LocalCard.Add(XMLSaver.Load(origPathAlt));
             NewCard(i);
         }
 

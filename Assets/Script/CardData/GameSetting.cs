@@ -8,10 +8,6 @@ public class GameSetting : ScriptableObject
 {
     public ActionLibrary Library;
 
-    public GameData GlobalMyData;
-
-    public GameData GlobalPlayerData;
-
     public Sprite[] Icon;
     public string[] StatName;
     public int[] SellCount;
@@ -22,7 +18,12 @@ public class GameSetting : ScriptableObject
     public Material[] TargetColor;
     public GameObject OrigHiro;
 
+    [Space(10)]
     public int StatSize = 4;
     public int RuleSize = 5;
+
+    [Space(10)]
+    public int SlotSize = 5;
+    public int StartHandSize = 5;
     // public Color[] SelectColor; ??
 }

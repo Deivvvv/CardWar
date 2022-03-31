@@ -12,6 +12,7 @@ namespace Saver
     static class XMLSaver
     {
         private static GameSetting gameSetting;
+        //потом убрать
         private static CardConstructor cardConstructor;
         private static RuleConstructor ruleConstructor;
         private static ColodConstructor colodConstructor;
@@ -107,14 +108,13 @@ namespace Saver
             File.WriteAllText($"{path}.xml", saveDoc.ToString());
 
         }
-        public static void LoadCardSet( string path, ColodConstructor colodConstructor)
+        public static CardSet LoadCardSet( string path)
         {
-
+            CardSet cardSet = new CardSet();
             if (path != "")
             {
                 XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
 
-                CardSet cardSet = new CardSet();
                 cardSet.Name = root.Element("Name").Value;
 
                 cardSet.AllCard = int.Parse(root.Element("AllCard").Value);
@@ -133,9 +133,10 @@ namespace Saver
                 }
 
 
-                colodConstructor.TransfData(cardSet);
+                //colodConstructor.TransfData(cardSet);
 
             }
+            return cardSet;
         }
 
         # region Card
@@ -174,15 +175,14 @@ namespace Saver
                 root.Add(new XElement("TraitSize" + i, cardBase.TraitSize[i]));
             }
 
-            string path1 = "";
-            a = cardBase.Image.Length;
-            root.Add(new XElement("Image", a));
-            for (int i = 0; i < a; i++)
-            {
-                path1 += $"{cardBase.Image[i]}.";
-                // root.Add(new XElement("Trait" + i, cardBase.Trait[i]));
-            }
-            root.Add(new XElement("ImageSt", path1));
+            //string path1 = "";
+            //a = cardBase.Image.Length;
+            //root.Add(new XElement("Image", a));
+            //for (int i = 0; i < a; i++)
+            //{
+            //    path1 += $"{cardBase.Image[i]}.";
+            //}
+            //root.Add(new XElement("ImageSt", path1));
 
             //string[] subs = path1.Split('.');
             //byte[] = string[] subs
@@ -201,15 +201,16 @@ string someString = Encoding.ASCII.GetString(bytes);
 
 
 
-        public static void Load(string path, string mood)
+        public static CardBase Load(string path)
         {
+            CardBase cardBase = new CardBase();
             if (path != "")
             {
                 XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
 
-                CardBase cardBase = new CardBase();
 
                 cardBase.Name = root.Element("Name").Value;
+                //Debug.Log(path);
 
                 string data = root.Element("Guild").Value;
                 int a = gameSetting.Library.Guilds.FindIndex(x => x.Name == data);
@@ -291,24 +292,11 @@ string someString = Encoding.ASCII.GetString(bytes);
                 cardBase.Image = bat;
 
 
-                switch (mood) 
-                {
-                    case ("Card"):
-                        cardConstructor.LocalCard.Add(cardBase);
-                        break;
 
-                    case ("Colod"):
-                        colodConstructor.LocalCard.Add(cardBase);
-                        break;
-
-
-                    case ("Stol"):
-                        stol.BufferColod.Add(cardBase);
-                        break;
-                }
 
 
             }
+            return cardBase;
         }
         #endregion
 

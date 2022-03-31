@@ -19,20 +19,20 @@ public class TargetHiro : MonoBehaviour
 
     public void Play()
     {
-        stol.ClickHiro(line, slot, position);
+       // stol.ClickHiro(line, slot, position);
     }
 
     public void Target()
     {
-        stol.SelectTarget(line, slot, position);
+       // stol.SelectTarget(line, slot, position);
     }
     public void CardLoad()
     {
-        stol.UseCard(line, slot, position);
+       // stol.UseCard(line, slot, position);
     }
 
     public void PreView()
     {
-        stol.PreView(line, slot, position);
+      //  stol.PreView(line, slot, position);
     }
 }

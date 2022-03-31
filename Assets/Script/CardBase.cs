@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[System.Serializable]
+[System.Serializable]
 public class CardBase 
 {
     public string Name;
@@ -14,20 +14,21 @@ public class CardBase
     public CivilianGroup CivilianGroups;
     // public List<Constant> Constants;
 
-    public List<Constant> Stat;
-    public List<int> StatSize;
-    public List<int> StatSizeLocal;
+    public List<Constant> Stat =new List<Constant>();
+    public List<int> StatSize = new List<int>();
+    public List<int> StatSizeLocal = new List<int>();
     public int Mana;
 
     //public List<int> Stat;
-    public List<string> Trait;
-    public List<int> TraitSize;
+    public List<string> Trait = new List<string>();
+    public List<int> TraitSize = new List<int>();
 
     // public List<Rule> Rules;
 
 
     public Transform Body;
 
+    //public Sprite ImageFull;
     public byte[] Image;
 
 
@@ -37,8 +38,8 @@ public class CardBase
     public bool Provacator;
     public int Team;
 
-    public List<TestEffect> Effect;
-    public List<TestEffect> InfinityEffect;
+    public List<Effect> Effect;
+    public List<Effect> InfinityEffect;
 
     public List<CardBase> Guard;
     public List<CardBase> Support;
@@ -47,14 +48,4 @@ public class CardBase
      */
 }
 
-public class TestEffect 
-{
-    public string Name = "Fly";
-    public int Turn;
-    public int Power;
-    public int Prioritet;
-    public string EffectGroup;
-    public string Mood;//All-Max-Local
-    public CardBase Target;
-}
 

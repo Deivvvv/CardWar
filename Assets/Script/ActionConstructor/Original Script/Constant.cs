@@ -15,6 +15,8 @@ public class Constant : ScriptableObject
     public bool Group;//Это группа
     public bool CombineConstant;//создает параметр производную
 
+    public string moodEffect = "Local";
+    public List<Constant> GuardConstant;//свойства с отрицанием
     public List<Constant> AntiConstant;//свойства с отрицанием
     public List<Constant> TwinConstant;//своиства исколючения, в одной карте они не могут быть установленны
 
