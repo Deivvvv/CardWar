@@ -410,17 +410,22 @@ string someString = Encoding.ASCII.GetString(bytes);
 
             return text;
         }
+        private static RuleForm LoadRuleCore(string str)
+        {
+            RuleForm ruleForm = new RuleForm();
+
+            string[] subs = str.Split('_');
+            ruleForm.Card = int.Parse(subs[0]);
+            ruleForm.StatTayp = subs[1];
+            ruleForm.Stat = subs[2];
+            ruleForm.Mod = int.Parse(subs[3]);
+            ruleForm.Num = int.Parse(subs[4]);
+
+            return ruleForm;
+        }
 
         private static XElement SaveRuleIfAction(IfAction ifAction, XElement root, string text)
         {
-            /*
-               public int Prioritet;
-    public int Point;
-    public List<RuleForm> Core;
-
-    public string Text;
-             
-             */
             RuleForm ifCore = null;
             
             root.Add(new XElement($"{text}Result", ifAction.Result));
@@ -440,12 +445,6 @@ string someString = Encoding.ASCII.GetString(bytes);
         private static XElement SaveRuleAction(RuleAction ifAction, XElement root, string text)
         {
             RuleForm ifCore = null;
-            /*
-             public int MinPoint;
-    public int MaxPoint;
-            public int MinPoint;
-             
-             */
             root.Add(new XElement($"{text}Point", $"{ifAction.MinPoint}|{ifAction.MaxPoint}"));
             root.Add(new XElement($"{text}ActionMood", ifAction.ActionMood));
             root.Add(new XElement($"{text}Action", ifAction.Action));
@@ -463,49 +462,48 @@ string someString = Encoding.ASCII.GetString(bytes);
             return root;
         }
 
-        //private static IfAction LoadRuleIfAction(XElement root, string text)
-        //{
+        private static IfAction LoadRuleIfAction(XElement root, string text)
+        {
+            IfAction ifAction = new IfAction();
 
-        //    IfCore ifCore = null;
-        //    IfAction ifAction = new IfAction();
-        //    //ifAction.LocalId = i;
-        //    //Debug.Log(ifAction.LocalId);
+            ifAction.Result = int.Parse(root.Element($"{ text}Result").Value);
+            ifAction.Prioritet = int.Parse(root.Element($"{ text}Prioritet").Value);
+            ifAction.Point = int.Parse(root.Element($"{ text}Point").Value);
 
-        //    ifAction.Prioritet = int.Parse(root.Element($"{text}Prioritet").Value);
+            int a = int.Parse(root.Element($"{ text}CoreCount").Value);
 
-        //    ifAction.MainCore[0] = int.Parse(root.Element($"{text}MainCore1").Value);
-        //    ifAction.MainCore[1] = int.Parse(root.Element($"{text}MainCore2").Value);
+            for (int i = 0; i < a; i++)
+            {
+                ifAction.Core.Add(LoadRuleCore(root.Element($"{text}Core{i}").Value));
+            }
 
+            return ifAction;
+        }
+        private static RuleAction LoadRuleAction(XElement root, string text)
+        {
+            RuleAction ifAction = new RuleAction();
 
-        //    ifAction.Core = new List<IfCore>();
-        //    //ifCore = ruleConstructor.NewIfCore();
-        //    int b2 = int.Parse(root.Element($"{text}CoreCount").Value);
+            string str = root.Element($"{ text}Point").Value;
+            string[] subs = str.Split('|');
 
-        //    for (int i2 = 0; i2 < b2; i2++)
-        //    {
-        //        ifCore = new IfCore();
-        //        ifCore.TextData = new List<string>();
-        //        ifCore.IntData = new List<int>();
-        //        string str = root.Element($"{text}Core{i2}").Value;
+            ifAction.MinPoint = int.Parse(subs[0]);
+            ifAction.MaxPoint = int.Parse(subs[1]);
 
-        //        string[] number = str.Split('_');
+            ifAction.ActionMood = int.Parse(root.Element($"{ text}ActionMood").Value);
+            ifAction.Action = root.Element($"{ text}Action").Value;
+            ifAction.Num = int.Parse(root.Element($"{ text}Num").Value);
+            ifAction.Target = int.Parse(root.Element($"{ text}Target").Value);
 
-        //        ifCore.Core = int.Parse(number[0]);
+            int a = int.Parse(root.Element($"{ text}CoreCount").Value); 
+            
+            for (int i = 0; i < a; i++)
+            {
+                ifAction.Core.Add(LoadRuleCore(root.Element($"{text}Core{i}").Value));
+            }
 
-        //        for (int i3 = 1; i3 < number.Length; i3++)
-        //        {
-        //            ifCore.TextData.Add("");
-        //            ifCore.IntData.Add(int.Parse(number[i3]));
-        //        }
+            return ifAction;
 
-        //        //ifAction.Core.Add(int.Parse(root.Element($"{text}Core{i2}").Value));
-        //        ifAction.Core.Add(ifCore);
-
-        //        //ruleConstructor.PreLableIfAction(ifAction, ifCore);
-
-        //    }
-        //    return ifAction;
-        //}
+        }
 
         //public static void SaveSimpleRule(HeadRule head, int a)
         //{
@@ -699,102 +697,96 @@ string someString = Encoding.ASCII.GetString(bytes);
             }
         }
 
-        //public static HeadRule LoadRule(int a)
-        //{
-        //    HeadRule head = null;
-        //    string path = Application.dataPath + $"/Resources/Data/Rule/Rule{a}";
-        //    if (path != "")
-        //    {
+        public static HeadRule LoadRule(int a)
+        {
+            HeadRule head = null;
+            string path = Application.dataPath + $"/Resources/Data/Rule/Rule{a}";
+            if (path != "")
+            {
 
-        //        XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
+                XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
 
-        //        head = new HeadRule();
-        //        head.Name = root.Element($"HeadName").Value;
-        //        head.Cost = int.Parse(root.Element($"HeadCost").Value);
-        //        head.CostExtend = int.Parse(root.Element($"HeadCostExtend").Value);
-        //        head.LevelCap = int.Parse(root.Element($"HeadLevelCap").Value);
-        //        //head.CostMovePoint = int.Parse(root.Element($"CostMovePoint").Value);
-        //        head.Player = bool.Parse(root.Element($"HeadPlayer").Value);
-
-
-        //        int b = int.Parse(root.Element("HeadNeedRuleCount").Value);
-        //        for (int i = 0; i < b; i++)
-        //        {
-        //            head.NeedRule.Add(root.Element($"HeadNeedRule{i}").Value);
-        //        }
-
-        //        b = int.Parse(root.Element("HeadEnemyRuleCount").Value);
-        //        for (int i = 0; i < b; i++)
-        //        {
-        //            head.EnemyRule.Add(root.Element($"HeadEnemyRule{i}").Value);
-        //        }
+                head = new HeadRule();
+                head.Name = root.Element($"HeadName").Value;
+                head.Cost = int.Parse(root.Element($"HeadCost").Value);
+                head.CostExtend = int.Parse(root.Element($"HeadCostExtend").Value);
+                head.LevelCap = int.Parse(root.Element($"HeadLevelCap").Value);
+                //head.CostMovePoint = int.Parse(root.Element($"CostMovePoint").Value);
+                head.Player = bool.Parse(root.Element($"HeadPlayer").Value);
 
 
-        //        TriggerAction triggerAction = null;
-        //        IfAction ifAction = null;
-        //        RuleAction ruleAction = null;
+                int b = int.Parse(root.Element("HeadNeedRuleCount").Value);
+                for (int i = 0; i < b; i++)
+                {
+                    head.NeedRule.Add(root.Element($"HeadNeedRule{i}").Value);
+                }
+
+                b = int.Parse(root.Element("HeadEnemyRuleCount").Value);
+                for (int i = 0; i < b; i++)
+                {
+                    head.EnemyRule.Add(root.Element($"HeadEnemyRule{i}").Value);
+                }
 
 
-        //        string text = "";
-        //        int b1 = 0;
-        //        int b2 = 0;
+                TriggerAction triggerAction = null;
+                IfAction ifAction = null;
+                RuleAction ruleAction = null;
 
-        //        b = int.Parse(root.Element("TriggerActionCount").Value);
-        //        for (int i = 0; i < b; i++)
-        //        {
-        //            triggerAction = new TriggerAction();
 
-        //            triggerAction.PlusAction = new List<IfAction>();
-        //            triggerAction.MinusAction = new List<IfAction>();
-        //            triggerAction.Action = new List<RuleAction>();
+                string text = "";
+                int b1 = 0;
+                int b2 = 0;
 
-        //            // text.Add(root.Element($"RuleName{i}").Value);
-        //            triggerAction.TargetPalyer = int.Parse(root.Element($"TargetPalyer{i}").Value);
-        //            triggerAction.Trigger = int.Parse(root.Element($"Trigger{i}").Value);
+                b = int.Parse(root.Element("TriggerActionCount").Value);
+                for (int i = 0; i < b; i++)
+                {
+                    triggerAction = new TriggerAction();
 
-        //            b1 = int.Parse(root.Element($"PlusActionCount{i}").Value);
-        //            //Debug.Log(b1);
-        //            for (int i1 = 0; i1 < b1; i1++)
-        //            {
-        //                text = $"Trigger{i}PlusAction{i1}";
-        //                triggerAction.PlusAction.Add(LoadRuleRoot(root, text));
+                    triggerAction.PlusAction = new List<IfAction>();
+                    triggerAction.MinusAction = new List<IfAction>();
+                    triggerAction.Action = new List<RuleAction>();
 
-        //            }
 
-        //            b1 = int.Parse(root.Element($"MinusActionCount{i}").Value);
-        //            for (int i1 = 0; i1 < b1; i1++)
-        //            {
-        //                text = $"Trigger{i}MinusAction{i1}";
-        //                triggerAction.MinusAction.Add(LoadRuleRoot(root, text));
-        //            }
+                    triggerAction.CountMod = bool.Parse(root.Element($"CountMod{i}").Value);
+                    triggerAction.CountModExtend = bool.Parse(root.Element($"CountModExtend{i}").Value);
 
-        //            b1 = int.Parse(root.Element($"ActionCount{i}").Value);
-        //            for (int i1 = 0; i1 < b1; i1++)
-        //            {
-        //                ruleAction = new RuleAction();
-        //                text = $"Trigger{i}Action{i1}";
+                    triggerAction.TargetPalyer = int.Parse(root.Element($"TargetPalyer{i}").Value);
+                    triggerAction.Trigger = int.Parse(root.Element($"Trigger{i}").Value);
 
-        //                ruleAction.Mood = int.Parse(root.Element($"{text}Mood").Value);
-        //                ruleAction.TargetPalyer = int.Parse(root.Element($"{text}TargetPalyer").Value);
-        //                ruleAction.EffectData = int.Parse(root.Element($"{text}EffectData").Value);
-        //                ruleAction.RelizeConstant = int.Parse(root.Element($"{text}RelizeConstant").Value);
-        //                ruleAction.TargetConstant = int.Parse(root.Element($"{text}TargetConstant").Value);
-        //                ruleAction.IntData = int.Parse(root.Element($"{text}IntData").Value);
-        //                root.Add(new XElement($"{text}Mood", ruleAction.Mood));
+                    b1 = int.Parse(root.Element($"PlusActionCount{i}").Value);
+                    //Debug.Log(b1);
+                    for (int i1 = 0; i1 < b1; i1++)
+                    {
+                        text = $"Trigger{i}PlusAction{i1}";
+                        triggerAction.PlusAction.Add(LoadRuleIfAction(root, text));
 
-        //                triggerAction.Action.Add(ruleAction);
-        //            }
+                    }
 
-        //            head.TriggerActions.Add(triggerAction);
-        //        }
+                    b1 = int.Parse(root.Element($"MinusActionCount{i}").Value);
+                    for (int i1 = 0; i1 < b1; i1++)
+                    {
+                        text = $"Trigger{i}MinusAction{i1}";
+                        triggerAction.MinusAction.Add(LoadRuleIfAction(root, text));
+                    }
+
+                    b1 = int.Parse(root.Element($"ActionCount{i}").Value);
+                    for (int i1 = 0; i1 < b1; i1++)
+                    {
+                        text = $"Trigger{i}Action{i1}";
+                        
+                        triggerAction.Action.Add(LoadRuleAction(root, text));
+                    }
+
+                    head.TriggerActions.Add(triggerAction);
+                }
 
 
 
-        //       // ruleConstructor.SetRule(head);
+                // ruleConstructor.SetRule(head);
 
-        //    }
-        //    return head;
-        //}
+            }
+            return head;
+        }
         #endregion
     }
 }

@@ -1335,7 +1335,9 @@ public class RuleConstructor : MonoBehaviour
     void LoadRule(int i)
     {
         curentRule = i;
-      //  XMLSaver.LoadRule(ruleConstructor, i);
+        SetRule(XMLSaver.LoadRule(i));
+        //head = XMLSaver.LoadRule( i);
+        //XMLSaver.LoadRule(ruleConstructor, i);
     }
 
     public void SetRule(HeadRule headRule)
@@ -1345,12 +1347,24 @@ public class RuleConstructor : MonoBehaviour
 
         LoadMainText();
         int a = head.TriggerActions.Count;
+        TriggerAction triggerAction = null;
         for (int i = 0; i < a; i++)
         {
+            triggerAction = head.TriggerActions[i];
             TriggerMainText(i);
+
+            for (int i1 = 0; i1 < triggerAction.PlusAction.Count; i1++)
+                CreateIfText(i, i1, true);
             TriggerIfText(i, true);
+
+            for (int i1 = 0; i1 < triggerAction.MinusAction.Count; i1++)
+                CreateIfText(i, i1, false);
             TriggerIfText(i, false);
+
+            for (int i1 = 0; i1 < triggerAction.Action.Count; i1++)
+                CreateActionText(i, i1);
             TriggerActionText(i);
+
             TriggerRootText(i);
         }
         LoadAllText();
