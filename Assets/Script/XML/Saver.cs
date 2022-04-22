@@ -175,14 +175,14 @@ namespace Saver
                 root.Add(new XElement("TraitSize" + i, cardBase.TraitSize[i]));
             }
 
-            //string path1 = "";
-            //a = cardBase.Image.Length;
-            //root.Add(new XElement("Image", a));
-            //for (int i = 0; i < a; i++)
-            //{
-            //    path1 += $"{cardBase.Image[i]}.";
-            //}
-            //root.Add(new XElement("ImageSt", path1));
+            string path1 = "";
+            a = cardBase.Image.Length;
+            root.Add(new XElement("Image", a));
+            for (int i = 0; i < a; i++)
+            {
+                path1 += $"{cardBase.Image[i]}.";
+            }
+            root.Add(new XElement("ImageSt", path1));
 
             //string[] subs = path1.Split('.');
             //byte[] = string[] subs

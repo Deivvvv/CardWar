@@ -6,13 +6,10 @@ using TMPro;
 
 public class StolUi : MonoBehaviour
 {
-    public Transform[] MySlot;
-    public Transform[] EnemySlot;
+    public GameObject OrigButton;
 
     public GameObject OrigAction;
     public GameObject OrigCase;
-    public GameObject OrigSlot;
-    public GameObject OrigSlotEnemy;
 
     public GameObject OrigCard;
     public GameObject OrigHiro;
@@ -27,4 +24,12 @@ public class StolUi : MonoBehaviour
     public TMP_Text EnemyInfo;
 
     public Button NextTurn;
+
+    public Transform AllTacticCase;
+    public Transform TacticCase;
+    public List<Transform> AllTactic  = new List<Transform>();
+
+
+    public Transform MyFirstStol;
+    public Transform EnemyFirstStol;
 }

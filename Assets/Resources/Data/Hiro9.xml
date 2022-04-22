@@ -7,15 +7,15 @@
   <Mana>1</Mana>
   <Stat>4</Stat>
   <Stat0>Hp</Stat0>
-  <StatSize0>1</StatSize0>
-  <Stat1> </Stat1>
-  <StatSize1>0</StatSize1>
+  <StatSize0>2</StatSize0>
+  <Stat1>MeleeDamage</Stat1>
+  <StatSize1>1</StatSize1>
   <Stat2> </Stat2>
   <StatSize2>0</StatSize2>
   <Stat3> </Stat3>
   <StatSize3>0</StatSize3>
   <Trait>5</Trait>
-  <Trait0>первый удар</Trait0>
+  <Trait0></Trait0>
   <TraitSize0>0</TraitSize0>
   <Trait1></Trait1>
   <TraitSize1>0</TraitSize1>

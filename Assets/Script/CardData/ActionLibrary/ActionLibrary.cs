@@ -12,7 +12,8 @@ public class ActionLibrary : ScriptableObject
     public List<CivilianGroup> CivilianGroups;
     public List<Constant> Constants;
     public List<Effect> Effects;
-    public List<Trait> Action;
 
     public List<string> RuleName;
+    public List<string> AllTactic;
+    
 }

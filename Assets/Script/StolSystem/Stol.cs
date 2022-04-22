@@ -10,9 +10,6 @@ using Saver;
 
 public class Stol : MonoBehaviour
 {
-    private Stol stol;
-
-    public bool IsAI;
     [SerializeField]
     private Camera camera;
 
@@ -30,19 +27,12 @@ public class Stol : MonoBehaviour
 
     private GameObject selectable;
 
-
-    //использовать временно
-  
-
-
     void Start()
     {
-        stol = gameObject.GetComponent<Stol>();
         XMLSaver.SetGameSetting(gameSetting);
         Core.LoadGameSetting(gameSetting);
 
         HiroHead.SetUI(Ui);
-
         HiroHead.Install();
 
         //int r = Random.Range(0, 2);
@@ -58,7 +48,27 @@ public class Stol : MonoBehaviour
        // HiroUi(hiro[1]);
 
     }
-
+    void Update()
+    {
+        //Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        //RaycastHit hit;
+        //if (Physics.Raycast(ray, out hit, 100))
+        //{
+        //    TargetHiro targetHiro = hit.transform.gameObject.GetComponent<TargetHiro>();
+        //    if (targetHiro != null)
+        //    {
+        //        if (selectable != hit.transform.gameObject)
+        //        {
+        //            selectable = hit.transform.gameObject;
+        //            Ui.TargetCard.gameObject.active = true;
+        //            targetHiro.PreView();
+        //            // CardView.IViewCard(newHiro.CardColod[a]); 
+        //        }
+        //    }
+        //    else
+        //        Ui.TargetCard.gameObject.active = false;
+        //}
+    }
 
     //void Update()
     //{

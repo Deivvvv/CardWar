@@ -18,11 +18,6 @@ namespace BattleTable
             GameEventSystem.gameSetting = gameSetting;
             HiroHead.gameSetting = gameSetting;
         }
-        public static void SetStol(Stol stol)
-        {
-           // BattleSystem.stol = stol;
-            TableRule.stol = stol;
-        }
 
         public static CardBase CardClone(CardBase card)
         {
@@ -47,10 +42,38 @@ namespace BattleTable
                 newCard.Trait.Add(card.Trait[i]);
                 newCard.TraitSize.Add(card.TraitSize[i]);
             }
+            
+            for (int i = 0; i < card.StatSizeLocal.Count; i++)
+            {
+                newCard.StatSizeLocal.Add(card.StatSizeLocal[i]);
+            }
+
+            newCard.Image =  card.Image;
+
+            newCard.Class = card.Class;
+            newCard.Iniciativa = card.Iniciativa;
+            newCard.MyHiro = card.MyHiro;
+            newCard.Tayp = card.Tayp;
+
 
             //newCard.Body = card.Body;// Возможно времнная мера, после обнокления интерфеса конструктора точно будет  не нужно
 
             return newCard;
+        }
+
+        public static void CardClear(CardBase card)
+        {
+            for (int i = 0; i < card.Stat.Count; i++)
+            {
+                if (card.Stat[i] == null)
+                {
+                    card.Stat.RemoveAt(i);
+                    card.StatSize.RemoveAt(i);
+                    i--;
+                }
+                else
+                    card.StatSizeLocal.Add(card.StatSize[i]);
+            }
         }
     }
 
@@ -59,10 +82,10 @@ namespace BattleTable
         //p
 
         public static GameSetting gameSetting;
-        private static Hiro[] hiro;
+        private static List<Hiro> hiro;
         private static CardBase card1, card2;
 
-        public static void SetHiro(Hiro[] _hiro) { Hiro[] hiro = _hiro;  }
+        public static void SetHiro(List<Hiro> _hiro) { List<Hiro> hiro = _hiro;  }
 
         public static int FindInt(string attribute, CardBase cardBase)
         {
@@ -443,7 +466,6 @@ namespace BattleTable
             return (mood == "0") ? localCard1 : localCard2;
         }
 
-
         public static void AddStat(string mood, string actionFull, CardBase localCard1, CardBase localCard2)
         {
             string[] com = actionFull.Split('|');
@@ -513,114 +535,27 @@ namespace BattleTable
     class Create : MonoBehaviour
     {
         public static GameSetting gameSetting;
-        public static Hiro[] hiro;
+        public static List<Hiro> hiro = new List<Hiro>();
         public static StolUi stolUi;
 
         public static void CreateHiro(bool enemy)
         {
             Hiro newHiro = new Hiro();
-            newHiro.Slots = new Slot[gameSetting.SlotSize];
+            newHiro.Team = (enemy) ? 1 : 0;
+            newHiro.Ui = (enemy) ? stolUi.EnemyInfo : stolUi.MyInfo;
 
-            CreateSlots(enemy, newHiro);
-
-            Slot newSlot = null;
-            Transform[] newSlotTrans = null;
-            if (enemy)
-            {
-                newSlotTrans = stolUi.MySlot;
-                newHiro.Team = 0;
-                hiro[0] = newHiro;
-               
-            }
-            else
-            {
-                newSlotTrans = stolUi.EnemySlot;
-                newHiro.Team = 1;
-                hiro[1] = newHiro;
-            }
-            newHiro.OrigSlots = newSlotTrans;
-
-
-            //int a = newHiro.Slots.Length;
-            //for (int i = 0; i < a; i++)
-            //{
-            //    newSlot = new Slot();
-            //    newSlot.Position = new RealCard[2];
-            //    newSlot.Mesh = new MeshRenderer[2];
-            //    if (enemy)
-            //    {
-            //        newSlot.Mesh[0] = newSlotTrans[i].GetChild(0).gameObject.GetComponent<MeshRenderer>();
-            //        newSlot.Mesh[1] = newSlotTrans[i].GetChild(1).gameObject.GetComponent<MeshRenderer>();
-            //    }
-            //    else
-            //    {
-            //        newSlot.Mesh[0] = newSlotTrans[i].GetChild(0).gameObject.GetComponent<MeshRenderer>();
-            //        newSlot.Mesh[1] = newSlotTrans[i].GetChild(1).gameObject.GetComponent<MeshRenderer>();
-            //    }
-            //    newHiro.Slots[i] = newSlot;
-            //}
-
-
-
-            // AddManaCanal();
+            hiro.Add(newHiro);
             LoadCardSet(newHiro);
-            //LoadSet(newHiro, myCardSet);
-
         }
-
-        static void CreateSlots(bool enemy, Hiro newHiro)
-        {
-            GameObject origSlot = null;
-            int b = 3;
-            if (!enemy)
-            {
-                stolUi.EnemySlot = new Transform[gameSetting.SlotSize];
-                origSlot = stolUi.OrigSlotEnemy;
-            }
-            else
-            {
-                stolUi.MySlot = new Transform[gameSetting.SlotSize];
-                origSlot = stolUi.OrigSlot;
-            }
-
-            GameObject GO = null;
-            Transform trans = null;
-            Vector3 v = new Vector3(0, 0, 0);
-
-            for (int i = 0; i < gameSetting.SlotSize; i++)
-            {
-                GO = Instantiate(origSlot);
-                trans = GO.transform;
-
-                if (!enemy)
-                {
-                    stolUi.EnemySlot[i] = trans;
-                    v = new Vector3(i * b, 0, 10);
-                    //   GO.transform.eulerAngles = new Vector3(0, 180, 0);
-                    //  trans.GetChild(0).gameObject.GetComponent<TargetHiro>().Set(1, i, 0, stol);
-                    //  trans.GetChild(1).gameObject.GetComponent<TargetHiro>().Set(1, i, 1, stol);
-                }
-                else
-                {
-                    stolUi.MySlot[i] = trans;
-                    v = new Vector3(i * b, 0, 0);
-
-                    //  trans.GetChild(0).gameObject.GetComponent<TargetHiro>().Set(0, i, 0, stol);
-                    //  trans.GetChild(1).gameObject.GetComponent<TargetHiro>().Set(0, i, 1, stol);
-                }
-
-
-                trans.position = v;
-            }
-        }
-
-        static void AddCardInHand(Hiro hiro, int a)
+        public static void AddCardInHand(Hiro hiro, int a)
         {
             for (int i = 0; i < a; i++)
             {
-                hiro.CardHand.Add(hiro.CardHandFull[hiro.NextCard]);
+                CardBase newCard = Core.CardClone(hiro.CardColod[hiro.CardHandFull[hiro.NextCard]]);
+                hiro.CardHand.Add(newCard);
+
                 hiro.NextCard++;
-                CreateUiCard(hiro.CardColod[hiro.CardHand[i]], hiro);
+                CreateUiCard(newCard);
             }
         }
 
@@ -636,6 +571,9 @@ namespace BattleTable
             for (int i = 0; i < cardSet.OrigCard.Count; i++)
             {
                 hiro.CardColod.Add(XMLSaver.Load(Application.dataPath + $"/Resources/Data/Hiro{cardSet.OrigCard[i]}"));
+                hiro.CardColod[i].MyHiro = hiro;
+                Core.CardClear(hiro.CardColod[i]);
+
                 for (int i1 = 0; i1 < cardSet.OrigCount[i]; i1++)
                 {
                     cardBase.Add(cardSet.OrigCard[i]);
@@ -736,46 +674,32 @@ namespace BattleTable
             //    BufferColod.RemoveAt(r);
             //}
         }
-
-        public static void PlayCard(CardBase card, Hiro hiro)
+        
+        public static void CreateTacticList()
         {
-            CardBase newCard = Core.CardClone(card);
-
-            for (int i = 0; i < newCard.Stat.Count; i++)
+            GameObject go = null;
+            Transform trans = null;
+            foreach(string str in gameSetting.Library.AllTactic)
             {
-                if (newCard.Stat[i] == null)
-                {
-                    newCard.Stat.RemoveAt(i);
-                    newCard.StatSize.RemoveAt(i);
-                    i--;
-                }
-                else
-                    card.StatSizeLocal.Add(newCard.StatSize[i]);
+                go = Instantiate(stolUi.OrigButton);
+                trans = go.transform;
+                trans.SetParent(stolUi.AllTacticCase);
+                trans.GetChild(0).gameObject.GetComponent<Text>().text = str;
+                stolUi.AllTactic.Add(trans);
+
+                go.GetComponent<Button>().onClick.AddListener(() => HiroHead.UseTactic(str));
             }
-
-            // PlayColod.Add(newCard);
-            // newCard.Body = CreateUiCard(enemy);
-            Destroy(card.Body.gameObject);
-            hiro.PlayColod.Add(newCard);
-            CreateBody(card, hiro);
         }
 
-        static void CreateBody(CardBase card, Hiro hiro)
-        {//hiro с него наследуются символика персонажа
-            GameObject GO = Instantiate(stolUi.OrigHiro);
-            card.Body = GO.transform;
-            card.Body.SetParent(hiro.OrigSlots[0]);
-        }
-
-        static void CreateUiCard(CardBase card, Hiro hiro)
+        static void CreateUiCard(CardBase card)
         {
-            Transform myHand = (hiro.Team == 0) ? stolUi.MyHand : stolUi.EnemyHand;
+            Transform myHand = (card.MyHiro.Team == 0) ? stolUi.MyHand : stolUi.EnemyHand;
 
             GameObject GO = Instantiate(stolUi.OrigCard);
             card.Body = GO.transform;
             card.Body.SetParent(myHand);
 
-            GO.GetComponent<Button>().onClick.AddListener(() => HiroHead.PrePlayCard(card, hiro));
+            GO.GetComponent<Button>().onClick.AddListener(() => HiroHead.Reply(card));
 
 
             CardView.ViewCard(card);
@@ -788,54 +712,261 @@ namespace BattleTable
     public class HiroHead
     {
         public static GameSetting gameSetting;
-        private static Hiro[] hiro;
+        private static List<Hiro> hiro;
         private static StolUi stolUi;
         public static void SetUI(StolUi _stolUI) { stolUi = _stolUI; }
         private static bool player;
+        private static List<SubString> calls = new List<SubString>();
         #region Start Table
-        public static void Install()
+        
+        static void ReplyHiro(bool enemy)
         {
-            hiro = new Hiro[2];
-            GameEventSystem.SetHiro(hiro);
-            Create.gameSetting = gameSetting;
-            Create.hiro = hiro;
-            Create.stolUi = stolUi;
-
-            Create.CreateHiro(true);
-            Create.CreateHiro(false);
-
-            stolUi.NextTurn.onClick.AddListener(() => NextTurn()); 
-           // PlayCard(ca
+            Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
         }
-        #endregion
 
-
-        public static void PrePlayCard(CardBase card, Hiro hiro)
+        static void ReplyStol(bool extend, bool enemy)
         {
-            //посчитать стоимость по сложной формуле
-
-            if (hiro.Mana >= card.Mana)
+            Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
+            if (calls.Count > 0)
             {
-                hiro.Mana -= card.Mana;
-                Create.PlayCard(card, hiro); 
+                bool use = false;
+                CardBase firstCard = calls[0].Card;
+                string mood = calls[0].Mood;
+                switch (calls[0].Text)//calls[0].Action
+                {
+                    case ("UseSlot"):
+
+                        if (firstCard.MyHiro.ManaCurent >= firstCard.Mana)
+                            if (CallMood(myHiro, firstCard, mood))
+                            {
+
+                                firstCard.MyHiro.ManaCurent -= firstCard.Mana;
+                                if(enemy)
+                                    firstCard.Body.SetParent(stolUi.EnemyFirstStol);
+                                else
+                                    firstCard.Body.SetParent(stolUi.MyFirstStol);
+
+                                firstCard.Tayp = "Create";
+                                int a = firstCard.Stat.FindIndex(x => x.Name == "MeleeDamage");
+                                if (a != -1)
+                                    firstCard.Tactic.Add("Attack");
+                                a = firstCard.Stat.FindIndex(x => x.Name == "RangedDamage");
+                                if (a != -1)
+                                    firstCard.Tactic.Add("Shot");
+
+                                HiroUi(firstCard.MyHiro);
+                            }
+
+                        use = true;
+                        break;
+                    default:
+                        Debug.Log(calls[0].Text);
+                        break;
+                }
+                if (use)
+                {
+                    calls.RemoveAt(0);
+                    if (calls.Count > 0)
+                        Reply(null);
+                }
+
             }
         }
-
-        static void NextTurn( )
+        
+        public static void Reply(CardBase card)
         {
+            if (calls.Count > 0)
+            {
+                bool use = false;
+                CardBase firstCard = calls[0].Card;
+                string mood = calls[0].Mood; 
+                if (card == null)
+                    switch (calls[0].Text)//calls[0].Action
+                    {
+                        
+                        default:
+                            Debug.Log(calls[0].Text);
+                            break;
+                    }
+                else
+                    switch (calls[0].Text)//calls[0].Action
+                    {
+                        case ("Attack"):
+                            if (CallMood(firstCard.MyHiro, card, mood))
+                                GameEventSystem.MelleAction("",firstCard,card); 
+
+                                break;
+                        case ("Shot"):
+
+                            break;
+                        //case ("UseSlot"):
+                        //    if (firstCard == null)
+                        //    {
+                        //        if (CallMood(hiro, card1, mood))
+                        //        {
+                        //            card1.MyHiro.ManaCurent -= card1.Mana;
+                        //            Create.PlayCard(card1);
+                        //        }
+                        //    }
+                        //    break;
+                        default:
+                            Debug.Log(calls[0].Text);
+                            break;
+                    }
+                
+
+                if (use)
+                {
+                    calls.RemoveAt(0);
+                    if (calls.Count > 0)
+                        Reply(null);
+                }
+            }
+            else if (card != null)
+            {
+                switch (card.Tayp)
+                {
+                    case ("HandCreate"):
+                        if (card.MyHiro.ManaCurent >= card.Mana)
+                        {
+                            AddCall("UseSlot", "My", "CreateBody", card);
+                        }
+                        break;
+                    case ("Create"):
+                        if (card.Tactic.Count > 0)
+                            if (card.Tactic.Count == 1)
+                            {
+                                AddCall(card.Tactic[0], "My", "CreateBody", card);
+                            }
+                            else
+                                TacticList(card);
+                                //if (card.MyHiro.ManaCurent >= card.Mana)
+                                //{
+                                //AddCall("Attack", "My", "CreateBody", card);
+                                //}
+                        break;
+                    default:
+                        Debug.Log(card.Tayp);
+                        break;
+                }
+
+                Reply(null);
+            }
+
+        }
+
+
+        public static void UseTactic(string str)
+        {
+            calls[0].Text = str;
+            Reply(null);
+            //AddCall(str, "My", "CreateBody", card);
+        }
+
+        static bool CallMood( Hiro hiro, CardBase card, string mood)
+        {
+            switch (mood)
+            {
+                case ("All"):
+                    return true;
+                    break;
+                case ("My"):
+                    if(hiro.Team == card.MyHiro.Team)
+                        return true;
+                    break;
+                case ("Enemy"):
+                    if (hiro.Team != card.MyHiro.Team)
+                        return true;
+                    break;
+            }
+            return false;
+        }
+
+        static void TacticList(CardBase card)
+        {
+            AddCall("Void", "My", "CreateBody", card);
+            stolUi.TacticCase.gameObject.active = true;
+            foreach (Transform child in stolUi.TacticCase)
+            {
+                child.SetParent(stolUi.AllTacticCase);
+            }
+            int a = 0;
+
+            foreach (string tactic in card.Tactic)
+            {
+                a = gameSetting.Library.AllTactic.FindIndex(x => x == tactic);
+                stolUi.AllTactic[a].SetParent(stolUi.TacticCase);
+            }
+            
+        }
+
+        public static void RemoveCall()
+        {
+            calls.RemoveAt(0);
+        }
+
+        public static void Install()
+        {
+            //hiro = new Hiro[2];
+            Create.gameSetting = gameSetting;
+            Create.stolUi = stolUi;
+
+            Create.CreateHiro(false);
+            Create.CreateHiro(true);
+
+            hiro = Create.hiro;
+            GameEventSystem.SetHiro(hiro);
+
+            Create.CreateTacticList();
+
+            NextTurn();
+            NextTurn();
+
+
+            stolUi.NextTurn.onClick.AddListener(() => NextTurn());
+            stolUi.MyFirstStol.gameObject.GetComponent<Button>().onClick.AddListener(() => ReplyStol(false, false));
+
+            stolUi.EnemyFirstStol.gameObject.GetComponent<Button>().onClick.AddListener(() => ReplyStol(false, true));
+            //true, false));
+            // PlayCard(ca
+        }
+        #endregion
+        static void AddCall (string text, string mood, string action, CardBase card)
+        {
+            SubString call = new SubString();
+            call.Text = text;
+            call.Mood = mood;
+            call.Action = action;
+            //call.Num = num;
+            call.Card = card;
+
+            calls.Add(call); 
+        }
+
+
+        private static void NextTurn( )
+        {
+            //Deactive button
+
             player = !player;
             Hiro newHiro = (player) ? hiro[0] : hiro[1];
 
             if (newHiro.Mana < newHiro.ManaMax)
                 newHiro.Mana++;
             newHiro.ManaCurent = newHiro.Mana;
+            Create.AddCardInHand(newHiro, 1);
+
+            HiroUi(newHiro);
         }
        
+        public static void HiroUi(Hiro hiro)
+        {
+            hiro.Ui.text = $"Hp {hiro.Hp} Mana ({hiro.ManaMax}|{hiro.Mana}|{hiro.ManaCurent})";
+        }
     }
 
     public class TableRule : MonoBehaviour
     {
-        public static Stol stol;
         public static GameSetting gameSetting;
 
         //static void LoadAction(RealCard card, CardBase cardBase)

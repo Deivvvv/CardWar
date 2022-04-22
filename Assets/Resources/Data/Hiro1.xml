@@ -7,9 +7,9 @@
   <Mana>1</Mana>
   <Stat>4</Stat>
   <Stat0>Hp</Stat0>
-  <StatSize0>1</StatSize0>
-  <Stat1> </Stat1>
-  <StatSize1>0</StatSize1>
+  <StatSize0>2</StatSize0>
+  <Stat1>MeleeDamage</Stat1>
+  <StatSize1>1</StatSize1>
   <Stat2> </Stat2>
   <StatSize2>0</StatSize2>
   <Stat3> </Stat3>

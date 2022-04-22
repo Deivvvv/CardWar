@@ -29,14 +29,16 @@ public class CardBase
     public Transform Body;
 
     //public Sprite ImageFull;
+    [HideInInspector]
     public byte[] Image;
 
 
     //extend
     public string Class;
     public int Iniciativa = 2;
-    public bool Provacator;
-    public int Team;
+    public Hiro MyHiro;
+    public string Tayp = "HandCreate";
+    public List<string> Tactic = new List<string>();
 
     public List<Effect> Effect;
     public List<Effect> InfinityEffect;
@@ -46,6 +48,10 @@ public class CardBase
     /*
      publec CardBase Guard;
      */
+    //Status
+
+    public bool Provacator;
+    public bool Fly;
 }
 
 
