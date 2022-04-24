@@ -20,7 +20,7 @@ public class CardBase
     public int Mana;
 
     //public List<int> Stat;
-    public List<string> Trait = new List<string>();
+    public List<HeadSimpleTrigger> Trait = new List<HeadSimpleTrigger>();
     public List<int> TraitSize = new List<int>();
 
     // public List<Rule> Rules;

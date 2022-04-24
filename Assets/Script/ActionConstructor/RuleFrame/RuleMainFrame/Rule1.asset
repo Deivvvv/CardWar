@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 043ed8662342d2b40a96c80a1c8e6509, type: 3}
   m_Name: Rule1
   m_EditorClassIdentifier: 
+  ForseTayp:
+  - '"All"'
+  - '"Max"'
+  - '"LocalForse"'
+  - '"Local"'
   EqualString:
   - ' ='
   - ' !='

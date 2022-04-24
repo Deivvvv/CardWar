@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class GameSetting : ScriptableObject
 {
+    public List<HeadSimpleTrigger> Rule;
+
     public ActionLibrary Library;
 
     public Sprite[] Icon;

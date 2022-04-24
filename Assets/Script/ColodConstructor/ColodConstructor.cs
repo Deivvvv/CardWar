@@ -9,7 +9,6 @@ using TMPro;
 
 public class ColodConstructor : MonoBehaviour
 {
-    private ColodConstructor colodConstructor;
     [SerializeField]
     private GameSetting gameSetting;
     private GameData gameData;
@@ -48,8 +47,6 @@ public class ColodConstructor : MonoBehaviour
     void Start()
     {
         XMLSaver.SetGameSetting(gameSetting);
-        XMLSaver.SetColodConstructor(colodConstructor);
-           colodConstructor = gameObject.GetComponent<ColodConstructor>();
         origPath = Application.dataPath + $"/Resources/Hiro";
         origPathAlt = Application.dataPath + $"/Resources/CardSet";
         LoadBase();

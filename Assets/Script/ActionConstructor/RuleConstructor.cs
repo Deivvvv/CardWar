@@ -598,9 +598,6 @@ public class RuleConstructor : MonoBehaviour
             case ("Num"):
                 action.Num = a;
                 break;
-            case ("Target"):
-                action.Target = a;
-                break;
             case ("MaxPoint"):
                 action.MaxPoint = a;
                 if (action.MinPoint > action.MaxPoint)
@@ -1110,6 +1107,7 @@ public class RuleConstructor : MonoBehaviour
         ruleConstructor = GetComponent<RuleConstructor>();
         Application.targetFrameRate = 30;
         head = new HeadRule();
+        XMLSaver.SetRuleMainFrame(frame);
 
         CoreLoad();
         CoreLoadRule();
@@ -1196,6 +1194,7 @@ public class RuleConstructor : MonoBehaviour
     {
         Ui.TextWindowButton.onClick.AddListener(() => LoadData());
         Ui.SaveButton.onClick.AddListener(() => CreateRule());
+        Ui.SaveSimpleButton.onClick.AddListener(() => SaveRuleSample(curentRule));
         Ui.NewRuleButton.onClick.AddListener(() => NewRule());
 
         GameObject GO = null;
@@ -1336,8 +1335,6 @@ public class RuleConstructor : MonoBehaviour
     {
         curentRule = i;
         SetRule(XMLSaver.LoadRule(i));
-        //head = XMLSaver.LoadRule( i);
-        //XMLSaver.LoadRule(ruleConstructor, i);
     }
 
     public void SetRule(HeadRule headRule)
@@ -1368,70 +1365,15 @@ public class RuleConstructor : MonoBehaviour
             TriggerRootText(i);
         }
         LoadAllText();
-        //  TriggerAction triggerAction1 = null;
-        //  IfAction ifAction = null;
-        ////  RuleAction ruleAction = null;
-
-        //  int b = head.TriggerActions.Count;
-        //  int b1 = 0;
-        //  for (int i = 0; i < b; i++)
-        //  {
-        //      triggerAction1 = head.TriggerActions[i];
-        //      TriggerMainText(i);
-
-        //      b1 = triggerAction1.PlusAction.Count;
-        //      for (int i1 = 0; i1 < b1; i1++)
-        //      {
-        //          ifAction = triggerAction1.PlusAction[i1];
-        //          ifAction.LocalId = i1;
-
-        //          ifAction.Form = frame.AllTriggers[ifAction.MainCore[0]].Form[ifAction.MainCore[1]];
-        //          int b2 = ifAction.Core.Count;
-        //          for (int i2 = 0; i2 < b2; i2++)
-        //          {
-        //              PreLableIfAction(ifAction, ifAction.Core[i2]);
-        //          }
-
-        //          LableIfAction(ifAction, "Plus", i);
-        //      }
-        //      TriggerPlusText(i);
-
-
-        //      b1 = triggerAction1.MinusAction.Count;
-        //      for (int i1 = 0; i1 < b1; i1++)
-        //      {
-        //          ifAction = triggerAction1.MinusAction[i1];
-        //          ifAction.LocalId = i1;
-
-        //          ifAction.Form = frame.AllTriggers[ifAction.MainCore[0]].Form[ifAction.MainCore[1]];
-
-        //          for (int i2 = 0; i2 < ifAction.Core.Count; i2++)
-        //          {
-        //              PreLableIfAction(ifAction, ifAction.Core[i2]);
-        //          }
-        //          LableIfAction(ifAction, "Minus", i);
-        //      }
-        //      TriggerMinusText(i);
-
-        //      b1 = triggerAction1.Action.Count;
-        //      for (int i1 = 0; i1 < b1; i1++)
-        //      {
-        //          // ruleAction = triggerAction1.Action[i1];
-        //          CreateActionText(i, i1);
-        //      }
-        //      TriggerActionText(i);
-
-        //      TriggerRootText(i);
-        //  }
-
-
-        // LoadAllText();
     }
 
     void SaveRule(int i)
     {
          XMLSaver.SaveRule(head, i);
-       // XMLSaver.SaveSimpleRule(head, i);
+    }
+    void SaveRuleSample(int i)
+    {
+        XMLSaver.SaveSimpleRule(head, i);
     }
 
     void SaveCore()
@@ -1441,10 +1383,8 @@ public class RuleConstructor : MonoBehaviour
 
     void CoreLoad()
     {
-        //RuleName = 
-            XMLSaver.LoadMainRule(library);
-       // ruleConstructor.RuleCount = library.RuleName.Count;
-       RuleName = library.RuleName;
+        XMLSaver.LoadMainRule(library);
+        RuleName = library.RuleName;
     }
 
     void CreateRule()
@@ -1537,8 +1477,6 @@ public class RuleAction
     public string Action;//
     public List<RuleForm> Core = new List<RuleForm>();
     public int Num;
-
-    public int Target;
 
     public string RootText;
 }

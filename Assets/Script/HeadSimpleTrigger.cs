@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class HeadSimpleTrigger
 {
     public string Name = "Благочестие";//Название
@@ -23,27 +24,34 @@ public class HeadSimpleTrigger
     public List<string> EnemyRule = new List<string>();
 }
 
+[System.Serializable]
 public class SimpleTrigger
 {
     public bool CountMod;
     public bool CountModExtend;
-    public int TargetPalyer;
-    public List<SimpleIfCore> MinusPrior = new List<SimpleIfCore>();
+    public string TargetPalyer;
+    public string Trigger;
     public List<SimpleIfCore> PlusPrior = new List<SimpleIfCore>();
-    public List<SimpleAction> Action;
-    //  public List<RuleAction> Action;
+    public List<SimpleIfCore> MinusPrior = new List<SimpleIfCore>();
+    public List<SimpleAction> Action = new List<SimpleAction>();
 }
+[System.Serializable]
 public class SimpleAction
 {
     public string Action;
+    public string Mood;
     public string ActionFull;
     public int MinPoint;
     public int MaxPoint;
+
+    public int Num;
 }
+[System.Serializable]
 public class SimpleIfCore
 {
+    public string Result;
     public int Point;
     public int Prioritet;
-    public string Attribute;//public List<string> Attribute;//
+    public string Attribute;
     //public List<string> Target;//
 }

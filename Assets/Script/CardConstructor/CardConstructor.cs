@@ -11,18 +11,6 @@ using BattleTable;
 
 public class CardConstructor : MonoBehaviour
 {
-    /*
-     * Раса - Легион
-     * Легион - Легион
-     * Выбрать социальную группу
-     * 
-     * на основе социальной группы Фиксирывать корневой парметр, его утрата приведет к смерти армии
-     * Добавить три любых иных парметра
-     * 
-     * Вывести правила(черты, которые карта наследует от выше перечисленных групп), 
-     * их стоимость не указывается внутри системы т.к. они наследуются от выше стоящих источников
-     * Выбрать до 5 правил как дополнительно
-     */
     private List<Legion> actualLegion = new List<Legion>();
 
     private Transform selector;
@@ -59,8 +47,6 @@ public class CardConstructor : MonoBehaviour
     private List<int> newData;
     private int curentFiltr;
     private bool filterRevers;
-    //[SerializeField]
-    //private XMLSaver saver;
 
     private string origPath;
     private string origPathAlt;
@@ -245,7 +231,7 @@ public class CardConstructor : MonoBehaviour
             for (int i = 0; i < cardBase.Trait.Count; i++)
             {
                 keyRule =i;
-                SwitchRule(card.Trait[i]);
+                SwitchRule(card.Trait[i].Name);
                 // cardBase.Trait[i] = card.Trait[i];
                 // cardBase.TraitSize[i] = card.TraitSize[i];
             }
@@ -332,7 +318,6 @@ public class CardConstructor : MonoBehaviour
 
     void LoadBase()
     {
-        XMLSaver.SetCardConstructor(cardConstructor);
 
         string path = "";
         int a = gameData.AllCard;
@@ -712,7 +697,7 @@ public class CardConstructor : MonoBehaviour
         StatCaseUi caseUi = Ui.RuleUi[a];
         if (str == "-1" || str == "")
         {
-            cardBase.Trait[a] = "";
+            cardBase.Trait[a] = null;
             //  cardBase.StatSize[a] = 0;
             caseUi.Name.text = "Пустой слот";
 
@@ -726,8 +711,8 @@ public class CardConstructor : MonoBehaviour
         }
         else
         {
-
-            cardBase.Trait[a] = str;
+            int b = gameSetting.Rule.FindIndex(x => x.Name == str);
+            cardBase.Trait[a] = gameSetting.Rule[b];
             //  cardBase.StatSize[a] = 0;
             caseUi.Name.text = str;
             //cardBase.Stat[a] = gameSetting.Library.Constants[str];
@@ -900,10 +885,10 @@ public class CardConstructor : MonoBehaviour
 
 
         cardBase.TraitSize = new List<int>();
-        cardBase.Trait = new List<string>();
+        cardBase.Trait = new List<HeadSimpleTrigger>();
         for (int i = 0; i < gameSetting.RuleSize; i++)
         {
-            cardBase.Trait.Add("");
+            cardBase.Trait.Add(null);
             cardBase.TraitSize.Add(0);
             //SwitchStat(i, -1);
         }

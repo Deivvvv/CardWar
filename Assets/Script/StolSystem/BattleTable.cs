@@ -10,13 +10,20 @@ namespace BattleTable
 {
     public class Core
     {
+
+
         public static void LoadGameSetting(GameSetting gameSetting)
         {
-            //BattleSystem.gameSetting = gameSetting;
-            TableRule.gameSetting = gameSetting;
             CardView.gameSetting = gameSetting;
             GameEventSystem.gameSetting = gameSetting;
             HiroHead.gameSetting = gameSetting;
+        }
+
+        public static void LoadRules(GameSetting gameSetting)
+        {
+            gameSetting.Rule = new List<HeadSimpleTrigger>();
+            for (int i = 0; i < gameSetting.Library.RuleName.Count; i++)
+                gameSetting.Rule.Add(Core.ReadRule(i));
         }
 
         public static CardBase CardClone(CardBase card)
@@ -75,20 +82,131 @@ namespace BattleTable
                     card.StatSizeLocal.Add(card.StatSize[i]);
             }
         }
+
+        public static HeadSimpleTrigger ReadRule(int a)
+        {
+            XMLSaver.SetSimpleRoot(a);
+            HeadSimpleTrigger simpleTrigger = new HeadSimpleTrigger();
+            LoadHead(simpleTrigger);
+            LoadHeadExtended(simpleTrigger);
+
+            LoadTrigger(simpleTrigger);
+            for(int i =0;i <simpleTrigger.SimpleTriggers.Count;i++)
+                LoadTriggerExtended(simpleTrigger, i);
+
+            return simpleTrigger;
+        }
+        private static void LoadHead(HeadSimpleTrigger simpleTrigger)
+        {
+            string[] sub = XMLSaver.LoadSimpleRule("Head").Split('_');
+            simpleTrigger.Name = sub[0];
+            simpleTrigger.Cost = int.Parse(sub[1]);
+            simpleTrigger.CostExtend = int.Parse(sub[2]);
+            simpleTrigger.LevelCap = int.Parse(sub[3]);
+            simpleTrigger.Player = bool.Parse(sub[4]);
+        }
+        private static void LoadHeadExtended( HeadSimpleTrigger simpleTrigger)
+        {
+            string[] sub = XMLSaver.LoadSimpleRule("HeadNeedRule").Split('_');
+            if(sub[0] !="")
+                for (int i = 0; i < sub.Length; i++)
+                {
+                    simpleTrigger.NeedRule.Add(sub[i]);
+                }
+
+            sub = XMLSaver.LoadSimpleRule("HeadEnemyRule").Split('_');
+            if (sub[0] != "")
+                for (int i = 0; i < sub.Length; i++)
+                {
+                    simpleTrigger.EnemyRule.Add(sub[i]);
+                }
+        }
+        private static void LoadTrigger(HeadSimpleTrigger simpleTrigger)
+        {
+            SimpleTrigger simpleTriggers = null;
+            string[] sub = XMLSaver.LoadSimpleRule("Trigger").Split('/');
+            string[] sub1 = null;
+            for (int i =0;i < sub.Length; i++)
+            {
+                sub1 = sub[i].Split('_');
+                simpleTriggers = new SimpleTrigger();
+                simpleTriggers.CountMod = bool.Parse(sub1[2]);
+                simpleTriggers.CountModExtend = bool.Parse(sub1[3]);
+                simpleTriggers.TargetPalyer = sub1[0];
+                simpleTriggers.Trigger = sub1[1];
+
+                simpleTrigger.SimpleTriggers.Add(simpleTriggers);
+            }
+        }
+
+        private static SimpleIfCore LoadIfCore(string str)
+        {
+            SimpleIfCore ifCore = new SimpleIfCore();
+            string[] sub = str.Split('*');
+            ifCore.Attribute = sub[1];
+
+            sub = sub[0].Split('_');
+            ifCore.Result = sub[0];
+            ifCore.Point = int.Parse(sub[1]);
+            ifCore.Prioritet = int.Parse(sub[2]);
+
+            return ifCore;
+        }
+        private static SimpleAction LoadAction(string str)
+        {
+            SimpleAction action = new SimpleAction();
+            string[] sub = str.Split('*');
+            action.ActionFull = sub[1];
+
+            sub = sub[0].Split('_');
+            action.MinPoint = int.Parse(sub[0]);
+            action.MaxPoint = int.Parse(sub[1]);
+            action.Action = sub[3];
+            action.Mood = sub[2];
+
+            action.Num = int.Parse(sub[4]);
+
+            return action;
+        }
+        private static void LoadTriggerExtended(HeadSimpleTrigger simpleTrigger, int b)
+        {
+            SimpleTrigger simpleTriggers = simpleTrigger.SimpleTriggers[b];
+            string[] sub = XMLSaver.LoadSimpleRule("TriggerPartPlus", b).Split('/');
+            if (sub[0] != "")
+                foreach (string str in sub)
+                {
+                    simpleTriggers.PlusPrior.Add(LoadIfCore(str));
+                }
+
+            sub = XMLSaver.LoadSimpleRule("TriggerPartMinus", b).Split('/');
+            if (sub[0] != "")
+                foreach (string str in sub)
+                {
+                    simpleTriggers.MinusPrior.Add(LoadIfCore(str));
+                }
+
+            sub = XMLSaver.LoadSimpleRule("TriggerPart", b).Split('/');
+            if (sub[0] != "")
+                foreach (string str in sub)
+                {
+                    simpleTriggers.Action.Add(LoadAction(str));
+                }
+
+
+        }
     }
 
     public static class GameEventSystem
     {
-        //p
 
         public static GameSetting gameSetting;
-        private static List<Hiro> hiro;
+        //private static List<Hiro> hiro;
         private static CardBase card1, card2;
 
-        public static void SetHiro(List<Hiro> _hiro) { List<Hiro> hiro = _hiro;  }
+        //public static void SetHiro(List<Hiro> _hiro) { List<Hiro> hiro = _hiro;  }
 
         public static int FindInt(string attribute, CardBase cardBase)
-        {
+        {//card1
             string[] comAttribute = attribute.Split('_');
             float sum = -1;
             switch (comAttribute[0])
@@ -129,7 +247,7 @@ namespace BattleTable
                 case ("Trait"):
                     for (int i = 0; i < cardBase.Trait.Count; i++)
                     {
-                        if (cardBase.Trait[i] == comAttribute[1])
+                        if (cardBase.Trait[i].Name == comAttribute[1])
                         {
                             sum = 0;
                             i = cardBase.Trait.Count;
@@ -142,68 +260,67 @@ namespace BattleTable
 
             return Mathf.FloorToInt(sum);
         }
-        private static bool FindMenager(string attribute)
+        private static bool FindMenager(SimpleIfCore simpleIf)
         {
-            string[] mainAttribute = attribute.Split('/');
+            string[] comAttribute = simpleIf.Attribute.Split(':');
             int sum1 =-1, sum2 =0;
-            string[] comAttribute = mainAttribute[0].Split('_');
+            string[] comAttribute1 = comAttribute[0].Split('_');
+            //string target =
 
-            switch (comAttribute[1])
+            switch (comAttribute1[0])
             {
-                case ("0"):
-                    sum1 = FindInt(mainAttribute[1], card1);
+                case ("Null"):
+                    sum1 = 0;
                     break;
-                case ("1"):
-                    sum1 = FindInt(mainAttribute[1], card2);
+                case ("Card1"):
+                    sum1 = FindInt(comAttribute1[1], card1);
+                    break;
+                case ("Card2"):
+                    sum1 = FindInt(comAttribute1[1], card2);
                     break;
             }
-            switch (comAttribute[2])
+
+            comAttribute1 = comAttribute[1].Split('_');
+            switch (comAttribute1[0])
             {
-                case ("0"):
-                    sum2 = FindInt(mainAttribute[2], card1);
+                case ("Card1"):
+                    sum2 = FindInt(comAttribute1[1], card1);
                     break;
-                case ("1"):
-                    sum2 = FindInt(mainAttribute[2], card2);
+                case ("Card2"):
+                    sum2 = FindInt(comAttribute1[1], card2);
                     break;
-                case ("2"):
+                case ("Null"):
                     if(sum1 > -1)
                         sum2 = sum1;
                     break;
             }
 
-            switch (comAttribute[0])
+            switch (simpleIf.Result)
             {
-                case (" =")://0
+                case ("=")://0
                     return (sum1 == sum2);
                     break;
-                case (" !=")://1
+                case ("!=")://1
                     return (sum1 != sum2);
                     break;
-                case (" >")://2
+                case (">")://2
                     return (sum1 > sum2);
                     break;
-                case (" <")://3
+                case ("<")://3
                     return (sum1 < sum2);
                     break;
             }
 
-            Debug.Log(attribute);
+            //Debug.Log(attribute);
             return false;
         }
 
-
-        public static void PreCall(HeadSimpleTrigger head, CardBase _card1, CardBase _card2)
-        {
+        public static void UseRule(SimpleTrigger simpleTrigger, CardBase _card1, CardBase _card2)
+        {// HeadSimpleTrigger head
             card1 = _card1;
             card2 = _card2;
-            //SimpleTrigger simpleTrigger = null;
-            for (int i = 0; i < head.SimpleTriggers.Count; i++)
-            {
-                Call(head.SimpleTriggers[i]);
-            }
-        }
-        private static void Call(SimpleTrigger simpleTrigger)
-        {//HeadSimpleTrigger simpleTrigger
+            //HeadSimpleTrigger head = gameSetting.Rule[a];
+
 
             int noUse, use;
             noUse = CallSub(simpleTrigger.MinusPrior, simpleTrigger.CountMod);
@@ -239,7 +356,7 @@ namespace BattleTable
             {
                 simpleIf = simpleIfCore[i];
 
-                if (FindMenager(simpleIf.Attribute))
+                if (FindMenager(simpleIf))
                 {
                     if(i+1 < simpleIfCore.Count)
                     {
@@ -708,7 +825,6 @@ namespace BattleTable
 
     }
 
-
     public class HiroHead
     {
         public static GameSetting gameSetting;
@@ -792,6 +908,7 @@ namespace BattleTable
                     switch (calls[0].Text)//calls[0].Action
                     {
                         case ("Attack"):
+                            Debug.Log(CallMood(firstCard.MyHiro, card, mood));
                             if (CallMood(firstCard.MyHiro, card, mood))
                                 GameEventSystem.MelleAction("",firstCard,card); 
 
@@ -836,7 +953,7 @@ namespace BattleTable
                         if (card.Tactic.Count > 0)
                             if (card.Tactic.Count == 1)
                             {
-                                AddCall(card.Tactic[0], "My", "CreateBody", card);
+                                AddCall(card.Tactic[0], "Enemy", "CreateBody", card);
                             }
                             else
                                 TacticList(card);
@@ -911,13 +1028,18 @@ namespace BattleTable
             Create.gameSetting = gameSetting;
             Create.stolUi = stolUi;
 
+            Core.LoadRules(gameSetting);
+
             Create.CreateHiro(false);
             Create.CreateHiro(true);
 
             hiro = Create.hiro;
-            GameEventSystem.SetHiro(hiro);
+            //GameEventSystem.SetHiro(hiro);
 
             Create.CreateTacticList();
+
+
+
 
             NextTurn();
             NextTurn();
@@ -965,151 +1087,6 @@ namespace BattleTable
         }
     }
 
-    public class TableRule : MonoBehaviour
-    {
-        public static GameSetting gameSetting;
-
-        //static void LoadAction(RealCard card, CardBase cardBase)
-        //{
-        //    card.Action = new List<int>();
-        //    card.ShotAction = new List<int>();
-        //    card.PasiveAction = new List<int>();
-        //    card.Trait = new List<string>();
-        //    card.Effect = new List<Effect>();
-
-        //    int a = 0;
-        //    if (card.MeleeDMG > 0) 
-        //    {
-        //        a = gameSetting.Library.Action.FindIndex(x => x.Name == "Slash");//.Action.Find(x => x.Name == "Slash"));
-        //        card.Action.Add(a);
-        //    }
-        //    if (card.ShotDMG > 0)
-        //    {
-        //        a = gameSetting.Library.Action.FindIndex(x => x.Name == "Hit");
-        //        card.ShotAction.Add(a);
-        //    }
-
-        //    string traitCase = "";
-        //    Trait trait = null;
-        //    int b = 0;
-        //    a = cardBase.Trait.Count;
-        //    for(int i = 0; i < a; i++)
-        //    {
-        //        traitCase = cardBase.Trait[i];
-        //        card.Trait.Add(traitCase);
-        //        if (traitCase != "")
-        //        {
-        //            b = gameSetting.Library.Action.FindIndex(x => x.Name == traitCase);
-        //            if (b == -1)
-        //                Debug.Log(traitCase);
-        //            trait = gameSetting.Library.Action[b];
-
-        //            switch (trait.ClassTayp)
-        //            {
-        //                case ("Action")://Action
-        //                    card.Action.Add(b);
-        //                    break;
-
-        //                case ("ShotAction")://ShotAction
-        //                    card.ShotAction.Add(b);
-        //                    break;
-
-        //                case ("PasiveAction")://PasivAction
-        //                    card.PasiveAction.Add(b);
-        //                    break;
-        //            }
-
-        //            // b = card.Trait.FindIndex(x => x == "Dash");
-        //            switch (traitCase)
-        //            {
-        //                case ("Dash"):
-        //                    CloseMetod.IRestoreMP(card);
-        //                    break;
-
-        //                case ("Rush"):
-        //                    CloseMetod.IRestoreMP(card);
-        //                    StatusSystem.IAddEffect("NoHead", 1, card);
-        //                    break;
-
-        //                case ("Provacator"):
-        //                    if (card.Position == 0)
-        //                        card.HiroMain.Provacator.Add(card);
-        //                    break;
-
-        //                case ("BodyGuard"):
-        //                   // b = gameSetting.Library.Action.FindIndex(x => x.Name == traitCase);
-        //                    stol.SelectCardSpellTarget(b, card);
-        //                    //if (card.Position == 0)
-        //                    //    card.HiroMain.Provacator.Add(card);
-        //                    break;
-
-        //                //case ("Provacator"):
-        //                //    if (card.Position == 0)
-        //                //        card.HiroMain.Provacator.Add(card);
-        //                //    break;
-        //            }
-        //        }
-        //    }
-
-        //}
-        //static void IPlayCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
-        //{
-        //  //  int b = hiro1.CardColod[handNum].Stat[hiro1.CardColod[handNum].Stat.Count - 1];
-        //  //  hiro1.ManaCurent -= b;
-
-        //    ICreateCard(hiro1, hiro2, handNum, slot, pos);
-        //    stol.PostUse(true);
-        //}
-
-        //public static void IUseCard(Hiro hiro1, Hiro hiro2, int handNum, int slot, int pos)
-        //{
-        //    CardBase card = hiro1.CardColod[handNum];
-        //    int b = 0;// card.Stat[card.Stat.Count - 1];
-        //    if (hiro1.ManaCurent >= b)
-        //    {
-        //        bool targetHiro = false;
-        //        RealCard targetCard = hiro2.Slots[slot].Position[pos];
-        //        if (targetCard != null) 
-        //            targetHiro = true;
-
-        //        if (!targetHiro)
-        //        {
-        //            if(hiro1.Team == hiro2.Team)
-        //            {
-        //                if(pos == 1)
-        //                {
-        //                    b = card.Trait.FindIndex(x => x == "ArGuard");
-        //                    if (b != -1)
-        //                    {
-        //                        targetCard = hiro2.Slots[slot].Position[0];
-        //                        if (targetCard != null)
-        //                        {
-        //                            b = targetCard.Trait.FindIndex(x => x == "AvGuard");
-        //                            if (b != -1)
-        //                                IPlayCard(hiro1, hiro2, handNum, slot, pos);
-        //                        }
-        //                        else
-        //                            IPlayCard(hiro1, hiro2, handNum, slot, pos);
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    IPlayCard(hiro1, hiro2, handNum, slot, pos);
-        //                }
-        //            }
-
-        //           // ICreateCard(hiro1, hiro2, handNum, slot, pos);
-
-        //            //IPlayCard(hiro1, hiro2, handNum, slot, pos);//Временно заморожено
-        //            //stol.PostUse(true);
-        //        }
-        //       // switch(targetCard)
-        //    }
-         
-
-        //}//процедура определения задачи карты и возможности ее реализации
-    }
-
     public static class CardView
     {
         public static GameSetting gameSetting;
@@ -1136,8 +1113,8 @@ namespace BattleTable
             Ui.Trait.text = "";
             for (int i = 0; i < card.Trait.Count; i++)
             {
-                if (card.Trait[i] != "")
-                    Ui.Trait.text += $"{card.Trait[i]} \n";
+                if (card.Trait[i] != null)
+                    Ui.Trait.text += $"{card.Trait[i].Name} \n";
                 //Ui.Stat.text += $"{card.Stat[i].IconName} {card.StatSize[i]} ";
             }
 
