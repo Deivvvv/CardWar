@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+//[System.Serializable]
 public class Hiro
 {
     public int NextCard;
@@ -32,4 +33,5 @@ public class Hiro
     public int ShotHiro;
 
     public TMP_Text Ui;
+    public Transform UiStol;
 }

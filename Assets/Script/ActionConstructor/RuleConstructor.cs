@@ -400,6 +400,11 @@ public class RuleConstructor : MonoBehaviour
 
         text1 += LinkSupport(colorText, linkText, text2);
 
+        linkText = headText + $"Switch{headTextExtend}ForseMood";
+        text2 = $"\n-Тип воздействия { frame.ForseTayp[action.ForseMood]}";
+
+        text1 += LinkSupport(colorText, linkText, text2);
+
 
         // RuleForm ruleForm = null;
         for (int i=0; i < action.Core.Count; i++)
@@ -617,8 +622,12 @@ public class RuleConstructor : MonoBehaviour
     int NextSwitch(int a, string mood)
     {
         a++;
-        switch (mood) 
+        switch (mood)
         {
+            case ("ForseMood"):
+                if (a >= frame.ForseTayp.Length)
+                    a = 0;
+                break;
             case ("Card"):
                 if (a >= frame.CardString.Length)
                     a = 0;
@@ -821,7 +830,12 @@ public class RuleConstructor : MonoBehaviour
                                         if (com[3] == "Action")
                                         {
                                             RuleAction ruleAction = triggerAction.Action[b];
-                                            ruleAction.ActionMood = NextSwitch(ruleAction.ActionMood, "TargetPalyer");
+                                            if(com[5] == "ForseMood")
+                                            {
+                                                ruleAction.ForseMood = NextSwitch(ruleAction.ForseMood, "ForseMood");
+                                            }
+                                            else
+                                                ruleAction.ActionMood = NextSwitch(ruleAction.ActionMood, "TargetPalyer");
                                         }
                                         else { 
                                             IfAction ifAction = (com[3] == "Plus") ? triggerAction.PlusAction[b] : triggerAction.MinusAction[b];
@@ -1477,6 +1491,8 @@ public class RuleAction
     public string Action;//
     public List<RuleForm> Core = new List<RuleForm>();
     public int Num;
+
+    public int ForseMood;//
 
     public string RootText;
 }

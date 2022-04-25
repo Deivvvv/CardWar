@@ -8,6 +8,25 @@ public class GameSetting : ScriptableObject
 {
     public List<HeadSimpleTrigger> Rule;
 
+
+    public List<SimpleTrigger> PlayCard;
+    public List<SimpleTrigger> PlayAnotherCard;
+    public List<CardBase> PlayAnotherCardBody;
+
+    public List<SimpleTrigger> Die;
+    public List<SimpleTrigger> AnotherDie;
+    public List<CardBase> AnotherDieBody;
+
+    public List<SimpleTrigger> Action;
+    public List<SimpleTrigger> AnotherAction;
+    public List<CardBase> AnotherActionBody;
+
+
+    public List<SimpleTrigger> InHand;
+    public List<SimpleTrigger> NextTurn;
+    //public List<HeadSimpleTrigger> DefRule;
+    //public List<string> DefRuleText;
+
     public ActionLibrary Library;
 
     public Sprite[] Icon;

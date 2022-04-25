@@ -27,6 +27,7 @@ public class HeadSimpleTrigger
 [System.Serializable]
 public class SimpleTrigger
 {
+    public int CodName;
     public bool CountMod;
     public bool CountModExtend;
     public string TargetPalyer;

@@ -14,6 +14,5 @@ public class ActionLibrary : ScriptableObject
     public List<Effect> Effects;
 
     public List<string> RuleName;
-    public List<string> AllTactic;
     
 }

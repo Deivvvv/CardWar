@@ -8,23 +8,100 @@ using Saver;
 
 namespace BattleTable
 {
-    public class Core
+    public static class Core
     {
+        private static GameSetting gameSetting;
 
-
-        public static void LoadGameSetting(GameSetting gameSetting)
+        public static void LoadGameSetting(GameSetting _gameSetting)
         {
-            CardView.gameSetting = gameSetting;
-            GameEventSystem.gameSetting = gameSetting;
-            HiroHead.gameSetting = gameSetting;
+            gameSetting = _gameSetting;
+            CardView.gameSetting = _gameSetting;
+            GameEventSystem.gameSetting = _gameSetting;
+            HiroHead.gameSetting = _gameSetting;
         }
 
-        public static void LoadRules(GameSetting gameSetting)
+        public static void LoadRules()
         {
             gameSetting.Rule = new List<HeadSimpleTrigger>();
             for (int i = 0; i < gameSetting.Library.RuleName.Count; i++)
                 gameSetting.Rule.Add(Core.ReadRule(i));
+
+            //int a = 0;
+            //gameSetting.DefRule = new List<HeadSimpleTrigger>();
+            //for (int i = 0; i < gameSetting.DefRuleText.Count; i++)
+            //{
+            //    a = gameSetting.Library.RuleName.FindIndex(x => x == gameSetting.DefRuleText[i]);
+            //    gameSetting.DefRule.Add(gameSetting.Rule[a]);
+            //}
         }
+
+
+        public static void GenerateActionCard(CardBase card)
+        {
+            card.Action = new List<int>();
+            card.InHand = new List<int>();
+            card.NextTurn = new List<int>();
+            //for(int i =0;i< gameSetting.Rule.Count; i++)
+            int a = 0;
+            foreach (HeadSimpleTrigger head in card.Trait)
+            {
+                foreach (SimpleTrigger simpleTrigger in head.SimpleTriggers)
+                {
+                    a = simpleTrigger.CodName;
+                    switch (simpleTrigger.Trigger)
+                    {
+                        case ("Action"):
+                            card.Action.Add(a);
+                            break;
+                        case ("InHand"):
+                            card.InHand.Add(a);
+                            break;
+                        case ("NextTurn"):
+                            card.NextTurn.Add(a);
+                            break;
+                    }
+                }
+            }
+
+            // if()
+
+        }
+        public static void GenerateAction()
+        {
+            gameSetting.Action = new List<SimpleTrigger>();
+            gameSetting.InHand = new List<SimpleTrigger>();
+            gameSetting.NextTurn = new List<SimpleTrigger>();
+            //for(int i =0;i< gameSetting.Rule.Count; i++)
+            foreach (HeadSimpleTrigger head in gameSetting.Rule)
+            {
+                foreach (SimpleTrigger simpleTrigger in head.SimpleTriggers)
+                {
+                    switch (simpleTrigger.Trigger)
+                    {
+                        case ("Action"):
+                            simpleTrigger.CodName = gameSetting.Action.Count;
+                            gameSetting.Action.Add(simpleTrigger);
+                            break;
+                        case ("InHand"):
+                            simpleTrigger.CodName = gameSetting.InHand.Count;
+                            gameSetting.InHand.Add(simpleTrigger);
+                            break;
+                        case ("NextTurn"):
+                            simpleTrigger.CodName = gameSetting.NextTurn.Count;
+                            gameSetting.NextTurn.Add(simpleTrigger);
+                            break;
+                    }
+                }
+            }
+            /*
+             Action
+            InHand
+            NextTurn
+
+             */
+
+        }
+
 
         public static CardBase CardClone(CardBase card)
         {
@@ -62,6 +139,10 @@ namespace BattleTable
             newCard.MyHiro = card.MyHiro;
             newCard.Tayp = card.Tayp;
 
+            for (int i = 0; i < card.Action.Count; i++)
+            {
+                newCard.Action.Add(card.Action[i]);
+            }
 
             //newCard.Body = card.Body;// Возможно времнная мера, после обнокления интерфеса конструктора точно будет  не нужно
 
@@ -81,6 +162,18 @@ namespace BattleTable
                 else
                     card.StatSizeLocal.Add(card.StatSize[i]);
             }
+
+            for (int i = 0; i < card.Trait.Count; i++)
+            {
+                if (card.Trait[i] == null)
+                {
+                    card.Trait.RemoveAt(i);
+                    card.TraitSize.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            card.WalkMood = gameSetting.Rule.Find(x => x.Name == "Walk");
         }
 
         public static HeadSimpleTrigger ReadRule(int a)
@@ -204,10 +297,43 @@ namespace BattleTable
         private static CardBase card1, card2;
 
         //public static void SetHiro(List<Hiro> _hiro) { List<Hiro> hiro = _hiro;  }
-
-        public static int FindInt(string attribute, CardBase cardBase)
-        {//card1
-            string[] comAttribute = attribute.Split('_');
+        public static CardBase GetCard(string str)
+        {
+            switch (str)
+            {
+                case ("Card1"):
+                    return card1;
+                    break;
+                case ("Card2"):
+                    return card2;
+                    break;
+            }
+            return null;
+        }
+        public static bool CallMood(Hiro hiro, CardBase card, string mood)
+        {
+            switch (mood)
+            {
+                case ("All"):
+                    return true;
+                    break;
+                case ("My"):
+                    if (hiro.Team == card.MyHiro.Team)
+                        return true;
+                    break;
+                case ("Enemy"):
+                    if (hiro.Team != card.MyHiro.Team)
+                        return true;
+                    break;
+            }
+            return false;
+        }
+        public static int FindInt(string attribute)
+        {
+            string[] comAttribute = attribute.Split(':');
+            CardBase card = GetCard(comAttribute[0]);
+            
+            comAttribute = comAttribute[1].Split('_');
             float sum = -1;
             switch (comAttribute[0])
             {
@@ -215,11 +341,11 @@ namespace BattleTable
                     sum = 0;
                     break;
                 case ("Legion"):
-                    if (cardBase.Legions.Name == comAttribute[1])
+                    if (card.Legions.Name == comAttribute[1])
                         sum = 0;
                     break;
                 case ("Guilds"):
-                    if (cardBase.Guilds.Name == comAttribute[1])
+                    if (card.Guilds.Name == comAttribute[1])
                         sum = 0;
                     break;
                 case ("Stat"):
@@ -230,13 +356,13 @@ namespace BattleTable
                             break;
                         default:
                             // if Добавить вызов всего содержимого группы
-                            for(int i=0; i< cardBase.Stat.Count; i++)
+                            for(int i=0; i< card.Stat.Count; i++)
                             {
-                                if (cardBase.Stat[i].Name == comAttribute[1])
+                                if (card.Stat[i].Name == comAttribute[1])
                                 {
-                                    sum = cardBase.StatSize[i];
+                                    sum = card.StatSize[i];
                                     sum *= int.Parse(comAttribute[2]);
-                                    i = cardBase.Stat.Count;
+                                    i = card.Stat.Count;
                                 }
                             }
                             break;
@@ -245,12 +371,12 @@ namespace BattleTable
                     sum += int.Parse(comAttribute[3]);
                     break;
                 case ("Trait"):
-                    for (int i = 0; i < cardBase.Trait.Count; i++)
+                    for (int i = 0; i < card.Trait.Count; i++)
                     {
-                        if (cardBase.Trait[i].Name == comAttribute[1])
+                        if (card.Trait[i].Name == comAttribute[1])
                         {
                             sum = 0;
-                            i = cardBase.Trait.Count;
+                            i = card.Trait.Count;
                         }
                     }
 
@@ -262,38 +388,10 @@ namespace BattleTable
         }
         private static bool FindMenager(SimpleIfCore simpleIf)
         {
-            string[] comAttribute = simpleIf.Attribute.Split(':');
-            int sum1 =-1, sum2 =0;
-            string[] comAttribute1 = comAttribute[0].Split('_');
-            //string target =
+            string[] com = simpleIf.Attribute.Split('|');
 
-            switch (comAttribute1[0])
-            {
-                case ("Null"):
-                    sum1 = 0;
-                    break;
-                case ("Card1"):
-                    sum1 = FindInt(comAttribute1[1], card1);
-                    break;
-                case ("Card2"):
-                    sum1 = FindInt(comAttribute1[1], card2);
-                    break;
-            }
-
-            comAttribute1 = comAttribute[1].Split('_');
-            switch (comAttribute1[0])
-            {
-                case ("Card1"):
-                    sum2 = FindInt(comAttribute1[1], card1);
-                    break;
-                case ("Card2"):
-                    sum2 = FindInt(comAttribute1[1], card2);
-                    break;
-                case ("Null"):
-                    if(sum1 > -1)
-                        sum2 = sum1;
-                    break;
-            }
+            int sum1 = FindInt(com[0]);
+            int sum2 = FindInt(com[1]);
 
             switch (simpleIf.Result)
             {
@@ -315,39 +413,39 @@ namespace BattleTable
             return false;
         }
 
-        public static void UseRule(SimpleTrigger simpleTrigger, CardBase _card1, CardBase _card2)
+        public static bool UseRule(SimpleTrigger simpleTrigger, CardBase _card1, CardBase _card2)
         {// HeadSimpleTrigger head
             card1 = _card1;
             card2 = _card2;
+            //Записать ситуации когда, автомат не может сработать
+           // switch(simpleTrigger.)
+           // if (card1.Tayp)
             //HeadSimpleTrigger head = gameSetting.Rule[a];
+            //if(card1)
 
+            int noUse = CallSub(simpleTrigger.MinusPrior, simpleTrigger.CountMod);
+            int use = CallSub(simpleTrigger.PlusPrior, simpleTrigger.CountMod);
 
-            int noUse, use;
-            noUse = CallSub(simpleTrigger.MinusPrior, simpleTrigger.CountMod);
-            use = CallSub(simpleTrigger.PlusPrior, simpleTrigger.CountMod);
-
-            SimpleAction action = null;
             if (simpleTrigger.CountModExtend)
             {
                 int sum = use - noUse;
-                for (int i = 0; i < simpleTrigger.Action.Count; i++)
+
+                foreach (SimpleAction action in simpleTrigger.Action)
                 {
-                    action = simpleTrigger.Action[i];
                     if (action.MinPoint <= sum && action.MaxPoint >= sum)
-                        PreUseEffect(action.Action, action.ActionFull);
-                   // PreUseCommand(simpleTrigger.Action[i].Action);
+                        UseAction(action);
                 }
             }
             else if (use > noUse)
             {
-                for (int i = 0; i < simpleTrigger.Action.Count; i++)
+                foreach (SimpleAction action in simpleTrigger.Action)
                 {
-                    action = simpleTrigger.Action[i];
-                    PreUseEffect(action.Action, action.ActionFull);
+                    UseAction(action);
                 }
             }
-
+            return true;
         }
+
         private static int CallSub(List<SimpleIfCore> simpleIfCore, bool extend)
         {
             int sum=0;
@@ -373,116 +471,92 @@ namespace BattleTable
             return sum;
         }
 
-        private static void PreUseEffect(string action, string actionFull)
+
+        static void UseAction(SimpleAction action)
         {
-            // string[] com = action.Split('/');
-            string[] com = action.Split('_');
-            //1-действие вообщем 2- уточнение 3 - конкретное действие
-            // Die NewTarget (0 -мой, 1- вражеский 2- любой)
-
-
-            CardBase local1 = card1;
-            CardBase local2 = card2;
-            switch (com[0])
+            switch (action.Action)
             {
-                case ("TargetCreature"):
-                    UseEffect(actionFull, local1, local2);
-                    //com[1] All  My Enemy
+                case ("InGround"):
+
                     break;
-                case ("NewTargetCreature"):
-                    //CallNewTarget(); UseEffect(str)
+
+                case ("Melle"):
+                    MelleAction(action);
                     break;
-                case ("AllCreature"):
+                case ("Shot"):
+
+                    break;
+                case ("AddStat"):
+
+                    break;
+
+                case ("Die"):
+
                     break;
 
                 case ("Effect"):
-                    switch (com[1])
-                    {
-                        case ("MyCard"):
-                            //Die(local1);
-                            break;
-                        case ("TargetCard"):
-                            //NewTarget("Effect/{com[2]}");
-                            break;
-                    }
+
                     break;
 
-                case ("Die"):
-                    switch (com[1])
-                    {
-                        case ("MyCard"):
-                            //Die(local1);
-                            break;
-                        case ("TargetCard"):
-                            //NewTarget("Die/{com[2]}");
-                            break;
-                    }
+                case ("EffectEternal"):
+
                     break;
             }
-            /*
-             * 
-             * 
-             * 
-             * mood me,enemy,all
-             TargetCreature
-             AllCreature
-             
-            метамарфозы статов
-             */
         }
 
-        static void UseEffect(string actionFull, CardBase local1, CardBase local2)
+        //static void UseEffect(string actionFull, CardBase local1, CardBase local2)
+        //{
+        //    string[] com = actionFull.Split('/');
+        //    string[] com1 = com[0].Split('|');
+
+        //    switch (com1[0])
+        //    {
+        //        case ("AddStat"):
+        //            AddStat("Local", com[1], local1, local2);//All-Max-Local
+        //            break;
+
+        //        case ("AddEffect"):
+
+        //            Effect newEffect = new Effect();
+        //            newEffect.Name = com1[1];
+
+        //            if (com1[2] == "Eternal")
+        //            {
+        //                local2.InfinityEffect.Add(newEffect);
+        //            }
+        //            else
+        //            {
+        //                local2.Effect.Add(newEffect);
+        //                com1 = com[1].Split('|');
+        //                newEffect.Turn = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
+        //            }
+
+        //            com1 = com[2].Split('|');
+        //            newEffect.Power = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
+
+        //            com1 = com[3].Split('|');
+        //            newEffect.Prioritet = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
+
+        //            newEffect.Target = local2;
+        //            break;
+
+        //        case ("Die"):
+        //            //Die(local2);
+        //            break;
+        //        case ("Guard"):
+        //            local2.Guard.Add(local1);
+        //            break;
+        //            //case ("Support"):
+        //            //    local2.Support.Add(local1);
+        //            //    break;
+        //    }
+
+        //}
+
+        public static void MelleAction(SimpleAction action)
         {
-            string[] com = actionFull.Split('/');
-            string[] com1 = com[0].Split('|');
-
-            switch (com1[0]) 
-            {
-                case ("AddStat"):
-                    AddStat("Local", com[1], local1, local2);//All-Max-Local
-                    break;
-
-                case ("AddEffect"):
-
-                    Effect newEffect = new Effect();
-                    newEffect.Name = com1[1];
-
-                    if(com1[2] == "Eternal")
-                    {
-                        local2.InfinityEffect.Add(newEffect);
-                    }
-                    else
-                    {
-                        local2.Effect.Add(newEffect);
-                        com1 = com[1].Split('|');
-                        newEffect.Turn = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
-                    }
-
-                    com1 = com[2].Split('|');
-                    newEffect.Power = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
-
-                    com1 = com[3].Split('|');
-                    newEffect.Prioritet = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
-
-                    newEffect.Target = local2;
-                    break;
-
-                case ("Die"):
-                    //Die(local2);
-                    break;
-                case ("Guard"):
-                    local2.Guard.Add(local1);
-                    break;
-                //case ("Support"):
-                //    local2.Support.Add(local1);
-                //    break;
-            }
-
-        }
-        
-        public static void MelleAction(string actionFull, CardBase localCard1, CardBase localCard2)
-        {
-            string[] com = actionFull.Split('_');
+            string[] com = action.ActionFull.Split('|');
+            string[] com1 = com[0].Split('_');
 
             List<Constant> stat = new List<Constant>();
             List<int> statSize = new List<int>();
@@ -492,37 +566,28 @@ namespace BattleTable
             //{
             //}
             string text = com[1];
+            string actionFull = "";
             int sum;
             Constant group = gameSetting.Library.Constants.Find(x => x.Name == text);
-            if(group.Group)
+            if (group.Group)
                 for (int i = 0; i < group.AntiConstant.Count; i++)
                 {
                     text = group.AntiConstant[i].Name;
                     actionFull = $"{com[0]}_{text}_{com[2]}_{com[3]}";
-                    sum = FindInt(actionFull, localCard1);
-                    
-                    if (sum > 0) 
+                    sum = FindInt(actionFull);
+
+                    if (sum > 0)
                     {
                         stat.Add(gameSetting.Library.Constants.Find(x => x.Name == text));
                         statSize.Add(sum);
-                        mood.Add(group.moodEffect); 
+                        mood.Add(group.moodEffect);
                     }
-                    //a = stat.FindIndex(x => x.Name == text);
-                    //if(a != -1)
-                    //{
-                    //    statSize[a] += sum;
-                    //}
-                    //else
-                    //{
-                    //    stat.Add(gameSetting.Library.Constants.Find(x => x.Name == text));
-                    //    statSize.Add(sum);
-                    //}
 
                 }
             else
             {
                 stat.Add(group);
-                sum = FindInt(actionFull, localCard1);
+                sum = FindInt(com[0]);
                 statSize.Add(sum);
                 mood.Add(group.moodEffect);
             }
@@ -533,15 +598,15 @@ namespace BattleTable
             {
                 foreach (Constant actualStats in stat[i].AntiConstant)
                 {
-                    a = localCard2.Stat.FindIndex(x => x.Name == actualStats.Name);
+                    a = card2.Stat.FindIndex(x => x.Name == actualStats.Name);
                     if (a != -1)
                     {
-                        foreach (Constant stats in localCard2.Stat[i].GuardConstant)
+                        foreach (Constant stats in card2.Stat[i].GuardConstant)
                         {
-                            b = localCard2.Stat.FindIndex(x => x.Name == stats.Name);
+                            b = card2.Stat.FindIndex(x => x.Name == stats.Name);
                             if (b != -1)
                             {
-                                statSize[i] -= localCard2.StatSize[b];
+                                statSize[i] -= card2.StatSize[b];
                                 if (statSize[i] <= 0)
                                 {
                                     statSize[i] = 0;
@@ -554,14 +619,17 @@ namespace BattleTable
                         switch (mood[i])
                         {
                             case ("All"):
-                                localCard2.StatSize[a] -= statSize[i];
-                                localCard2.StatSizeLocal[a] -= statSize[i];
+                                card2.StatSize[a] -= statSize[i];
+                                card2.StatSizeLocal[a] -= statSize[i];
                                 break;
                             case ("Max"):
-                                localCard2.StatSize[a] -= statSize[i];
+                                card2.StatSize[a] -= statSize[i];
                                 break;
                             case ("Local"):
-                                localCard2.StatSizeLocal[a] -= statSize[i];
+                                card2.StatSizeLocal[a] -= statSize[i];
+                                break;
+                            case ("LocalForse"):
+                                card2.StatSizeLocal[a] -= statSize[i];
                                 break;
 
                         }
@@ -574,32 +642,25 @@ namespace BattleTable
             // if (localCard2.StatSizeLocal <= 0)
             //Die();
 
-            CardView.ViewCard(localCard1);
-            CardView.ViewCard(localCard2);
-        }
-
-        public static CardBase SwitchCard(CardBase localCard1, CardBase localCard2, string mood)
-        {
-            return (mood == "0") ? localCard1 : localCard2;
+            CardView.ViewCard(card2);
+            //CardView.ViewCard(localCard2);
         }
 
         public static void AddStat(string mood, string actionFull, CardBase localCard1, CardBase localCard2)
         {
             string[] com = actionFull.Split('|');
 
-            CardBase local1 = SwitchCard(localCard1, localCard2, com[0]);
-            CardBase local2 = SwitchCard(localCard1, localCard2, com[2]);
-            CardBase local3 = SwitchCard(localCard1, localCard2, com[4]);
+            CardBase local3 = GetCard(com[4]);
 
             string text = com[6];
-            int sum = FindInt(com[1], local1);
-            int sum2 = FindInt(com[3], local2);
+            int sum = FindInt(com[1]);
+            int sum2 = FindInt(com[3]);
             if (sum2 != 0)
                 sum /= sum2;
             sum += int.Parse(com[5]);
 
             int a = local3.Stat.FindIndex(x => x.Name == text);
-            if(a == -1)
+            if (a == -1)
             {
                 if (mood != "Local")
                 {
@@ -625,7 +686,7 @@ namespace BattleTable
             }
             else
             {
-                switch (mood) 
+                switch (mood)
                 {
                     case ("All"):
                         local3.StatSize[a] += sum;
@@ -636,8 +697,8 @@ namespace BattleTable
                         break;
                     case ("Local"):
                         local3.StatSizeLocal[a] += sum;
-                        if (local3.StatSizeLocal[a] > local2.StatSize[a])
-                            local3.StatSizeLocal[a] = local2.StatSize[a];
+                        if (local3.StatSizeLocal[a] > local3.StatSize[a])
+                            local3.StatSizeLocal[a] = local3.StatSize[a];
                         break;
                     case ("LocalForse"):
                         local3.StatSizeLocal[a] += sum;
@@ -647,6 +708,7 @@ namespace BattleTable
 
             }
         }
+
     }
 
     class Create : MonoBehaviour
@@ -660,6 +722,7 @@ namespace BattleTable
             Hiro newHiro = new Hiro();
             newHiro.Team = (enemy) ? 1 : 0;
             newHiro.Ui = (enemy) ? stolUi.EnemyInfo : stolUi.MyInfo;
+            newHiro.UiStol = (enemy) ? stolUi.EnemyFirstStol : stolUi.MyFirstStol;
 
             hiro.Add(newHiro);
             LoadCardSet(newHiro);
@@ -678,7 +741,8 @@ namespace BattleTable
 
         static void LoadCardSet(Hiro hiro)
         {
-            //card = new List<CardBase>();
+
+            CardBase card = null;
             List<int> cardBase = new List<int>();
             //интегрирывать из старгого метода позже
             List<int> cardBaseFast = new List<int>();
@@ -687,9 +751,15 @@ namespace BattleTable
 
             for (int i = 0; i < cardSet.OrigCard.Count; i++)
             {
-                hiro.CardColod.Add(XMLSaver.Load(Application.dataPath + $"/Resources/Data/Hiro{cardSet.OrigCard[i]}"));
-                hiro.CardColod[i].MyHiro = hiro;
-                Core.CardClear(hiro.CardColod[i]);
+                card = XMLSaver.Load(Application.dataPath + $"/Resources/Data/Hiro{cardSet.OrigCard[i]}");
+
+                card.MyHiro = hiro;
+                Core.CardClear(card);
+                Core.GenerateActionCard(card);
+
+                hiro.CardColod.Add(card);
+
+
 
                 for (int i1 = 0; i1 < cardSet.OrigCount[i]; i1++)
                 {
@@ -792,19 +862,22 @@ namespace BattleTable
             //}
         }
         
+
         public static void CreateTacticList()
         {
             GameObject go = null;
             Transform trans = null;
-            foreach(string str in gameSetting.Library.AllTactic)
+            SimpleTrigger SimpleTrigger = null;
+            for (int i = 0; i < gameSetting.Action.Count; i++)
             {
+                //SimpleTrigger = gameSetting.Action[i];
                 go = Instantiate(stolUi.OrigButton);
                 trans = go.transform;
                 trans.SetParent(stolUi.AllTacticCase);
-                trans.GetChild(0).gameObject.GetComponent<Text>().text = str;
+                trans.GetChild(0).gameObject.GetComponent<Text>().text = $"Действие{i}";//gameSetting.DefRule[i].Name;
                 stolUi.AllTactic.Add(trans);
 
-                go.GetComponent<Button>().onClick.AddListener(() => HiroHead.UseTactic(str));
+                go.GetComponent<Button>().onClick.AddListener(() => HiroHead.UseTactic(i));
             }
         }
 
@@ -816,7 +889,7 @@ namespace BattleTable
             card.Body = GO.transform;
             card.Body.SetParent(myHand);
 
-            GO.GetComponent<Button>().onClick.AddListener(() => HiroHead.Reply(card));
+            GO.GetComponent<Button>().onClick.AddListener(() => HiroHead.ReplyCard(card));
 
 
             CardView.ViewCard(card);
@@ -825,7 +898,7 @@ namespace BattleTable
 
     }
 
-    public class HiroHead
+    public static class HiroHead
     {
         public static GameSetting gameSetting;
         private static List<Hiro> hiro;
@@ -840,168 +913,139 @@ namespace BattleTable
             Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
         }
 
+        public static void ReplyCard(CardBase card)
+        {
+            //Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
+            if(calls.Count > 0)
+            {   
+                if(calls[0].Action != null)
+                {
+                    calls[0].Card2 = card;
+                    Reply();
+                }
+            }
+            else //if(card.ActiveRule.Count = 1)
+            {
+                switch (card.Tayp)
+                {
+                    case ("Create"):
+                        TacticList(card);
+                        break;
+                    case ("HandCreate"):
+                        if (card.MyHiro.ManaCurent >= card.Mana)
+                            AddCall(card, null, card.WalkMood.SimpleTriggers[0]);
+                        //TacticList(CardBase card);
+                        break;
+                }
+            }
+        }
+
         static void ReplyStol(bool extend, bool enemy)
         {
             Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
             if (calls.Count > 0)
             {
-                bool use = false;
-                CardBase firstCard = calls[0].Card;
-                string mood = calls[0].Mood;
-                switch (calls[0].Text)//calls[0].Action
+                CardBase card = calls[0].Card1;
+                string mood = calls[0].Action.TargetPalyer;
+                switch (card.Tayp)
                 {
-                    case ("UseSlot"):
+                    case ("HandCreate"):
+                        if (GameEventSystem.CallMood(myHiro, card, mood))
+                        {
+                            card.MyHiro.ManaCurent -= card.Mana;
+                            card.Body.SetParent(myHiro.UiStol);
+                            card.Tayp = "Create";
 
-                        if (firstCard.MyHiro.ManaCurent >= firstCard.Mana)
-                            if (CallMood(myHiro, firstCard, mood))
+                            foreach(int i in card.PlayCard)
                             {
-
-                                firstCard.MyHiro.ManaCurent -= firstCard.Mana;
-                                if(enemy)
-                                    firstCard.Body.SetParent(stolUi.EnemyFirstStol);
-                                else
-                                    firstCard.Body.SetParent(stolUi.MyFirstStol);
-
-                                firstCard.Tayp = "Create";
-                                int a = firstCard.Stat.FindIndex(x => x.Name == "MeleeDamage");
-                                if (a != -1)
-                                    firstCard.Tactic.Add("Attack");
-                                a = firstCard.Stat.FindIndex(x => x.Name == "RangedDamage");
-                                if (a != -1)
-                                    firstCard.Tactic.Add("Shot");
-
-                                HiroUi(firstCard.MyHiro);
+                                AddCall(card, null, gameSetting.PlayCard[i]);
                             }
+                            //GameEventSystem.UseRule()
 
-                        use = true;
+                            HiroUi(card.MyHiro);
+                            RemoveCall(true);
+                            Reply();
+                        }
                         break;
-                    default:
-                        Debug.Log(calls[0].Text);
-                        break;
-                }
-                if (use)
-                {
-                    calls.RemoveAt(0);
-                    if (calls.Count > 0)
-                        Reply(null);
+
                 }
 
             }
         }
         
-        public static void Reply(CardBase card)
+        static void Reply()
         {
             if (calls.Count > 0)
             {
-                bool use = false;
-                CardBase firstCard = calls[0].Card;
-                string mood = calls[0].Mood; 
-                if (card == null)
-                    switch (calls[0].Text)//calls[0].Action
-                    {
-                        
-                        default:
-                            Debug.Log(calls[0].Text);
-                            break;
-                    }
-                else
-                    switch (calls[0].Text)//calls[0].Action
-                    {
-                        case ("Attack"):
-                            Debug.Log(CallMood(firstCard.MyHiro, card, mood));
-                            if (CallMood(firstCard.MyHiro, card, mood))
-                                GameEventSystem.MelleAction("",firstCard,card); 
-
-                                break;
-                        case ("Shot"):
-
-                            break;
-                        //case ("UseSlot"):
-                        //    if (firstCard == null)
-                        //    {
-                        //        if (CallMood(hiro, card1, mood))
-                        //        {
-                        //            card1.MyHiro.ManaCurent -= card1.Mana;
-                        //            Create.PlayCard(card1);
-                        //        }
-                        //    }
-                        //    break;
-                        default:
-                            Debug.Log(calls[0].Text);
-                            break;
-                    }
-                
+                bool use = GameEventSystem.UseRule(calls[0].Action, calls[0].Card1, calls[0].Card2);
 
                 if (use)
                 {
-                    calls.RemoveAt(0);
+                    RemoveCall(true);
                     if (calls.Count > 0)
-                        Reply(null);
+                        Reply();
                 }
-            }
-            else if (card != null)
-            {
-                switch (card.Tayp)
-                {
-                    case ("HandCreate"):
-                        if (card.MyHiro.ManaCurent >= card.Mana)
-                        {
-                            AddCall("UseSlot", "My", "CreateBody", card);
-                        }
-                        break;
-                    case ("Create"):
-                        if (card.Tactic.Count > 0)
-                            if (card.Tactic.Count == 1)
-                            {
-                                AddCall(card.Tactic[0], "Enemy", "CreateBody", card);
-                            }
-                            else
-                                TacticList(card);
-                                //if (card.MyHiro.ManaCurent >= card.Mana)
-                                //{
-                                //AddCall("Attack", "My", "CreateBody", card);
-                                //}
-                        break;
-                    default:
-                        Debug.Log(card.Tayp);
-                        break;
-                }
+                //bool use = false;
+                //CardBase firstCard = calls[0].Card1;
+                //string mood = calls[0].Mood; 
+                //if (card == null)
+                //    switch (calls[0].Text)//calls[0].Action
+                //    {
+                        
+                //        default:
+                //            Debug.Log(calls[0].Text);
+                //            break;
+                //    }
+                //else
+                //    switch (calls[0].Text)//calls[0].Action
+                //    {
+                //        case ("Attack"):
+                //            Debug.Log(CallMood(firstCard.MyHiro, card, mood));
+                //            if (CallMood(firstCard.MyHiro, card, mood))
+                //                GameEventSystem.MelleAction("",firstCard,card); 
 
-                Reply(null);
+                //                break;
+                //        case ("Shot"):
+
+                //            break;
+                //        //case ("UseSlot"):
+                //        //    if (firstCard == null)
+                //        //    {
+                //        //        if (CallMood(hiro, card1, mood))
+                //        //        {
+                //        //            card1.MyHiro.ManaCurent -= card1.Mana;
+                //        //            Create.PlayCard(card1);
+                //        //        }
+                //        //    }
+                //        //    break;
+                //        default:
+                //            Debug.Log(calls[0].Text);
+                //            break;
+                //    }
+                
+
+                //if (use)
+                //{
+                //    calls.RemoveAt(0);
+                //    if (calls.Count > 0)
+                //        Reply(null);
+                //}
             }
 
         }
 
-
-        public static void UseTactic(string str)
+        public static void UseTactic(int a)
         {
-            calls[0].Text = str;
-            Reply(null);
-            //AddCall(str, "My", "CreateBody", card);
+            //GameEventSystem.UseRule();
+            calls[0].Action = gameSetting.Action[a];
+            Reply();
         }
 
-        static bool CallMood( Hiro hiro, CardBase card, string mood)
-        {
-            switch (mood)
-            {
-                case ("All"):
-                    return true;
-                    break;
-                case ("My"):
-                    if(hiro.Team == card.MyHiro.Team)
-                        return true;
-                    break;
-                case ("Enemy"):
-                    if (hiro.Team != card.MyHiro.Team)
-                        return true;
-                    break;
-            }
-            return false;
-        }
+
 
         static void TacticList(CardBase card)
         {
-            AddCall("Void", "My", "CreateBody", card);
+            AddCall(card, null, null);
             stolUi.TacticCase.gameObject.active = true;
             foreach (Transform child in stolUi.TacticCase)
             {
@@ -1009,26 +1053,27 @@ namespace BattleTable
             }
             int a = 0;
 
-            foreach (string tactic in card.Tactic)
+            foreach (int i in card.Action)
             {
-                a = gameSetting.Library.AllTactic.FindIndex(x => x == tactic);
-                stolUi.AllTactic[a].SetParent(stolUi.TacticCase);
+                stolUi.AllTactic[i].SetParent(stolUi.TacticCase);
             }
             
         }
 
-        public static void RemoveCall()
+        public static void RemoveCall(bool forseRemove)
         {
+            //для дальнейших механик
+            //forseRemove
             calls.RemoveAt(0);
         }
-
-        public static void Install()
+        public static Hiro Install()
         {
             //hiro = new Hiro[2];
             Create.gameSetting = gameSetting;
             Create.stolUi = stolUi;
 
-            Core.LoadRules(gameSetting);
+            Core.LoadRules();
+            Core.GenerateAction();
 
             Create.CreateHiro(false);
             Create.CreateHiro(true);
@@ -1051,16 +1096,23 @@ namespace BattleTable
             stolUi.EnemyFirstStol.gameObject.GetComponent<Button>().onClick.AddListener(() => ReplyStol(false, true));
             //true, false));
             // PlayCard(ca
+            return hiro[0];
         }
         #endregion
-        static void AddCall (string text, string mood, string action, CardBase card)
+        public static void AddCall (CardBase card1, CardBase card2, SimpleTrigger action)
         {
+        
             SubString call = new SubString();
-            call.Text = text;
-            call.Mood = mood;
-            call.Action = action;
+            //call.Text = text;
+            //call.Mood = mood;
+
             //call.Num = num;
-            call.Card = card;
+            call.Card1 = card1;
+            call.Card2 = card2;
+            call.Action = action;
+
+
+
 
             calls.Add(call); 
         }
@@ -1083,7 +1135,8 @@ namespace BattleTable
        
         public static void HiroUi(Hiro hiro)
         {
-            hiro.Ui.text = $"Hp {hiro.Hp} Mana ({hiro.ManaMax}|{hiro.Mana}|{hiro.ManaCurent})";
+            
+            hiro.Ui.text = $"Hp {hiro.Hp} Card: { hiro.CardColod.Count - hiro.NextCard} Mana ({hiro.ManaMax}|{hiro.Mana}|{hiro.ManaCurent})";
         }
     }
 

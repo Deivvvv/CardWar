@@ -13,6 +13,7 @@ public class CardBase
     public Legion Legions;
     public CivilianGroup CivilianGroups;
     // public List<Constant> Constants;
+    public HeadSimpleTrigger WalkMood;
 
     public List<Constant> Stat =new List<Constant>();
     public List<int> StatSize = new List<int>();
@@ -38,7 +39,6 @@ public class CardBase
     public int Iniciativa = 2;
     public Hiro MyHiro;
     public string Tayp = "HandCreate";
-    public List<string> Tactic = new List<string>();
 
     public List<Effect> Effect;
     public List<Effect> InfinityEffect;
@@ -49,6 +49,17 @@ public class CardBase
      publec CardBase Guard;
      */
     //Status
+
+    public List<int> PlayCard;
+    public List<int> PlayAnotherCard;
+
+    public List<int> Die;
+
+    public List<int> Action;
+
+    public List<int> InHand;// = new List<SimpleTrigger>();
+    public List<int> NextTurn;// = new List<SimpleTrigger>();
+
 
     public bool Provacator;
     public bool Fly;
