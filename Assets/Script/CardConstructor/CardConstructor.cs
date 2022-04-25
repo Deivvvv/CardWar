@@ -207,34 +207,55 @@ public class CardConstructor : MonoBehaviour
 
         if (curentNum > -1)
         {
-            CardBase card = LocalCard[curentNum];
-            cardBase.Name = card.Name;
-            Ui.NameFlied.text = cardBase.Name;
+            cardBase = Core.CardClone(LocalCard[curentNum]);
+            //CardBase card = LocalCard[curentNum];
+            //cardBase.Name = card.Name;
+            //Ui.NameFlied.text = cardBase.Name;
 
-            int b = 0;
-            for (int i = 0; i < cardBase.Stat.Count; i++)
+            //int b = 0;
+            //for (int i = 0; i < cardBase.Stat.Count; i++)
+            //{
+            //    if(card.Stat[i]!= null)
+            //    {
+            //        b = gameSetting.Library.Constants.FindIndex(x => x.Name == card.Stat[i].Name);
+            //        SwitchStat(i, b);
+            //        //cardBase.Stat[i] = card.Stat[i];
+            //        cardBase.StatSize[i] = card.StatSize[i];
+            //    }
+            //    else
+            //    {
+            //        SwitchStat(i, -1);
+            //    }
+            //}
+            //ReCalculate();
+
+            //for (int i = 0; i < cardBase.Trait.Count; i++)
+            //{
+            //    if (card.Trait[i] != null)
+            //    {
+            //        keyRule = i;
+            //        SwitchRule(card.Trait[i].Name);
+            //    }
+            //    // cardBase.Trait[i] = card.Trait[i];
+            //    // cardBase.TraitSize[i] = card.TraitSize[i];
+            //}
+            Ui.NameFlied.text = cardBase.Name;
+            Debug.Log(cardBase.Trait.Count);
+            for (int i = 0; i < cardBase.Trait.Count; i++)
             {
-                if(card.Stat[i]!= null)
+                keyRule = i;
+                if (cardBase.Trait[i] != null)
                 {
-                    b = gameSetting.Library.Constants.FindIndex(x => x.Name == card.Stat[i].Name);
-                    SwitchStat(i, b);
-                    //cardBase.Stat[i] = card.Stat[i];
-                    cardBase.StatSize[i] = card.StatSize[i];
+                    SwitchRule(cardBase.Trait[i].Name);
                 }
                 else
                 {
-                    SwitchStat(i, -1);
+                    SwitchRule("-1");
                 }
-            }
-            ReCalculate();
-
-            for (int i = 0; i < cardBase.Trait.Count; i++)
-            {
-                keyRule =i;
-                SwitchRule(card.Trait[i].Name);
                 // cardBase.Trait[i] = card.Trait[i];
                 // cardBase.TraitSize[i] = card.TraitSize[i];
             }
+            //ReCalculate();
             keyRule = -1;
 
             //Выгрузка данных в редактор героев
@@ -266,6 +287,7 @@ public class CardConstructor : MonoBehaviour
         origPathAlt = Application.dataPath + $"/Resources/Data";
 
         Core.LoadGameSetting(gameSetting);
+        Core.LoadRules();
         cardConstructor = gameObject.GetComponent<CardConstructor>();
 
 
@@ -711,7 +733,10 @@ public class CardConstructor : MonoBehaviour
         }
         else
         {
+            Debug.Log(str);
+            Debug.Log(gameSetting.Rule.Count);
             int b = gameSetting.Rule.FindIndex(x => x.Name == str);
+            Debug.Log(b);
             cardBase.Trait[a] = gameSetting.Rule[b];
             //  cardBase.StatSize[a] = 0;
             caseUi.Name.text = str;

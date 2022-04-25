@@ -1,9 +1,9 @@
 <root>
-  <Head>Благочестие_0_0_0_False</Head>
+  <Head>Walk_0_0_0_False</Head>
   <HeadNeedRule></HeadNeedRule>
   <HeadEnemyRule></HeadEnemyRule>
   <Trigger0PlusAction></Trigger0PlusAction>
-  <Trigger0MinusAction> =_10_10*Null_Null_Null_1_0|Null_Null_Null_1_0</Trigger0MinusAction>
-  <Trigger0Action>0_0_All_AddConstant_0*Null_Null_Null_1_0|Null_Null_Null_1_0|Null_Null_Null_1_0</Trigger0Action>
-  <TriggerHead>All_Action_False_False</TriggerHead>
+  <Trigger0MinusAction></Trigger0MinusAction>
+  <Trigger0Action></Trigger0Action>
+  <TriggerHead>My_PlayAnotherCard_False_False</TriggerHead>
 </root>

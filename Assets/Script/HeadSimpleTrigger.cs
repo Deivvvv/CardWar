@@ -24,7 +24,7 @@ public class HeadSimpleTrigger
     public List<string> EnemyRule = new List<string>();
 }
 
-[System.Serializable]
+//[System.Serializable]
 public class SimpleTrigger
 {
     public int CodName;
@@ -36,7 +36,7 @@ public class SimpleTrigger
     public List<SimpleIfCore> MinusPrior = new List<SimpleIfCore>();
     public List<SimpleAction> Action = new List<SimpleAction>();
 }
-[System.Serializable]
+//[System.Serializable]
 public class SimpleAction
 {
     public string Action;
@@ -47,7 +47,7 @@ public class SimpleAction
 
     public int Num;
 }
-[System.Serializable]
+//[System.Serializable]
 public class SimpleIfCore
 {
     public string Result;

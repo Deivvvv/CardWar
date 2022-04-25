@@ -16,8 +16,12 @@ MonoBehaviour:
   Name: armor
   Icon: {fileID: 0}
   IconName: 
-  Cost: 0
+  Cost: 4
+  Regen: 0
   Group: 0
   CombineConstant: 0
+  moodEffect: Local
+  GuardConstant: []
   AntiConstant: []
   TwinConstant: []
+  Effect: []

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 309b40e129fc7b94294548dbc6311793, type: 3}
   m_Name: Attack
   m_EditorClassIdentifier: 
-  Name: Fly
+  Name: Attack
   Turn: 0
   Power: 0
   Prioritet: 0
@@ -31,7 +31,6 @@ MonoBehaviour:
       CostExtend: 0
       LevelCap: 0
       Player: 0
-      SimpleTriggers: []
       NeedRule: []
       EnemyRule: []
     Stat: []

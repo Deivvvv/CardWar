@@ -25,8 +25,7 @@ public class Stol : MonoBehaviour
     private string actionTayp;
     private int curentPlayer;
 
-    //private GameObject selectable;
-    public Hiro hiro;
+
 
     void Start()
     {
@@ -34,7 +33,7 @@ public class Stol : MonoBehaviour
         Core.LoadGameSetting(gameSetting);
 
         HiroHead.SetUI(Ui);
-        hiro = HiroHead.Install();
+        HiroHead.Install();
 
         //int r = Random.Range(0, 2);
         //if (r == 0)

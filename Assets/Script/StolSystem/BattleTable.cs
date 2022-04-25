@@ -134,19 +134,21 @@ namespace BattleTable
 
             newCard.Image =  card.Image;
 
-            newCard.Class = card.Class;
-            newCard.Iniciativa = card.Iniciativa;
-            newCard.MyHiro = card.MyHiro;
-            newCard.Tayp = card.Tayp;
-
-            for (int i = 0; i < card.Action.Count; i++)
-            {
-                newCard.Action.Add(card.Action[i]);
-            }
-
             //newCard.Body = card.Body;// ¬озможно времнна€ мера, после обноклени€ интерфеса конструктора точно будет  не нужно
 
             return newCard;
+        }
+        public static void CardCloneExtended(CardBase card1, CardBase card2)
+        {
+            card2.Class = card1.Class;
+            card2.Iniciativa = card1.Iniciativa;
+            card2.MyHiro = card1.MyHiro;
+            card2.Tayp = card1.Tayp;
+
+            for (int i = 0; i < card1.Action.Count; i++)
+            {
+                card2.Action.Add(card1.Action[i]);
+            }
         }
 
         public static void CardClear(CardBase card)
@@ -1066,7 +1068,7 @@ namespace BattleTable
             //forseRemove
             calls.RemoveAt(0);
         }
-        public static Hiro Install()
+        public static void Install()
         {
             //hiro = new Hiro[2];
             Create.gameSetting = gameSetting;
@@ -1096,7 +1098,6 @@ namespace BattleTable
             stolUi.EnemyFirstStol.gameObject.GetComponent<Button>().onClick.AddListener(() => ReplyStol(false, true));
             //true, false));
             // PlayCard(ca
-            return hiro[0];
         }
         #endregion
         public static void AddCall (CardBase card1, CardBase card2, SimpleTrigger action)
