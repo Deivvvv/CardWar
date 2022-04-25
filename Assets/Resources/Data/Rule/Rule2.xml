@@ -1,5 +1,5 @@
 <root>
-  <HeadName>1</HeadName>
+  <HeadName>atk2</HeadName>
   <HeadCost>0</HeadCost>
   <HeadCostExtend>0</HeadCostExtend>
   <HeadLevelCap>0</HeadLevelCap>
@@ -7,32 +7,26 @@
   <HeadNeedRuleCount>0</HeadNeedRuleCount>
   <HeadEnemyRuleCount>0</HeadEnemyRuleCount>
   <TriggerActionCount>1</TriggerActionCount>
-  <TargetPalyer0>0</TargetPalyer0>
+  <TargetPalyer0>2</TargetPalyer0>
   <Trigger0>0</Trigger0>
-  <CountMod0>true</CountMod0>
-  <CountModExtend0>true</CountModExtend0>
+  <CountMod0>false</CountMod0>
+  <CountModExtend0>false</CountModExtend0>
   <PlusActionCount0>1</PlusActionCount0>
-  <Trigger0PlusAction0Result>0</Trigger0PlusAction0Result>
+  <Trigger0PlusAction0Result>2</Trigger0PlusAction0Result>
   <Trigger0PlusAction0Prioritet>10</Trigger0PlusAction0Prioritet>
   <Trigger0PlusAction0Point>10</Trigger0PlusAction0Point>
   <Trigger0PlusAction0CoreCount>2</Trigger0PlusAction0CoreCount>
-  <Trigger0PlusAction0Core0>0_Null_Null_1_0</Trigger0PlusAction0Core0>
+  <Trigger0PlusAction0Core0>1_Stat_RangedDamage_1_0</Trigger0PlusAction0Core0>
   <Trigger0PlusAction0Core1>0_Null_Null_1_0</Trigger0PlusAction0Core1>
-  <MinusActionCount0>1</MinusActionCount0>
-  <Trigger0MinusAction0Result>0</Trigger0MinusAction0Result>
-  <Trigger0MinusAction0Prioritet>10</Trigger0MinusAction0Prioritet>
-  <Trigger0MinusAction0Point>10</Trigger0MinusAction0Point>
-  <Trigger0MinusAction0CoreCount>2</Trigger0MinusAction0CoreCount>
-  <Trigger0MinusAction0Core0>0_Null_Null_1_0</Trigger0MinusAction0Core0>
-  <Trigger0MinusAction0Core1>0_Null_Null_1_0</Trigger0MinusAction0Core1>
+  <MinusActionCount0>0</MinusActionCount0>
   <ActionCount0>1</ActionCount0>
-  <Trigger0Action0Point>0|0</Trigger0Action0Point>
+  <Trigger0Action0Point>1|10</Trigger0Action0Point>
   <Trigger0Action0ActionMood>0</Trigger0Action0ActionMood>
-  <Trigger0Action0Action>AddConstant</Trigger0Action0Action>
+  <Trigger0Action0Action>Attack</Trigger0Action0Action>
   <Trigger0Action0Num>0</Trigger0Action0Num>
-  <Trigger0Action0ForseMood>0</Trigger0Action0ForseMood>
+  <Trigger0Action0ForseMood>3</Trigger0Action0ForseMood>
   <Trigger0Action0CoreCount>3</Trigger0Action0CoreCount>
-  <Trigger0Action0Core0>0_Null_Null_1_0</Trigger0Action0Core0>
-  <Trigger0Action0Core1>0_Null_Null_1_0</Trigger0Action0Core1>
-  <Trigger0Action0Core2>0_Null_Null_1_0</Trigger0Action0Core2>
+  <Trigger0Action0Core0>1_Stat_RangedDamage_1_0</Trigger0Action0Core0>
+  <Trigger0Action0Core1>0_Stat_Honor_2_0</Trigger0Action0Core1>
+  <Trigger0Action0Core2>2_Stat_RangedDamage_1_0</Trigger0Action0Core2>
 </root>

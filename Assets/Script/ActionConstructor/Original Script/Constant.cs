@@ -12,6 +12,7 @@ public class Constant : ScriptableObject
     public string IconName;
     public int Cost;
 
+    public bool Regen;//Это группа
     public bool Group;//Это группа
     public bool CombineConstant;//создает параметр производную
 

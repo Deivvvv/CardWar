@@ -1,5 +1,5 @@
 <root>
-  <HeadName>Благочестие</HeadName>
+  <HeadName>Walk</HeadName>
   <HeadCost>0</HeadCost>
   <HeadCostExtend>0</HeadCostExtend>
   <HeadLevelCap>0</HeadLevelCap>
@@ -7,26 +7,11 @@
   <HeadNeedRuleCount>0</HeadNeedRuleCount>
   <HeadEnemyRuleCount>0</HeadEnemyRuleCount>
   <TriggerActionCount>1</TriggerActionCount>
-  <TargetPalyer0>0</TargetPalyer0>
-  <Trigger0>0</Trigger0>
+  <TargetPalyer0>1</TargetPalyer0>
+  <Trigger0>8</Trigger0>
   <CountMod0>false</CountMod0>
   <CountModExtend0>false</CountModExtend0>
   <PlusActionCount0>0</PlusActionCount0>
-  <MinusActionCount0>1</MinusActionCount0>
-  <Trigger0MinusAction0Result>0</Trigger0MinusAction0Result>
-  <Trigger0MinusAction0Prioritet>10</Trigger0MinusAction0Prioritet>
-  <Trigger0MinusAction0Point>10</Trigger0MinusAction0Point>
-  <Trigger0MinusAction0CoreCount>2</Trigger0MinusAction0CoreCount>
-  <Trigger0MinusAction0Core0>0_Null_Null_1_0</Trigger0MinusAction0Core0>
-  <Trigger0MinusAction0Core1>0_Null_Null_1_0</Trigger0MinusAction0Core1>
-  <ActionCount0>1</ActionCount0>
-  <Trigger0Action0Point>0|0</Trigger0Action0Point>
-  <Trigger0Action0ActionMood>0</Trigger0Action0ActionMood>
-  <Trigger0Action0Action>AddConstant</Trigger0Action0Action>
-  <Trigger0Action0Num>0</Trigger0Action0Num>
-  <Trigger0Action0ForseMood>0</Trigger0Action0ForseMood>
-  <Trigger0Action0CoreCount>3</Trigger0Action0CoreCount>
-  <Trigger0Action0Core0>0_Null_Null_1_0</Trigger0Action0Core0>
-  <Trigger0Action0Core1>0_Null_Null_1_0</Trigger0Action0Core1>
-  <Trigger0Action0Core2>0_Null_Null_1_0</Trigger0Action0Core2>
+  <MinusActionCount0>0</MinusActionCount0>
+  <ActionCount0>0</ActionCount0>
 </root>
