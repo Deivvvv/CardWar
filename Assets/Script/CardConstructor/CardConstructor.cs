@@ -222,6 +222,20 @@ public class CardConstructor : MonoBehaviour
                 }
             }
 
+            if (cardBase.Trait.Count < Ui.RuleUi.Count)
+            {
+                for (int i = cardBase.Trait.Count; i < Ui.RuleUi.Count; i++)
+                {
+                    DeliteRule(cardBase.Trait.Count);
+                }
+            }
+            else if (cardBase.Trait.Count > Ui.RuleUi.Count)
+            {
+                for (int i = Ui.RuleUi.Count; i < cardBase.Trait.Count; i++)
+                {
+                    AddRuleUi();
+                }
+            }
 
             //Выгрузка данных в редактор героев
             Ui.NameFlied.text = cardBase.Name;
@@ -623,8 +637,8 @@ public class CardConstructor : MonoBehaviour
         caseUi.AllCount.text = "1";
 
 
-        Ui.AddStat.SetParent(Ui.TraitCard);
-        Ui.AddStat.SetParent(Ui.StatCard);
+        Ui.AddRule.SetParent(Ui.StatCard);
+        Ui.AddRule.SetParent(Ui.TraitCard);
         NewRuleSelector();
     }
 
@@ -633,11 +647,14 @@ public class CardConstructor : MonoBehaviour
         StatCaseUi ui = Ui.RuleUi[a];
         Ui.RuleUi.RemoveAt(a);
         Destroy(ui.gameObject);
-        cardBase.Trait.RemoveAt(a);
-        cardBase.TraitSize.RemoveAt(a);
+
+        if (a < cardBase.Trait.Count)
+        {
+            cardBase.Trait.RemoveAt(a);
+            cardBase.TraitSize.RemoveAt(a);
+        }
         for (int i = a; i < Ui.RuleUi.Count; i++)
         {
-            Debug.Log(i);
             ui = Ui.RuleUi[i];
 
             //AddStatButton(false, ui.ButtonMinus, i);
