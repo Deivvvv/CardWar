@@ -7,7 +7,6 @@ using Saver;
 
 public class RuleConstructor : MonoBehaviour
 {
-    private RuleConstructor ruleConstructor;
     [SerializeField]
     private RuleMainFrame frame;
    
@@ -1118,7 +1117,6 @@ public class RuleConstructor : MonoBehaviour
     }
     void Start()
     {
-        ruleConstructor = GetComponent<RuleConstructor>();
         Application.targetFrameRate = 30;
         head = new HeadRule();
         XMLSaver.SetRuleMainFrame(frame);

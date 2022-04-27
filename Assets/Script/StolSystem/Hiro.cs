@@ -29,7 +29,7 @@ public class Hiro
     public int ManaCurent =1;
     public int Team;
 
-    public int Hp;
+    public int Hp =15;
     public int ShotHiro;
 
     public TMP_Text Ui;

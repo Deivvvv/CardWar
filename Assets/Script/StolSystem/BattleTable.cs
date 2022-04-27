@@ -415,10 +415,7 @@ namespace BattleTable
             //Debug.Log(simpleIf.Attribute);
             int sum1 = FindInt(com[0]);
             int sum2 = FindInt(com[1]);
-            Debug.Log(sum1);
-            Debug.Log(sum2);
 
-            Debug.Log(sum1 > sum2);
             switch (simpleIf.Result)
             {
                 case ("=")://0
@@ -622,7 +619,6 @@ namespace BattleTable
 
         public static void MelleAction(SimpleAction action)
         {
-            Debug.Log(action.ActionFull);
             string[] com = action.ActionFull.Split('|');
             string[] com1 = com[2].Split('_');
 
@@ -639,7 +635,7 @@ namespace BattleTable
                 mod1 /= mod2;
 
             string text = com1[1];
-            Debug.Log(text);
+
             string actionFull = "";
             int sum;
             Constant group = gameSetting.Library.Constants.Find(x => x.Name == text);
@@ -647,7 +643,7 @@ namespace BattleTable
                 for (int i = 0; i < group.AntiConstant.Count; i++)
                 {
                     text = group.AntiConstant[i].Name;
-                    actionFull = $"{com[0]}_{text}_{com[2]}_{com[3]}";
+                    actionFull = $"{com1[0]}_{text}_{com1[2]}_{com1[3]}";
                     sum = FindInt(actionFull);
 
                     if (sum > 0)
@@ -665,7 +661,6 @@ namespace BattleTable
                 statSize.Add(mod1 * sum);
                 mood.Add(group.moodEffect);
             }
-            Debug.Log(statSize.Count);
 
 
             int a, b;
@@ -1018,7 +1013,9 @@ namespace BattleTable
                         break;
                     case ("HandCreate"):
                         if (card.MyHiro.ManaCurent >= card.Mana)
+                        {
                             AddCall(card, null, card.WalkMood.SimpleTriggers[0]);
+                        }
                         //TacticList(CardBase card);
                         break;
                 }
@@ -1062,10 +1059,9 @@ namespace BattleTable
         {
             if (calls.Count > 0)
             {
+                //calls[0].Card1.Body.localScale = new Vector3(.8f, .8f, .8f);
                 bool use = GameEventSystem.UseRule(calls[0].Action, calls[0].Card1, calls[0].Card2);
 
-                Debug.Log(calls[0].Card2);
-                Debug.Log(calls.Count);
                 if (use)
                 {
                     RemoveCall(true);
@@ -1153,7 +1149,11 @@ namespace BattleTable
         {
             //для дальнейших механик
             //forseRemove
-            calls.RemoveAt(0);
+            if (calls.Count > 0)
+            {
+                calls[0].Card1.Body.localScale = new Vector3(.7f, .7f, .7f);
+                calls.RemoveAt(0);
+            }
         }
         public static void Install()
         {
@@ -1195,6 +1195,7 @@ namespace BattleTable
             //call.Mood = mood;
 
             //call.Num = num;
+            card1.Body.localScale = new Vector3(.9f, .9f, .9f);
             call.Card1 = card1;
             call.Card2 = card2;
             call.Action = action;
@@ -1224,9 +1225,10 @@ namespace BattleTable
         public static void HiroUi(Hiro hiro)
         {
             
-            hiro.Ui.text = $"Hp {hiro.Hp} Card: { hiro.CardColod.Count - hiro.NextCard} Mana ({hiro.ManaMax}|{hiro.Mana}|{hiro.ManaCurent})";
+            hiro.Ui.text = $"Hp {hiro.Hp} Card: { hiro.CardHandFull.Count - hiro.NextCard} Mana ({hiro.ManaMax}|{hiro.Mana}|{hiro.ManaCurent})";
         }
-    }
+       
+}
 
     public static class CardView
     {

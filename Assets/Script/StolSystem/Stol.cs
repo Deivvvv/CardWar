@@ -50,6 +50,8 @@ public class Stol : MonoBehaviour
     }
     void Update()
     {
+        if (Input.GetMouseButtonDown(1))
+            HiroHead.RemoveCall(false);
         //Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         //RaycastHit hit;
         //if (Physics.Raycast(ray, out hit, 100))

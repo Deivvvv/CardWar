@@ -14,8 +14,8 @@ public class StolUi : MonoBehaviour
     public GameObject OrigCard;
     public GameObject OrigHiro;
 
-    public Transform UseCard;
-    public Transform TargetCard;
+    //public Transform UseCard;
+    //public Transform TargetCard;
 
     public Transform MyHand;
     public Transform EnemyHand;

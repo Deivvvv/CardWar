@@ -31,7 +31,7 @@ public class GameSetting : ScriptableObject
 
     public string origPath = $"/Resources/Hiro";
 
-    public Material[] TargetColor;
+    public Color[] TargetColor;
     public GameObject OrigHiro;
 
     [Space(10)]
