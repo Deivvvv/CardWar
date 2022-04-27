@@ -13,5 +13,14 @@
   <CountModExtend0>false</CountModExtend0>
   <PlusActionCount0>0</PlusActionCount0>
   <MinusActionCount0>0</MinusActionCount0>
-  <ActionCount0>0</ActionCount0>
+  <ActionCount0>1</ActionCount0>
+  <Trigger0Action0Point>0|0</Trigger0Action0Point>
+  <Trigger0Action0ActionMood>1</Trigger0Action0ActionMood>
+  <Trigger0Action0Action>AddConstant</Trigger0Action0Action>
+  <Trigger0Action0Num>0</Trigger0Action0Num>
+  <Trigger0Action0ForseMood>0</Trigger0Action0ForseMood>
+  <Trigger0Action0CoreCount>3</Trigger0Action0CoreCount>
+  <Trigger0Action0Core0>0_Null_Null_1_0</Trigger0Action0Core0>
+  <Trigger0Action0Core1>0_Null_Null_1_0</Trigger0Action0Core1>
+  <Trigger0Action0Core2>0_Null_Null_1_0</Trigger0Action0Core2>
 </root>

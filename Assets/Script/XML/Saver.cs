@@ -248,6 +248,7 @@ string someString = Encoding.ASCII.GetString(bytes);
                             cardBase.StatSize[i] = int.Parse(root.Element($"StatSize{i}").Value);
                         }
                     }
+                    cardBase.StatSizeLocal.Add(cardBase.StatSize[i]);
 
                     //else
                     //    Debug.Log(data);

@@ -18,10 +18,10 @@ MonoBehaviour:
   - LocalForse
   - Local
   EqualString:
-  - ' ='
-  - ' !='
-  - ' >'
-  - ' <'
+  - =
+  - '!='
+  - '>'
+  - <
   PlayerString:
   - All
   - My

@@ -587,6 +587,7 @@ public class CardConstructor : MonoBehaviour
         {
             cardBase.Stat.Add(gameSetting.Library.Constants[b]);
             cardBase.StatSize.Add(0);
+            cardBase.StatSizeLocal.Add(0);
             AddStatUi();
             Ui.StatUi[0].ButtonSwitch.enabled = false;
         }

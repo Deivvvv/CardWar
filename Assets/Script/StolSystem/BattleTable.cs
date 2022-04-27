@@ -38,7 +38,13 @@ namespace BattleTable
 
         public static void GenerateActionCard(CardBase card)
         {
+            card.PlayCard = new List<int>();
+            card.PlayAnotherCard = new List<int>();
+
+            card.Die = new List<int>();
+
             card.Action = new List<int>();
+
             card.InHand = new List<int>();
             card.NextTurn = new List<int>();
             //for(int i =0;i< gameSetting.Rule.Count; i++)
@@ -119,6 +125,8 @@ namespace BattleTable
             {
                 newCard.Stat.Add(card.Stat[i]);
                 newCard.StatSize.Add(card.StatSize[i]);
+                newCard.StatSizeLocal.Add(card.StatSizeLocal[i]);
+                //card.StatSizeLocal.Add(card.StatSize[i]);
             }
 
             for (int i = 0; i < card.Trait.Count; i++)
@@ -140,6 +148,17 @@ namespace BattleTable
         }
         public static void CardCloneExtended(CardBase card1, CardBase card2)
         {
+            card2.PlayCard = new List<int>();
+            card2.PlayAnotherCard = new List<int>();
+
+            card2.Die = new List<int>();
+
+            card2.Action = new List<int>();
+
+            card2.InHand = new List<int>();
+            card2.NextTurn = new List<int>();
+
+            card2.WalkMood = card1.WalkMood;
             card2.Class = card1.Class;
             card2.Iniciativa = card1.Iniciativa;
             card2.MyHiro = card1.MyHiro;
@@ -153,27 +172,27 @@ namespace BattleTable
 
         public static void CardClear(CardBase card)
         {
-            for (int i = 0; i < card.Stat.Count; i++)
-            {
-                if (card.Stat[i] == null)
-                {
-                    card.Stat.RemoveAt(i);
-                    card.StatSize.RemoveAt(i);
-                    i--;
-                }
-                else
-                    card.StatSizeLocal.Add(card.StatSize[i]);
-            }
+            //for (int i = 0; i < card.Stat.Count; i++)
+            //{
+            //    //if (card.Stat[i] == null)
+            //    //{
+            //    //    card.Stat.RemoveAt(i);
+            //    //    card.StatSize.RemoveAt(i);
+            //    //    i--;
+            //    //}
+            //    //else
+            //        card.StatSizeLocal.Add(card.StatSize[i]);
+            //}
 
-            for (int i = 0; i < card.Trait.Count; i++)
-            {
-                if (card.Trait[i] == null)
-                {
-                    card.Trait.RemoveAt(i);
-                    card.TraitSize.RemoveAt(i);
-                    i--;
-                }
-            }
+            //for (int i = 0; i < card.Trait.Count; i++)
+            //{
+            //    if (card.Trait[i] == null)
+            //    {
+            //        card.Trait.RemoveAt(i);
+            //        card.TraitSize.RemoveAt(i);
+            //        i--;
+            //    }
+            //}
 
             card.WalkMood = gameSetting.Rule.Find(x => x.Name == "Walk");
         }
@@ -334,6 +353,8 @@ namespace BattleTable
         {
             string[] comAttribute = attribute.Split(':');
             CardBase card = GetCard(comAttribute[0]);
+            if (card == null)
+                return 0;
             
             comAttribute = comAttribute[1].Split('_');
             float sum = -1;
@@ -391,10 +412,13 @@ namespace BattleTable
         private static bool FindMenager(SimpleIfCore simpleIf)
         {
             string[] com = simpleIf.Attribute.Split('|');
-
+            //Debug.Log(simpleIf.Attribute);
             int sum1 = FindInt(com[0]);
             int sum2 = FindInt(com[1]);
+            Debug.Log(sum1);
+            Debug.Log(sum2);
 
+            Debug.Log(sum1 > sum2);
             switch (simpleIf.Result)
             {
                 case ("=")://0
@@ -409,6 +433,9 @@ namespace BattleTable
                 case ("<")://3
                     return (sum1 < sum2);
                     break;
+                default:
+                    Debug.Log(simpleIf.Result);
+                    break;
             }
 
             //Debug.Log(attribute);
@@ -419,6 +446,7 @@ namespace BattleTable
         {// HeadSimpleTrigger head
             card1 = _card1;
             card2 = _card2;
+            bool isUse = false;
             //Записать ситуации когда, автомат не может сработать
            // switch(simpleTrigger.)
            // if (card1.Tayp)
@@ -428,6 +456,8 @@ namespace BattleTable
             int noUse = CallSub(simpleTrigger.MinusPrior, simpleTrigger.CountMod);
             int use = CallSub(simpleTrigger.PlusPrior, simpleTrigger.CountMod);
 
+            //Debug.Log(noUse);
+            //Debug.Log(use);
             if (simpleTrigger.CountModExtend)
             {
                 int sum = use - noUse;
@@ -435,17 +465,23 @@ namespace BattleTable
                 foreach (SimpleAction action in simpleTrigger.Action)
                 {
                     if (action.MinPoint <= sum && action.MaxPoint >= sum)
-                        UseAction(action);
+                        isUse = UseAction(action);
                 }
             }
             else if (use > noUse)
             {
                 foreach (SimpleAction action in simpleTrigger.Action)
                 {
-                    UseAction(action);
+                   isUse = UseAction(action);
                 }
             }
-            return true;
+            //if (card1 != null)
+               // CardView.ViewCard(card1);
+            //if (card2 != null)
+               // CardView.ViewCard(card2);
+            //else
+              //  return false;
+            return isUse;
         }
 
         private static int CallSub(List<SimpleIfCore> simpleIfCore, bool extend)
@@ -455,10 +491,10 @@ namespace BattleTable
             for (int i = 0; i < simpleIfCore.Count; i++)
             {
                 simpleIf = simpleIfCore[i];
-
-                if (FindMenager(simpleIf))
+                bool use = FindMenager(simpleIf);
+                if (use)
                 {
-                    if(i+1 < simpleIfCore.Count)
+                    if (i+1 < simpleIfCore.Count)
                     {
                         if(simpleIfCore[i+1].Prioritet != simpleIf.Prioritet)
                         {
@@ -474,7 +510,7 @@ namespace BattleTable
         }
 
 
-        static void UseAction(SimpleAction action)
+        static bool UseAction(SimpleAction action)
         {
             switch (action.Action)
             {
@@ -482,28 +518,57 @@ namespace BattleTable
 
                     break;
 
-                case ("Melle"):
-                    MelleAction(action);
+                case ("Attack"):
+                    if(card2 != null)
+                    {
+                        MelleAction(action);
+                        return true;
+                    }
+                   // Debug.Log(action.Action);
                     break;
                 case ("Shot"):
+                    if (card2 != null)
+                    {
+                        MelleAction(action);
+                        return true;
+                    }
 
                     break;
                 case ("AddStat"):
-
+                    if (card2 != null)
+                    {
+                        MelleAction(action);
+                        return true;
+                    }
                     break;
 
                 case ("Die"):
 
+                    return true;
                     break;
 
                 case ("Effect"):
 
+                    if (card2 != null)
+                    {
+                        MelleAction(action);
+                        return true;
+                    }
                     break;
 
                 case ("EffectEternal"):
 
+                    if (card2 != null)
+                    {
+                        MelleAction(action);
+                        return true;
+                    }
+                    break;
+                default:
+                    Debug.Log(action.Action);
                     break;
             }
+            return false;
         }
 
         //static void UseEffect(string actionFull, CardBase local1, CardBase local2)
@@ -557,8 +622,9 @@ namespace BattleTable
 
         public static void MelleAction(SimpleAction action)
         {
+            Debug.Log(action.ActionFull);
             string[] com = action.ActionFull.Split('|');
-            string[] com1 = com[0].Split('_');
+            string[] com1 = com[2].Split('_');
 
             List<Constant> stat = new List<Constant>();
             List<int> statSize = new List<int>();
@@ -567,7 +633,13 @@ namespace BattleTable
             //if (group.Group)
             //{
             //}
-            string text = com[1];
+            int mod1 = FindInt(com[0]);
+            int mod2 = FindInt(com[1]);
+            if (mod2 != 0)
+                mod1 /= mod2;
+
+            string text = com1[1];
+            Debug.Log(text);
             string actionFull = "";
             int sum;
             Constant group = gameSetting.Library.Constants.Find(x => x.Name == text);
@@ -581,7 +653,7 @@ namespace BattleTable
                     if (sum > 0)
                     {
                         stat.Add(gameSetting.Library.Constants.Find(x => x.Name == text));
-                        statSize.Add(sum);
+                        statSize.Add(mod1 * sum);
                         mood.Add(group.moodEffect);
                     }
 
@@ -589,10 +661,11 @@ namespace BattleTable
             else
             {
                 stat.Add(group);
-                sum = FindInt(com[0]);
-                statSize.Add(sum);
+                 sum = FindInt(com[0]);
+                statSize.Add(mod1 * sum);
                 mood.Add(group.moodEffect);
             }
+            Debug.Log(statSize.Count);
 
 
             int a, b;
@@ -733,7 +806,9 @@ namespace BattleTable
         {
             for (int i = 0; i < a; i++)
             {
-                CardBase newCard = Core.CardClone(hiro.CardColod[hiro.CardHandFull[hiro.NextCard]]);
+                CardBase card = hiro.CardColod[hiro.CardHandFull[hiro.NextCard]];
+                CardBase newCard = Core.CardClone(card);
+                Core.CardCloneExtended(card, newCard);
                 hiro.CardHand.Add(newCard);
 
                 hiro.NextCard++;
@@ -743,7 +818,7 @@ namespace BattleTable
 
         static void LoadCardSet(Hiro hiro)
         {
-
+            //Debug.Log(hiro);
             CardBase card = null;
             List<int> cardBase = new List<int>();
             //интегрирывать из старгого метода позже
@@ -758,6 +833,7 @@ namespace BattleTable
                 card.MyHiro = hiro;
                 Core.CardClear(card);
                 Core.GenerateActionCard(card);
+                //Core.CardCloneExtended(card, card);
 
                 hiro.CardColod.Add(card);
 
@@ -879,12 +955,19 @@ namespace BattleTable
                 trans.GetChild(0).gameObject.GetComponent<Text>().text = $"Действие{i}";//gameSetting.DefRule[i].Name;
                 stolUi.AllTactic.Add(trans);
 
-                go.GetComponent<Button>().onClick.AddListener(() => HiroHead.UseTactic(i));
+                AddTactic(go.GetComponent<Button>(),i);
             }
         }
+        private static void AddTactic(Button button, int i)
+        {
+            button.onClick.AddListener(() => HiroHead.UseTactic(i));
+        }
+
 
         static void CreateUiCard(CardBase card)
         {
+            //Debug.Log(card);
+            //Debug.Log(card.MyHiro);
             Transform myHand = (card.MyHiro.Team == 0) ? stolUi.MyHand : stolUi.EnemyHand;
 
             GameObject GO = Instantiate(stolUi.OrigCard);
@@ -981,6 +1064,8 @@ namespace BattleTable
             {
                 bool use = GameEventSystem.UseRule(calls[0].Action, calls[0].Card1, calls[0].Card2);
 
+                Debug.Log(calls[0].Card2);
+                Debug.Log(calls.Count);
                 if (use)
                 {
                     RemoveCall(true);
@@ -1038,9 +1123,11 @@ namespace BattleTable
 
         public static void UseTactic(int a)
         {
+
             //GameEventSystem.UseRule();
             calls[0].Action = gameSetting.Action[a];
             Reply();
+            stolUi.TacticCase.gameObject.active = false;
         }
 
 
@@ -1146,7 +1233,9 @@ namespace BattleTable
         public static GameSetting gameSetting;
         public static void ViewCard(CardBase card)
         {
-           // Transform trans = card.Body;
+            // Transform trans = card.Body;
+            //Debug.Log(card);
+            //Debug.Log(card.Body);
             CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
 
             Texture2D texture = new Texture2D(100, 150);
@@ -1160,7 +1249,7 @@ namespace BattleTable
             {
                 if (card.StatSize[i] > 0)
                 {
-                    Ui.Stat.text += $"<sprite name={card.Stat[i].IconName}>{card.StatSize[i]} \n";
+                    Ui.Stat.text += $"<sprite name={card.Stat[i].IconName}>{card.StatSize[i]}/{card.StatSizeLocal[i]} \n";
                 }
                 //Ui.Stat.text += $"{card.Stat[i].IconName} {card.StatSize[i]} ";
             }
