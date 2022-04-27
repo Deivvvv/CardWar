@@ -29,11 +29,6 @@ public class GameSetting : ScriptableObject
 
     public ActionLibrary Library;
 
-    public Sprite[] Icon;
-    public string[] StatName;
-    public int[] SellCount;
-    public string[] NameIcon;
-
     public string origPath = $"/Resources/Hiro";
 
     public Material[] TargetColor;

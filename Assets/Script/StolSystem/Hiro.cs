@@ -25,8 +25,8 @@ public class Hiro
 
     //StatHiroSystem
     public int ManaMax = 10;
-    public int Mana;
-    public int ManaCurent;
+    public int Mana =1;
+    public int ManaCurent =1;
     public int Team;
 
     public int Hp;

@@ -251,11 +251,11 @@ public class ColodConstructor : MonoBehaviour
 
         text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
         text.text = "";
-        for (int i = 0; i < card.Stat.Count - 1; i++)
-        {
-            //if (card.Stat[i] > 0)
-                text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
-        }
+        //for (int i = 0; i < card.Stat.Count - 1; i++)
+        //{
+        //    //if (card.Stat[i] > 0)
+        //        text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
+        //}
         // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
 
 
@@ -297,7 +297,7 @@ public class ColodConstructor : MonoBehaviour
         for (int i = 0; i < card.Stat.Count - 1; i++)
         {
            // if (card.Stat[i] > 0)
-                text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
+        //        text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
         }
         // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
 

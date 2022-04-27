@@ -54,72 +54,72 @@ public class CardConstructor : MonoBehaviour
     public RenderTexture rTex;
     public Camera captureCamera;
 
-    #region Filtr System
-    void GenerateFiltr()
-    {
-        int a = gameSetting.SellCount.Length + 1;
+    //#region Filtr System
+    //void GenerateFiltr()
+    //{
+    //    int a = gameSetting.SellCount.Length + 1;
 
-        GameObject GO = null;
+    //    GameObject GO = null;
 
-        GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
-        GO.transform.SetParent(Ui.BaseFiltr);
+    //    GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
+    //    GO.transform.SetParent(Ui.BaseFiltr);
 
-        AddFiltr(-1, GO.GetComponent<Button>());
-
-
-        for (int i = 0; i < a; i++)
-        {
-
-            GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
-            GO.transform.SetParent(Ui.BaseFiltr);
-
-            GO.GetComponent<Image>().sprite = gameSetting.Icon[i];
-            AddFiltr(i, GO.GetComponent<Button>());
-        }
-    }
-    void AddFiltr(int a, Button button)
-    {
-
-        button.onClick.AddListener(() => SetFiltr(a));
-    }
-    void SetFiltr(int a)
-    {
-        if (curentFiltr == a)
-            filterRevers = !filterRevers;
-        else
-            filterRevers = false;
-
-        curentFiltr = a;
-
-        Sort();
-    }
-
-    void Sort()
-    {
-        IEnumerable<CardBase> items = null;//biomData.Arsenal.OrderBy(i => i.Class).ThenBy(x => x.CostMin).ThenBy(x => x.Qvailty);
+    //    AddFiltr(-1, GO.GetComponent<Button>());
 
 
-        if (curentFiltr == -1)
-        {
-            items = LocalCard;
-        }
-        else
-        {
-            if (filterRevers)
-                items = LocalCard.OrderBy(i => i.Stat[curentFiltr]);
-            else
-                items = LocalCard.OrderByDescending(i => i.Stat[curentFiltr]);
+    //    for (int i = 0; i < a; i++)
+    //    {
+
+    //        GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
+    //        GO.transform.SetParent(Ui.BaseFiltr);
+
+    //        GO.GetComponent<Image>().sprite = gameSetting.Icon[i];
+    //        AddFiltr(i, GO.GetComponent<Button>());
+    //    }
+    //}
+    //void AddFiltr(int a, Button button)
+    //{
+
+    //    button.onClick.AddListener(() => SetFiltr(a));
+    //}
+    //void SetFiltr(int a)
+    //{
+    //    if (curentFiltr == a)
+    //        filterRevers = !filterRevers;
+    //    else
+    //        filterRevers = false;
+
+    //    curentFiltr = a;
+
+    //    Sort();
+    //}
+
+    //void Sort()
+    //{
+    //    IEnumerable<CardBase> items = null;//biomData.Arsenal.OrderBy(i => i.Class).ThenBy(x => x.CostMin).ThenBy(x => x.Qvailty);
 
 
-        }
+    //    if (curentFiltr == -1)
+    //    {
+    //        items = LocalCard;
+    //    }
+    //    else
+    //    {
+    //        if (filterRevers)
+    //            items = LocalCard.OrderBy(i => i.Stat[curentFiltr]);
+    //        else
+    //            items = LocalCard.OrderByDescending(i => i.Stat[curentFiltr]);
 
-        foreach (CardBase item in items)
-        {
-            item.Body.SetParent(Ui.TraitCard);
-            item.Body.SetParent(Ui.BaseCard);
-        }
-    }
-    #endregion
+
+    //    }
+
+    //    foreach (CardBase item in items)
+    //    {
+    //        item.Body.SetParent(Ui.TraitCard);
+    //        item.Body.SetParent(Ui.BaseCard);
+    //    }
+    //}
+    //#endregion
     #region IO card System
     void Enject()
     {
@@ -199,66 +199,32 @@ public class CardConstructor : MonoBehaviour
     }
     void Inject()
     {
-        ReLoadCard();
-        //int a = curentNum;
-        //curentNum = -1;
-        //Delite();
-        //curentNum = a;
+        //ReLoadCard();
 
+        keyRule = -1;
         if (curentNum > -1)
         {
             cardBase = Core.CardClone(LocalCard[curentNum]);
-            //CardBase card = LocalCard[curentNum];
-            //cardBase.Name = card.Name;
-            //Ui.NameFlied.text = cardBase.Name;
-
-            //int b = 0;
-            //for (int i = 0; i < cardBase.Stat.Count; i++)
-            //{
-            //    if(card.Stat[i]!= null)
-            //    {
-            //        b = gameSetting.Library.Constants.FindIndex(x => x.Name == card.Stat[i].Name);
-            //        SwitchStat(i, b);
-            //        //cardBase.Stat[i] = card.Stat[i];
-            //        cardBase.StatSize[i] = card.StatSize[i];
-            //    }
-            //    else
-            //    {
-            //        SwitchStat(i, -1);
-            //    }
-            //}
-            //ReCalculate();
-
-            //for (int i = 0; i < cardBase.Trait.Count; i++)
-            //{
-            //    if (card.Trait[i] != null)
-            //    {
-            //        keyRule = i;
-            //        SwitchRule(card.Trait[i].Name);
-            //    }
-            //    // cardBase.Trait[i] = card.Trait[i];
-            //    // cardBase.TraitSize[i] = card.TraitSize[i];
-            //}
-            Ui.NameFlied.text = cardBase.Name;
-            Debug.Log(cardBase.Trait.Count);
-            for (int i = 0; i < cardBase.Trait.Count; i++)
+           // Debug.Log(cardBase.Stat.Count);
+            //Debug.Log(Ui.StatUi.Count);
+            if (cardBase.Stat.Count < Ui.StatUi.Count)
             {
-                keyRule = i;
-                if (cardBase.Trait[i] != null)
+                for (int i = cardBase.Stat.Count ; i < Ui.StatUi.Count; i++)
                 {
-                    SwitchRule(cardBase.Trait[i].Name);
+                    DeliteStat(cardBase.Stat.Count);
                 }
-                else
-                {
-                    SwitchRule("-1");
-                }
-                // cardBase.Trait[i] = card.Trait[i];
-                // cardBase.TraitSize[i] = card.TraitSize[i];
             }
-            //ReCalculate();
-            keyRule = -1;
+            else if (cardBase.Stat.Count > Ui.StatUi.Count)
+            {
+                for (int i = Ui.StatUi.Count ; i < cardBase.Stat.Count; i++)
+                {
+                    AddStatUi();
+                }
+            }
+
 
             //Выгрузка данных в редактор героев
+            Ui.NameFlied.text = cardBase.Name;
         }
         ReCalculate();
     }
@@ -445,6 +411,7 @@ public class CardConstructor : MonoBehaviour
 
     void AddStatButton(bool plus, Button button, int a)
     {
+        button.onClick.RemoveAllListeners();
         if (plus)
             button.onClick.AddListener(() => StatUp(a));
         else
@@ -490,24 +457,16 @@ public class CardConstructor : MonoBehaviour
         Ui.StatUi[a].AllCount.text = "" + cardBase.StatSize[a];
     }
     void StatDown(int a)
-    {   
-        if(a == 0)
+    {
+        if (cardBase.StatSize[a] > 1)
         {
-            if (cardBase.StatSize[0] > 1)
-                cardBase.StatSize[0]--;
+            cardBase.StatSize[a]--;
+            Ui.StatUi[a].AllCount.text = "" + cardBase.StatSize[a];
         }
-        else
-        {
-            if(cardBase.Stat[a] != null)
-            {
-                if (cardBase.StatSize[a] > 1)
-                    cardBase.StatSize[a]--;
-                else
-                    SwitchStat(a, -1);
-            }
-        }
+        else if (a != 0)
+            DeliteStat(a);
 
-        Ui.StatUi[a].AllCount.text = "" + cardBase.StatSize[a];
+
         ReCalculate();
     }
     void ReCalculate()
@@ -548,53 +507,163 @@ public class CardConstructor : MonoBehaviour
     #endregion
 
     #region Constant and Rule
+    void AddStatUi()
+    {
+        GameObject GO = Instantiate(Ui.OrigStat);
+        GO.transform.SetParent(Ui.StatCard);
+
+        //  GO.GetComponent<Image>().sprite = gameSetting.Library.Guilds[i].Icon;
+
+        StatCaseUi caseUi = GO.GetComponent<StatCaseUi>();
+
+        int i = Ui.StatUi.Count;
+        Ui.StatUi.Add(caseUi);
+
+        AddStatButton(false, caseUi.ButtonMinus, i);
+        AddStatButton(true, caseUi.ButtonPlus, i);
+        // caseUi.ButtonSwitch.onClick.AddListener(() => LoadStatSelector(a);
+        SetSelectorStatButton(i, caseUi.ButtonSwitch);
+
+        caseUi.Name.text = cardBase.Stat[i].Name;
+        caseUi.Icon.sprite = cardBase.Stat[i].Icon;
+
+        caseUi.SellCount.text = $"{ cardBase.Stat[i].Cost}/4";
+        caseUi.AllCount.text = "1";
+
+        Ui.AddStat.SetParent(Ui.TraitCard);
+        Ui.AddStat.SetParent(Ui.StatCard);
+        ReCalculate();
+        NewStatSelector();
+    }
+
+    void DeliteStat(int a)
+    {
+        if( a > 0)
+        {
+            StatCaseUi ui = Ui.StatUi[a];
+            Ui.StatUi.RemoveAt(a);
+            Destroy(ui.gameObject);
+            if(a < cardBase.Stat.Count)
+            {
+                cardBase.Stat.RemoveAt(a);
+                cardBase.StatSize.RemoveAt(a);
+            }
+            for (int i = a; i < Ui.StatUi.Count; i++)
+            {
+                Debug.Log(i);
+                ui = Ui.StatUi[i];
+
+                AddStatButton(false, ui.ButtonMinus, i);
+                AddStatButton(true, ui.ButtonPlus, i);
+
+                SetSwitchRuleButton(ui.ButtonSwitch, cardBase.Stat[i].Name);
+            }
+        }
+        ReCalculate();
+        NewStatSelector();
+    }
+
 
     void SwitchStat(int a, int b)
     {
         if (selector != null)
             Destroy(selector.gameObject);
 
-        cardBase.StatSize[a] = 0;
+        if(a >= cardBase.Stat.Count)
+        {
+            cardBase.Stat.Add(gameSetting.Library.Constants[b]);
+            cardBase.StatSize.Add(0);
+            AddStatUi();
+            Ui.StatUi[0].ButtonSwitch.enabled = false;
+        }
 
         StatCaseUi caseUi = Ui.StatUi[a];
-        if (b == -1)
+        cardBase.StatSize[a] = 0;
+        cardBase.Stat[a] = gameSetting.Library.Constants[b];
+        StatUp(a);
+
+        caseUi.Name.text = cardBase.Stat[a].Name;
+        caseUi.Icon.sprite = cardBase.Stat[a].Icon;
+
+        caseUi.SellCount.text = $"{ cardBase.Stat[a].Cost}/4";
+        //caseUi.AllCount.text = "1";
+        //if (cardBase.StatSize[a] == 0)
+        //{
+        //    DeliteStat(a);
+        //    return;
+        //}
+    }
+
+
+    void AddRuleUi()
+    {
+        GameObject GO = Instantiate(Ui.OrigStat);
+        GO.transform.SetParent(Ui.TraitCard);
+
+        //  GO.GetComponent<Image>().sprite = gameSetting.Library.Guilds[i].Icon;
+
+        StatCaseUi caseUi = GO.GetComponent<StatCaseUi>();
+
+        int i = Ui.RuleUi.Count;
+        Ui.RuleUi.Add(caseUi);
+
+        //AddRuleButton(false, caseUi.ButtonMinus, i);
+        //AddRuleButton(true, caseUi.ButtonPlus, i);
+
+        DeliteRuleButton(i, caseUi.ButtonMinus);
+        // caseUi.ButtonSwitch.onClick.AddListener(() => LoadStatSelector(a);
+        SetSelectorRuleButton(i, caseUi.ButtonSwitch);
+        //SetSwitchRuleButton(ui.ButtonSwitch, cardBase.Stat[i].Name);
+        caseUi.Name.text = cardBase.Trait[i].Name;
+
+        //caseUi.Name.text = cardBase.Stat[a].Name;
+       // caseUi.Icon.sprite = cardBase.Stat[a].Icon;
+
+        caseUi.SellCount.text = $"{ cardBase.Trait[i].Cost}/4";
+        caseUi.AllCount.text = "1";
+
+
+        Ui.AddStat.SetParent(Ui.TraitCard);
+        Ui.AddStat.SetParent(Ui.StatCard);
+        NewRuleSelector();
+    }
+
+    void DeliteRule(int a)
+    {
+        StatCaseUi ui = Ui.RuleUi[a];
+        Ui.RuleUi.RemoveAt(a);
+        Destroy(ui.gameObject);
+        cardBase.Trait.RemoveAt(a);
+        cardBase.TraitSize.RemoveAt(a);
+        for (int i = a; i < Ui.RuleUi.Count; i++)
         {
-            cardBase.Stat[a] = null;
-            //  cardBase.StatSize[a] = 0;
-            caseUi.Name.text = "Пустой слот";
+            Debug.Log(i);
+            ui = Ui.RuleUi[i];
 
-            caseUi.ButtonPlus.enabled = false;
-            caseUi.ButtonMinus.enabled = false;
+            //AddStatButton(false, ui.ButtonMinus, i);
+            //AddStatButton(true, ui.ButtonPlus, i);
 
-            caseUi.Icon.enabled = false;
-
-            caseUi.SellCount.text = "";
-            caseUi.AllCount.text = "";
+            DeliteRuleButton(i, ui.ButtonMinus);
+            SetSelectorRuleButton(i, ui.ButtonSwitch);
+            //SetSwitchRuleButton(ui.ButtonSwitch, cardBase.Stat[i].Name);
         }
-        else
-        {
-            cardBase.Stat[a] = gameSetting.Library.Constants[b];
-            //  cardBase.StatSize[a] = 0;
-            StatUp(a);
+        NewRuleSelector();
+    }
 
-            caseUi.Name.text = cardBase.Stat[a].Name;
+    void DeliteRuleButton(int a, Button button)
+    {
+        button.onClick.AddListener(() => DeliteRule(a));
+    }
 
-            caseUi.ButtonPlus.enabled = true;
-            caseUi.ButtonMinus.enabled = true;
-
-            caseUi.Icon.enabled = true;
-            caseUi.Icon.sprite = cardBase.Stat[a].Icon;
-
-            caseUi.SellCount.text = $"{ cardBase.Stat[a].Cost}/4";
-            //caseUi.AllCount.text = "";
-            if (cardBase.StatSize[a] == 0)
-            {
-                SwitchStat(a, -1);
-                return;
-            }
-        }
-        ReCalculate();
-
+    void NewStatSelector()
+    {
+        Ui.AddStatButton.onClick.RemoveAllListeners();
+        Ui.AddStatButton.onClick.AddListener(() => LoadStatSelector(cardBase.Stat.Count));
+    }
+    void NewRuleSelector()
+    {
+        Ui.AddRuleButton.onClick.RemoveAllListeners();
+        Ui.AddRuleButton.onClick.AddListener(() => LoadRuleSelector(cardBase.Trait.Count));
     }
 
     void CreateSystemButton()
@@ -605,47 +674,29 @@ public class CardConstructor : MonoBehaviour
         Ui.LegionButton.onClick.AddListener(() => LoadSelector("Legion"));
         Ui.CivilianButton.onClick.AddListener(() => LoadSelector("Civilian"));
 
-        GameObject GO = null;
-
-        //Ui.StatButtons
-        for (int i = 0; i < gameSetting.StatSize; i++)
-        {
-            GO = Instantiate(Ui.OrigStat);
-            GO.transform.SetParent(Ui.StatCard);
-
-            //  GO.GetComponent<Image>().sprite = gameSetting.Library.Guilds[i].Icon;
-
-            StatCaseUi caseUi = GO.GetComponent<StatCaseUi>();
-
-            Ui.StatUi.Add(caseUi);
-
-            AddStatButton(false, caseUi.ButtonMinus, i);
-            AddStatButton(true, caseUi.ButtonPlus, i);
-            // caseUi.ButtonSwitch.onClick.AddListener(() => LoadStatSelector(a);
-            SetSelectorStatButton(i, caseUi.ButtonSwitch);
-            //  Ui.StatButtons[i].Name =
-        }
-        Ui.StatUi[0].ButtonSwitch.enabled = false;
+        NewStatSelector();
+        NewRuleSelector();
+        //Ui.StatUi[0].ButtonSwitch.enabled = false;
 
         //Ui.RuleButtons
-        for (int i = 0; i < gameSetting.RuleSize; i++)
-        {
-            GO = Instantiate(Ui.OrigStat);
-            GO.transform.SetParent(Ui.TraitCard);
+        //for (int i = 0; i < gameSetting.RuleSize; i++)
+        //{
+        //    GO = Instantiate(Ui.OrigStat);
+        //    GO.transform.SetParent(Ui.TraitCard);
 
-            //  GO.GetComponent<Image>().sprite = gameSetting.Library.Guilds[i].Icon;
+        //    //  GO.GetComponent<Image>().sprite = gameSetting.Library.Guilds[i].Icon;
 
-            StatCaseUi caseUi = GO.GetComponent<StatCaseUi>();
+        //    StatCaseUi caseUi = GO.GetComponent<StatCaseUi>();
 
-            Ui.RuleUi.Add(caseUi);
+        //    Ui.RuleUi.Add(caseUi);
 
-            SetRemoveRuleButton(caseUi.ButtonMinus, i);
-            //AddStatButton(false, caseUi.ButtonMinus, i);
-            //AddStatButton(true, caseUi.ButtonPlus, i);
-            // caseUi.ButtonSwitch.onClick.AddListener(() => LoadStatSelector(a);
-            SetSelectorRuleButton(i, caseUi.ButtonSwitch);
-            //  Ui.StatButtons[i].Name =
-        }
+        //    SetRemoveRuleButton(caseUi.ButtonMinus, i);
+        //    //AddStatButton(false, caseUi.ButtonMinus, i);
+        //    //AddStatButton(true, caseUi.ButtonPlus, i);
+        //    // caseUi.ButtonSwitch.onClick.AddListener(() => LoadStatSelector(a);
+        //    SetSelectorRuleButton(i, caseUi.ButtonSwitch);
+        //    //  Ui.StatButtons[i].Name =
+        //}
         //Ui.RuleUi[0].ButtonSwitch.enabled = false;
 
     }
@@ -713,93 +764,61 @@ public class CardConstructor : MonoBehaviour
         if (a == -1)
             return;
         Ui.RuleSelectorMain.active = false;
+        //Debug.Log(a);
 
-        //cardBase.StatSize[a] = 0;
+        if (a >= cardBase.Trait.Count)
+        {
+            cardBase.Trait.Add(gameSetting.Rule.Find(x => x.Name == str));
+            cardBase.TraitSize.Add(0);
+            AddRuleUi();
+        }
 
         StatCaseUi caseUi = Ui.RuleUi[a];
-        if (str == "-1" || str == "")
-        {
-            cardBase.Trait[a] = null;
-            //  cardBase.StatSize[a] = 0;
-            caseUi.Name.text = "Пустой слот";
-
-            caseUi.ButtonPlus.enabled = false;
-            caseUi.ButtonMinus.enabled = false;
-
-            caseUi.Icon.enabled = false;
-
-            caseUi.SellCount.text = "";
-            caseUi.AllCount.text = "";
-        }
-        else
-        {
-            Debug.Log(str);
-            Debug.Log(gameSetting.Rule.Count);
-            int b = gameSetting.Rule.FindIndex(x => x.Name == str);
-            Debug.Log(b);
-            cardBase.Trait[a] = gameSetting.Rule[b];
-            //  cardBase.StatSize[a] = 0;
-            caseUi.Name.text = str;
-            //cardBase.Stat[a] = gameSetting.Library.Constants[str];
-            ////  cardBase.StatSize[a] = 0;
-            //StatUp(a);
-
-            //caseUi.Name.text = cardBase.Stat[a].Name;
-
-            //caseUi.ButtonPlus.enabled = true;
-            //caseUi.ButtonMinus.enabled = true;
-
-            //caseUi.Icon.enabled = true;
-            //caseUi.Icon.sprite = cardBase.Stat[a].Icon;
-
-            //caseUi.SellCount.text = $"{ cardBase.Stat[a].Cost}/4";
-            ////caseUi.AllCount.text = "";
-            //if (cardBase.StatSize[a] == 0)
-            //{
-            //    SwitchRule(a, "-1");
-            //    return;
-            //}
-        }
+        //int b = gameSetting.Rule.Find(x => x.Name == str);
+        cardBase.Trait[a] = gameSetting.Rule.Find(x => x.Name == str);
+        //  cardBase.StatSize[a] = 0;
+        caseUi.Name.text = str;
         ReCalculate();
 
         keyRule = -1;
     }
 
-    void SetRemoveRuleButton(Button button, int a)
-    {
-        button.onClick.AddListener(() => PreSwitchRule(a, "-1"));
-    }
-    void PreSwitchRule( int a, string str)
-    {
-        keyRule = a;
-        SwitchRule("-1");
-    }
+    //void SetRemoveRuleButton(Button button, int a)
+    //{
+    //    button.onClick.AddListener(() => PreSwitchRule(a));
+    //}
+    //void PreSwitchRule( int a)
+    //{
+    //    keyRule = a;
+    //    SwitchRule("-1");
+    //}
 
 
 
     void SetSelectorRuleButton(int a, Button button)
     {
+        button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => LoadRuleSelector(a));
     }
 
     void SetSwitchRuleButton(Button button, string srt)
     {
-        button.onClick.RemoveAllListeners();
+        //button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => SwitchRule(srt));
     }
 
     void CreateRuleList()
     {
         //cardBase.Trait = new List<string>();
-        for (int i = 0; i < gameSetting.RuleSize; i++)
-        {
-            keyRule = i;
-            SwitchRule("-1");
-            //cardBase.Trait.Add("");
-            //Ui.RuleUi.Name = "";
-            //SwitchStat(i, -1);
-        }
-        keyRule = -1;
+        //for (int i = 0; i < gameSetting.RuleSize; i++)
+        //{
+        //    keyRule = i;
+        //    SwitchRule("-1");
+        //    //cardBase.Trait.Add("");
+        //    //Ui.RuleUi.Name = "";
+        //    //SwitchStat(i, -1);
+        //}
+        //keyRule = -1;
         ruleList = new List<string>();
         /*
          расширенный метод, для исключеняи лишних - недоступных компонентов
@@ -840,7 +859,6 @@ public class CardConstructor : MonoBehaviour
 
     void LoadRuleSelector(int a)
     {
-
         keyRule = a;
         Ui.RuleSelectorMain.active = true;
 
@@ -893,12 +911,13 @@ public class CardConstructor : MonoBehaviour
         cardBase = new CardBase();
         cardBase.Stat = new List<Constant>();
         cardBase.StatSize = new List<int>();
-        for (int i =0; i < gameSetting.StatSize; i++)
-        {
-            cardBase.Stat.Add(null);
-            cardBase.StatSize.Add(0);
-            SwitchStat(i, -1);
-        }
+        //for (int i =0; i < gameSetting.StatSize; i++)
+        //{
+        //    cardBase.Stat.Add(null);
+        //    cardBase.StatSize.Add(0);
+        //    SwitchStat(i, -1);
+        //    Ui.StatUi[0].ButtonSwitch.enabled = false;
+        //}
 
         cardBase.Guilds = curentGuild;
         actualLegion = new List<Legion>();
@@ -911,12 +930,12 @@ public class CardConstructor : MonoBehaviour
 
         cardBase.TraitSize = new List<int>();
         cardBase.Trait = new List<HeadSimpleTrigger>();
-        for (int i = 0; i < gameSetting.RuleSize; i++)
-        {
-            cardBase.Trait.Add(null);
-            cardBase.TraitSize.Add(0);
-            //SwitchStat(i, -1);
-        }
+        //for (int i = 0; i < gameSetting.RuleSize; i++)
+        //{
+        //    cardBase.Trait.Add(null);
+        //    cardBase.TraitSize.Add(0);
+        //    //SwitchStat(i, -1);
+        //}
     }
     void SwitchRace(Race race)
     {
@@ -1054,7 +1073,7 @@ public class CardConstructor : MonoBehaviour
         CreateRuleList();
         //LoadRuleSelector(0);
 
-        GenerateFiltr();
+        //GenerateFiltr();
 
     }
 

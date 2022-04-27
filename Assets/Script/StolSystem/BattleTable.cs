@@ -1088,8 +1088,8 @@ namespace BattleTable
 
 
 
-            NextTurn();
-            NextTurn();
+            //NextTurn();
+            //NextTurn();
 
 
             stolUi.NextTurn.onClick.AddListener(() => NextTurn());

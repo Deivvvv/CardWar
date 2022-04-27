@@ -26,8 +26,6 @@ public class CardConstructorUi : MonoBehaviour
 
     public List<StatCaseUi> StatUi;
     public List<StatCaseUi> RuleUi;
-    //public Button[] StatButtons;
-    //public Button[] RuleButtons;
 
 
 
@@ -36,8 +34,6 @@ public class CardConstructorUi : MonoBehaviour
 
     public Transform BaseFiltr;
 
-    public Text[] StatCount;
-    public Text[] TraitCount;
 
     public Text ManaCount;
 
@@ -48,10 +44,6 @@ public class CardConstructorUi : MonoBehaviour
     public GameObject OrigButtonBanner;
     public GameObject SelectorOrigin;
 
-    //public Sprite[] Icon;
-    //public string[] StatName;
-    //public int[] SellCount;
-    //public string[] NameIcon;
 
     public Button EjectButton;
     public Button InjectButton;
@@ -69,4 +61,9 @@ public class CardConstructorUi : MonoBehaviour
 
     public GameObject RuleSelectorMain;
     public Transform RuleSelector;
+
+    public Transform AddStat;
+    public Transform AddRule;
+    public Button AddStatButton;
+    public Button AddRuleButton;
 }
