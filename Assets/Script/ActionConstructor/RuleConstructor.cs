@@ -1231,7 +1231,7 @@ public class RuleConstructor : MonoBehaviour
         Ui.TextWindowButton.onClick.AddListener(() => LoadData());
         Ui.SaveButton.onClick.AddListener(() => CreateRule());
         Ui.SaveSimpleButton.onClick.AddListener(() => SaveRuleSample(curentRule));
-        Ui.SaveSimpleButton.onClick.AddListener(() => SaveRuleSampleAll());
+        Ui.SaveSimpleAllButton.onClick.AddListener(() => SaveRuleSampleAll());
         Ui.NewRuleButton.onClick.AddListener(() => NewRule());
 
         GameObject GO = null;
