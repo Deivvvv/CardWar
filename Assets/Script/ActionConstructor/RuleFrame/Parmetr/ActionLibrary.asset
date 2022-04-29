@@ -38,10 +38,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 331fbbe9408c04f4dbec7745bf818585, type: 2}
   - {fileID: 11400000, guid: a57eac89fd8a8134584b301a70bdc54c, type: 2}
   - {fileID: 11400000, guid: fd28fcbde4080af4db891b8637140f32, type: 2}
+  - {fileID: 11400000, guid: 8be5ef80d9efdec4c94ee843e8f7d2e2, type: 2}
   RuleName:
-  - "\u0411\u043B\u0430\u0433\u043E\u0447\u0435\u0441\u0442\u0438\u0435"
-  - "\u0411\u043B\u0430\u0433\u043E\u0447\u0435\u0441\u0442\u0438\u0435"
-  - "\u0411\u043B\u0430\u0433\u043E\u0447\u0435\u0441\u0442\u0438\u0435"
-  AllTactic:
-  - Attack
-  - Shot
+  - Walk
+  - atk1
+  - atk2
+  - Double damage
+  - thorns

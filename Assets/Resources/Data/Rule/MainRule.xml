@@ -1,6 +1,8 @@
 <root>
-  <RuleCount>3</RuleCount>
+  <RuleCount>5</RuleCount>
   <RuleName0>Walk</RuleName0>
   <RuleName1>atk1</RuleName1>
   <RuleName2>atk2</RuleName2>
+  <RuleName3>Double damage</RuleName3>
+  <RuleName4>thorns</RuleName4>
 </root>

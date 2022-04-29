@@ -6,8 +6,7 @@
   <HeadCostExtend>0</HeadCostExtend>
   <HeadLevelCap>0</HeadLevelCap>
   <HeadPlayer>false</HeadPlayer>
-  <HeadNeedRuleCount>1</HeadNeedRuleCount>
-  <HeadNeedRule0>atk1</HeadNeedRule0>
+  <HeadNeedRuleCount>0</HeadNeedRuleCount>
   <HeadEnemyRuleCount>0</HeadEnemyRuleCount>
   <TriggerActionCount>1</TriggerActionCount>
   <TargetPalyer0>1</TargetPalyer0>
