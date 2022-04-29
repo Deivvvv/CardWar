@@ -1,6 +1,8 @@
 <root>
   <HeadName>atk1</HeadName>
   <HeadCost>0</HeadCost>
+  <HeadNameText>Благочестие</HeadNameText>
+  <Tag>Walk</Tag>
   <HeadCostExtend>0</HeadCostExtend>
   <HeadLevelCap>0</HeadLevelCap>
   <HeadPlayer>false</HeadPlayer>

@@ -634,6 +634,8 @@ string someString = Encoding.ASCII.GetString(bytes);
 
                 root.Add(new XElement("HeadName", head.Name));
                 root.Add(new XElement("HeadCost", head.Cost));
+                root.Add(new XElement("HeadNameText", head.NameText));
+                root.Add(new XElement("Tag", head.Tag));
                 root.Add(new XElement("HeadCostExtend", head.CostExtend));
                 root.Add(new XElement("HeadLevelCap", head.LevelCap));
                 root.Add(new XElement("HeadPlayer", head.Player));
@@ -733,6 +735,9 @@ string someString = Encoding.ASCII.GetString(bytes);
                 head = new HeadRule();
                 head.Name = root.Element($"HeadName").Value;
                 head.Cost = int.Parse(root.Element($"HeadCost").Value);
+                head.NameText = root.Element($"HeadNameText").Value;
+                head.Tag = root.Element($"Tag").Value;
+
                 head.CostExtend = int.Parse(root.Element($"HeadCostExtend").Value);
                 head.LevelCap = int.Parse(root.Element($"HeadLevelCap").Value);
                 //head.CostMovePoint = int.Parse(root.Element($"CostMovePoint").Value);

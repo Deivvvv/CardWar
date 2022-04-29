@@ -29,6 +29,8 @@ public class RuleConstructorUi : MonoBehaviour
     public GameObject SelectorMainAltRule;
     [HideInInspector]
     public GameObject SelectorMainStatTayp;
+    [HideInInspector]
+    public GameObject SelectorMainTag;
 
     //[HideInInspector]
     //public GameObject SelectorMainIfCore1;
@@ -49,6 +51,8 @@ public class RuleConstructorUi : MonoBehaviour
     public Transform SelectorAltRule;
     [HideInInspector]
     public Transform SelectorStatTayp;
+    [HideInInspector]
+    public Transform SelectorTag;
 
     //[HideInInspector]
     //public GameObject SelectorIfCore1;
@@ -65,6 +69,7 @@ public class RuleConstructorUi : MonoBehaviour
     public Transform SelectorLibrary;
     public Button SaveButton;
     public Button SaveSimpleButton;
+    public Button SaveSimpleAllButton;
     public Button NewRuleButton;
 
     public GameObject ButtonOrig;

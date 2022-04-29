@@ -75,6 +75,8 @@ public class RuleConstructor : MonoBehaviour
 
         mainText += LinkSupport(color, "Text_RuleName", $"Правило -- { head.Name}");
         mainText += LinkSupport(color, "Text_Cost", $"\nЦена: { head.Cost}");
+        mainText += LinkSupport(color, "Text_RuleNameText", $"\nИмя -- { head.NameText}");
+        mainText += LinkSupport(color, "Tag_Tag", $"\nTag { head.Tag}");
 
         if (head.CostExtend == 0)
             mainText += LinkSupport(color, "Text_CostExtend", $"\nЦена за доп очки: -- идентично");
@@ -507,6 +509,9 @@ public class RuleConstructor : MonoBehaviour
             case ("Effects"):
                 Ui.SelectorMainEffects.active = true;
                 break;
+            case ("Tag"):
+                Ui.SelectorMainTag.active = true;
+                break;
 
             //case ("Select"):
             // //   LoadSelector();
@@ -525,6 +530,7 @@ public class RuleConstructor : MonoBehaviour
     }
     void HideSelector()
     { 
+        Ui.SelectorMainTag.active = false;
         Ui.SelectorMainStatTayp.active = false;
         Ui.SelectorMainAltRule.active = false;
         Ui.SelectorMainLegion.active = false;
@@ -659,10 +665,13 @@ public class RuleConstructor : MonoBehaviour
         string text = com[1];
         switch (com[0])
         {
-
+            case ("Tag"):
+                OpenSelector(text);
+                stringMood = text;
+                break;
             case ("MainAdd"):
                 OpenSelector(text);
-                stringMood = com[2];
+                stringMood = com[1];
                 break;
             case ("MainRemove"):
                 switch (text)
@@ -687,6 +696,9 @@ public class RuleConstructor : MonoBehaviour
 
                     case ("Cost"):
                         LoadTextWindowData($"{head.Cost}", text);
+                        break;
+                    case ("RuleNameText"):
+                        LoadTextWindowData($"{head.NameText}", text);
                         break;
 
                         //case ("CostExtend"):
@@ -736,7 +748,7 @@ public class RuleConstructor : MonoBehaviour
                                 stringMood = $"{a}_{com[3]}_{com[4]}_{com[5]}";
                         }
                     }
-                    Debug.Log(com[2]);
+                    //Debug.Log(com[2]);
                     switch (com[2])
                     {
                         case ("Del"):
@@ -998,6 +1010,10 @@ public class RuleConstructor : MonoBehaviour
                     head.Cost = i;
                 break;
 
+            case ("RuleNameText"):
+                head.NameText = text;
+                break;
+
             case ("CostExtend"):
                 i = int.Parse(text);
                 if (i != null)
@@ -1119,6 +1135,7 @@ public class RuleConstructor : MonoBehaviour
     {
         Application.targetFrameRate = 30;
         head = new HeadRule();
+        head.Tag = frame.Tag[0];
         XMLSaver.SetRuleMainFrame(frame);
 
         CoreLoad();
@@ -1164,6 +1181,9 @@ public class RuleConstructor : MonoBehaviour
             case ("Rule"):
                 a = RuleName.Count;
                 break;
+            case ("Tag"):
+                a = frame.Tag.Length;
+                break;
         }
 
         for (int i = 0; i < a; i++)
@@ -1198,6 +1218,10 @@ public class RuleConstructor : MonoBehaviour
                     GO.transform.SetParent(Ui.SelectorAltRule);
                     GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = RuleName[i];
                     break;
+                case ("Tag"):
+                    GO.transform.SetParent(Ui.SelectorTag);
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.Tag[i];
+                    break;
             }
             ButtonSelector(text, i, GO.GetComponent<Button>());
         }
@@ -1207,6 +1231,7 @@ public class RuleConstructor : MonoBehaviour
         Ui.TextWindowButton.onClick.AddListener(() => LoadData());
         Ui.SaveButton.onClick.AddListener(() => CreateRule());
         Ui.SaveSimpleButton.onClick.AddListener(() => SaveRuleSample(curentRule));
+        Ui.SaveSimpleButton.onClick.AddListener(() => SaveRuleSampleAll());
         Ui.NewRuleButton.onClick.AddListener(() => NewRule());
 
         GameObject GO = null;
@@ -1247,6 +1272,10 @@ public class RuleConstructor : MonoBehaviour
                     Ui.SelectorMainAltRule = GO;
                     Ui.SelectorAltRule = GO.transform.GetChild(0).GetChild(0);
                     break;
+                case ("Tag"):
+                    Ui.SelectorMainTag = GO;
+                    Ui.SelectorTag= GO.transform.GetChild(0).GetChild(0);
+                    break;
                 default:
                     Debug.Log(mainText);
                     break;
@@ -1277,6 +1306,9 @@ public class RuleConstructor : MonoBehaviour
         {
             switch (com[0])
             {
+                case ("Tag"):
+                    head.Tag = frame.Tag[a];
+                    break;
                 case ("NeedRule"):
                     head.NeedRule.Add(RuleName[a]);
                     break;
@@ -1386,6 +1418,15 @@ public class RuleConstructor : MonoBehaviour
     void SaveRuleSample(int i)
     {
         XMLSaver.SaveSimpleRule(head, i);
+    }
+    void SaveRuleSampleAll()
+    {
+        HeadRule rule = null;
+        for ( int i =0; i < RuleName.Count; i++)
+        {
+            rule = XMLSaver.LoadRule(i);
+            XMLSaver.SaveSimpleRule(rule, i);
+        }
     }
 
     void SaveCore()
@@ -1498,8 +1539,10 @@ public class RuleAction
 [System.Serializable]
 public class HeadRule
 {
-    public string Name = "Благочестие";//Название
+    public string Name = "World";//Название
     public string Info;//Описание
+    public string NameText = "Благочестие";//Название
+    public string Tag; //Описание
 
     public int Cost;//Цена
     public int CostExtend;//цена за доп очки навыков

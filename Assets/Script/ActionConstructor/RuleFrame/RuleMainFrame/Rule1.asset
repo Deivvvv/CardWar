@@ -38,6 +38,7 @@ MonoBehaviour:
   - StatTayp
   - CivilianGroups
   - Null
+  - Tag
   Trigger:
   - Action
   - Start Turn
@@ -51,3 +52,6 @@ MonoBehaviour:
   - PostDeadTurn
   - Select
   - PlayThisCard
+  Tag:
+  - Walk
+  - Attack
