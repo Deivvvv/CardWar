@@ -16,4 +16,6 @@ public class RuleMainFrame : ScriptableObject
     [Space(10)]
     public string[] Trigger;
     public string[] Tag;
+    public string[] Status;
+    public string[] Action;
 }

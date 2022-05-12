@@ -17,6 +17,7 @@ MonoBehaviour:
   - Max
   - LocalForse
   - Local
+  - Orig
   EqualString:
   - =
   - '!='
@@ -33,27 +34,40 @@ MonoBehaviour:
   StatTayp:
   - Legion
   - Stat
-  - Effects
   - Rule
   - StatTayp
   - CivilianGroups
   - Null
   - Tag
+  - Status
+  - Action
   Trigger:
   - Action
-  - Start Turn
-  - End Turn
+  - AnotherAction
+  - PlayCard
+  - PlayAnotherCard
+  - Die
+  - AnotherDie
+  - NextTurn
   - PreAction
   - PostAction
-  - PlayCard
-  - DeadCard
-  - DeadAnotherCard
-  - PlayAnotherCard
-  - PostDeadTurn
-  - Select
-  - PlayThisCard
   Tag:
+  - Null
   - Walk
   - Attack
   - Defence
-  - Null
+  Status:
+  - Fly
+  - Stan
+  - Provacator
+  Action:
+  - Attack|Melee
+  - Attack|Shot
+  - Die
+  - Status|Add
+  - Status|Remove
+  - Effect|Eternal|Add
+  - Effect|Eternal|Remove
+  - Effect|Add
+  - Effect|Remove
+  - Stat|Add

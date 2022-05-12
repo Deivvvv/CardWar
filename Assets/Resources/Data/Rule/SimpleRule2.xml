@@ -4,6 +4,6 @@
   <HeadEnemyRule></HeadEnemyRule>
   <Trigger0PlusAction>&gt;_10_10*Card1:Stat_RangedDamage_1_0|Null:Null_Null_1_0</Trigger0PlusAction>
   <Trigger0MinusAction></Trigger0MinusAction>
-  <Trigger0Action>1_10_All_Attack_0_Local*Card1:Stat_RangedDamage_1_0|Null:Stat_Honor_2_0|Card2:Stat_RangedDamage_1_0</Trigger0Action>
+  <Trigger0Action>1_10_All_Attack_Local*Card1:Stat_RangedDamage_1_0|Null:Stat_Honor_2_0|Card2:Stat_RangedDamage_1_0</Trigger0Action>
   <TriggerHead>Enemy_Action_False_False</TriggerHead>
 </root>

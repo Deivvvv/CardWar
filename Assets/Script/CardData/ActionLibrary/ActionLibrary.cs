@@ -11,7 +11,7 @@ public class ActionLibrary : ScriptableObject
     public List<Legion> Legions;
     public List<CivilianGroup> CivilianGroups;
     public List<Constant> Constants;
-    public List<Effect> Effects;
+    //public List<Effect> Effects;
 
     public List<string> RuleName;
     

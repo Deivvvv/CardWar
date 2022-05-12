@@ -23,6 +23,7 @@ namespace BattleTable
         public static void LoadRules()
         {
             gameSetting.Rule = new List<HeadSimpleTrigger>();
+            gameSetting.AllCard = new List<CardBase>();
             for (int i = 0; i < gameSetting.Library.RuleName.Count; i++)
                 gameSetting.Rule.Add(Core.ReadRule(i));
 
@@ -42,13 +43,20 @@ namespace BattleTable
             card.PlayAnotherCard = new List<int>();
 
             card.Die = new List<int>();
+            card.AnotherDie = new List<int>();
 
             card.Action = new List<int>();
+            card.AnotherAction = new List<int>();
 
-            card.InHand = new List<int>();
+            card.PreAction = new List<int>();
+            card.PostAction = new List<int>();
+            //card.InHand;
             card.NextTurn = new List<int>();
-            //for(int i =0;i< gameSetting.Rule.Count; i++)
+
+            card.Status = new List<string>();
+
             int a = 0;
+            int id = card.Id;
             foreach (HeadSimpleTrigger head in card.Trait)
             {
                 foreach (SimpleTrigger simpleTrigger in head.SimpleTriggers)
@@ -56,27 +64,63 @@ namespace BattleTable
                     a = simpleTrigger.CodName;
                     switch (simpleTrigger.Trigger)
                     {
+                        case ("PreAction"):
+                            card.PreAction.Add(a);
+                            break;
+                        case ("PostAction"):
+                            card.PostAction.Add(a);
+                            break;
+                        case ("PlayCard"):
+                            card.PlayCard.Add(a);
+                            break;
+                        case ("PlayAnotherCard"):
+                            card.PlayAnotherCard.Add(a);
+                            AddEcho("PlayAnotherCard", id);
+                            break;
+
+                        case ("Die"):
+                            card.Die.Add(a);
+                            break;
+                        case ("AnotherDie"):
+                            card.AnotherDie.Add(a);
+                            AddEcho("AnotherDie", id);
+                            break;
+
                         case ("Action"):
                             card.Action.Add(a);
                             break;
-                        case ("InHand"):
-                            card.InHand.Add(a);
+                        case ("AnotherAction"):
+                            card.AnotherAction.Add(a);
+                            AddEcho("AnotherAction", id);
                             break;
+                        //case ("InHand"):
+                        //    card.InHand.Add(a);
+                        //    break;
                         case ("NextTurn"):
                             card.NextTurn.Add(a);
+
+                            if (simpleTrigger.TargetPalyer != "Enemy")
+                                AddEcho("NextTurn", id);
+                            if (simpleTrigger.TargetPalyer != "My")
+                                AddEcho("NextTurnElse", id);
+
                             break;
                     }
                 }
             }
-
-            // if()
-
         }
         public static void GenerateAction()
         {
+            gameSetting.PreAction = new List<SimpleTrigger>();
+            gameSetting.PostAction = new List<SimpleTrigger>();
+            gameSetting.PlayCard = new List<SimpleTrigger>();
+            gameSetting.PlayAnotherCard = new List<SimpleTrigger>();
+            gameSetting.Die = new List<SimpleTrigger>();
+            gameSetting.AnotherDie = new List<SimpleTrigger>();
             gameSetting.Action = new List<SimpleTrigger>();
-            gameSetting.InHand = new List<SimpleTrigger>();
+            gameSetting.AnotherAction = new List<SimpleTrigger>();
             gameSetting.NextTurn = new List<SimpleTrigger>();
+
             //for(int i =0;i< gameSetting.Rule.Count; i++)
             foreach (HeadSimpleTrigger head in gameSetting.Rule)
             {
@@ -84,14 +128,43 @@ namespace BattleTable
                 {
                     switch (simpleTrigger.Trigger)
                     {
+                        case ("PreAction"):
+                            simpleTrigger.CodName = gameSetting.PreAction.Count;
+                            gameSetting.PreAction.Add(simpleTrigger);
+                            break;
+                        case ("PostAction"):
+                            simpleTrigger.CodName = gameSetting.PostAction.Count;
+                            gameSetting.PostAction.Add(simpleTrigger);
+                            break;
+                        case ("PlayCard"):
+                            simpleTrigger.CodName = gameSetting.PlayCard.Count;
+                            gameSetting.PlayCard.Add(simpleTrigger);
+                            break;
+                        case ("PlayAnotherCard"):
+                            simpleTrigger.CodName = gameSetting.PlayAnotherCard.Count;
+                            gameSetting.PlayAnotherCard.Add(simpleTrigger);
+                            break;
+
+                        case ("Die"):
+                            simpleTrigger.CodName = gameSetting.Die.Count;
+                            gameSetting.Die.Add(simpleTrigger);
+                            break;
+                        case ("AnotherDie"):
+                            simpleTrigger.CodName = gameSetting.AnotherDie.Count;
+                            gameSetting.AnotherDie.Add(simpleTrigger);
+                            break;
+
                         case ("Action"):
                             simpleTrigger.CodName = gameSetting.Action.Count;
                             gameSetting.Action.Add(simpleTrigger);
                             break;
-                        case ("InHand"):
-                            simpleTrigger.CodName = gameSetting.InHand.Count;
-                            gameSetting.InHand.Add(simpleTrigger);
+                        case ("AnotherAction"):
+                            simpleTrigger.CodName = gameSetting.AnotherAction.Count;
+                            gameSetting.AnotherAction.Add(simpleTrigger);
                             break;
+                        //case ("InHand"):
+                        //    card.InHand.Add(a);
+                        //    break;
                         case ("NextTurn"):
                             simpleTrigger.CodName = gameSetting.NextTurn.Count;
                             gameSetting.NextTurn.Add(simpleTrigger);
@@ -108,6 +181,42 @@ namespace BattleTable
 
         }
 
+        public static void AddEcho(string str, int id)
+        {
+            int a = 0;
+            switch (str)
+            {
+                case ("PlayAnotherCard"):
+                    a = gameSetting.PlayAnotherCardBody.FindIndex(x => x == id);
+                    if (a != -1)
+                        gameSetting.PlayAnotherCardBody.Add(id);
+                    break;
+
+                case ("AnotherDie"):
+                    a = gameSetting.AnotherDieBody.FindIndex(x => x == id);
+                    if (a != -1)
+                        gameSetting.AnotherDieBody.Add(id);
+                    break;
+
+                case ("AnotherAction"):
+                    a = gameSetting.AnotherActionBody.FindIndex(x => x == id);
+                    if (a != -1)
+                        gameSetting.AnotherActionBody.Add(id);
+                    break;
+
+                case ("NextTurn"):
+                    a = gameSetting.NextTurnBody.FindIndex(x => x == id);
+                    if (a != -1)
+                        gameSetting.NextTurnBody.Add(id);
+                    break;
+                case ("NextTurnElse"):
+                    a = gameSetting.NextTurnBodyElse.FindIndex(x => x == id);
+                    if (a != -1)
+                        gameSetting.NextTurnBodyElse.Add(id);
+
+                    break;
+            }
+        }
 
         public static CardBase CardClone(CardBase card)
         {
@@ -148,15 +257,26 @@ namespace BattleTable
         }
         public static void CardCloneExtended(CardBase card1, CardBase card2)
         {
+            if(gameSetting.AllCard.Count != 0)
+                card2.Id = gameSetting.AllCard[ gameSetting.AllCard.Count-1 ].Id + 1;
+            gameSetting.AllCard.Add(card2);
+
             card2.PlayCard = new List<int>();
             card2.PlayAnotherCard = new List<int>();
 
             card2.Die = new List<int>();
+            card2.AnotherDie = new List<int>();
 
             card2.Action = new List<int>();
+            card2.AnotherAction = new List<int>();
 
-            card2.InHand = new List<int>();
+            card2.PreAction = new List<int>();
+            card2.PostAction = new List<int>();
+            //card.InHand;
             card2.NextTurn = new List<int>();
+
+            card2.Status = new List<string>();
+
 
             card2.WalkMood = card1.WalkMood;
             card2.Class = card1.Class;
@@ -164,10 +284,41 @@ namespace BattleTable
             card2.MyHiro = card1.MyHiro;
             card2.Tayp = card1.Tayp;
 
+            for (int i = 0; i < card1.Status.Count; i++)
+                card2.Status.Add(card1.Status[i]);
+
+
+            for (int i = 0; i < card1.PreAction.Count; i++)
+                card2.PreAction.Add(card1.PreAction[i]);
+
+            for (int i = 0; i < card1.PostAction.Count; i++)
+                card2.PostAction.Add(card1.PostAction[i]);
+
+
             for (int i = 0; i < card1.Action.Count; i++)
-            {
                 card2.Action.Add(card1.Action[i]);
-            }
+
+            for (int i = 0; i < card1.AnotherAction.Count; i++)
+                card2.AnotherAction.Add(card1.AnotherAction[i]);
+
+
+            for (int i = 0; i < card1.PlayCard.Count; i++)
+                card2.PlayCard.Add(card1.PlayCard[i]);
+
+            for (int i = 0; i < card1.PlayAnotherCard.Count; i++)
+                card2.PlayAnotherCard.Add(card1.PlayAnotherCard[i]);
+
+
+            for (int i = 0; i < card1.Die.Count; i++)
+                card2.Die.Add(card1.Die[i]);
+
+            for (int i = 0; i < card1.AnotherDie.Count; i++)
+                card2.AnotherDie.Add(card1.AnotherDie[i]);
+
+
+            for (int i = 0; i < card1.NextTurn.Count; i++)
+                card2.NextTurn.Add(card1.NextTurn[i]);
+
         }
 
         public static void CardClear(CardBase card)
@@ -276,9 +427,11 @@ namespace BattleTable
             action.MinPoint = int.Parse(sub[0]);
             action.MaxPoint = int.Parse(sub[1]);
             action.Action = sub[3];
-            action.Mood = sub[2];
+            action.Player = sub[2];
 
-            action.Num = int.Parse(sub[4]);
+
+            action.Mood = sub[4];
+       // action.Num = int.Parse(sub[4]);
 
             return action;
         }
@@ -333,18 +486,17 @@ namespace BattleTable
         }
         public static bool CallMood(Hiro hiro, CardBase card, string mood)
         {
+            Debug.Log(mood);
             switch (mood)
             {
                 case ("All"):
                     return true;
                     break;
                 case ("My"):
-                    if (hiro.Team == card.MyHiro.Team)
-                        return true;
+                    return hiro.Team == card.MyHiro.Team;
                     break;
                 case ("Enemy"):
-                    if (hiro.Team != card.MyHiro.Team)
-                        return true;
+                    return hiro.Team != card.MyHiro.Team;
                     break;
             }
             return false;
@@ -439,22 +591,31 @@ namespace BattleTable
             return false;
         }
 
-        public static bool UseRule(SimpleTrigger simpleTrigger, CardBase _card1, CardBase _card2)
+        public static bool UseRule(SimpleTrigger simpleTrigger, CardBase _card1, CardBase _card2, bool echo)
         {// HeadSimpleTrigger head
+
+            if (_card1 == null)
+            {
+                if (!CallMood(_card2.MyHiro, _card2, simpleTrigger.TargetPalyer))
+                    return false;
+            }
+            else if (_card2 == null)
+            {
+                if (!CallMood(_card1.MyHiro, _card1, simpleTrigger.TargetPalyer))
+                    return false;
+            }
+            else if (!CallMood(_card1.MyHiro, _card2, simpleTrigger.TargetPalyer))
+                return false;
+
             card1 = _card1;
             card2 = _card2;
+            //if (!CallMood(card1.myHiro, card, mood))
+            //return false;
             bool isUse = false;
-            //Записать ситуации когда, автомат не может сработать
-           // switch(simpleTrigger.)
-           // if (card1.Tayp)
-            //HeadSimpleTrigger head = gameSetting.Rule[a];
-            //if(card1)
 
             int noUse = CallSub(simpleTrigger.MinusPrior, simpleTrigger.CountMod);
             int use = CallSub(simpleTrigger.PlusPrior, simpleTrigger.CountMod);
 
-            //Debug.Log(noUse);
-            //Debug.Log(use);
             if (simpleTrigger.CountModExtend)
             {
                 int sum = use - noUse;
@@ -462,22 +623,16 @@ namespace BattleTable
                 foreach (SimpleAction action in simpleTrigger.Action)
                 {
                     if (action.MinPoint <= sum && action.MaxPoint >= sum)
-                        isUse = UseAction(action);
+                        isUse = UseAction(action, echo);
                 }
             }
             else if (use > noUse)
             {
                 foreach (SimpleAction action in simpleTrigger.Action)
                 {
-                   isUse = UseAction(action);
+                   isUse = UseAction(action,echo);
                 }
             }
-            //if (card1 != null)
-               // CardView.ViewCard(card1);
-            //if (card2 != null)
-               // CardView.ViewCard(card2);
-            //else
-              //  return false;
             return isUse;
         }
 
@@ -507,9 +662,10 @@ namespace BattleTable
         }
 
 
-        static bool UseAction(SimpleAction action)
+        static bool UseAction(SimpleAction action, bool echo)
         {
-            switch (action.Action)
+            string[] com = action.Action.Split('|');
+            switch (com[0])
             {
                 case ("InGround"):
 
@@ -518,54 +674,103 @@ namespace BattleTable
                 case ("Attack"):
                     if(card2 != null)
                     {
-                        MelleAction(action);
+                        switch (com[1])
+                        {
+                            case ("Shot"):
+                                MelleAction(action);
+                                break;
+                            case ("Melee"):
+                                MelleAction(action);
+                                if (card2.StatSizeLocal[0] > 0)
+                                //if (card2 != null)
+                                {
+                                    CardBase card3 = card1;
+                                    card1 = card2;
+                                    card2 = card3;
+                                    //MelleAction(action);
+                                }
+                                break;
+                        }
                         return true;
                     }
                    // Debug.Log(action.Action);
                     break;
-                case ("Shot"):
-                    if (card2 != null)
-                    {
-                        MelleAction(action);
-                        return true;
-                    }
 
                     break;
-                case ("AddStat"):
+                case ("Stat"):
                     if (card2 != null)
                     {
-                        MelleAction(action);
+                        switch (com[1])
+                        {
+                            case ("Add"):
+                                AddStat(action.Mood, action.ActionFull, card1, card2);
+                                break;
+                        }
+                        return true;
+                    }
+                    break;
+                case ("Status"):
+                    if (card2 != null)
+                    {
+                        switch (com[1])
+                        {
+                            case ("Add"):
+                                NewStatus(card2, action.ActionFull, true);
+                                break;
+                            case ("Remove"):
+                                NewStatus(card2, action.ActionFull, false);
+                                break;
+                        }
                         return true;
                     }
                     break;
 
                 case ("Die"):
-
-                    return true;
+                    if (card2 != null)
+                    {
+                        Create.Die(card2);
+                        return true;
+                    }
                     break;
 
                 case ("Effect"):
 
                     if (card2 != null)
                     {
-                        MelleAction(action);
+                        if(com[1] == "Eternal")
+                        switch (com[1])
+                        {
+                            case ("Add"):
+                                NewStatus(card2, action.ActionFull, true);
+                                break;
+                            case ("Remove"):
+                                NewStatus(card2, action.ActionFull, false);
+                                break;
+                        }
+
+
+                        // MelleAction(action);
                         return true;
                     }
                     break;
 
-                case ("EffectEternal"):
-
-                    if (card2 != null)
-                    {
-                        MelleAction(action);
-                        return true;
-                    }
-                    break;
                 default:
                     Debug.Log(action.Action);
                     break;
             }
             return false;
+        }
+
+        static void NewStatus(CardBase card, string str, bool add)
+        {
+            int a =  card.Status.FindIndex(x => x == str);
+            if(a != 0)
+            {
+                if (!add) 
+                    card.Status.RemoveAt(a);
+            }
+            else if (add)
+                card.Status.Add(str);
         }
 
         //static void UseEffect(string actionFull, CardBase local1, CardBase local2)
@@ -616,103 +821,93 @@ namespace BattleTable
         //    }
 
         //}
+        static void GetStat(Constant localStat, ref List<ConstantSub> stat)
+        {
+            foreach (ConstantSub actualStat in localStat.AntiConstant)
+            {
+                if (actualStat.Stat.Group)
+                {
+                    GetStat(actualStat.Stat, ref stat);
+                }
+                else
+                    stat.Add(actualStat);
+            }
+                //return stat;
+        }
 
         public static void MelleAction(SimpleAction action)
         {
             string[] com = action.ActionFull.Split('|');
             string[] com1 = com[2].Split('_');
 
-            List<Constant> stat = new List<Constant>();
-            List<int> statSize = new List<int>();
-            List<string> mood = new List<string>();
-            //int a = gameSetting.Library.Constants.FindIndex(x => x.Name == text);
-            //if (group.Group)
-            //{
-            //}
+            List<ConstantSub> stat = new List<ConstantSub>();
+
             int mod1 = FindInt(com[0]);
             int mod2 = FindInt(com[1]);
             if (mod2 != 0)
                 mod1 /= mod2;
 
-            string text = com1[1];
+            Constant group = gameSetting.Library.Constants.Find(x => x.Name == com1[1]);
+            GetStat(group, ref stat);
 
-            string actionFull = "";
-            int sum;
-            Constant group = gameSetting.Library.Constants.Find(x => x.Name == text);
-            if (group.Group)
-                for (int i = 0; i < group.AntiConstant.Count; i++)
-                {
-                    text = group.AntiConstant[i].Name;
-                    actionFull = $"{com1[0]}_{text}_{com1[2]}_{com1[3]}";
-                    sum = FindInt(actionFull);
 
-                    if (sum > 0)
-                    {
-                        stat.Add(gameSetting.Library.Constants.Find(x => x.Name == text));
-                        statSize.Add(mod1 * sum);
-                        mood.Add(group.moodEffect);
-                    }
-
-                }
-            else
+            string mood;
+            int a, b, sum;
+            foreach (ConstantSub localStat in stat)
             {
-                stat.Add(group);
-                 sum = FindInt(com[0]);
-                statSize.Add(mod1 * sum);
-                mood.Add(group.moodEffect);
-            }
+                sum = (int)( localStat.Size * mod1);
+                if (action.Mood != "Orig")
+                    mood = action.Mood;
+                else
+                    mood = localStat.MoodEffect;
 
 
-            int a, b;
-            for (int i = 0; i < stat.Count; i++)
-            {
-                foreach (Constant actualStats in stat[i].AntiConstant)
+                a = card2.Stat.FindIndex(x => x.Name == localStat.Stat.Name);
+                if (a != -1)
                 {
-                    a = card2.Stat.FindIndex(x => x.Name == actualStats.Name);
-                    if (a != -1)
+                    foreach (ConstantSub stats in localStat.Stat.GuardConstant)
                     {
-                        foreach (Constant stats in card2.Stat[i].GuardConstant)
+                        b = card2.Stat.FindIndex(x => x.Name == stats.Stat.Name);
+                        if (b != -1)
                         {
-                            b = card2.Stat.FindIndex(x => x.Name == stats.Name);
-                            if (b != -1)
+                            sum -= card2.StatSize[b];
+                            if (sum <= 0)
                             {
-                                statSize[i] -= card2.StatSize[b];
-                                if (statSize[i] <= 0)
-                                {
-                                    statSize[i] = 0;
-                                    break;
-                                }
+                                sum = 0;
+                                break;
                             }
                         }
+                    }
 
 
-                        switch (mood[i])
+
+                    switch (mood)
                         {
                             case ("All"):
-                                card2.StatSize[a] -= statSize[i];
-                                card2.StatSizeLocal[a] -= statSize[i];
+                                card2.StatSize[a] -= sum;
+                                card2.StatSizeLocal[a] -= sum;
                                 break;
                             case ("Max"):
-                                card2.StatSize[a] -= statSize[i];
+                                card2.StatSize[a] -= sum;
                                 break;
                             case ("Local"):
-                                card2.StatSizeLocal[a] -= statSize[i];
-                                break;
+                                card2.StatSizeLocal[a] -= sum;
+                            break;
                             case ("LocalForse"):
-                                card2.StatSizeLocal[a] -= statSize[i];
-                                break;
-
+                                card2.StatSizeLocal[a] -= sum;
+                            break;
                         }
-                        //Debug.Log(localCard2.StatSizeLocal[a]);
-                        //if(localCard2.StatSize[a] <=0)
-                        //RemoveStat(localCard2,a);
-                    }
+                  
+                    //Debug.Log(localCard2.StatSizeLocal[a]);
+                    //if(localCard2.StatSize[a] <=0)
+                    //RemoveStat(localCard2,a);
                 }
             }
-            // if (localCard2.StatSizeLocal <= 0)
-            //Die();
+            if (card2.StatSizeLocal[0] <= 0)
+                Create.Die(card2);
+            else
+                CardView.ViewCard(card2);
 
-            CardView.ViewCard(card2);
             //CardView.ViewCard(localCard2);
         }
 
@@ -777,7 +972,9 @@ namespace BattleTable
                 }
 
             }
+            CardView.ViewCard(card2);
         }
+
 
     }
 
@@ -786,6 +983,25 @@ namespace BattleTable
         public static GameSetting gameSetting;
         public static List<Hiro> hiro = new List<Hiro>();
         public static StolUi stolUi;
+
+        public static void Die(CardBase card)
+        {
+            Destroy(card.Body.gameObject);
+            for (int i = 0; i < card.Die.Count; i++)
+                HiroHead.AddCall(card, null, gameSetting.Die[card.Die[i]]);
+            HiroHead.EchoDie(card);
+            HiroHead.ClearEcho(card.Id);
+
+            int a = gameSetting.AllCard.FindIndex(x => x.Id == card.Id);
+            gameSetting.AllCard.RemoveAt(a);
+            //Hiro hiro = card.MyHiro;
+
+            //for (int i = 0; i < card2.Die.Count; i++)
+            //    HiroHead.AddCall(card2, null, gameSetting.Die[card2.Die[i]]);
+
+
+
+        }
 
         public static void CreateHiro(bool enemy)
         {
@@ -804,7 +1020,7 @@ namespace BattleTable
                 CardBase card = hiro.CardColod[hiro.CardHandFull[hiro.NextCard]];
                 CardBase newCard = Core.CardClone(card);
                 Core.CardCloneExtended(card, newCard);
-                hiro.CardHand.Add(newCard);
+                hiro.CardHand.Add(newCard.Id);
 
                 hiro.NextCard++;
                 CreateUiCard(newCard);
@@ -1029,6 +1245,7 @@ namespace BattleTable
             {
                 CardBase card = calls[0].Card1;
                 string mood = calls[0].Action.TargetPalyer;
+                //bool use = 
                 switch (card.Tayp)
                 {
                     case ("HandCreate"):
@@ -1038,13 +1255,21 @@ namespace BattleTable
                             card.Body.SetParent(myHiro.UiStol);
                             card.Tayp = "Create";
 
-                            foreach(int i in card.PlayCard)
+                            card.MyHiro.CardHand.Remove(card.Id);
+                            card.MyHiro.PlayColod.Add(card.Id);
+
+                            foreach (int i in card.PlayCard)
                             {
                                 AddCall(card, null, gameSetting.PlayCard[i]);
                             }
-                            //GameEventSystem.UseRule()
 
                             HiroUi(card.MyHiro);
+
+                            EchoPlayCard(card);
+
+                            //gameSetting.PlayAnotherCardBody.Add(card);
+
+
                             RemoveCall(true);
                             Reply();
                         }
@@ -1054,65 +1279,82 @@ namespace BattleTable
 
             }
         }
-        
+
+        static void EchoPlayCard(CardBase card)
+        {
+            foreach (int a in gameSetting.PlayAnotherCardBody)
+            {
+                CardBase cardLocal = gameSetting.AllCard[a];
+                foreach (int i in cardLocal.PlayAnotherCard)
+                    AddCall(cardLocal, card, gameSetting.PlayAnotherCard[i]);
+            }
+        }
+        static void EchoAction(CardBase card)
+        {
+            foreach (int a in gameSetting.AnotherActionBody)
+            {
+                CardBase cardLocal = gameSetting.AllCard[a];
+                foreach (int i in cardLocal.AnotherAction)
+                    AddCall(cardLocal, card, gameSetting.AnotherAction[i]);
+            }
+        }
+        public static void EchoDie(CardBase card)
+        {
+            foreach (int a in gameSetting.AnotherDieBody)
+            {
+                CardBase cardLocal = gameSetting.AllCard[a];
+                foreach (int i in cardLocal.AnotherDie)
+                    AddCall(cardLocal, card, gameSetting.AnotherDie[i]);
+            }
+        }
+        public static void EchoNextTurn(int team)
+        {
+            foreach (int a in gameSetting.NextTurnBody)
+            {
+                CardBase cardLocal = gameSetting.AllCard[a];
+                foreach (int i in cardLocal.AnotherDie)
+                    if (team == cardLocal.MyHiro.Team)
+                        AddCall(cardLocal, null, gameSetting.AnotherDie[i]);
+            }
+
+            foreach (int a in gameSetting.NextTurnBodyElse)
+            {
+                CardBase cardLocal = gameSetting.AllCard[a];
+                foreach (int i in cardLocal.AnotherDie)
+                    if (team != cardLocal.MyHiro.Team)
+                        AddCall(cardLocal, null, gameSetting.AnotherDie[i]);
+            }
+        }
+        public static void ClearEcho(int i)
+        {
+            gameSetting.PlayAnotherCardBody.Remove(i);
+            gameSetting.AnotherActionBody.Remove(i);
+            gameSetting.AnotherDieBody.Remove(i);
+            gameSetting.NextTurnBody.Remove(i);
+            gameSetting.NextTurnBodyElse.Remove(i);
+
+        }
+
         static void Reply()
         {
             if (calls.Count > 0)
             {
                 //calls[0].Card1.Body.localScale = new Vector3(.8f, .8f, .8f);
-                bool use = GameEventSystem.UseRule(calls[0].Action, calls[0].Card1, calls[0].Card2);
+                bool use = GameEventSystem.UseRule(calls[0].Action, calls[0].Card1, calls[0].Card2, false);
 
                 if (use)
                 {
+                    if (calls[0].Card2 == null)
+                        EchoAction(calls[0].Card1);
+                    //else if(calls.card1 == null)
+                    //    Exo(calls.card2);
+                    else
+                        EchoAction(calls[0].Card2);
+
                     RemoveCall(true);
                     if (calls.Count > 0)
                         Reply();
                 }
-                //bool use = false;
-                //CardBase firstCard = calls[0].Card1;
-                //string mood = calls[0].Mood; 
-                //if (card == null)
-                //    switch (calls[0].Text)//calls[0].Action
-                //    {
-                        
-                //        default:
-                //            Debug.Log(calls[0].Text);
-                //            break;
-                //    }
-                //else
-                //    switch (calls[0].Text)//calls[0].Action
-                //    {
-                //        case ("Attack"):
-                //            Debug.Log(CallMood(firstCard.MyHiro, card, mood));
-                //            if (CallMood(firstCard.MyHiro, card, mood))
-                //                GameEventSystem.MelleAction("",firstCard,card); 
-
-                //                break;
-                //        case ("Shot"):
-
-                //            break;
-                //        //case ("UseSlot"):
-                //        //    if (firstCard == null)
-                //        //    {
-                //        //        if (CallMood(hiro, card1, mood))
-                //        //        {
-                //        //            card1.MyHiro.ManaCurent -= card1.Mana;
-                //        //            Create.PlayCard(card1);
-                //        //        }
-                //        //    }
-                //        //    break;
-                //        default:
-                //            Debug.Log(calls[0].Text);
-                //            break;
-                //    }
-                
-
-                //if (use)
-                //{
-                //    calls.RemoveAt(0);
-                //    if (calls.Count > 0)
-                //        Reply(null);
-                //}
             }
 
         }
@@ -1219,6 +1461,8 @@ namespace BattleTable
             newHiro.ManaCurent = newHiro.Mana;
             Create.AddCardInHand(newHiro, 1);
 
+            EchoNextTurn(newHiro.Team);
+
             HiroUi(newHiro);
         }
        
@@ -1235,9 +1479,6 @@ namespace BattleTable
         public static GameSetting gameSetting;
         public static void ViewCard(CardBase card)
         {
-            // Transform trans = card.Body;
-            //Debug.Log(card);
-            //Debug.Log(card.Body);
             CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
 
             Texture2D texture = new Texture2D(100, 150);
@@ -1263,162 +1504,11 @@ namespace BattleTable
                 //Ui.Stat.text += $"{card.Stat[i].IconName} {card.StatSize[i]} ";
             }
 
-            //  Ui.Trait;
 
             Ui.Mana.text = "" + card.Mana;
 
-            //if(Ui.Count != null)
-            //        Ui.Count.text;
+
         }
 
-        //static void ViewSlot(RealCard newPosition, MeshRenderer mesh, string mood, int b, int team, RealCard curentCard, int line)
-        //{
-
-        //    mesh.material = gameSetting.TargetColor[0];
-        //    //int a - используется для указания на использование первой или второй линин позиции
-        //    if(newPosition != null)
-        //        switch (mood)
-        //        {
-        //            case ("ShotView"):
-        //                if (newPosition.Team == line)
-        //                    if (newPosition.MovePoint > 0)
-        //                        if (newPosition.ShotAction.Count > 0)
-        //                        {
-        //                            mesh.material = gameSetting.TargetColor[1];
-        //                        }
-        //                break;
-
-        //            case ("ShotTarget"):
-        //                if (newPosition.Team != line)
-        //                    //if (line == team)
-        //                        mesh.material = gameSetting.TargetColor[2];
-        //                else if (newPosition == curentCard)
-        //                    mesh.material = gameSetting.TargetColor[3];
-
-        //                break;
-
-        //            case ("MeleeView"):
-        //                if (newPosition.Team == line)
-        //                    if (newPosition.MovePoint > 0)
-        //                        if (newPosition.Action.Count > 0)
-        //                        {
-        //                            mesh.material = gameSetting.TargetColor[1];
-        //                        }
-        //                break;
-
-        //            case ("MeleeTarget"):
-        //                if (newPosition.Team != line)
-        //                {
-        //                   // if (line == team)
-        //                        if (b == 0)
-        //                            mesh.material = gameSetting.TargetColor[2];
-        //                }
-        //                else if (newPosition == curentCard)
-        //                    mesh.material = gameSetting.TargetColor[3];
-
-        //                break;
-
-        //            default:
-        //                break;
-        //        }
-        //    else
-        //        switch (mood)
-        //        {
-        //            case ("SetCard"):
-        //                if (line == team)
-        //                    if (b == 0)
-        //                    {
-        //                        mesh.material = gameSetting.TargetColor[1];
-        //                    }
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //}
-
-        //public static void ViewLoadUi(Hiro newHiro, string mood, RealCard curentCard, Transform[] slots, int line)
-        //{
-        //  //  Transform[] slots = null;
-        //    Slot[] hiroSlot = newHiro.Slots;
-
-        //    int team = newHiro.Team;
-        //    if(curentCard!= null)
-        //        team = curentCard.Team;
-        //    // Slot newSlot = null;
-
-        //    //if (newHiro.Team == 0)
-        //    //    slots = Ui.MySlot;
-        //    //else
-        //    //    slots = Ui.EnemySlot;
-
-        //    Slot newSlot = null;
-        //    RealCard newPosition = null;
-        //    MeshRenderer mesh = null;
-        //    int a = slots.Length;
-        //    int b = 0;
-        //    for (int i = 0; i < a; i++)
-        //    {
-        //        newSlot = hiroSlot[i];
-
-        //        b = 0;
-        //        ViewSlot(newSlot.Position[b], newSlot.Mesh[b], mood, b, team, curentCard, line);
-
-        //        b++;
-        //        ViewSlot(newSlot.Position[b], newSlot.Mesh[b], mood, b, team, curentCard, line);
-        //    }
-        //}
-
-        //public static void ViewTargetCard(CardBase cardBase, Transform Ui)
-        //{
-
-        //    Ui.gameObject.active = true;
-        //    Transform trans = cardBase.Body;
-        //    cardBase.Body = Ui;
-        //    ViewCard(cardBase);
-        //    cardBase.Body = trans;
-        //}
-
-        //static void ViewSlotHandler(int a, int b, TMP_Text text)
-        //{
-        //    if (a > 0)
-        //        text.text += $"<sprite name={gameSetting.NameIcon[b]}>{a} ";
-        //}
-        //public static void ViewSlotUi(RealCard card)
-        //{
-        //    TMP_Text text = card.Ui;
-        //    text.text = "";
-
-        //    int[] stat = new int[] 
-        //    { 
-        //        card.MeleeDMG,
-        //        card.ShotDMG,
-        //        card.NoArmorDMG,
-        //        card.ArmorBreakerDMG,
-
-        //        card.Hp,
-        //        card.Helmet,
-        //        card.Shild,
-        //        card.Armor,
-
-        //        card.Agility1,
-        //        card.Agility2,
-        //        card.Agility3,
-        //        card.Agility4
-        //    };
-
-        //    int a = stat.Length;
-        //    for (int i = 0; i < a; i++)
-        //    {
-        //        ViewSlotHandler(stat[i], i, text);
-        //    }
-
-
-
-
-        //}
-        //public static void ViewSlotClear(RealCard card)
-        //{
-        //    card.Ui.text = "";
-        //}
     }
 }

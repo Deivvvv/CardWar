@@ -17,11 +17,9 @@ MonoBehaviour:
   Icon: {fileID: 0}
   IconName: 
   Cost: 0
+  Regen: 0
   Group: 1
   CombineConstant: 0
+  MoodEffect: Orig
+  GuardConstant: []
   AntiConstant: []
-  TwinConstant:
-  - {fileID: 11400000, guid: 3b05ed8a6966f474f995033fa3a0cb19, type: 2}
-  - {fileID: 11400000, guid: 54a8662960c8a3f4d9583ee4b2112828, type: 2}
-  - {fileID: 11400000, guid: 065c84027d5bdfa498e6ccc0535fd02e, type: 2}
-  Effect: []

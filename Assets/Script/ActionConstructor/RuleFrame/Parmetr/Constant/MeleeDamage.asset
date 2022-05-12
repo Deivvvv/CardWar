@@ -17,11 +17,10 @@ MonoBehaviour:
   Icon: {fileID: -1034702292421729933, guid: 9a1e5d2af59607545afd327dc74a1180, type: 3}
   IconName: Dmg
   Cost: 1
+  Regen: 0
   Group: 0
-  CombineConstant: 0
-  moodEffect: Local
   GuardConstant: []
   AntiConstant:
-  - {fileID: 11400000, guid: 9401bb222c8ac8e4fb5112b929532f01, type: 2}
-  TwinConstant: []
-  Effect: []
+  - Stat: {fileID: 11400000, guid: 9401bb222c8ac8e4fb5112b929532f01, type: 2}
+    Size: 1
+    MoodEffect: Local

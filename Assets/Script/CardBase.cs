@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //[System.Serializable]
-public class CardBase 
+public class CardBase
 {
+    public int Id;
     public string Name;
 
     public Guild Guilds;
@@ -40,6 +41,7 @@ public class CardBase
     public Hiro MyHiro;
     public string Tayp = "HandCreate";
 
+
     public List<Effect> Effect;
     public List<Effect> InfinityEffect;
 
@@ -54,15 +56,18 @@ public class CardBase
     public List<int> PlayAnotherCard;
 
     public List<int> Die;
+    public List<int> AnotherDie;
 
     public List<int> Action;
+    public List<int> AnotherAction;
 
-    public List<int> InHand;// = new List<SimpleTrigger>();
-    public List<int> NextTurn;// = new List<SimpleTrigger>();
+    public List<int> InHand;
+    public List<int> NextTurn;
 
+    public List<int> PreAction;
+    public List<int> PostAction;
 
-    public bool Provacator;
-    public bool Fly;
+    public List<string> Status;
 }
 
 

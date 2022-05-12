@@ -14,35 +14,21 @@ public class Constant : ScriptableObject
 
     public bool Regen;//Это группа
     public bool Group;//Это группа
-    public bool CombineConstant;//создает параметр производную
 
-    public string moodEffect = "Local";
-    public List<Constant> GuardConstant;//свойства с отрицанием
-    public List<Constant> AntiConstant;//свойства с отрицанием
-    public List<Constant> TwinConstant;//своиства исколючения, в одной карте они не могут быть установленны
+   // public string MoodEffect = "Orig";
+    public List<ConstantSub> GuardConstant;//свойства с отрицанием
+    public List<ConstantSub> AntiConstant;//свойства с отрицанием
+    //public List<Constant> TwinConstant;//своиства исколючения, в одной карте они не могут быть установленны
 
-    public List<Effect1> Effect;
   
 
 }
 
 [System.Serializable]
-public class Effect1
+public class ConstantSub
 {
-    //public bool Use;
-    public string Text;
-    public int Id;
-    public int EffectStrnth;
-    public Effect2[] Form;
+    public Constant Stat;
+    public float Size =1;
+    public string MoodEffect = "Local";
 }
 
-[System.Serializable]
-public class Effect2
-{
-    public Effect Effects;
-    public Constant Constants;
-//    public string Action;
-    public Constant TargetConstant;
-    public int Int;
-    public bool Plus = true;
-}

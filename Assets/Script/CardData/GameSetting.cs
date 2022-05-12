@@ -7,23 +7,40 @@ using UnityEngine;
 public class GameSetting : ScriptableObject
 {
     public List<HeadSimpleTrigger> Rule;
+    public List<CardBase> AllCard;
 
 
     public List<SimpleTrigger> PlayCard;
+
     public List<SimpleTrigger> PlayAnotherCard;
-    public List<CardBase> PlayAnotherCardBody;
+    public List<int> PlayAnotherCardBody;
+
 
     public List<SimpleTrigger> Die;
+
     public List<SimpleTrigger> AnotherDie;
-    public List<CardBase> AnotherDieBody;
+    public List<int> AnotherDieBody;
+
 
     public List<SimpleTrigger> Action;
+
     public List<SimpleTrigger> AnotherAction;
-    public List<CardBase> AnotherActionBody;
+    public List<int> AnotherActionBody;
 
 
     public List<SimpleTrigger> InHand;
+
     public List<SimpleTrigger> NextTurn;
+    public List<int> NextTurnBody;
+    public List<int> NextTurnBodyElse;
+
+    public List<SimpleTrigger> PreAction;
+    public List<int> PreActionBody;
+
+    public List<SimpleTrigger> PostAction;
+    public List<int> PostActionBody;
+
+
     //public List<HeadSimpleTrigger> DefRule;
     //public List<string> DefRuleText;
 

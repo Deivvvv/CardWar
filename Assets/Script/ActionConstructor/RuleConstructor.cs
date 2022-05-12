@@ -43,7 +43,6 @@ public class RuleConstructor : MonoBehaviour
             Debug.Log("Open link -1");
             return;
         }
-        Ui.MouseIndicator.position = new Vector3(1300, Input.mousePosition.y, 0);
         //  TMP_LinkInfo linkInfo = textMessage.textInfo.linkInfo[linkIndex];
         //  string selectedLink = linkInfo.GetLinkID();
         TMP_LinkInfo linkInfo = TT.textInfo.linkInfo[linkIndex];
@@ -116,12 +115,22 @@ public class RuleConstructor : MonoBehaviour
         return ruleForm;
     }
 
+    void NewFormAction(ref RuleAction action)
+    {
+        switch (action.Action)
+        {
+            case (""):
+                break;
+        }
+    }
+
     void AddAction(int a)
     {
         TriggerAction triggerAction = head.TriggerActions[a];
         RuleAction action = new RuleAction();
         int b = triggerAction.Action.Count;
-        action.Action = SwitchRuleText(0, "Effects");
+        action.Action = SwitchRuleText(0, "Action");
+        //NewFormAction(ref action);
         action.Core.Add(AddRuleForm());
         action.Core.Add(AddRuleForm());
         action.Core.Add(AddRuleForm());
@@ -325,9 +334,49 @@ public class RuleConstructor : MonoBehaviour
         return text;
     }
 
+    string RuleFarmeSupportExtend(RuleForm ruleForm, string headText, string headTextExtend)
+    {
+        string colorText = "#F4FF04";
+        string text = "";
+
+        string linkText = headText + $"Switch{headTextExtend}NextCard";
+        string textData = $"\n-{ frame.CardString[ruleForm.Card]}";
+
+        text += LinkSupport(colorText, linkText, textData);
+        if(ruleForm.Card != 0)
+        {
+            linkText = headText + $"Selector{headTextExtend}StatTayp";
+            textData = $" - {ruleForm.StatTayp}";
+
+            text += LinkSupport(colorText, linkText, textData);
+
+
+            linkText = headText + $"Selector{headTextExtend}SetStat|{ruleForm.StatTayp}";
+            textData = $" - {ruleForm.Stat}";
+
+            text += LinkSupport(colorText, linkText, textData);
+
+            if(ruleForm.StatTayp == "stat")
+            {
+                linkText = headText + $"Text{headTextExtend}Mod";
+                textData = $" - {ruleForm.Mod}";
+
+                text += LinkSupport(colorText, linkText, textData);
+
+            }
+        }
+
+
+
+        linkText = headText + $"Text{headTextExtend}Num";
+        textData = $" - {ruleForm.Num}";
+
+        text += LinkSupport(colorText, linkText, textData);
+        return text;
+    }
+
     void CreateIfText( int a, int b, bool plus) 
     {
-        Debug.Log(a);
         string linkText = "";
         string colorText = "#F4FF04";
 
@@ -396,7 +445,7 @@ public class RuleConstructor : MonoBehaviour
 
         text1 += LinkSupport(colorText, linkText, text2);
 
-        linkText = headText + $"Selector{headTextExtend}Effects";//all only
+        linkText = headText + $"Selector{headTextExtend}Action";//all only
         text2 = $"\n-Действие { action.Action}";
 
         text1 += LinkSupport(colorText, linkText, text2);
@@ -412,10 +461,10 @@ public class RuleConstructor : MonoBehaviour
         {
             text1 += RuleFarmeSupport(action.Core[i], headText, headTextExtend+$"{i}_");
         }
-        linkText = headText +"Text"+ headTextExtend + "Num";
-        text2 = $"\n - {action.Num}";
+        //linkText = headText +"Text"+ headTextExtend + "Num";
+        //text2 = $"\n - {action.Num}";
 
-        text1 += LinkSupport(colorText, linkText, text2);
+        //text1 += LinkSupport(colorText, linkText, text2);
 
 
         action.RootText = text1;
@@ -444,8 +493,11 @@ public class RuleConstructor : MonoBehaviour
             case ("Stat"):
                 str = library.Constants[a].Name;
                 break;
-            case ("Effects"):
-                str = library.Effects[a].Name;
+            case ("Status"):
+                str = frame.Status[a];
+                break;
+            case ("Action"):
+                str = frame.Action[a];
                 break;
             case ("Group"):
                 str = library.CivilianGroups[a].Name;
@@ -505,9 +557,12 @@ public class RuleConstructor : MonoBehaviour
             case ("Stat"):
                 Ui.SelectorMainConstants.active = true;
                 break;
+            case ("Status"):
+                Ui.SelectorMainStatus.active = true;
+                break;
 
-            case ("Effects"):
-                Ui.SelectorMainEffects.active = true;
+            case ("Action"):
+                Ui.SelectorMainAction.active = true;
                 break;
             case ("Tag"):
                 Ui.SelectorMainTag.active = true;
@@ -536,7 +591,8 @@ public class RuleConstructor : MonoBehaviour
         Ui.SelectorMainLegion.active = false;
         Ui.SelectorMainCivilianGroups.active = false;
         Ui.SelectorMainConstants.active = false;
-        Ui.SelectorMainEffects.active = false;
+        Ui.SelectorMainAction.active = false;
+        Ui.SelectorMainStatus.active = false;
     }
 
     //RuleForm
@@ -559,7 +615,10 @@ public class RuleConstructor : MonoBehaviour
                 ruleForm.StatTayp = frame.StatTayp[a];
                 break;
             case ("Stat"):
-                Debug.Log(ruleForm.StatTayp);
+                //Debug.Log(ruleForm.StatTayp);
+                ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
+                break;
+            case ("Status"):
                 ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
                 break;
             case ("Mod"):
@@ -606,7 +665,7 @@ public class RuleConstructor : MonoBehaviour
         switch (text)
         {
             case ("Num"):
-                action.Num = a;
+                //action.Num = a;
                 break;
             case ("MaxPoint"):
                 action.MaxPoint = a;
@@ -917,7 +976,7 @@ public class RuleConstructor : MonoBehaviour
                                                // break;
 
                                             case ("Num"):
-                                                text = "" + ruleAction.Num;
+                                            //    text = "" + ruleAction.Num;
                                                 break;
                                             case ("MinPoint"):
                                                 text = "" + ruleAction.MinPoint;
@@ -1175,8 +1234,8 @@ public class RuleConstructor : MonoBehaviour
                 a = library.Constants.Count;
                 break;
 
-            case ("Effects"):
-                a = library.Effects.Count;
+            case ("Action"):
+                a = frame.Action.Length;
                 break;
             case ("Rule"):
                 a = RuleName.Count;
@@ -1210,9 +1269,9 @@ public class RuleConstructor : MonoBehaviour
                     GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Constants[i].Name;
                     break;
 
-                case ("Effects"):
-                    GO.transform.SetParent(Ui.SelectorEffects);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Effects[i].Name;
+                case ("Action"):
+                    GO.transform.SetParent(Ui.SelectorAction);
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.Action[i];
                     break;
                 case ("Rule"):
                     GO.transform.SetParent(Ui.SelectorAltRule);
@@ -1235,7 +1294,7 @@ public class RuleConstructor : MonoBehaviour
         Ui.NewRuleButton.onClick.AddListener(() => NewRule());
 
         GameObject GO = null;
-        string[] text = frame.StatTayp;// new string[] { "Legion", "CivilianGroups", "Constants", "Effects","Rule", "StatTayp" };
+        string[] text = frame.StatTayp;
         string mainText = "";
         for (int i = 0; i < text.Length; i++)
         {
@@ -1264,9 +1323,9 @@ public class RuleConstructor : MonoBehaviour
                     Ui.SelectorConstants = GO.transform.GetChild(0).GetChild(0);
                     break;
 
-                case ("Effects"):
-                    Ui.SelectorMainEffects = GO;
-                    Ui.SelectorEffects = GO.transform.GetChild(0).GetChild(0);
+                case ("Action"):
+                    Ui.SelectorMainAction = GO;
+                    Ui.SelectorAction = GO.transform.GetChild(0).GetChild(0);
                     break;
                 case ("Rule"):
                     Ui.SelectorMainAltRule = GO;
@@ -1276,6 +1335,11 @@ public class RuleConstructor : MonoBehaviour
                     Ui.SelectorMainTag = GO;
                     Ui.SelectorTag= GO.transform.GetChild(0).GetChild(0);
                     break;
+                case ("Status"):
+                    Ui.SelectorMainStatus = GO;
+                    Ui.SelectorStatus = GO.transform.GetChild(0).GetChild(0);
+                    break;
+
                 default:
                     Debug.Log(mainText);
                     break;
@@ -1529,7 +1593,7 @@ public class RuleAction
     public int ActionMood;//
     public string Action;//
     public List<RuleForm> Core = new List<RuleForm>();
-    public int Num;
+    //public int Num;
 
     public int ForseMood;//
 

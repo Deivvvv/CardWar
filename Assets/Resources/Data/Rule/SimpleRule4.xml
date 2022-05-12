@@ -4,6 +4,6 @@
   <HeadEnemyRule></HeadEnemyRule>
   <Trigger0PlusAction></Trigger0PlusAction>
   <Trigger0MinusAction></Trigger0MinusAction>
-  <Trigger0Action>0_0_Enemy_Attack_0_Local*Card1:Stat_MeleeDamage_1_0|Null:Null_Null_1_0|Card2:Stat_MeleeDamage_2_0</Trigger0Action>
-  <TriggerHead>My_PlayAnotherCard_False_False</TriggerHead>
+  <Trigger0Action>0_0_Enemy_Attack_Local*Card1:Stat_MeleeDamage_1_0|Null:Null_Null_1_0|Card2:Stat_MeleeDamage_2_0</Trigger0Action>
+  <TriggerHead>My_PostAction_False_False</TriggerHead>
 </root>

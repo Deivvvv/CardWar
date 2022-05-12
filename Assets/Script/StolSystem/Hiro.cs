@@ -19,9 +19,9 @@ public class Hiro
     public List<CardBase> CardColod = new List<CardBase>();
     public List<int> CardHandFull = new List<int>();
 
-    public List<CardBase> CardHand = new List<CardBase>();
+    public List<int> CardHand = new List<int>();
 
-    public List<CardBase> PlayColod = new List<CardBase>();
+    public List<int> PlayColod = new List<int>();
 
     //StatHiroSystem
     public int ManaMax = 10;

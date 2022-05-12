@@ -40,12 +40,13 @@ public class SimpleTrigger
 public class SimpleAction
 {
     public string Action;
-    public string Mood;
+    public string Player;
     public string ActionFull;
     public int MinPoint;
     public int MaxPoint;
 
-    public int Num;
+    public string Mood;
+    // public int Num;
 }
 //[System.Serializable]
 public class SimpleIfCore

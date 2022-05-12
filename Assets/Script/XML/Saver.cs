@@ -397,7 +397,7 @@ string someString = Encoding.ASCII.GetString(bytes);
             root.Add(new XElement($"{text}Point", $"{ifAction.MinPoint}|{ifAction.MaxPoint}"));
             root.Add(new XElement($"{text}ActionMood", ifAction.ActionMood));
             root.Add(new XElement($"{text}Action", ifAction.Action));
-            root.Add(new XElement($"{text}Num", ifAction.Num));
+           // root.Add(new XElement($"{text}Num", ifAction.Num));
             root.Add(new XElement($"{text}ForseMood", ifAction.ForseMood));
 
             root.Add(new XElement($"{text}CoreCount", ifAction.Core.Count));
@@ -440,7 +440,7 @@ string someString = Encoding.ASCII.GetString(bytes);
 
             ifAction.ActionMood = int.Parse(root.Element($"{ text}ActionMood").Value);
             ifAction.Action = root.Element($"{ text}Action").Value;
-            ifAction.Num = int.Parse(root.Element($"{ text}Num").Value);
+           // ifAction.Num = int.Parse(root.Element($"{ text}Num").Value);
             ifAction.ForseMood = int.Parse(root.Element($"{ text}ForseMood").Value);
             
             int a = int.Parse(root.Element($"{ text}CoreCount").Value); 
@@ -476,7 +476,7 @@ string someString = Encoding.ASCII.GetString(bytes);
                 + "_" + ifAction.MaxPoint
                 + "_" + frame.PlayerString[ifAction.ActionMood]
                 + "_" + ifAction.Action
-                + "_" + ifAction.Num
+              //  + "_" + ifAction.Num
                 + "_" + frame.ForseTayp[ifAction.ForseMood]
                 + "*";
 

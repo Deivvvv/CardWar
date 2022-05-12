@@ -17,8 +17,10 @@ MonoBehaviour:
   Icon: {fileID: 8802722911165090788, guid: 9a1e5d2af59607545afd327dc74a1180, type: 3}
   IconName: Hp
   Cost: 1
+  Regen: 0
   Group: 0
-  CombineConstant: 0
+  GuardConstant:
+  - Stat: {fileID: 11400000, guid: 3b05ed8a6966f474f995033fa3a0cb19, type: 2}
+    Size: 1
+    MoodEffect: Local
   AntiConstant: []
-  TwinConstant: []
-  Effect: []
