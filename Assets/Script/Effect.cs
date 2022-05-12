@@ -7,7 +7,11 @@ public class Effect : ScriptableObject
     public int Turn;
     public int Power;
     public int Prioritet;
+
     public string EffectGroup;
     public string Mood;//All-Max-Local
+
     public CardBase Target;
+
+    public string Com;
 }

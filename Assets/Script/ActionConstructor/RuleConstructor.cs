@@ -115,11 +115,32 @@ public class RuleConstructor : MonoBehaviour
         return ruleForm;
     }
 
+    void AddCore(ref RuleAction action, int a)
+    {
+        for(int i =0; i< a;i++)
+            action.Core.Add(AddRuleForm());
+    }
+
     void NewFormAction(ref RuleAction action)
     {
-        switch (action.Action)
+        action.Core = new List<RuleForm>();
+        string[] com = action.Action.Split('|');
+        switch (com[0])
         {
-            case (""):
+            case ("Attack"):
+                AddCore(ref action, 3);
+                break;
+            case ("Stat"):
+                AddCore(ref action, 3);
+                break;
+            case ("Status"):
+                AddCore(ref action, 1);
+                break;
+            case ("Effect"):
+                if(com[1] == "Eternal")
+                    AddCore(ref action, 5);
+                else
+                    AddCore(ref action, 7);
                 break;
         }
     }
@@ -130,10 +151,7 @@ public class RuleConstructor : MonoBehaviour
         RuleAction action = new RuleAction();
         int b = triggerAction.Action.Count;
         action.Action = SwitchRuleText(0, "Action");
-        //NewFormAction(ref action);
-        action.Core.Add(AddRuleForm());
-        action.Core.Add(AddRuleForm());
-        action.Core.Add(AddRuleForm());
+        NewFormAction(ref action);
 
         triggerAction.Action.Add(action);
         CreateActionText(a,b);
@@ -304,33 +322,35 @@ public class RuleConstructor : MonoBehaviour
         string text = "";
 
         string linkText = headText + $"Switch{headTextExtend}NextCard";
-        string textData = $"\n-{ frame.CardString[ruleForm.Card]}";
+        string textData = $"{ frame.CardString[ruleForm.Card]}";
 
         text += LinkSupport(colorText, linkText, textData);
 
+        if (frame.CardString[ruleForm.Card] != "Null")
+        {
+            linkText = headText + $"Selector{headTextExtend}StatTayp";
+            textData = $" - {ruleForm.StatTayp}";
 
-        linkText = headText + $"Selector{headTextExtend}StatTayp";
-        textData = $" - {ruleForm.StatTayp}";
-
-        text += LinkSupport(colorText, linkText, textData);
-
-
-        linkText = headText + $"Selector{headTextExtend}SetStat|{ruleForm.StatTayp}";
-        textData = $" - {ruleForm.Stat}";
-
-        text += LinkSupport(colorText, linkText, textData);
+            text += LinkSupport(colorText, linkText, textData);
 
 
-        linkText = headText + $"Text{headTextExtend}Mod";
-        textData = $" - {ruleForm.Mod}";
+            linkText = headText + $"Selector{headTextExtend}SetStat|{ruleForm.StatTayp}";
+            textData = $" - {ruleForm.Stat}";
 
-        text += LinkSupport(colorText, linkText, textData);
+            text += LinkSupport(colorText, linkText, textData);
 
 
-        linkText = headText + $"Text{headTextExtend}Num";
-        textData = $" - {ruleForm.Num}";
+            linkText = headText + $"Text{headTextExtend}Mod";
+            textData = $" - {ruleForm.Mod}";
 
-        text += LinkSupport(colorText, linkText, textData);
+            text += LinkSupport(colorText, linkText, textData);
+
+
+            linkText = headText + $"Text{headTextExtend}Num";
+            textData = $" - {ruleForm.Num}";
+
+            text += LinkSupport(colorText, linkText, textData);
+        }
         return text;
     }
 
@@ -397,19 +417,31 @@ public class RuleConstructor : MonoBehaviour
 
 
         linkText = headText + $"Text{headTextExtend}Point";
-        text2 = $"\n-Очки { action.Point}";
+        text2 = $"  -Очки { action.Point}";// text2 = $"\n-Очки { action.Point}";
 
         text1 += LinkSupport(colorText, linkText, text2);
 
 
-        linkText = headText + $"Switch{headTextExtend}Result";
-        text2 = $"\n-Ожидаемый результат {SwitchRuleText(action.Result, "Equal")}";
+        //linkText = headText + $"Switch{headTextExtend}Result";
+        //text2 = $"\n-Ожидаемый результат {SwitchRuleText(action.Result, "Equal")}";
 
-        text1 += LinkSupport(colorText, linkText, text2);
-        
+        //text1 += LinkSupport(colorText, linkText, text2);
+
+        text1 += "\n";
         // RuleForm ruleForm = null;
         for (int i = 0; i < action.Core.Count; i++)
         {
+            if (i % 2 > 0)
+            {
+                linkText = headText + $"Switch{headTextExtend}Result";
+                text2 = $"  {SwitchRuleText(action.Result, "Equal")}  ";
+
+                text1 += LinkSupport(colorText, linkText, text2);
+            }
+            //if (i % 2 > 0)
+            //    text1 += " / ";
+            //else
+            //    text1 += "\n";
             text1 += RuleFarmeSupport(action.Core[i], headText, headTextExtend + $"{i}_");
         }
         action.Text = text1;
@@ -433,11 +465,11 @@ public class RuleConstructor : MonoBehaviour
         //public int MinPoint;
         //public int MaxPoint;
         linkText = headText + $"Text{headTextExtend}MinPoint";
-        text2 = $"\n - Стоймость мин { action.MinPoint}";
+        text2 = $"\n- Стоймость мин { action.MinPoint}";
         text1 += LinkSupport(colorText, linkText, text2);
         
         linkText = headText + $"Text{headTextExtend}MaxPoint";
-        text2 = $"\n - Стоймость мах {action.MaxPoint}";
+        text2 = $"  - мах {action.MaxPoint}";
         text1 += LinkSupport(colorText, linkText, text2);
 
         linkText = headText + $"Switch{headTextExtend}ActionMood";
@@ -459,6 +491,12 @@ public class RuleConstructor : MonoBehaviour
         // RuleForm ruleForm = null;
         for (int i=0; i < action.Core.Count; i++)
         {
+            if (i % 2 > 0)
+                text1 += " / ";
+            else
+                text1 += "\n";
+
+
             text1 += RuleFarmeSupport(action.Core[i], headText, headTextExtend+$"{i}_");
         }
         //linkText = headText +"Text"+ headTextExtend + "Num";
@@ -1243,6 +1281,10 @@ public class RuleConstructor : MonoBehaviour
             case ("Tag"):
                 a = frame.Tag.Length;
                 break;
+            case ("Status"):
+                a = frame.Status.Length;
+                break;
+                
         }
 
         for (int i = 0; i < a; i++)
@@ -1281,6 +1323,11 @@ public class RuleConstructor : MonoBehaviour
                     GO.transform.SetParent(Ui.SelectorTag);
                     GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.Tag[i];
                     break;
+                case ("Status"):
+                    GO.transform.SetParent(Ui.SelectorStatus);
+                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.Status[i];
+                    break;
+                    
             }
             ButtonSelector(text, i, GO.GetComponent<Button>());
         }
@@ -1392,10 +1439,12 @@ public class RuleConstructor : MonoBehaviour
             int i1 = int.Parse(com[0]);
             int i2 = int.Parse(com[2]);
             TriggerAction triggerAction = head.TriggerActions[i1];
-            Debug.Log(com.Length);
+            //Debug.Log(com.Length);
             if (com.Length == 4)
             {
-                triggerAction.Action[i2].Action = SwitchRuleText(a, text);
+                RuleAction action = triggerAction.Action[i2];
+                action.Action = SwitchRuleText(a, text);
+                NewFormAction(ref action);
                 //SetIntRuleForm(triggerAction.Action[i2], text, a);
                 CreateActionText(i1, i2);
                 TriggerActionText(i1);

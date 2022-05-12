@@ -677,10 +677,10 @@ namespace BattleTable
                         switch (com[1])
                         {
                             case ("Shot"):
-                                MelleAction(action);
+                                MelleAction(ref action);
                                 break;
                             case ("Melee"):
-                                MelleAction(action);
+                                MelleAction(ref action);
                                 if (card2.StatSizeLocal[0] > 0)
                                 //if (card2 != null)
                                 {
@@ -703,7 +703,7 @@ namespace BattleTable
                         switch (com[1])
                         {
                             case ("Add"):
-                                AddStat(action.Mood, action.ActionFull, card1, card2);
+                                AddStat(action);
                                 break;
                         }
                         return true;
@@ -737,14 +737,19 @@ namespace BattleTable
 
                     if (card2 != null)
                     {
-                        if(com[1] == "Eternal")
-                        switch (com[1])
+                        string mood;
+                        bool eternal = (com[1] == "Eternal");
+                        mood = (eternal) ? com[2] : com[1];
+
+
+                        switch (mood)
                         {
                             case ("Add"):
-                                NewStatus(card2, action.ActionFull, true);
+                                UseEffect(action, eternal);
                                 break;
                             case ("Remove"):
-                                NewStatus(card2, action.ActionFull, false);
+                                //RemoveEffect
+                                // UseEffect(action.ActionFull, eternal);
                                 break;
                         }
 
@@ -773,54 +778,34 @@ namespace BattleTable
                 card.Status.Add(str);
         }
 
-        //static void UseEffect(string actionFull, CardBase local1, CardBase local2)
-        //{
-        //    string[] com = actionFull.Split('/');
-        //    string[] com1 = com[0].Split('|');
+        static void UseEffect(SimpleAction action, bool eternal)
+        {
+            Effect effect = new Effect();
+            int a = 0;
+            string[] com = action.ActionFull.Split('|');
+            if (eternal)
+            {
+                card2.InfinityEffect.Add(effect);
+            }
+            else
+            {
+                card2.Effect.Add(effect);
+                effect.Turn = FindInt(com[a]) / FindInt(com[a + 1]);
+                a += 2;
+            }
 
-        //    switch (com1[0])
-        //    {
-        //        case ("AddStat"):
-        //            AddStat("Local", com[1], local1, local2);//All-Max-Local
-        //            break;
+            effect.Power = FindInt(com[a]) / FindInt(com[a + 1]);
+            a += 2;
 
-        //        case ("AddEffect"):
+            effect.Prioritet = FindInt(com[a]) / FindInt(com[a + 1]);
+            a += 2;
 
-        //            Effect newEffect = new Effect();
-        //            newEffect.Name = com1[1];
+            effect.Target = card2;
 
-        //            if (com1[2] == "Eternal")
-        //            {
-        //                local2.InfinityEffect.Add(newEffect);
-        //            }
-        //            else
-        //            {
-        //                local2.Effect.Add(newEffect);
-        //                com1 = com[1].Split('|');
-        //                newEffect.Turn = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
-        //            }
+            effect.Com = com[a];
+        }
 
-        //            com1 = com[2].Split('|');
-        //            newEffect.Power = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
 
-        //            com1 = com[3].Split('|');
-        //            newEffect.Prioritet = FindInt(com1[0], local1) / int.Parse(com1[1]) + int.Parse(com1[2]);
-
-        //            newEffect.Target = local2;
-        //            break;
-
-        //        case ("Die"):
-        //            //Die(local2);
-        //            break;
-        //        case ("Guard"):
-        //            local2.Guard.Add(local1);
-        //            break;
-        //            //case ("Support"):
-        //            //    local2.Support.Add(local1);
-        //            //    break;
-        //    }
-
-        //}
         static void GetStat(Constant localStat, ref List<ConstantSub> stat)
         {
             foreach (ConstantSub actualStat in localStat.AntiConstant)
@@ -835,7 +820,7 @@ namespace BattleTable
                 //return stat;
         }
 
-        public static void MelleAction(SimpleAction action)
+        public static void MelleAction(ref SimpleAction action)
         {
             string[] com = action.ActionFull.Split('|');
             string[] com1 = com[2].Split('_');
@@ -911,9 +896,9 @@ namespace BattleTable
             //CardView.ViewCard(localCard2);
         }
 
-        public static void AddStat(string mood, string actionFull, CardBase localCard1, CardBase localCard2)
+        public static void AddStat(SimpleAction action)
         {
-            string[] com = actionFull.Split('|');
+            string[] com = action.ActionFull.Split('|');
 
             CardBase local3 = GetCard(com[4]);
 
@@ -927,11 +912,11 @@ namespace BattleTable
             int a = local3.Stat.FindIndex(x => x.Name == text);
             if (a == -1)
             {
-                if (mood != "Local")
+                if (action.Mood != "Local")
                 {
                     a = gameSetting.Library.Constants.FindIndex(x => x.Name == text);
                     local3.Stat.Add(gameSetting.Library.Constants[a]);
-                    switch (mood)
+                    switch (action.Mood)
                     {
                         case ("All"):
                             local3.StatSize.Add(sum);
@@ -951,7 +936,7 @@ namespace BattleTable
             }
             else
             {
-                switch (mood)
+                switch (action.Mood)
                 {
                     case ("All"):
                         local3.StatSize[a] += sum;
