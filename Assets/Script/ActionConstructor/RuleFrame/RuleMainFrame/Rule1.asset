@@ -71,3 +71,4 @@ MonoBehaviour:
   - Effect|Add
   - Effect|Remove
   - Stat|Add
+  - UseRule

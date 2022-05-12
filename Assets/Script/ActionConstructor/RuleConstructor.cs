@@ -340,16 +340,20 @@ public class RuleConstructor : MonoBehaviour
             text += LinkSupport(colorText, linkText, textData);
 
 
-            linkText = headText + $"Text{headTextExtend}Mod";
-            textData = $" - {ruleForm.Mod}";
+            if(ruleForm.StatTayp == "Stat")
+            {
+                linkText = headText + $"Text{headTextExtend}Mod";
+                textData = $" - {ruleForm.Mod}";
 
-            text += LinkSupport(colorText, linkText, textData);
+                text += LinkSupport(colorText, linkText, textData);
 
 
-            linkText = headText + $"Text{headTextExtend}Num";
-            textData = $" - {ruleForm.Num}";
+                linkText = headText + $"Text{headTextExtend}Num";
+                textData = $" - {ruleForm.Num}";
 
-            text += LinkSupport(colorText, linkText, textData);
+                text += LinkSupport(colorText, linkText, textData);
+            }
+
         }
         return text;
     }
@@ -534,6 +538,9 @@ public class RuleConstructor : MonoBehaviour
             case ("Status"):
                 str = frame.Status[a];
                 break;
+            case ("Tag"):
+                str = frame.Tag[a];
+                break;
             case ("Action"):
                 str = frame.Action[a];
                 break;
@@ -610,6 +617,9 @@ public class RuleConstructor : MonoBehaviour
             // //   LoadSelector();
             //  //  Ui.SelectorsMain[5].active = true;
             //    break;
+            case ("Rule"):
+                Ui.SelectorMainAltRule.active = true;
+                break;
             case ("NeedRule"):
                 Ui.SelectorMainAltRule.active = true;
                 break;
@@ -659,6 +669,9 @@ public class RuleConstructor : MonoBehaviour
             case ("Status"):
                 ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
                 break;
+            case ("Rule"):
+                ruleForm.Stat = RuleName[a];// SwitchRuleText(a, ruleForm.StatTayp);
+                break;
             case ("Mod"):
                 if(a!=0)
                     ruleForm.Mod = a;
@@ -671,6 +684,9 @@ public class RuleConstructor : MonoBehaviour
                 break;
             case ("Card"):
                 ruleForm.Card = a;
+                break;
+            case ("Tag"):
+                ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
                 break;
             default:
                 Debug.Log(text);
