@@ -67,9 +67,16 @@ MonoBehaviour:
   - Die
   - Status|Add
   - Status|Remove
+  - Effect|Eternal|All|Add
+  - Effect|Eterna|All|Remove
   - Effect|Eternal|Add
   - Effect|Eternal|Remove
+  - Effect|All|Add
+  - Effect|All|Remove
   - Effect|Add
   - Effect|Remove
   - Stat|Add
   - UseRule
+  - UseAction
+  - Iniciativa|Plus
+  - Iniciativa|Minus
