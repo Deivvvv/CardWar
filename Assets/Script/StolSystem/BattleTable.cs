@@ -320,6 +320,10 @@ namespace BattleTable
                 card2.NextTurn.Add(card1.NextTurn[i]);
 
         }
+        //public static void BuildNewBody(CardBase card1, CardBase card2)
+        //{
+
+        //}
 
         public static void CardClear(CardBase card)
         {
@@ -674,23 +678,37 @@ namespace BattleTable
                 case ("Attack"):
                     if(card2 != null)
                     {
+                        CardBase card3 = card1, card4 = card2;
+
+                        if(!echo)
+                            for (int i = 0; i < card1.PreAction.Count; i++)
+                                UseRule(gameSetting.PreAction[card3.PreAction[i]],card3,card4,true);
+
+                        card1 = card3; card2 = card4;
+
+                        MelleAction(ref action);
+
+                        //card1 = card3; card2 = card4;
+
                         switch (com[1])
                         {
                             case ("Shot"):
-                                MelleAction(ref action);
                                 break;
                             case ("Melee"):
-                                MelleAction(ref action);
                                 if (card2.StatSizeLocal[0] > 0)
                                 //if (card2 != null)
                                 {
-                                    CardBase card3 = card1;
+                                   // CardBase card3 = card1;
                                     card1 = card2;
                                     card2 = card3;
                                     //MelleAction(action);
                                 }
                                 break;
                         }
+                        if (!echo)
+                            for (int i = 0; i < card1.PostAction.Count; i++)
+                                UseRule(gameSetting.PostAction[card3.PreAction[i]], card3, card4, true);
+
                         return true;
                     }
                    // Debug.Log(action.Action);
@@ -804,7 +822,20 @@ namespace BattleTable
 
             effect.Com = com[a];
         }
+        static void Regen(CardBase card)
+        {
+            for(int i =0;i < card.Stat.Count; i++)
+                if (card.Stat[i].Regen)
+                    card.StatSizeLocal[i] = card.StatSize[i];
 
+            //for (int i = 0; i < card.Effect.Count; i++)
+            //HiroHead.AddCall()
+            //UseRule()
+
+            //for (int i = 0; i < card.EffectEternal.Count; i++)
+
+
+        }
 
         static void GetStat(Constant localStat, ref List<ConstantSub> stat)
         {
@@ -946,9 +977,12 @@ namespace BattleTable
                         local3.StatSize[a] += sum;
                         break;
                     case ("Local"):
-                        local3.StatSizeLocal[a] += sum;
-                        if (local3.StatSizeLocal[a] > local3.StatSize[a])
-                            local3.StatSizeLocal[a] = local3.StatSize[a];
+                        if (local3.StatSizeLocal[a] < local3.StatSize[a])
+                        {
+                            local3.StatSizeLocal[a] += sum;
+                            if (local3.StatSizeLocal[a] > local3.StatSize[a])
+                                local3.StatSizeLocal[a] = local3.StatSize[a];
+                        }
                         break;
                     case ("LocalForse"):
                         local3.StatSizeLocal[a] += sum;
@@ -973,7 +1007,7 @@ namespace BattleTable
         {
             Destroy(card.Body.gameObject);
             for (int i = 0; i < card.Die.Count; i++)
-                HiroHead.AddCall(card, null, gameSetting.Die[card.Die[i]]);
+                HiroHead.AddCall(card, null, gameSetting.Die[card.Die[i]],false);
             HiroHead.EchoDie(card);
             HiroHead.ClearEcho(card.Id);
 
@@ -1162,8 +1196,6 @@ namespace BattleTable
 
         static void CreateUiCard(CardBase card)
         {
-            //Debug.Log(card);
-            //Debug.Log(card.MyHiro);
             Transform myHand = (card.MyHiro.Team == 0) ? stolUi.MyHand : stolUi.EnemyHand;
 
             GameObject GO = Instantiate(stolUi.OrigCard);
@@ -1215,7 +1247,7 @@ namespace BattleTable
                     case ("HandCreate"):
                         if (card.MyHiro.ManaCurent >= card.Mana)
                         {
-                            AddCall(card, null, card.WalkMood.SimpleTriggers[0]);
+                            AddCall(card, null, card.WalkMood.SimpleTriggers[0], false);
                         }
                         //TacticList(CardBase card);
                         break;
@@ -1245,7 +1277,7 @@ namespace BattleTable
 
                             foreach (int i in card.PlayCard)
                             {
-                                AddCall(card, null, gameSetting.PlayCard[i]);
+                                AddCall(card, null, gameSetting.PlayCard[i], false);
                             }
 
                             HiroUi(card.MyHiro);
@@ -1271,7 +1303,7 @@ namespace BattleTable
             {
                 CardBase cardLocal = gameSetting.AllCard[a];
                 foreach (int i in cardLocal.PlayAnotherCard)
-                    AddCall(cardLocal, card, gameSetting.PlayAnotherCard[i]);
+                    AddCall(cardLocal, card, gameSetting.PlayAnotherCard[i], true);
             }
         }
         static void EchoAction(CardBase card)
@@ -1280,7 +1312,7 @@ namespace BattleTable
             {
                 CardBase cardLocal = gameSetting.AllCard[a];
                 foreach (int i in cardLocal.AnotherAction)
-                    AddCall(cardLocal, card, gameSetting.AnotherAction[i]);
+                    AddCall(cardLocal, card, gameSetting.AnotherAction[i], true);
             }
         }
         public static void EchoDie(CardBase card)
@@ -1289,7 +1321,7 @@ namespace BattleTable
             {
                 CardBase cardLocal = gameSetting.AllCard[a];
                 foreach (int i in cardLocal.AnotherDie)
-                    AddCall(cardLocal, card, gameSetting.AnotherDie[i]);
+                    AddCall(cardLocal, card, gameSetting.AnotherDie[i], true);
             }
         }
         public static void EchoNextTurn(int team)
@@ -1299,7 +1331,7 @@ namespace BattleTable
                 CardBase cardLocal = gameSetting.AllCard[a];
                 foreach (int i in cardLocal.AnotherDie)
                     if (team == cardLocal.MyHiro.Team)
-                        AddCall(cardLocal, null, gameSetting.AnotherDie[i]);
+                        AddCall(cardLocal, null, gameSetting.AnotherDie[i], true);
             }
 
             foreach (int a in gameSetting.NextTurnBodyElse)
@@ -1307,7 +1339,7 @@ namespace BattleTable
                 CardBase cardLocal = gameSetting.AllCard[a];
                 foreach (int i in cardLocal.AnotherDie)
                     if (team != cardLocal.MyHiro.Team)
-                        AddCall(cardLocal, null, gameSetting.AnotherDie[i]);
+                        AddCall(cardLocal, null, gameSetting.AnotherDie[i], true);
             }
         }
         public static void ClearEcho(int i)
@@ -1325,16 +1357,17 @@ namespace BattleTable
             if (calls.Count > 0)
             {
                 //calls[0].Card1.Body.localScale = new Vector3(.8f, .8f, .8f);
-                bool use = GameEventSystem.UseRule(calls[0].Action, calls[0].Card1, calls[0].Card2, false);
+                bool use = GameEventSystem.UseRule(calls[0].Action, calls[0].Card1, calls[0].Card2, calls[0].Echo);
 
                 if (use)
                 {
-                    if (calls[0].Card2 == null)
-                        EchoAction(calls[0].Card1);
-                    //else if(calls.card1 == null)
-                    //    Exo(calls.card2);
-                    else
-                        EchoAction(calls[0].Card2);
+                    if (!calls[0].Echo)
+                    {
+                        if (calls[0].Card2 == null)
+                            EchoAction(calls[0].Card1);
+                        else
+                            EchoAction(calls[0].Card2);
+                    }
 
                     RemoveCall(true);
                     if (calls.Count > 0)
@@ -1357,7 +1390,7 @@ namespace BattleTable
 
         static void TacticList(CardBase card)
         {
-            AddCall(card, null, null);
+            AddCall(card, null, null, false);
             stolUi.TacticCase.gameObject.active = true;
             foreach (Transform child in stolUi.TacticCase)
             {
@@ -1414,7 +1447,7 @@ namespace BattleTable
             // PlayCard(ca
         }
         #endregion
-        public static void AddCall (CardBase card1, CardBase card2, SimpleTrigger action)
+        public static void AddCall (CardBase card1, CardBase card2, SimpleTrigger action, bool Echo)
         {
         
             SubString call = new SubString();
@@ -1426,6 +1459,7 @@ namespace BattleTable
             call.Card1 = card1;
             call.Card2 = card2;
             call.Action = action;
+            call.Echo = Echo;
 
 
 

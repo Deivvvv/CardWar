@@ -1652,6 +1652,7 @@ public class RuleForm
 [System.Serializable]
 public class RuleAction
 {
+    public string Name;
     public int MinPoint;
     public int MaxPoint;
 

@@ -568,7 +568,23 @@ string someString = Encoding.ASCII.GetString(bytes);
                     b1 = triggerAction.Action.Count;
                     for (int i1 = 0; i1 < b1; i1++)
                     {
-                        text += SaveRuleActionSimple(triggerAction.Action[i1]);
+
+                        if(triggerAction.Action[i1].Action == "ActionFlash")
+                        {   
+                            a = triggerAction.Action[i1].Core.Count-1;
+                            triggerAction.Action[i1].Action = "PreAction";
+                            text += SaveRuleActionSimple(triggerAction.Action[i1]);
+
+                            triggerAction.Action[i1].Core[a].Mod = -triggerAction.Action[i1].Core[a].Mod;
+                            triggerAction.Action[i1].Action = "PostAction";
+                            text += SaveRuleActionSimple(triggerAction.Action[i1]);
+
+                            triggerAction.Action[i1].Core[a].Mod = -triggerAction.Action[i1].Core[a].Mod;
+                            triggerAction.Action[i1].Action = "ActionFlash";
+                        }
+                        else
+                            text += SaveRuleActionSimple(triggerAction.Action[i1]);
+
                         if (i1 + 1 != b1)
                             text += "/";
                     }

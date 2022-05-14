@@ -13,4 +13,5 @@ public class SubString : MonoBehaviour
     public CardBase Card1;
     public CardBase Card2;
     public SimpleTrigger Action;
+    public bool Echo = false;
 }

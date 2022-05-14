@@ -66,6 +66,7 @@ public class CardBase
 
     public List<int> PreAction;
     public List<int> PostAction;
+    public List<int> ActionFlash;
 
     public List<string> Status;
 }

@@ -35,10 +35,7 @@ public class GameSetting : ScriptableObject
     public List<int> NextTurnBodyElse;
 
     public List<SimpleTrigger> PreAction;
-    public List<int> PreActionBody;
-
     public List<SimpleTrigger> PostAction;
-    public List<int> PostActionBody;
 
 
     //public List<HeadSimpleTrigger> DefRule;
