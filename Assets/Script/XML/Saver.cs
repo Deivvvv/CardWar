@@ -306,15 +306,29 @@ string someString = Encoding.ASCII.GetString(bytes);
             if (path != "")
             {
                 XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
-
-                int b = int.Parse(root.Element("RuleCount").Value);
-
-                List<string> text = new List<string>();
-                for(int i = 0; i < b; i++)
+                
+                string str = root.Element("RuleTag").Value;
+                string[] com = str.Split('_');
+                List<SubRuleHead> text = new List<SubRuleHead>();
+                SubRuleHead subRule = null;
+                for (int i =0; i < com.Length; i++)
                 {
-                    text.Add(root.Element($"RuleName{i}").Value);
+                    subRule = new SubRuleHead();
+
+                    str = root.Element($"RuleName{i}").Value;
+                    string[] com1 = str.Split('_');
+
+                    subRule.Name = com[i];
+                    subRule.Rule = new List<string>();
+
+                    foreach( string str1 in com1)
+                        subRule.Rule.Add(str1);
+
+
+                    text.Add(subRule);
                 }
-               library.RuleName = text;
+
+                library.Rule = text;
             }
         }
         public static void SaveMainRule( ActionLibrary library)
@@ -323,15 +337,30 @@ string someString = Encoding.ASCII.GetString(bytes);
             if (path != "")
             {
                 XElement root = new XElement("root");
+                string str;
+                string strMain = "";
 
-                int b = library.RuleName.Count;
+                //root.Add(new XElement($"RuleSize", library.Rule.Count));
 
-                root.Add(new XElement("RuleCount", b));
-
-                for(int i = 0; i < b; i++)
+                for (int i =0;i< library.Rule.Count;i++)
                 {
-                    root.Add(new XElement($"RuleName{i}", library.RuleName[i]));
+                    strMain += library.Rule[i].Name;
+                    str = "";
+
+                    for (int i1 = 0; i1 < library.Rule[i].Rule.Count; i1++)
+                    {
+                        str += library.Rule[i].Rule[i1];
+                        if(i1+1 < library.Rule[i].Rule.Count)
+                            str += "_";
+
+                    }
+                    root.Add(new XElement($"RuleName{i}", str));
+
+                    if (i + 1 < library.Rule.Count)
+                        str += "_";
                 }
+
+                root.Add(new XElement($"RuleTag", strMain));
 
 
                 XDocument saveDoc = new XDocument(root);
@@ -394,6 +423,7 @@ string someString = Encoding.ASCII.GetString(bytes);
         private static XElement SaveRuleAction(RuleAction ifAction, XElement root, string text)
         {
             RuleForm ifCore = null;
+            root.Add(new XElement($"{text}Name", $"{ifAction.Name}"));
             root.Add(new XElement($"{text}Point", $"{ifAction.MinPoint}|{ifAction.MaxPoint}"));
             root.Add(new XElement($"{text}ActionMood", ifAction.ActionMood));
             root.Add(new XElement($"{text}Action", ifAction.Action));
@@ -431,6 +461,9 @@ string someString = Encoding.ASCII.GetString(bytes);
         private static RuleAction LoadRuleAction(XElement root, string text)
         {
             RuleAction ifAction = new RuleAction();
+
+
+            ifAction.Name = root.Element($"{ text}Name").Value;
 
             string str = root.Element($"{ text}Point").Value;
             string[] subs = str.Split('|');
@@ -643,7 +676,7 @@ string someString = Encoding.ASCII.GetString(bytes);
 
         public static void SaveRule(HeadRule head, int a)
         {
-            string path = Application.dataPath + $"/Resources/Data/Rule/Rule{a}"; ;
+            string path = Application.dataPath + $"/Resources/Data/Rule/{head.Tag}_{a}"; ;
             if (path != "")
             {
                 XElement root = new XElement("root");
@@ -739,10 +772,10 @@ string someString = Encoding.ASCII.GetString(bytes);
             }
         }
 
-        public static HeadRule LoadRule(int a)
+        public static HeadRule LoadRule(string tag, int a)
         {
             HeadRule head = null;
-            string path = Application.dataPath + $"/Resources/Data/Rule/Rule{a}";
+            string path = Application.dataPath + $"/Resources/Data/Rule/{tag}_{a}";
             if (path != "")
             {
 

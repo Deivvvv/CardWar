@@ -1,0 +1,25 @@
+<root>
+  <HeadName>World</HeadName>
+  <HeadCost>0</HeadCost>
+  <HeadNameText>Благочестие</HeadNameText>
+  <Tag>Null</Tag>
+  <HeadCostExtend>0</HeadCostExtend>
+  <HeadLevelCap>0</HeadLevelCap>
+  <HeadPlayer>false</HeadPlayer>
+  <HeadNeedRuleCount>0</HeadNeedRuleCount>
+  <HeadEnemyRuleCount>0</HeadEnemyRuleCount>
+  <TriggerActionCount>1</TriggerActionCount>
+  <TargetPalyer0>0</TargetPalyer0>
+  <Trigger0>0</Trigger0>
+  <CountMod0>false</CountMod0>
+  <CountModExtend0>false</CountModExtend0>
+  <PlusActionCount0>1</PlusActionCount0>
+  <Trigger0PlusAction0Result>0</Trigger0PlusAction0Result>
+  <Trigger0PlusAction0Prioritet>10</Trigger0PlusAction0Prioritet>
+  <Trigger0PlusAction0Point>10</Trigger0PlusAction0Point>
+  <Trigger0PlusAction0CoreCount>2</Trigger0PlusAction0CoreCount>
+  <Trigger0PlusAction0Core0>1_Tag_Walk_1_0</Trigger0PlusAction0Core0>
+  <Trigger0PlusAction0Core1>1_Null_Null_1_0</Trigger0PlusAction0Core1>
+  <MinusActionCount0>0</MinusActionCount0>
+  <ActionCount0>0</ActionCount0>
+</root>

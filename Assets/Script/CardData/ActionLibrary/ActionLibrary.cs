@@ -13,6 +13,6 @@ public class ActionLibrary : ScriptableObject
     public List<Constant> Constants;
     //public List<Effect> Effects;
 
-    public List<string> RuleName;
-    
+    public List<SubRuleHead> Rule;
+
 }

@@ -842,9 +842,9 @@ public class CardConstructor : MonoBehaviour
          расширенный метод, для исключеняи лишних - недоступных компонентов
          
          */
-        for(int i =0; i < gameSetting.Library.RuleName.Count; i++)
+        for(int i =0; i < gameSetting.Library.Rule.Count; i++)
         {
-            ruleList.Add(gameSetting.Library.RuleName[i]);
+            ruleList.Add(gameSetting.Library.Rule[i].Name);
         }
 
         int a = Ui.RuleSelector.childCount;

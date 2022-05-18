@@ -24,7 +24,7 @@ namespace BattleTable
         {
             gameSetting.Rule = new List<HeadSimpleTrigger>();
             gameSetting.AllCard = new List<CardBase>();
-            for (int i = 0; i < gameSetting.Library.RuleName.Count; i++)
+            for (int i = 0; i < gameSetting.Library.Rule.Count; i++)
                 gameSetting.Rule.Add(Core.ReadRule(i));
 
             //int a = 0;

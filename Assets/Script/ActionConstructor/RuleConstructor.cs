@@ -23,8 +23,14 @@ public class RuleConstructor : MonoBehaviour
     [SerializeField]
     private Color[] colors;
 
+    private string defColor = "green";
 
+    private int curentRule = -1;
+    private string oldTag;
 
+    private string ruleLable;
+    private string comLable;
+    private string actionLable;
     private string allText;
     private string mainText;
     //private string plusText;
@@ -34,18 +40,40 @@ public class RuleConstructor : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI TT;
+    [SerializeField]
+    private TextMeshProUGUI TT1;
+    [SerializeField]
+    private TextMeshProUGUI TT2;
 
     void PointerClick()
     {
+        bool extend = false;
         int linkIndex = TMP_TextUtilities.FindIntersectingLink(TT, Input.mousePosition, Camera.main);
+        TMP_LinkInfo linkInfo = new TMP_LinkInfo();
+
         if (linkIndex == -1)
         {
-            Debug.Log("Open link -1");
-            return;
+            linkIndex = TMP_TextUtilities.FindIntersectingLink(TT1, Input.mousePosition, Camera.main);
+            if (linkIndex == -1)
+            {
+                linkIndex = TMP_TextUtilities.FindIntersectingLink(TT2, Input.mousePosition, Camera.main);
+                if (linkIndex == -1)
+                {
+                    Debug.Log("Open link -1");
+                    return;
+                }
+                else
+                    linkInfo = TT2.textInfo.linkInfo[linkIndex];
+            }
+            else
+                linkInfo = TT1.textInfo.linkInfo[linkIndex];
         }
-        //  TMP_LinkInfo linkInfo = textMessage.textInfo.linkInfo[linkIndex];
-        //  string selectedLink = linkInfo.GetLinkID();
-        TMP_LinkInfo linkInfo = TT.textInfo.linkInfo[linkIndex];
+        else
+            linkInfo = TT.textInfo.linkInfo[linkIndex];
+
+
+       // TMP_LinkInfo linkInfo = (!extend) ? TT.textInfo.linkInfo[linkIndex] : TT1.textInfo.linkInfo[linkIndex];
+
         string selectedLink = linkInfo.GetLinkID();
         Debug.Log("Open link " + selectedLink);
         DeCoder(selectedLink);
@@ -220,10 +248,8 @@ public class RuleConstructor : MonoBehaviour
     void AddTrigger()
     {
         TriggerAction triggerAction = new TriggerAction();
-        //triggerAction.Id =-1;
-       // triggerAction.Mood = 0;// Mood[0];//All. Shot. Melee
-        triggerAction.TargetPalyer = 0;//TargetPalyer[0];//All. My. Enemy
-        triggerAction.Trigger = 0;//TargetTime[0];//Action. Start Turn. End Turn. PreAction. PostAction. PlayCard. DeadCard. DeadAnotherCard. PlayAnotherCard. PostDeadTurn(свойства с кладбища)
+        triggerAction.TargetPalyer = 0;
+        triggerAction.Trigger = 0;
 
         triggerAction.PlusAction = new List<IfAction>();
         triggerAction.MinusAction = new List<IfAction>();
@@ -466,8 +492,10 @@ public class RuleConstructor : MonoBehaviour
         RuleAction action = triggerAction.Action[b];
 
 
-        //public int MinPoint;
-        //public int MaxPoint;
+        linkText = headText + $"Text{headTextExtend}Name";
+        text2 = $"\n- Имя { action.Name}";
+        text1 += LinkSupport(colorText, linkText, text2);
+
         linkText = headText + $"Text{headTextExtend}MinPoint";
         text2 = $"\n- Стоймость мин { action.MinPoint}";
         text1 += LinkSupport(colorText, linkText, text2);
@@ -583,65 +611,6 @@ public class RuleConstructor : MonoBehaviour
         Ui.TextInput.text = text;
     }
 
-    void OpenSelector(string text)
-    {
-        HideSelector();
-        switch (text)
-        {
-            case ("StatTayp"):
-                Ui.SelectorMainStatTayp.active = true;
-                break;
-            case ("Legion"):
-                Ui.SelectorMainLegion.active = true;
-                break;
-
-            case ("CivilianGroups"):
-                Ui.SelectorMainCivilianGroups.active = true;
-                break;
-
-            case ("Stat"):
-                Ui.SelectorMainConstants.active = true;
-                break;
-            case ("Status"):
-                Ui.SelectorMainStatus.active = true;
-                break;
-
-            case ("Action"):
-                Ui.SelectorMainAction.active = true;
-                break;
-            case ("Tag"):
-                Ui.SelectorMainTag.active = true;
-                break;
-
-            //case ("Select"):
-            // //   LoadSelector();
-            //  //  Ui.SelectorsMain[5].active = true;
-            //    break;
-            case ("Rule"):
-                Ui.SelectorMainAltRule.active = true;
-                break;
-            case ("NeedRule"):
-                Ui.SelectorMainAltRule.active = true;
-                break;
-            case ("EnemyRule"):
-                Ui.SelectorMainAltRule.active = true;
-                break;
-            default:
-                Debug.Log(text);
-                break;
-        }
-    }
-    void HideSelector()
-    { 
-        Ui.SelectorMainTag.active = false;
-        Ui.SelectorMainStatTayp.active = false;
-        Ui.SelectorMainAltRule.active = false;
-        Ui.SelectorMainLegion.active = false;
-        Ui.SelectorMainCivilianGroups.active = false;
-        Ui.SelectorMainConstants.active = false;
-        Ui.SelectorMainAction.active = false;
-        Ui.SelectorMainStatus.active = false;
-    }
 
     //RuleForm
     void SetIntRuleForm(RuleForm ruleForm, string text, int a)
@@ -670,7 +639,9 @@ public class RuleConstructor : MonoBehaviour
                 ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
                 break;
             case ("Rule"):
-                ruleForm.Stat = RuleName[a];// SwitchRuleText(a, ruleForm.StatTayp);
+                int b = a / 1000;
+                a = a % 1000;
+                ruleForm.Stat = library.Rule[b].Name+ "_"+ library.Rule[b].Rule[a];// SwitchRuleText(a, ruleForm.StatTayp);
                 break;
             case ("Mod"):
                 if(a!=0)
@@ -694,11 +665,7 @@ public class RuleConstructor : MonoBehaviour
         }
     }
     void SetIntIfAction(IfAction action, string text, int a)
-    {/*
-       public int Prioritet;
-    public int Point;
-      
-      */
+    {
         switch (text)
         {
             //action.Num = a;
@@ -775,15 +742,92 @@ public class RuleConstructor : MonoBehaviour
     void DeCoder(string cod)
     {
         string[] com = cod.Split('_');
+        string[] com1 = null;
         string text = com[1];
+
+        int a = 0;
         switch (com[0])
         {
+            case ("Select"):
+                com1 = stringMood.Split('_');
+                switch (text)
+                {
+                    case ("Rule"):
+                        switch (com1[0])
+                        {
+                            case ("Tag"):
+                                head.Tag = text;//frame.Tag[a];
+                                break;
+                            case ("NeedRule"):
+                                head.NeedRule.Add(text);
+                                break;
+                            case ("EnemyRule"):
+                                head.EnemyRule.Add(text);
+                                break;
+                        }
+
+                        LoadMainText();
+                        break;
+                    default:
+                        a = int.Parse(com[2]);
+                        string text1 = com1[1];
+                        int i1 = int.Parse(com1[0]);
+                        int i2 = int.Parse(com1[2]);
+                        TriggerAction triggerAction = head.TriggerActions[i1];
+                        if (com1.Length == 4)
+                        {
+                            RuleAction action = triggerAction.Action[i2];
+                            action.Action = SwitchRuleText(a, text);
+                            NewFormAction(ref action);
+                            CreateActionText(i1, i2);
+                            TriggerActionText(i1);
+                        }
+                        else
+                        {
+                            int i = int.Parse(com1[3]);
+                            if (text1 != "Action")
+                            {
+                                bool plus = ("Plus" == text1);
+                                IfAction ifAction = (plus) ? triggerAction.PlusAction[i2] : triggerAction.MinusAction[i2];
+
+                                SetIntRuleForm(ifAction.Core[i], text, a);
+                                CreateIfText(i1, i2, plus);
+                                TriggerIfText(i1, plus);
+                            }
+                            else
+                            {
+                                SetIntRuleForm(triggerAction.Action[i2].Core[i], text, a);
+
+                                CreateActionText(i1, i2);
+                                TriggerActionText(i1);
+                            }
+                        }
+                        TriggerRootText(i1);
+                        break;
+                }
+                ComandClear();
+                LoadAllText();
+                break;
+
+            case ("Save"):
+                CreateRule();
+                //SaveRule(curentRule);
+                break;
+            case ("SaveAll"):
+                break;
+            case ("Zip"):
+                SaveRuleSample(curentRule);
+                break;
+            case ("ZipAll"):
+                SaveRuleSampleAll();
+                break;
+
             case ("Tag"):
-                OpenSelector(text);
+                GenerateComand(text);
                 stringMood = text;
                 break;
             case ("MainAdd"):
-                OpenSelector(text);
+                GenerateComand(text);
                 stringMood = com[1];
                 break;
             case ("MainRemove"):
@@ -836,10 +880,29 @@ public class RuleConstructor : MonoBehaviour
                         LoadMainText();
                         LoadAllText();
                         break;
+                    case ("Tag"):
+                        if (com[2] == "-1")
+                            ReturnTag();
+                        else
+                            SwitchTag(int.Parse(com[2]));
+                       // SwitchTag(int.Parse(cod[2]));
+                        break;
+                    case ("LoadRule"):
+                        LoadRule(com[2], int.Parse( com[3]));
+                        break;
+                    case ("NewRule"):
+                        curentRule = -1;
+                        //LoadRule(cod[2]);
+                        break;
+                        //$"Switch_Tag_-1", "Back\n");
+                        //for (int i = 0; i < library.Rule[a].Rule.Count; i++)
+                        //{
+                        //    ruleLable += LinkSupport(defColor, $"Switch_LoadRule_{i}",
+
                 }
                 break;
             case ("Trigger"):
-                int a = int.Parse(text);
+                a = int.Parse(text);
                 if (a != null)
                 {
                     int b = 0;
@@ -1038,6 +1101,9 @@ public class RuleConstructor : MonoBehaviour
                                             case ("MaxPoint"):
                                                 text = "" + ruleAction.MaxPoint;
                                                 break;
+                                            case ("Name"):
+                                                text = "" + ruleAction.Name;
+                                                break;
                                             default:
                                                 Debug.Log(com[5]);
                                                 break;
@@ -1048,11 +1114,6 @@ public class RuleConstructor : MonoBehaviour
                                         IfAction ifAction = (com[3] == "Plus") ? triggerAction.PlusAction[b] : triggerAction.MinusAction[b];
                                         switch (com[5])
                                         {
-                                            /*
-                                             public int Prioritet;
-    public int Point;
-                                             
-                                             */
                                             case ("Prioritet"):
                                                 text = "" + ifAction.Prioritet;
                                                 break;
@@ -1081,17 +1142,19 @@ public class RuleConstructor : MonoBehaviour
                             Debug.Log(cod);
                             if (com.Length == 7)
                             {
-                                string[] com1 = com[6].Split('|');
+                                com1 = com[6].Split('|');
                                 if (com1.Length == 1)
-                                    OpenSelector(com[6]);
+                                    GenerateComand(com[6]);// OpenSelector(com[6]);
                                 else
                                 {
-                                    OpenSelector(com1[1]);
+                                    GenerateComand(com1[1]);
+                                    //OpenSelector(com1[1]);
                                     stringMood = $"{a}_{com[3]}_{com[4]}_{com[5]}_{com1[0]}";
                                 }
                             }
                             else
-                                OpenSelector(com[5]);
+                                GenerateComand(com[5]);
+                            ///OpenSelector(com[5]);
                             break;
                     }
                 }
@@ -1150,75 +1213,81 @@ public class RuleConstructor : MonoBehaviour
                 //  string text1 = com[1];
                 int a = int.Parse(com[0]);
                 TriggerAction triggerAction = head.TriggerActions[a];
-                i = int.Parse(text);
-                if (i != null)
+
+                if (com[3] == "Name")
                 {
-                    if (com.Length > 1)
+                    int i1 = int.Parse(com[2]);
+                    triggerAction.Action[i1].Name = text;
+                    CreateActionText(a, i1);
+                    TriggerActionText(a);
+                    TriggerRootText(a);
+                }
+                else 
+                { 
+                    i = int.Parse(text);
+                    if (i != null)
                     {
-                        text = com[1];
-                        int i1 = int.Parse(com[2]);
-                        if (com.Length > 4)
+                        if (com.Length > 1)
                         {
-                            int b1 = int.Parse(com[3]);
-                            //int b2 = int.Parse(com[4]);
-                            if (text == "Action")
+                            text = com[1];
+                            int i1 = int.Parse(com[2]);
+                            if (com.Length > 4)
                             {
-                                SetIntRuleForm(triggerAction.Action[i1].Core[b1], com[4], i);
-                                //RuleAction action = triggerAction.Action[i1];
-                                //switch (com[4])
-                                //{
-                                //    case ("Mod"):
-                                //        action.Core[b1].Mod = i;
-                                //        break;
-                                //    case ("Num"):
-                                //        action.Core[b1].Num = i;
-                                //        break;
-                                //}
+                                int b1 = int.Parse(com[3]);
+                                //int b2 = int.Parse(com[4]);
+                                if (text == "Action")
+                                {
+                                    SetIntRuleForm(triggerAction.Action[i1].Core[b1], com[4], i);
+                                    //RuleAction action = triggerAction.Action[i1];
+                                    //switch (com[4])
+                                    //{
+                                    //    case ("Mod"):
+                                    //        action.Core[b1].Mod = i;
+                                    //        break;
+                                    //    case ("Num"):
+                                    //        action.Core[b1].Num = i;
+                                    //        break;
+                                    //}
+
+                                    CreateActionText(a, i1);
+                                    TriggerActionText(a);
+                                    TriggerRootText(a);
+                                    //LoadAllText();
+                                }
+                                else
+                                {
+                                    bool plus = (text == "Plus");
+                                    IfAction ifAction = (plus) ? triggerAction.PlusAction[i1] : triggerAction.MinusAction[i1];
+                                    SetIntRuleForm(ifAction.Core[b1], com[4], i);
+                                    CreateIfText(a, i1, plus);
+                                    TriggerIfText(a, plus);
+                                    TriggerRootText(a);
+                                    //LoadAllText();
+
+                                }
+
+                            }
+                            else if (text == "Action")
+                            {
+                                SetIntRuleAction(triggerAction.Action[i1], com[3], i);
 
                                 CreateActionText(a, i1);
                                 TriggerActionText(a);
                                 TriggerRootText(a);
-                                LoadAllText();
+                                //LoadAllText();
                             }
                             else
                             {
                                 bool plus = (text == "Plus");
                                 IfAction ifAction = (plus) ? triggerAction.PlusAction[i1] : triggerAction.MinusAction[i1];
-                                SetIntRuleForm(ifAction.Core[b1], com[4],  i);
+
+                                SetIntIfAction(ifAction, com[3], i);
                                 CreateIfText(a, i1, plus);
                                 TriggerIfText(a, plus);
                                 TriggerRootText(a);
-                                LoadAllText();
-
+                                //LoadAllText();
                             }
-
                         }
-                        else if (text == "Action")
-                        {
-                            SetIntRuleAction(triggerAction.Action[i1], com[3],  i);
-
-                            CreateActionText(a, i1);
-                            TriggerActionText(a);
-                            TriggerRootText(a);
-                            LoadAllText();
-                        }
-                        else
-                        {
-                            bool plus = (text == "Plus");
-                            IfAction ifAction = (plus) ? triggerAction.PlusAction[i1]: triggerAction.MinusAction[i1];
-
-                            SetIntIfAction(ifAction, com[3], i);
-                            CreateIfText(a, i1, plus);
-                            TriggerIfText(a, plus);
-                            TriggerRootText(a);
-                            LoadAllText();
-                        }
-                    }
-                    else
-                    {
-                        //triggerAction.Id = i;
-                        //TextReStruct();
-
                     }
                 }
                 //switch (com[2])
@@ -1240,279 +1309,138 @@ public class RuleConstructor : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             Ui.TextWindow.active = false;
-            HideSelector();
+            ComandClear();
            // Ui.TextWindow.active = false;
         }
     }
     void Start()
     {
         Application.targetFrameRate = 30;
+
         head = new HeadRule();
-        head.Tag = frame.Tag[0];
+        oldTag = head.Tag = frame.Tag[0];
         XMLSaver.SetRuleMainFrame(frame);
+        library.Rule = new List<SubRuleHead>();
 
         CoreLoad();
-        CoreLoadRule();
-
-        LoadBase();
-      //  SaveCore();
-        //CoreLoad();
-        //CoreLoadRule();
+        ReturnTag();
+        SysComGenerate();
+       // LoadBase();
 
 
         LoadMainText();
         LoadAllText();
 
-      //  SaveCore();
     }
 
     #region CreateSystemData
-    void CreateListButton(string text)
+
+    void GenerateComand(string str)
     {
-        GameObject GO = null;
-        int a = 0; 
-        switch (text)
+        string[] com = str.Split('_');
+        actionLable = "";
+        switch (com[0])
         {
+            case ("TagRule"):
+                for(int i =0; i < library.Rule.Count;i++)
+                    actionLable += LinkSupport(defColor, $"Select_TagRule_{i}", $"{library.Rule[i].Name} ({library.Rule[i].Rule.Count})\n");
+                break;
+            case ("Rule"):
+                int a = int.Parse(com[2]);
+                for (int i = 0; i < library.Rule[a].Rule.Count; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Rule_{i}", $"{library.Rule[a].Rule[i]}\n");
+                break;
             case ("StatTayp"):
-                a = frame.StatTayp.Length;
+                for (int i = 0; i < frame.StatTayp.Length; i++)
+                    actionLable += LinkSupport(defColor, $"Select_StatTayp_{i}", $"{frame.StatTayp[i]}\n");
                 break;
+            
             case ("Legion"):
-                a = library.Legions.Count;
+                for (int i = 0; i < library.Legions.Count; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Legion_{i}", $"{library.Legions[i].Name}\n");
                 break;
-
             case ("CivilianGroups"):
-                a = library.CivilianGroups.Count;
-                break;
 
+                break;
             case ("Stat"):
-                a = library.Constants.Count;
+                for (int i = 0; i < library.Constants.Count; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Stat_{i}", $"{library.Constants[i].Name}\n");
                 break;
 
             case ("Action"):
-                a = frame.Action.Length;
-                break;
-            case ("Rule"):
-                a = RuleName.Count;
+                for (int i = 0; i < frame.Action.Length; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Action_{i}", $"{frame.Action[i]}\n");
                 break;
             case ("Tag"):
-                a = frame.Tag.Length;
+                for (int i = 0; i < frame.Tag.Length; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Tag_{i}", $"{frame.Tag[i]}\n");
                 break;
             case ("Status"):
-                a = frame.Status.Length;
+                for (int i = 0; i < frame.Status.Length; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Status_{i}", $"{frame.Status[i]}\n");
                 break;
-                
         }
 
-        for (int i = 0; i < a; i++)
-        {
-            GO = Instantiate(Ui.ButtonOrig);
-            switch (text)
-            {
-                case ("StatTayp"):
-                    GO.transform.SetParent(Ui.SelectorStatTayp);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.StatTayp[i];
-                    break;
-                case ("Legion"):
-                    GO.transform.SetParent(Ui.SelectorLegion);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Legions[i].Name;
-                    break;
 
-                case ("CivilianGroups"):
-                    GO.transform.SetParent(Ui.SelectorCivilianGroups);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.CivilianGroups[i].Name;
-                    break;
-
-                case ("Stat"):
-                    GO.transform.SetParent(Ui.SelectorConstants);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = library.Constants[i].Name;
-                    break;
-
-                case ("Action"):
-                    GO.transform.SetParent(Ui.SelectorAction);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.Action[i];
-                    break;
-                case ("Rule"):
-                    GO.transform.SetParent(Ui.SelectorAltRule);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = RuleName[i];
-                    break;
-                case ("Tag"):
-                    GO.transform.SetParent(Ui.SelectorTag);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.Tag[i];
-                    break;
-                case ("Status"):
-                    GO.transform.SetParent(Ui.SelectorStatus);
-                    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = frame.Status[i];
-                    break;
-                    
-            }
-            ButtonSelector(text, i, GO.GetComponent<Button>());
-        }
+        TT2.text = comLable + actionLable;
     }
-    void LoadBase()
+
+    void ComandClear()
     {
-        Ui.TextWindowButton.onClick.AddListener(() => LoadData());
-        Ui.SaveButton.onClick.AddListener(() => CreateRule());
-        Ui.SaveSimpleButton.onClick.AddListener(() => SaveRuleSample(curentRule));
-        Ui.SaveSimpleAllButton.onClick.AddListener(() => SaveRuleSampleAll());
-        Ui.NewRuleButton.onClick.AddListener(() => NewRule());
-
-        GameObject GO = null;
-        string[] text = frame.StatTayp;
-        string mainText = "";
-        for (int i = 0; i < text.Length; i++)
-        {
-            mainText = text[i];
-            GO = Instantiate(Ui.SelectorMain);
-            //Debug.Log(text[i]);
-            switch (mainText)
-            {
-                case ("StatTayp"):
-                    Ui.SelectorMainStatTayp = GO;
-                    Ui.SelectorStatTayp = GO.transform.GetChild(0).GetChild(0);
-                    break;
-
-                case ("Legion"):
-                    Ui.SelectorMainLegion = GO;
-                    Ui.SelectorLegion = GO.transform.GetChild(0).GetChild(0);
-                    break;
-
-                case ("CivilianGroups"):
-                    Ui.SelectorMainCivilianGroups = GO;
-                    Ui.SelectorCivilianGroups = GO.transform.GetChild(0).GetChild(0);
-                    break;
-
-                case ("Stat"):
-                    Ui.SelectorMainConstants = GO;
-                    Ui.SelectorConstants = GO.transform.GetChild(0).GetChild(0);
-                    break;
-
-                case ("Action"):
-                    Ui.SelectorMainAction = GO;
-                    Ui.SelectorAction = GO.transform.GetChild(0).GetChild(0);
-                    break;
-                case ("Rule"):
-                    Ui.SelectorMainAltRule = GO;
-                    Ui.SelectorAltRule = GO.transform.GetChild(0).GetChild(0);
-                    break;
-                case ("Tag"):
-                    Ui.SelectorMainTag = GO;
-                    Ui.SelectorTag= GO.transform.GetChild(0).GetChild(0);
-                    break;
-                case ("Status"):
-                    Ui.SelectorMainStatus = GO;
-                    Ui.SelectorStatus = GO.transform.GetChild(0).GetChild(0);
-                    break;
-
-                default:
-                    Debug.Log(mainText);
-                    break;
-            }
-
-            if (mainText != "Null")
-            {
-                GO.name = "Selector" + mainText;
-                GO.transform.SetParent(Ui.Canvas);
-                GO.transform.position = Ui.SelectorMain.transform.position;
-                CreateListButton(mainText);
-            }
-            else
-            {
-                Destroy(GO);
-            }
-        }
-    }
-    void ButtonSelector(string text, int a, Button button)
-    {
-        button.onClick.AddListener(() => SwitchLibrary(a, text));
-    }
-    void SwitchLibrary(int a, string text)
-    {
-        //SwitchRuleText
-        string[] com = stringMood.Split('_');
-        if (com.Length == 1)
-        {
-            switch (com[0])
-            {
-                case ("Tag"):
-                    head.Tag = frame.Tag[a];
-                    break;
-                case ("NeedRule"):
-                    head.NeedRule.Add(RuleName[a]);
-                    break;
-                case ("EnemyRule"):
-                    head.EnemyRule.Add(RuleName[a]);
-                    break;
-            }
-            LoadMainText();
-
-        }
-        else
-        {
-            string text1 = com[1];
-            //trigger
-            //text1 = com[1];
-            // switch()
-            int i1 = int.Parse(com[0]);
-            int i2 = int.Parse(com[2]);
-            TriggerAction triggerAction = head.TriggerActions[i1];
-            //Debug.Log(com.Length);
-            if (com.Length == 4)
-            {
-                RuleAction action = triggerAction.Action[i2];
-                action.Action = SwitchRuleText(a, text);
-                NewFormAction(ref action);
-                //SetIntRuleForm(triggerAction.Action[i2], text, a);
-                CreateActionText(i1, i2);
-                TriggerActionText(i1);
-            }
-            else
-            {
-                int i = int.Parse(com[3]);
-                if (text1 != "Action")
-                {
-                    bool plus = ("Plus" == text1);
-                    IfAction ifAction = (plus) ? triggerAction.PlusAction[i2] : triggerAction.MinusAction[i2];
-
-                    SetIntRuleForm(ifAction.Core[i], text, a);
-                    CreateIfText(i1, i2, plus);
-                    TriggerIfText(i1, plus);
-                }
-                else
-                {
-                    SetIntRuleForm(triggerAction.Action[i2].Core[i], text, a);
-
-                    CreateActionText(i1, i2);
-                    TriggerActionText(i1);
-                }
-            }
-            TriggerRootText(i1);
-            LoadAllText();
-
-        }
-        LoadAllText();
-        HideSelector();
+        TT2.text = comLable;
     }
 
     #endregion
 
     #region Library Rule
-
-    private int curentRule =-1;
-    public List<string> RuleName;
-
-    void NewRule()
+    void SysComGenerate()
     {
-        curentRule = -1;
+
+        comLable = "";
+        comLable += LinkSupport(defColor, $"Save_", "Save      ");
+        comLable += LinkSupport(defColor, $"SaveAll_", "   SaveAll    ");
+        comLable += LinkSupport(defColor, $"Zip_", "   Zip     ");
+        comLable += LinkSupport(defColor, $"ZipAll_", "    ZipAll\n");
+        comLable += "\n";
+
+        TT2.text = comLable;
     }
-    void LoadRule(int i)
+
+    void ReturnTag()
+    {
+        ruleLable = "";
+        ruleLable += LinkSupport(defColor, $"Switch_NewRule", "NewRule\n");
+        for (int i =0;i< library.Rule.Count; i++)
+        {
+            ruleLable += LinkSupport(defColor,$"Switch_Tag_{i}", library.Rule[i].Name + $" ({library.Rule[i].Rule.Count})\n");
+        }
+        TT1.text = ruleLable;
+    }
+
+    void SwitchTag(int a)
+    {
+        string text = library.Rule[a].Name;
+        ruleLable = "";
+        ruleLable += LinkSupport(defColor, $"Switch_Tag_-1", $"Back ({text})\n");
+       
+        for (int i = 0; i < library.Rule[a].Rule.Count; i++)
+        {
+            ruleLable += LinkSupport(defColor, $"Switch_LoadRule_{text}_{i}", library.Rule[a].Rule[i] + "\n");
+        }
+
+        TT1.text = ruleLable;
+    }
+
+    void LoadRule(string tag, int i)
     {
         curentRule = i;
-        SetRule(XMLSaver.LoadRule(i));
+        SetRule(XMLSaver.LoadRule(tag,i));
     }
 
     public void SetRule(HeadRule headRule)
     {
         head = headRule;
+        oldTag = head.Tag;
 
 
         LoadMainText();
@@ -1551,61 +1479,87 @@ public class RuleConstructor : MonoBehaviour
     void SaveRuleSampleAll()
     {
         HeadRule rule = null;
-        for ( int i =0; i < RuleName.Count; i++)
+        for (int i = 0; i < library.Rule.Count; i++)
         {
-            rule = XMLSaver.LoadRule(i);
-            XMLSaver.SaveSimpleRule(rule, i);
+            for (int i1 = 0; i1 < library.Rule[i].Rule.Count; i1++)
+            {
+                rule = XMLSaver.LoadRule(library.Rule[i].Name,i1);
+                XMLSaver.SaveSimpleRule(rule, i);
+            }
         }
     }
 
-    void SaveCore()
-    {
-        XMLSaver.SaveMainRule(library);
-    }
+    void SaveCore() { XMLSaver.SaveMainRule(library); }
 
-    void CoreLoad()
-    {
-        XMLSaver.LoadMainRule(library);
-        RuleName = library.RuleName;
-    }
+    void CoreLoad() { XMLSaver.LoadMainRule(library); }
 
     void CreateRule()
     {
-        if(curentRule != -1)
+        int a = library.Rule.FindIndex(x => x.Name == oldTag);
+        if (curentRule != -1)
         {
-            library.RuleName[curentRule] = head.Name;
-            Ui.SelectorLibrary.GetChild(curentRule+1).GetChild(0).gameObject.GetComponent<Text>().text = head.Name;
+            if (oldTag != head.Tag)
+            {
+                int b = library.Rule[a].Rule.Count - 1;
+                if (b != 0) 
+                {
+                    library.Rule[a].Rule[curentRule] = library.Rule[a].Rule[b];
+                    library.Rule[a].Rule.RemoveAt(b);
+
+                    System.IO.File.Move(oldTag + $"{b}", oldTag + $"{curentRule}");
+                }
+                else
+                {
+                    library.Rule.RemoveAt(a);
+                }
+                curentRule = -1;
+                CreateRule();
+                return;
+            }
+
+            library.Rule[a].Rule[curentRule] = head.Name;
+           // Ui.SelectorLibrary.GetChild(curentRule+1).GetChild(0).gameObject.GetComponent<Text>().text = head.Name;
+        }
+        else if( a != -1)
+        {
+            curentRule = library.Rule[a].Rule.Count;
+            library.Rule[a].Rule.Add(head.Name);
         }
         else
         {
-            curentRule = RuleName.Count;
-            // RuleCount++;
-            AddRuleButton(RuleName.Count, head.Name);
-            library.RuleName.Add(head.Name);
+            a = library.Rule.Count;
+            SubRuleHead subRuleHead = new SubRuleHead();
+            subRuleHead.Name = head.Tag;
+            subRuleHead.Rule.Add(head.Name);
+            library.Rule.Add(subRuleHead);
+            curentRule = 0;
         }
+        oldTag = head.Tag;
+        SwitchTag(a);
+
         SaveRule(curentRule);
         SaveCore();
     }
 
-    public void CoreLoadRule()
-    {
-        GameObject GO = null;
+    //public void CoreLoadRule()
+    //{
+    //    GameObject GO = null;
 
-        for(int i =0; i< RuleName.Count; i++)
-        {
-            AddRuleButton(i, RuleName[i]);
-        }
-    }
-    void AddRuleButton(int i, string text)
-    {
-        GameObject GO = Instantiate(Ui.ButtonOrig);
-        GO.transform.SetParent(Ui.SelectorLibrary);
-        GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = text;
-        GO.GetComponent<Button>().onClick.AddListener(() => LoadRule(i));
-    }
+    //    for(int i =0; i< RuleName.Count; i++)
+    //    {
+    //        AddRuleButton(i, RuleName[i]);
+    //    }
+    //}
+    //void AddRuleButton(int i, string text)
+    //{
+    //    GameObject GO = Instantiate(Ui.ButtonOrig);
+    //    GO.transform.SetParent(Ui.SelectorLibrary);
+    //    GO.transform.GetChild(0).gameObject.GetComponent<Text>().text = text;
+    //    GO.GetComponent<Button>().onClick.AddListener(() => LoadRule(i));
+    //}
     #endregion
 }
-[System.Serializable]
+//[System.Serializable]
 public class TriggerAction
 {
     public bool CountMod;
@@ -1627,7 +1581,7 @@ public class TriggerAction
     public List<RuleAction> Action;
 }
 
-[System.Serializable]
+//[System.Serializable]
 public class IfAction 
 {
     public int Prioritet;
@@ -1640,7 +1594,7 @@ public class IfAction
     public string Text;
 }
 
-[System.Serializable]
+//[System.Serializable]
 public class RuleForm
 {
     public int Card;//0-null 1-card1 2-card2
@@ -1649,10 +1603,10 @@ public class RuleForm
     public int Mod =1;
     public int Num;
 }
-[System.Serializable]
+//[System.Serializable]
 public class RuleAction
 {
-    public string Name;
+    public string Name = "Action";
     public int MinPoint;
     public int MaxPoint;
 
@@ -1666,7 +1620,7 @@ public class RuleAction
     public string RootText;
 }
 
-[System.Serializable]
+//[System.Serializable]
 public class HeadRule
 {
     public string Name = "World";//Название
@@ -1689,3 +1643,11 @@ public class HeadRule
     public List<string> NeedRule = new List<string>();
     public List<string> EnemyRule = new List<string>();
 }
+
+
+public class SubRuleHead
+{
+    public string Name;
+    public List<string> Rule = new List<string>();
+}
+
