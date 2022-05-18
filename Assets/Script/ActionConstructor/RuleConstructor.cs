@@ -234,7 +234,7 @@ public class RuleConstructor : MonoBehaviour
         Ui.TextWindow.active = false;
         TriggerAction triggerAction = head.TriggerActions[a];
 
-
+        Debug.Log(b);
         if (plus)
             triggerAction.PlusAction.RemoveAt(b);
         else
@@ -359,8 +359,10 @@ public class RuleConstructor : MonoBehaviour
 
             text += LinkSupport(colorText, linkText, textData);
 
-
-            linkText = headText + $"Selector{headTextExtend}SetStat|{ruleForm.StatTayp}";
+            if(ruleForm.StatTayp == "Rule")
+                linkText = headText + $"Selector{headTextExtend}SetStat|TagRule";
+            else
+                linkText = headText + $"Selector{headTextExtend}SetStat|{ruleForm.StatTayp}";
             textData = $" - {ruleForm.Stat}";
 
             text += LinkSupport(colorText, linkText, textData);
@@ -381,47 +383,6 @@ public class RuleConstructor : MonoBehaviour
             }
 
         }
-        return text;
-    }
-
-    string RuleFarmeSupportExtend(RuleForm ruleForm, string headText, string headTextExtend)
-    {
-        string colorText = "#F4FF04";
-        string text = "";
-
-        string linkText = headText + $"Switch{headTextExtend}NextCard";
-        string textData = $"\n-{ frame.CardString[ruleForm.Card]}";
-
-        text += LinkSupport(colorText, linkText, textData);
-        if(ruleForm.Card != 0)
-        {
-            linkText = headText + $"Selector{headTextExtend}StatTayp";
-            textData = $" - {ruleForm.StatTayp}";
-
-            text += LinkSupport(colorText, linkText, textData);
-
-
-            linkText = headText + $"Selector{headTextExtend}SetStat|{ruleForm.StatTayp}";
-            textData = $" - {ruleForm.Stat}";
-
-            text += LinkSupport(colorText, linkText, textData);
-
-            if(ruleForm.StatTayp == "stat")
-            {
-                linkText = headText + $"Text{headTextExtend}Mod";
-                textData = $" - {ruleForm.Mod}";
-
-                text += LinkSupport(colorText, linkText, textData);
-
-            }
-        }
-
-
-
-        linkText = headText + $"Text{headTextExtend}Num";
-        textData = $" - {ruleForm.Num}";
-
-        text += LinkSupport(colorText, linkText, textData);
         return text;
     }
 
@@ -749,27 +710,36 @@ public class RuleConstructor : MonoBehaviour
         switch (com[0])
         {
             case ("Select"):
+                a = int.Parse(com[2]);
                 com1 = stringMood.Split('_');
                 switch (text)
                 {
-                    case ("Rule"):
-                        switch (com1[0])
+                    case ("Tag"):
+                        head.Tag = frame.Tag[a];//frame.Tag[a];
+                        break;
+                    case ("TagRule"):
+                        GenerateComand($"_Rule_{a}");
+                        return;
+                        break;
+
+                    default:
+                        string text2 = "";
+                        if (text == "Rule")
                         {
-                            case ("Tag"):
-                                head.Tag = text;//frame.Tag[a];
-                                break;
-                            case ("NeedRule"):
-                                head.NeedRule.Add(text);
-                                break;
-                            case ("EnemyRule"):
-                                head.EnemyRule.Add(text);
-                                break;
+                            text2 = library.Rule[a].Name + "_" + library.Rule[a].Rule[int.Parse(com[3])];
+                            if(com1[0] != "Rule")
+                            {
+                                if(com1[0] == "NeedRule")
+                                    head.NeedRule.Add(text2);
+                                else
+                                    head.EnemyRule.Add(text2);
+                                LoadMainText();
+                                LoadAllText();
+                                ComandClear();
+                                return;
+                            }
                         }
 
-                        LoadMainText();
-                        break;
-                    default:
-                        a = int.Parse(com[2]);
                         string text1 = com1[1];
                         int i1 = int.Parse(com1[0]);
                         int i2 = int.Parse(com1[2]);
@@ -790,13 +760,19 @@ public class RuleConstructor : MonoBehaviour
                                 bool plus = ("Plus" == text1);
                                 IfAction ifAction = (plus) ? triggerAction.PlusAction[i2] : triggerAction.MinusAction[i2];
 
-                                SetIntRuleForm(ifAction.Core[i], text, a);
+                                if (text == "Rule")
+                                    ifAction.Core[i].Stat = text2;
+                                else
+                                    SetIntRuleForm(ifAction.Core[i], text, a);
                                 CreateIfText(i1, i2, plus);
                                 TriggerIfText(i1, plus);
                             }
                             else
                             {
-                                SetIntRuleForm(triggerAction.Action[i2].Core[i], text, a);
+                                if (text == "Rule")
+                                    triggerAction.Action[i2].Core[i].Stat = text2;
+                                else
+                                    SetIntRuleForm(triggerAction.Action[i2].Core[i], text, a);
 
                                 CreateActionText(i1, i2);
                                 TriggerActionText(i1);
@@ -823,11 +799,11 @@ public class RuleConstructor : MonoBehaviour
                 break;
 
             case ("Tag"):
-                GenerateComand(text);
+                GenerateComand("_"+text);
                 stringMood = text;
                 break;
             case ("MainAdd"):
-                GenerateComand(text);
+                GenerateComand("_TagRule");
                 stringMood = com[1];
                 break;
             case ("MainRemove"):
@@ -908,11 +884,11 @@ public class RuleConstructor : MonoBehaviour
                     int b = 0;
                     // int b1 = 0;
                     TriggerAction triggerAction = head.TriggerActions[a];
-
-                    if (com.Length > 4)
+                    if (com.Length == 4)
+                        b = int.Parse(com[3]);
+                    else if (com.Length > 4)
                     {
                         b = int.Parse(com[4]);
-
 
                         if (com.Length > 5)
                         {
@@ -1144,16 +1120,16 @@ public class RuleConstructor : MonoBehaviour
                             {
                                 com1 = com[6].Split('|');
                                 if (com1.Length == 1)
-                                    GenerateComand(com[6]);// OpenSelector(com[6]);
-                                else
+                                    GenerateComand("_" + com[6]);// OpenSelector(com[6]);
+                                else 
                                 {
-                                    GenerateComand(com1[1]);
+                                    GenerateComand("_" + com1[1]);
                                     //OpenSelector(com1[1]);
                                     stringMood = $"{a}_{com[3]}_{com[4]}_{com[5]}_{com1[0]}";
                                 }
                             }
                             else
-                                GenerateComand(com[5]);
+                                GenerateComand("_" + com[5]);
                             ///OpenSelector(com[5]);
                             break;
                     }
@@ -1321,6 +1297,7 @@ public class RuleConstructor : MonoBehaviour
         oldTag = head.Tag = frame.Tag[0];
         XMLSaver.SetRuleMainFrame(frame);
         library.Rule = new List<SubRuleHead>();
+        Ui.TextWindowButton.onClick.AddListener(() => LoadData());
 
         CoreLoad();
         ReturnTag();
@@ -1339,7 +1316,7 @@ public class RuleConstructor : MonoBehaviour
     {
         string[] com = str.Split('_');
         actionLable = "";
-        switch (com[0])
+        switch (com[1])
         {
             case ("TagRule"):
                 for(int i =0; i < library.Rule.Count;i++)
@@ -1348,7 +1325,7 @@ public class RuleConstructor : MonoBehaviour
             case ("Rule"):
                 int a = int.Parse(com[2]);
                 for (int i = 0; i < library.Rule[a].Rule.Count; i++)
-                    actionLable += LinkSupport(defColor, $"Select_Rule_{i}", $"{library.Rule[a].Rule[i]}\n");
+                    actionLable += LinkSupport(defColor, $"Select_Rule_{a}_{i}", $"{library.Rule[a].Rule[i]}\n");
                 break;
             case ("StatTayp"):
                 for (int i = 0; i < frame.StatTayp.Length; i++)
