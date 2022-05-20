@@ -380,7 +380,7 @@ string someString = Encoding.ASCII.GetString(bytes);
         }
         private static string SaveRuleCoreSimple(RuleForm ruleForm)
         {
-            string text = "" + frame.CardString[ruleForm.Card] 
+            string text = "" + ruleForm.Card 
                 + ":" + ruleForm.StatTayp 
                 + "_" + ruleForm.Stat 
                 + "_" + ruleForm.Mod 
@@ -393,7 +393,7 @@ string someString = Encoding.ASCII.GetString(bytes);
             RuleForm ruleForm = new RuleForm();
 
             string[] subs = str.Split('_');
-            ruleForm.Card = int.Parse(subs[0]);
+            ruleForm.Card = subs[0];
             ruleForm.StatTayp = subs[1];
             ruleForm.Stat = subs[2];
             ruleForm.Mod = int.Parse(subs[3]);

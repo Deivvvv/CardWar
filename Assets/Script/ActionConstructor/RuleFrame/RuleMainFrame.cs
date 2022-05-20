@@ -18,4 +18,8 @@ public class RuleMainFrame : ScriptableObject
     public string[] Tag;
     public string[] Status;
     public string[] Action;
+
+    [Space(10)]
+    public List<string> KeyWord;
+    public List<string> KeyWordStatus;
 }

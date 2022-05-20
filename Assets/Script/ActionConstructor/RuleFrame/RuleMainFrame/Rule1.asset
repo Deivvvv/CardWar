@@ -31,9 +31,11 @@ MonoBehaviour:
   - Null
   - Card1
   - Card2
+  - All
   StatTayp:
   - Legion
   - Stat
+  - Stat-Max
   - Rule
   - StatTayp
   - CivilianGroups
@@ -80,3 +82,11 @@ MonoBehaviour:
   - UseAction
   - Iniciativa|Plus
   - Iniciativa|Minus
+  KeyWord:
+  - Eky
+  - size
+  KeyWordStatus:
+  - Null
+  - All
+  - My
+  - Enemy

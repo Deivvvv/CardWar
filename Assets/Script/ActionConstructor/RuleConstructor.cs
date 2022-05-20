@@ -45,6 +45,8 @@ public class RuleConstructor : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI TT2;
 
+    private int[] keyWord;
+
     void PointerClick()
     {
         bool extend = false;
@@ -347,12 +349,30 @@ public class RuleConstructor : MonoBehaviour
         string colorText = "#F4FF04";
         string text = "";
 
+        string[] com = ruleForm.Card.Split('/');
+
+
         string linkText = headText + $"Switch{headTextExtend}NextCard";
-        string textData = $"{ frame.CardString[ruleForm.Card]}";
+        string textData = "";
+        if (com.Length == 1)
+        {
+            textData = $"{ruleForm.Card}";
+            text += LinkSupport(colorText, linkText, textData);
+        }
+        else
+        {
+            textData = $"{com[0]} ";
+            text += LinkSupport(colorText, linkText, textData);
 
-        text += LinkSupport(colorText, linkText, textData);
+            linkText = headText + $"Switch{headTextExtend}CardView";
+            textData = $"[{com.Length-1}] ";
+            text += LinkSupport(colorText, linkText, textData);
 
-        if (frame.CardString[ruleForm.Card] != "Null")
+
+        }
+
+
+        if (ruleForm.Card != "Null")
         {
             linkText = headText + $"Selector{headTextExtend}StatTayp";
             textData = $" - {ruleForm.StatTayp}";
@@ -368,7 +388,7 @@ public class RuleConstructor : MonoBehaviour
             text += LinkSupport(colorText, linkText, textData);
 
 
-            if(ruleForm.StatTayp == "Stat")
+            if(ruleForm.StatTayp == "Stat" || ruleForm.StatTayp == "Stat-Max")
             {
                 linkText = headText + $"Text{headTextExtend}Mod";
                 textData = $" - {ruleForm.Mod}";
@@ -524,6 +544,9 @@ public class RuleConstructor : MonoBehaviour
             case ("Stat"):
                 str = library.Constants[a].Name;
                 break;
+            case ("Stat-Max"):
+                str = library.Constants[a].Name;
+                break;
             case ("Status"):
                 str = frame.Status[a];
                 break;
@@ -592,8 +615,10 @@ public class RuleConstructor : MonoBehaviour
             case ("StatTayp"):
                 ruleForm.StatTayp = frame.StatTayp[a];
                 break;
+            case ("Stat-Max"):
+                ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
+                break;
             case ("Stat"):
-                //Debug.Log(ruleForm.StatTayp);
                 ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
                 break;
             case ("Status"):
@@ -611,12 +636,12 @@ public class RuleConstructor : MonoBehaviour
             case ("Num"):
                 ruleForm.Num = a;
                 break;
-            case ("NextCard"):
-                ruleForm.Card = NextSwitch(ruleForm.Card, "Card");
-                break;
-            case ("Card"):
-                ruleForm.Card = a;
-                break;
+            //case ("NextCard"):
+            //    ruleForm.Card = NextSwitch(ruleForm.Card, "Card");
+            //    break;
+            //case ("Card"):
+            //    ruleForm.Card = a;
+            //    break;
             case ("Tag"):
                 ruleForm.Stat = SwitchRuleText(a, ruleForm.StatTayp);
                 break;
@@ -710,10 +735,25 @@ public class RuleConstructor : MonoBehaviour
         switch (com[0])
         {
             case ("Select"):
-                a = int.Parse(com[2]);
+                if(text != "Card" && text != "UseKeyWord")
+                    a = int.Parse(com[2]);
                 com1 = stringMood.Split('_');
                 switch (text)
                 {
+                    case ("UseKeyWord"):
+                        string str = "";
+                        for(int i = 0; i < keyWord.Length; i++)
+                        {
+                            a = keyWord[i];
+                            if (a != 0)
+                            {
+                                str += $"/{frame.KeyWord[i]}-{frame.KeyWordStatus[a]}";
+                            }
+                        }
+
+                        DeCoder($"Select_Card_All{str}");
+                        return;
+                        break;
                     case ("Tag"):
                         head.Tag = frame.Tag[a];//frame.Tag[a];
                         break;
@@ -721,6 +761,18 @@ public class RuleConstructor : MonoBehaviour
                         GenerateComand($"_Rule_{a}");
                         return;
                         break;
+                    case ("KeyWord"):
+                        int b = int.Parse(com[3]);
+                        keyWord[a] = b;
+                        GenerateComand("_All");
+                        return;
+                        break;
+                    //case ("All"):
+                    //    Debug.Log(cod);
+                    //    int b = int.Parse(com[3]);
+                    //    keyWord[a] = b;
+                    //    GenerateComand("_All");
+                    //    break;
 
                     default:
                         string text2 = "";
@@ -738,8 +790,9 @@ public class RuleConstructor : MonoBehaviour
                                 ComandClear();
                                 return;
                             }
-                        }
+                        } 
 
+                        //Debug.Log(cod);
                         string text1 = com1[1];
                         int i1 = int.Parse(com1[0]);
                         int i2 = int.Parse(com1[2]);
@@ -760,19 +813,48 @@ public class RuleConstructor : MonoBehaviour
                                 bool plus = ("Plus" == text1);
                                 IfAction ifAction = (plus) ? triggerAction.PlusAction[i2] : triggerAction.MinusAction[i2];
 
-                                if (text == "Rule")
-                                    ifAction.Core[i].Stat = text2;
-                                else
-                                    SetIntRuleForm(ifAction.Core[i], text, a);
+                                switch (text) 
+                                {
+                                    case ("Rule"):
+                                        ifAction.Core[i].Stat = text2;
+                                        break;
+                                    case ("Card"):
+                                        if(com[2] == "All")
+                                        {
+                                            NewAll(ifAction.Core[i].Card);
+                                            return;
+                                        }
+                                        else
+                                            ifAction.Core[i].Card = com[2];
+                                        break;
+                                    default:
+                                        SetIntRuleForm(ifAction.Core[i], text, a);
+                                        break;
+                                }
+
                                 CreateIfText(i1, i2, plus);
                                 TriggerIfText(i1, plus);
                             }
                             else
                             {
-                                if (text == "Rule")
-                                    triggerAction.Action[i2].Core[i].Stat = text2;
-                                else
-                                    SetIntRuleForm(triggerAction.Action[i2].Core[i], text, a);
+                                switch (text)
+                                {
+                                    case ("Rule"):
+                                        triggerAction.Action[i2].Core[i].Stat = text2;
+                                        break;
+                                    case ("Card"):
+                                        if (com[2] == "All")
+                                        {
+                                            NewAll(triggerAction.Action[i2].Core[i].Card);
+                                            return;
+                                        }
+                                        else
+                                            triggerAction.Action[i2].Core[i].Card = com[2];
+                                        break;
+                                    default:
+                                        SetIntRuleForm(triggerAction.Action[i2].Core[i], text, a);
+                                        break;
+                                }
 
                                 CreateActionText(i1, i2);
                                 TriggerActionText(i1);
@@ -965,6 +1047,12 @@ public class RuleConstructor : MonoBehaviour
                                 default:
                                     if (com.Length > 6)
                                     {
+                                        if (com[6] == "NextCard")
+                                        {
+                                            GenerateComand("_Card");
+                                            return;
+                                        }
+
                                         RuleForm ruleForm = null;
                                         int c = int.Parse(com[5]);
                                         if (com[3] == "Action")
@@ -979,6 +1067,11 @@ public class RuleConstructor : MonoBehaviour
                                             ruleForm = ifAction.Core[c];
                                         }
 
+                                        if (com[6] == "CardView")
+                                        {
+                                            ComandView(ruleForm.Card);
+                                            return;
+                                        }
                                         SetIntRuleForm(ruleForm, com[6], 0);
                                     }// Result
                                     else
@@ -1311,6 +1404,12 @@ public class RuleConstructor : MonoBehaviour
     }
 
     #region CreateSystemData
+    void NewAll(string str)
+    {
+
+        GenerateComand($"_ClearKeyWord_{str}");
+        GenerateComand("_All");
+    }
 
     void GenerateComand(string str)
     {
@@ -1343,6 +1442,10 @@ public class RuleConstructor : MonoBehaviour
                 for (int i = 0; i < library.Constants.Count; i++)
                     actionLable += LinkSupport(defColor, $"Select_Stat_{i}", $"{library.Constants[i].Name}\n");
                 break;
+            case ("Stat-Max"):
+                for (int i = 0; i < library.Constants.Count; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Stat_{i}", $"{library.Constants[i].Name}\n");
+                break;
 
             case ("Action"):
                 for (int i = 0; i < frame.Action.Length; i++)
@@ -1356,6 +1459,49 @@ public class RuleConstructor : MonoBehaviour
                 for (int i = 0; i < frame.Status.Length; i++)
                     actionLable += LinkSupport(defColor, $"Select_Status_{i}", $"{frame.Status[i]}\n");
                 break;
+
+
+
+            case ("Card"):
+                for (int i = 0; i < frame.CardString.Length; i++)
+                    actionLable += LinkSupport(defColor, $"Select_Card_{frame.CardString[i]}", $"{frame.CardString[i]}\n");
+                break;
+
+            case ("ClearKeyWord"):
+                keyWord = new int[frame.KeyWord.Count];
+                com = com[2].Split('/');
+                string[] com1;
+                int b;
+                if (com[0] == "All")
+                    for(int i =1;i< com.Length; i++)
+                    {
+                        com1 = com[i].Split('-');
+                        a = frame.KeyWord.FindIndex(x => x == com1[0]);
+                        b = frame.KeyWordStatus.FindIndex(x => x == com1[1]);
+
+                        keyWord[a] = b;
+                    }
+
+                break;
+            case ("All"):
+                actionLable += LinkSupport(defColor, $"Select_UseKeyWord", $"UseKeyWord     ");
+                //for (int i = 0; i < frame.KeyWordStatus.Length; i++)
+                //    actionLable += frame.KeyWordStatus[i] + " ";
+
+                string subStr = "";
+                for (int i = 0; i < frame.KeyWord.Count; i++)
+                {
+                    actionLable += $"\n{frame.KeyWord[i]}   ";
+                    for(int i1 = 0; i1 < frame.KeyWordStatus.Count; i1++)
+                    {
+                        subStr = frame.KeyWordStatus[i1];
+                        if (keyWord[i] == i1)
+                            actionLable += $"{subStr} ";
+                        else
+                            actionLable += LinkSupport(defColor, $"Select_KeyWord_{i}_{i1}", $"{subStr} ");
+                    }
+                }
+                break;
         }
 
 
@@ -1366,7 +1512,18 @@ public class RuleConstructor : MonoBehaviour
     {
         TT2.text = comLable;
     }
+    void ComandView(string str)
+    {
+        string[] com = str.Split('/');
+        str = "";
+        foreach(string s in com)
+        {
+            str += s + "\n";
+        }
 
+
+        TT2.text = comLable + str;
+    }
     #endregion
 
     #region Library Rule
@@ -1574,7 +1731,7 @@ public class IfAction
 //[System.Serializable]
 public class RuleForm
 {
-    public int Card;//0-null 1-card1 2-card2
+    public string Card = "Null";//0-null 1-card1 2-card2
     public string StatTayp;
     public string Stat;
     public int Mod =1;

@@ -493,7 +493,6 @@ namespace BattleTable
         }
         public static bool CallMood(Hiro hiro, CardBase card, string mood)
         {
-            Debug.Log(mood);
             switch (mood)
             {
                 case ("All"):
@@ -508,16 +507,74 @@ namespace BattleTable
             }
             return false;
         }
+        static int UseKeyWord(string[] str , string attribute)
+        {
+            int sum = 0;
+            CardBase mainCard = GetCard("Card1");
+            if(mainCard == null)
+                mainCard = GetCard("Card2");
+
+            string[] com;
+            foreach (CardBase card in gameSetting.AllCard)
+            {
+                card1 = card;
+                for (int i = 1; i < str.Length; i++)
+                {
+                    com = str[i].Split('-');
+                    if (card.Tayp == com[0])
+                    {
+                        switch (com[1])
+                        {
+                            case ("My"):
+                                if (mainCard.MyHiro.Team == card.MyHiro.Team)
+                                    if (FindInt(attribute) >= 0)
+                                        sum++;
+                                break;
+                            case ("Enemy"):
+                                if (mainCard.MyHiro.Team != card.MyHiro.Team)
+                                    if (FindInt(attribute) >= 0)
+                                        sum++;
+                                break;
+                            default:
+                                if (FindInt(attribute) >= 0)
+                                    sum++;
+                                break;
+                        }
+                        break;
+                    }
+
+
+                }
+            }
+            return sum;
+        }
+
         public static int FindInt(string attribute)
         {
+            float sum = 0;
+            string[] com;
             string[] comAttribute = attribute.Split(':');
             CardBase card = GetCard(comAttribute[0]);
             if (card == null)
-                return 0;
+            {
+                com = comAttribute[0].Split('_');
+                if(com[0] == "All")
+                {
+                    card = card1;
+                    //com[0] == "card1";
+                    sum = UseKeyWord(com,"Card1:"+ comAttribute[1]);
+                    card1 = card;
+                }
+
+                return Mathf.FloorToInt(sum);
+
+            }
             
             comAttribute = comAttribute[1].Split('_');
-            float sum = -1;
-            switch (comAttribute[0])
+            sum = -1;
+            com = comAttribute[0].Split('-');
+
+            switch (com[0])
             {
                 case ("Null"):
                     sum = 0;
@@ -538,13 +595,18 @@ namespace BattleTable
                             break;
                         default:
                             // if Добавить вызов всего содержимого группы
-                            for(int i=0; i< card.Stat.Count; i++)
+                            for (int i=0; i< card.Stat.Count; i++)
                             {
                                 if (card.Stat[i].Name == comAttribute[1])
                                 {
-                                    sum = card.StatSize[i];
+                                    if(com[1]== "Max")
+                                        sum = card.StatSize[i];
+                                    else
+                                        sum = card.StatSizeLocal[i];
+
                                     sum *= int.Parse(comAttribute[2]);
-                                    i = card.Stat.Count;
+                                    break;
+                                   // i = card.Stat.Count;
                                 }
                             }
                             break;
@@ -557,8 +619,9 @@ namespace BattleTable
                     {
                         if (card.Trait[i].Name == comAttribute[1])
                         {
-                            sum = 0;
-                            i = card.Trait.Count;
+                            return 0;
+                            //break;
+                            //i = card.Trait.Count;
                         }
                     }
 

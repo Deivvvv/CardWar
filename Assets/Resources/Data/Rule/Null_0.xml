@@ -18,8 +18,8 @@
   <Trigger0PlusAction0Prioritet>10</Trigger0PlusAction0Prioritet>
   <Trigger0PlusAction0Point>10</Trigger0PlusAction0Point>
   <Trigger0PlusAction0CoreCount>2</Trigger0PlusAction0CoreCount>
-  <Trigger0PlusAction0Core0>1_Tag_Walk_1_0</Trigger0PlusAction0Core0>
-  <Trigger0PlusAction0Core1>1_Null_Null_1_0</Trigger0PlusAction0Core1>
+  <Trigger0PlusAction0Core0>All/Eky-My_Tag_Walk_1_0</Trigger0PlusAction0Core0>
+  <Trigger0PlusAction0Core1>Null_Null_Null_1_0</Trigger0PlusAction0Core1>
   <Trigger0PlusAction1Result>0</Trigger0PlusAction1Result>
   <Trigger0PlusAction1Prioritet>10</Trigger0PlusAction1Prioritet>
   <Trigger0PlusAction1Point>5</Trigger0PlusAction1Point>
