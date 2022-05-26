@@ -31,6 +31,8 @@ public class CardConstructor : MonoBehaviour
     private List<CardBase> oldCard;
     private List<int> newCard;
 
+    private int cardMod;
+    private int cardModSize= 0;
     private int curentNum;
     private CardBase cardBase;
     public List<CardBase> LocalCard;
@@ -54,6 +56,157 @@ public class CardConstructor : MonoBehaviour
     public RenderTexture rTex;
     public Camera captureCamera;
 
+    [SerializeField]
+    private TextMeshProUGUI TT;
+    [SerializeField]
+    private TextMeshProUGUI TT1;
+
+
+    void PointerClick()
+    {
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(TT, Input.mousePosition, Camera.main);
+        TMP_LinkInfo linkInfo = new TMP_LinkInfo();
+
+        if (linkIndex == -1)
+        {
+            linkIndex = TMP_TextUtilities.FindIntersectingLink(TT1, Input.mousePosition, Camera.main);
+            if (linkIndex == -1)
+            {
+                Debug.Log("Open link -1");
+                return;
+            }
+            else
+                linkInfo = TT1.textInfo.linkInfo[linkIndex];
+        }
+        else
+            linkInfo = TT.textInfo.linkInfo[linkIndex];
+
+
+        string selectedLink = linkInfo.GetLinkID();
+        Debug.Log("Open link " + selectedLink);
+        DeCoder(selectedLink);
+    }
+
+    void DeCoder(string str)
+    {
+
+    }
+
+    void CardViews()
+    {
+        int a;
+        for(int i=0; i < Ui.CardBody.Count; i++)
+        {
+            a = cardModSize + i;
+            if (a < LocalCard.Count)
+            {
+                LocalCard[a].Body = Ui.CardBody[i];
+                CardView.ViewCard(LocalCard[a]);
+            }
+            else
+            {
+                CardView.ClearCard(Ui.CardBody[i]);
+            }
+
+        }
+    }
+    void CardCouner()
+    {
+        if(curentNum != -1)
+            Ui.CounterCard.text = $"{curentNum}/{LocalCard.Count}";
+        else
+            Ui.CounterCard.text = $"0/{LocalCard.Count}";
+    }
+    void Mod(bool up)
+    {
+        if (up)
+        {
+            if (cardModSize + Ui.CardBody.Count < LocalCard.Count)
+            {
+                cardMod++;
+                //SwitchCard(-1);
+            }
+        }
+        else if (cardMod > 0)
+        {
+            //SwitchCard(-1);
+            cardMod--;
+        }
+
+        cardModSize = cardMod * Ui.CardBody.Count;
+        CardViews();
+    }
+
+    private string LinkSupport(string colorText, string linkText, string mainText)
+    {
+        return $"<link={linkText}><color={colorText}>{mainText}</color></link>";
+    }
+    void GenerateText()
+    {
+        string color = "#F4FF04";
+        string str1;
+        string str = $"Имя{cardBase.Name}" +
+            "\nРасса: " + LinkSupport(color, "Selector_Races", $"{cardBase.Races.Name}") +
+            "\nЛегион: " + LinkSupport(color, "Selector_Legions", $"{cardBase.Legions.Name}") +
+            "\nСоицальная группа: " + LinkSupport(color, "Selector_CivilianGroups", $"{cardBase.CivilianGroups.Name}") +
+            "\nВыход на стол: ";
+
+        str1 = (cardBase.WalkMood != null) ? cardBase.WalkMood.Name : "Null";
+        str += LinkSupport(color, "Selector_Rule_Walk", $"{str1}");
+
+        str += "\nБазовый набор атак: ";
+        str1 = (cardBase.ActionMood != null) ?  cardBase.ActionMood.Name : "Null";
+        str += LinkSupport(color, "Selector_Rule_Acton", $"{str1}");
+
+        str += "\nБазовый набор защиты: ";
+        str1 = (cardBase.DefMood != null) ?  cardBase.DefMood.Name : "Null";
+        str += LinkSupport(color, "Selector_Rule_Def", $"{str1}");
+
+        str += "\nХарактеристики\n";
+        //    "Характеристики" +
+        //    "Навыки";
+        for (int i =0; i < cardBase.Stat.Count; i++)
+        {
+            str += LinkSupport(color, $"Selector_Stat_{i}", $"<sprite name={cardBase.Stat[i].IconName}>{cardBase.StatSize[i]}");
+            str += " "; 
+            str += LinkSupport(color, $"Stat_Minus_{i}", $"-");
+            str += " ";
+            str += LinkSupport(color, $"Stat_Plus_{i}", $"+");
+            str += "\n";
+        }
+        str += LinkSupport(color, $"Selector_Stat_{cardBase.Stat.Count}", $"Дополнительный параметр");
+
+        str += "\nНавыки\n";
+        for (int i = 0; i < cardBase.Trait.Count; i++)
+        {
+            str += LinkSupport(color, $"Selector_Rule_{i}", $"{cardBase.Trait[i].Name}");
+            str += " ";
+            str += LinkSupport(color, $"Rule_Minus_{i}", $"-");
+           // str += " ";
+           // str += LinkSupport(color, $"Rule_Plus_{i}", $"+");
+            str += "\n";
+        }
+        str += LinkSupport(color, $"Selector_Rule_{cardBase.Trait.Count}", $"Дополнительный Навык");
+
+        TT.text = str;
+    }
+
+    void GenerateTextExtendClear()
+    {
+        TT1.text = "";
+    }
+    void GenerateTextExtend(string text)
+    {
+        string str = "";
+        switch (text) 
+        {
+            case (""):
+                break;
+        }
+
+
+        TT1.text = str;
+    }
     //#region Filtr System
     //void GenerateFiltr()
     //{
@@ -178,7 +331,9 @@ public class CardConstructor : MonoBehaviour
                 //    AddEdit(LocalCard.Count);
 
                 LocalCard.Add(card);
-                NewCard(LocalCard.Count - 1);
+                CardCouner();
+                CardViews();
+                //  NewCard(LocalCard.Count - 1);
             }
 
         }
@@ -247,7 +402,7 @@ public class CardConstructor : MonoBehaviour
         if (curentNum != -1)
         {
             gameData.BlackList.Add(curentNum);
-            LocalCard[curentNum].Body.gameObject.active = false;
+            //LocalCard[curentNum].Body.gameObject.active = false;
             // Ui.
             SwitchCard(-1);
         }
@@ -272,6 +427,7 @@ public class CardConstructor : MonoBehaviour
 
 
         curentNum = -1;
+        cardMod = 0;
         // Delite();
 
         LocalCard = new List<CardBase>();
@@ -280,9 +436,14 @@ public class CardConstructor : MonoBehaviour
 
 
 
-        GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
-        GO.GetComponent<Image>().color = Ui.SelectColor[0];
-        GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
+        //GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
+        //GO.GetComponent<Image>().color = Ui.SelectColor[0];
+        //GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
+        Ui.NewCardButton.GetComponent<Image>().color = Ui.SelectColor[0];
+        Ui.NewCardButton.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); 
+
+        Ui.ModButton[0].onClick.AddListener(() => Mod(false)); 
+        Ui.ModButton[1].onClick.AddListener(() => Mod(true)); 
 
         Ui.EjectButton.onClick.AddListener(() => Enject());
         Ui.InjectButton.onClick.AddListener(() => Inject());
@@ -299,6 +460,9 @@ public class CardConstructor : MonoBehaviour
         XMLSaver.LoadGameData(origPathAlt, cardConstructor);
 
         LoadBase();
+
+        CardCouner();
+        CardViews();
     }
 
     public void TransfData(GameData gameData1, GameData gameData2)
@@ -327,13 +491,22 @@ public class CardConstructor : MonoBehaviour
         {
             path = origPath + $"{i}";
             LocalCard.Add(XMLSaver.Load(path));
-            NewCard(i);
+           // NewCard(i);
         }
 
         a = gameData.BlackList.Count;
         for (int i = 0; i < a; i++)
         {
             LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
+        }
+
+        for(int i =0;i< Ui.CardBody.Count; i++)
+        {
+            Button button = Ui.CardBody[i].gameObject.GetComponent<Button>();
+            SwitchCardButton(i, button);
+
+            Ui.CardBody[i].gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+            //SwitchCardButton
         }
     }
 
@@ -502,21 +675,31 @@ public class CardConstructor : MonoBehaviour
 
     void SwitchCard(int a)
     {
+        if (cardModSize + a > LocalCard.Count)
+            return;
+
         if (curentNum != -1)
         {
-            if (curentNum < gameData.AllCard)
-                LocalCard[curentNum].Body.gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+            if(curentNum < cardModSize + Ui.CardBody.Count && curentNum >= cardModSize)
+            //if (cardModSize + curentNum < LocalCard.Count)
+            {
+                Ui.CardBody[curentNum - cardModSize].gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+               // Ui.NewCardButton.gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+            }
         }
         else
-            Ui.BaseCard.GetChild(0).gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+            Ui.NewCardButton.gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
 
-        curentNum = a;
+        if (a == -1)
+            curentNum = -1;
+        else
+            curentNum = cardModSize + a;
 
         if (curentNum != -1)
-            LocalCard[curentNum].Body.gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+            Ui.CardBody[a].gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
         else
-            Ui.BaseCard.GetChild(0).gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
-
+            Ui.NewCardButton.gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+        //CardCouner();
     }
     #endregion
 

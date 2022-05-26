@@ -49,7 +49,6 @@ public class RuleConstructor : MonoBehaviour
 
     void PointerClick()
     {
-        bool extend = false;
         int linkIndex = TMP_TextUtilities.FindIntersectingLink(TT, Input.mousePosition, Camera.main);
         TMP_LinkInfo linkInfo = new TMP_LinkInfo();
 

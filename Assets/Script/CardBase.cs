@@ -15,6 +15,8 @@ public class CardBase
     public CivilianGroup CivilianGroups;
     // public List<Constant> Constants;
     public HeadSimpleTrigger WalkMood;
+    public HeadSimpleTrigger ActionMood;
+    public HeadSimpleTrigger DefMood;
     public SimpleAction DefAction;
 
     public List<Constant> Stat =new List<Constant>();

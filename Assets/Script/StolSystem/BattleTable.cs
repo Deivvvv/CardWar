@@ -507,7 +507,7 @@ namespace BattleTable
             }
             return false;
         }
-        static int UseKeyWord(string[] str , string attribute)
+        static int UseKeyWord(string[] str , string attribute, int num =-1)
         {
             int sum = 0;
             CardBase mainCard = GetCard("Card1");
@@ -517,33 +517,22 @@ namespace BattleTable
             string[] com;
             foreach (CardBase card in gameSetting.AllCard)
             {
-                card1 = card;
-                for (int i = 1; i < str.Length; i++)
+                if (card.Id != num)
                 {
-                    com = str[i].Split('-');
-                    if (card.Tayp == com[0])
+                    card1 = card;
+                    for (int i = 1; i < str.Length; i++)
                     {
-                        switch (com[1])
+                        com = str[i].Split('-');
+                        if (card.Tayp == com[0])
                         {
-                            case ("My"):
-                                if (mainCard.MyHiro.Team == card.MyHiro.Team)
-                                    if (FindInt(attribute) >= 0)
-                                        sum++;
-                                break;
-                            case ("Enemy"):
-                                if (mainCard.MyHiro.Team != card.MyHiro.Team)
-                                    if (FindInt(attribute) >= 0)
-                                        sum++;
-                                break;
-                            default:
+                            if (CallMood(mainCard.MyHiro, card, com[1]))
                                 if (FindInt(attribute) >= 0)
                                     sum++;
-                                break;
+                            break;
                         }
-                        break;
+
+
                     }
-
-
                 }
             }
             return sum;
@@ -562,7 +551,10 @@ namespace BattleTable
                 {
                     card = card1;
                     //com[0] == "card1";
-                    sum = UseKeyWord(com,"Card1:"+ comAttribute[1]);
+                    if(com.Length >1)
+                        sum = UseKeyWord(com, "Card1:" + comAttribute[1], card.Id);
+                    else
+                        sum = UseKeyWord(com,"Card1:"+ comAttribute[1]);
                     card1 = card;
                 }
 
@@ -1627,6 +1619,24 @@ namespace BattleTable
 
 
             Ui.Mana.text = "" + card.Mana;
+
+
+        }
+
+        public static void ClearCard(Transform body)
+        {
+            CardBaseUi Ui = body.gameObject.GetComponent<CardBaseUi>();
+
+            Texture2D texture = new Texture2D(10, 15);
+            //texture.LoadImage(card.Image);
+            Ui.Avatar.sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+
+            Ui.Name.text = "";
+
+            Ui.Stat.text = "";
+            Ui.Trait.text = "";
+
+            Ui.Mana.text = "";
 
 
         }

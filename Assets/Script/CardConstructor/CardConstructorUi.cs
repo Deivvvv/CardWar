@@ -66,4 +66,10 @@ public class CardConstructorUi : MonoBehaviour
     public Transform AddRule;
     public Button AddStatButton;
     public Button AddRuleButton;
+
+    public List<Transform> CardBody;
+
+    public Text CounterCard;
+    public GameObject NewCardButton;
+    public Button[] ModButton;
 }
