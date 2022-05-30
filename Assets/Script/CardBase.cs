@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[System.Serializable]
+[System.Serializable]
 public class CardBase
 {
     public int Id;
@@ -25,7 +25,7 @@ public class CardBase
     public int Mana;
 
     //public List<int> Stat;
-    public List<HeadSimpleTrigger> Trait = new List<HeadSimpleTrigger>();
+    public List<string> Trait = new List<string>();
     public List<int> TraitSize = new List<int>();
 
     // public List<Rule> Rules;

@@ -22,10 +22,15 @@ namespace BattleTable
 
         public static void LoadRules()
         {
+            string str;
             gameSetting.Rule = new List<HeadSimpleTrigger>();
-            gameSetting.AllCard = new List<CardBase>();
             for (int i = 0; i < gameSetting.Library.Rule.Count; i++)
-                gameSetting.Rule.Add(Core.ReadRule(i));
+                for (int i1 = 0; i1 < gameSetting.Library.Rule[i].Rule.Count; i1++)
+                {
+                    str = gameSetting.Library.Rule[i].Name + "_" + gameSetting.Library.Rule[i].Rule[i1];
+                    gameSetting.Rule.Add(Core.ReadRule(str));
+
+                }
 
             //int a = 0;
             //gameSetting.DefRule = new List<HeadSimpleTrigger>();
@@ -36,6 +41,26 @@ namespace BattleTable
             //}
         }
 
+        private static List<string> call = new List<string>();
+        public static void CallRuleLoad( CardBase card)
+        {
+            int a =0;
+            foreach(string str in card.Trait)
+            {
+                a = call.FindIndex(x => x == str);
+                if (a == -1)
+                    call.Add(str);
+            }
+        }
+
+        public static void CallRuleFinish()
+        {
+            gameSetting.Rule = new List<HeadSimpleTrigger>();
+            foreach (string str in call)
+                gameSetting.Rule.Add(Core.ReadRule(str));
+
+            call = null;
+        }
 
         public static void GenerateActionCard(CardBase card)
         {
@@ -57,8 +82,10 @@ namespace BattleTable
 
             int a = 0;
             int id = card.Id;
-            foreach (HeadSimpleTrigger head in card.Trait)
+            HeadSimpleTrigger head = null;
+            foreach (int i in card.TraitSize)
             {
+                head = gameSetting.Rule[i];
                 foreach (SimpleTrigger simpleTrigger in head.SimpleTriggers)
                 {
                     a = simpleTrigger.CodName;
@@ -244,10 +271,10 @@ namespace BattleTable
                 newCard.TraitSize.Add(card.TraitSize[i]);
             }
             
-            for (int i = 0; i < card.StatSizeLocal.Count; i++)
-            {
-                newCard.StatSizeLocal.Add(card.StatSizeLocal[i]);
-            }
+            //for (int i = 0; i < card.StatSizeLocal.Count; i++)
+            //{
+            //    newCard.StatSizeLocal.Add(card.StatSizeLocal[i]);
+            //}
 
             newCard.Image =  card.Image;
 
@@ -320,10 +347,6 @@ namespace BattleTable
                 card2.NextTurn.Add(card1.NextTurn[i]);
 
         }
-        //public static void BuildNewBody(CardBase card1, CardBase card2)
-        //{
-
-        //}
 
         public static void CardClear(CardBase card)
         {
@@ -355,9 +378,9 @@ namespace BattleTable
             card.DefAction = headSimple.SimpleTriggers[0].Action[0];
         }
 
-        public static HeadSimpleTrigger ReadRule(int a)
+        public static HeadSimpleTrigger ReadRule(string str)
         {
-            XMLSaver.SetSimpleRoot(a);
+            XMLSaver.SetSimpleRoot(str);
             HeadSimpleTrigger simpleTrigger = new HeadSimpleTrigger();
             LoadHead(simpleTrigger);
             LoadHeadExtended(simpleTrigger);
@@ -609,7 +632,7 @@ namespace BattleTable
                 case ("Trait"):
                     for (int i = 0; i < card.Trait.Count; i++)
                     {
-                        if (card.Trait[i].Name == comAttribute[1])
+                        if (card.Trait[i] == comAttribute[1])
                         {
                             return 0;
                             //break;
@@ -1130,7 +1153,7 @@ namespace BattleTable
 
                 card.MyHiro = hiro;
                 Core.CardClear(card);
-                Core.GenerateActionCard(card);
+                //Core.GenerateActionCard(card);
                 //Core.CardCloneExtended(card, card);
 
                 hiro.CardColod.Add(card);
@@ -1142,6 +1165,24 @@ namespace BattleTable
                     cardBase.Add(cardSet.OrigCard[i]);
                 }
             }
+
+            foreach(CardBase card1 in hiro.CardColod)
+                Core.CallRuleLoad(card1);
+
+            //for (int i = 0; i < hiro.CardColod.Count; i++)
+            //{
+            //    Core.CallRuleLoad(ref hiro.CardColod[i]);
+            //}
+
+            Core.CallRuleFinish();
+
+            for (int i = 0; i < hiro.CardColod.Count; i++)
+            {
+                card = hiro.CardColod[i];
+                Core.GenerateActionCard(card);
+                Core.CardCloneExtended(card, card);
+            }
+
 
 
             List<int> sortCardBase = new List<int>();
@@ -1491,8 +1532,9 @@ namespace BattleTable
             //hiro = new Hiro[2];
             Create.gameSetting = gameSetting;
             Create.stolUi = stolUi;
+            gameSetting.AllCard = new List<CardBase>();
 
-            Core.LoadRules();
+            //Core.LoadRules();
             Core.GenerateAction();
 
             Create.CreateHiro(false);
@@ -1613,7 +1655,7 @@ namespace BattleTable
             for (int i = 0; i < card.Trait.Count; i++)
             {
                 if (card.Trait[i] != null)
-                    Ui.Trait.text += $"{card.Trait[i].Name} \n";
+                    Ui.Trait.text += $"{card.Trait[i]} \n";
                 //Ui.Stat.text += $"{card.Stat[i].IconName} {card.StatSize[i]} ";
             }
 

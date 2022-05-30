@@ -158,8 +158,8 @@ namespace Saver
             root.Add(new XElement("Trait", a));
             for (int i = 0; i < a; i++)
             {
-                root.Add(new XElement("Trait" + i, cardBase.Trait[i].Name));
-                root.Add(new XElement("TraitSize" + i, cardBase.TraitSize[i]));
+                root.Add(new XElement("Trait" + i, cardBase.Trait));
+               // root.Add(new XElement("TraitSize" + i, cardBase.TraitSize[i]));
             }
 
             string path1 = "";
@@ -259,21 +259,20 @@ string someString = Encoding.ASCII.GetString(bytes);
 
 
                 a = int.Parse(root.Element("Trait").Value);
-                cardBase.Trait = new List<HeadSimpleTrigger>();
-                cardBase.TraitSize = new List<int>();
+                cardBase.Trait = new List<string>();
                 for (int i = 0; i < a; i++)
                 {
-                    cardBase.Trait.Add(null);
+                    cardBase.Trait.Add(root.Element($"Trait{i}").Value);
                     cardBase.TraitSize.Add(0);
 
-                    data = root.Element($"Trait{i}").Value;
-                    //Debug.Log()
-                    b = gameSetting.Rule.FindIndex(x => x.Name == data);
-                    if (b >= 0)
-                    {
-                        cardBase.Trait[i] = gameSetting.Rule[b];
-                        cardBase.TraitSize[i] = int.Parse(root.Element($"TraitSize{i}").Value);
-                    }
+                    //data = root.Element($"Trait{i}").Value;
+                    ////Debug.Log()
+                    //b = gameSetting.Rule.FindIndex(x => x.Name == data);
+                    //if (b >= 0)
+                    //{
+                    //    cardBase.Trait[i] = gameSetting.Rule[b];
+                    //    //cardBase.TraitSize[i] = int.Parse(root.Element($"TraitSize{i}").Value);
+                    //}
                 }
 
                 //Load Image
@@ -525,12 +524,13 @@ string someString = Encoding.ASCII.GetString(bytes);
         }
 
 
-        public static void SaveSimpleRule(HeadRule head, int a)
+        public static void SaveSimpleRule(HeadRule head)
         {
             SimpleTrigger simpleTrigger = new SimpleTrigger();
-            string path = Application.dataPath + $"/Resources/Data/Rule/SimpleRule{a}"; ;
+            string path = Application.dataPath + $"/Resources/Data/SimpleRule/{head.Tag}_{head.Name}";
             if (path != "")
             {
+                int a = 0;
                 XElement root = new XElement("root");
                 string str = "" + head.Name
                    + "_" + head.Cost
@@ -636,9 +636,9 @@ string someString = Encoding.ASCII.GetString(bytes);
 
 
         private static XElement root;
-        public static void SetSimpleRoot(int a)
+        public static void SetSimpleRoot(string tag)
         {
-            string path = Application.dataPath + $"/Resources/Data/Rule/SimpleRule{a}";
+            string path = Application.dataPath + $"/Resources/Data/SimpleRule/{tag}";
             if (path != "")
             {
                 root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
@@ -674,9 +674,9 @@ string someString = Encoding.ASCII.GetString(bytes);
             return path;
         }
 
-        public static void SaveRule(HeadRule head, int a)
+        public static void SaveRule(HeadRule head)
         {
-            string path = Application.dataPath + $"/Resources/Data/Rule/{head.Tag}_{a}"; ;
+            string path = Application.dataPath + $"/Resources/Data/Rule/{head.Tag}_{head.Name}"; ;
             if (path != "")
             {
                 XElement root = new XElement("root");
@@ -772,10 +772,10 @@ string someString = Encoding.ASCII.GetString(bytes);
             }
         }
 
-        public static HeadRule LoadRule(string tag, int a)
+        public static HeadRule LoadRule(string tag)
         {
             HeadRule head = null;
-            string path = Application.dataPath + $"/Resources/Data/Rule/{tag}_{a}";
+            string path = Application.dataPath + $"/Resources/Data/Rule/{tag}";
             if (path != "")
             {
 

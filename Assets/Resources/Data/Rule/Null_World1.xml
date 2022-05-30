@@ -1,0 +1,12 @@
+<root>
+  <HeadName>World1</HeadName>
+  <HeadCost>0</HeadCost>
+  <HeadNameText>Благочестие</HeadNameText>
+  <Tag>Null</Tag>
+  <HeadCostExtend>0</HeadCostExtend>
+  <HeadLevelCap>0</HeadLevelCap>
+  <HeadPlayer>false</HeadPlayer>
+  <HeadNeedRuleCount>0</HeadNeedRuleCount>
+  <HeadEnemyRuleCount>0</HeadEnemyRuleCount>
+  <TriggerActionCount>0</TriggerActionCount>
+</root>

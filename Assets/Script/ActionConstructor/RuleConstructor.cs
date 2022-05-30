@@ -873,7 +873,7 @@ public class RuleConstructor : MonoBehaviour
             case ("SaveAll"):
                 break;
             case ("Zip"):
-                SaveRuleSample(curentRule);
+                SaveRuleSample();
                 break;
             case ("ZipAll"):
                 SaveRuleSampleAll();
@@ -945,7 +945,7 @@ public class RuleConstructor : MonoBehaviour
                        // SwitchTag(int.Parse(cod[2]));
                         break;
                     case ("LoadRule"):
-                        LoadRule(com[2], int.Parse( com[3]));
+                        LoadRule(com[2] +"_"+ com[3], int.Parse( com[4]));
                         break;
                     case ("NewRule"):
                         curentRule = -1;
@@ -1388,9 +1388,10 @@ public class RuleConstructor : MonoBehaviour
         head = new HeadRule();
         oldTag = head.Tag = frame.Tag[0];
         XMLSaver.SetRuleMainFrame(frame);
-        library.Rule = new List<SubRuleHead>();
         Ui.TextWindowButton.onClick.AddListener(() => LoadData());
 
+       // library.Rule = new List<SubRuleHead>();
+       // SaveCore();
         CoreLoad();
         ReturnTag();
         SysComGenerate();
@@ -1558,7 +1559,7 @@ public class RuleConstructor : MonoBehaviour
        
         for (int i = 0; i < library.Rule[a].Rule.Count; i++)
         {
-            ruleLable += LinkSupport(defColor, $"Switch_LoadRule_{text}_{i}", library.Rule[a].Rule[i] + "\n");
+            ruleLable += LinkSupport(defColor, $"Switch_LoadRule_{text}_{library.Rule[a].Rule[i]}_{i}", library.Rule[a].Rule[i] + "\n");
         }
 
         TT1.text = ruleLable;
@@ -1567,7 +1568,7 @@ public class RuleConstructor : MonoBehaviour
     void LoadRule(string tag, int i)
     {
         curentRule = i;
-        SetRule(XMLSaver.LoadRule(tag,i));
+        SetRule(XMLSaver.LoadRule(tag));
     }
 
     public void SetRule(HeadRule headRule)
@@ -1601,23 +1602,25 @@ public class RuleConstructor : MonoBehaviour
         LoadAllText();
     }
 
-    void SaveRule(int i)
+    void SaveRule()
     {
-         XMLSaver.SaveRule(head, i);
+         XMLSaver.SaveRule(head);
     }
-    void SaveRuleSample(int i)
+    void SaveRuleSample()
     {
-        XMLSaver.SaveSimpleRule(head, i);
+        XMLSaver.SaveSimpleRule(head);
     }
     void SaveRuleSampleAll()
     {
         HeadRule rule = null;
+        string str = "";
         for (int i = 0; i < library.Rule.Count; i++)
         {
             for (int i1 = 0; i1 < library.Rule[i].Rule.Count; i1++)
             {
-                rule = XMLSaver.LoadRule(library.Rule[i].Name,i1);
-                XMLSaver.SaveSimpleRule(rule, i);
+                str = library.Rule[i].Name + "_" + library.Rule[i].Rule[i1];
+                rule = XMLSaver.LoadRule(str);
+                XMLSaver.SaveSimpleRule(rule);
             }
         }
     }
@@ -1651,7 +1654,6 @@ public class RuleConstructor : MonoBehaviour
             }
 
             library.Rule[a].Rule[curentRule] = head.Name;
-           // Ui.SelectorLibrary.GetChild(curentRule+1).GetChild(0).gameObject.GetComponent<Text>().text = head.Name;
         }
         else if( a != -1)
         {
@@ -1670,7 +1672,7 @@ public class RuleConstructor : MonoBehaviour
         oldTag = head.Tag;
         SwitchTag(a);
 
-        SaveRule(curentRule);
+        SaveRule();
         SaveCore();
     }
 
@@ -1778,6 +1780,7 @@ public class HeadRule
 }
 
 
+[System.Serializable]
 public class SubRuleHead
 {
     public string Name;
