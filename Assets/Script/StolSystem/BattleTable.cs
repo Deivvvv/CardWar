@@ -28,7 +28,7 @@ namespace BattleTable
                 for (int i1 = 0; i1 < gameSetting.Library.Rule[i].Rule.Count; i1++)
                 {
                     str = gameSetting.Library.Rule[i].Name + "_" + gameSetting.Library.Rule[i].Rule[i1];
-                    gameSetting.Rule.Add(Core.ReadRule(str));
+                    gameSetting.Rule.Add(Core.ReadRuleSimple(str));
 
                 }
 
@@ -378,6 +378,19 @@ namespace BattleTable
             card.DefAction = headSimple.SimpleTriggers[0].Action[0];
         }
 
+        public static HeadSimpleTrigger ReadRuleSimple(string str)
+        {
+            XMLSaver.SetSimpleRoot(str);
+            HeadSimpleTrigger simpleTrigger = new HeadSimpleTrigger();
+            LoadHead(simpleTrigger);
+            LoadHeadExtended(simpleTrigger);
+
+            //LoadTrigger(simpleTrigger);
+            //for (int i = 0; i < simpleTrigger.SimpleTriggers.Count; i++)
+            //    LoadTriggerExtended(simpleTrigger, i);
+
+            return simpleTrigger;
+        }
         public static HeadSimpleTrigger ReadRule(string str)
         {
             XMLSaver.SetSimpleRoot(str);

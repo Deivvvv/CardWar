@@ -91,7 +91,8 @@ public class CardConstructor : MonoBehaviour
         switch (com[0])
         {
             case ("Selector"):
-                GenerateTextExtend(com[1]);
+                //GenerateTextExtend(com[1]);
+                LoadSelector(com[1]);
                 break;
             case ("Select"):
                 a = int.Parse( com[2]);
@@ -126,13 +127,14 @@ public class CardConstructor : MonoBehaviour
                 a = int.Parse(com[2]);
                 switch (com[1])
                 {
-                    case ("Minus"):
+                    case ("Down"):
                         DeliteRule(a);
                         break;
                 }
                 break;
 
             case ("Stat"):
+                Debug.Log(com[1]);
                 a = int.Parse(com[2]);
                 switch (com[1])
                 {
@@ -156,6 +158,12 @@ public class CardConstructor : MonoBehaviour
         for(int i=0; i < Ui.CardBody.Count; i++)
         {
             a = cardModSize + i;
+            if (a == curentNum)
+                Ui.CardBody[i].gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+            else
+                Ui.CardBody[i].gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+
+
             if (a < LocalCard.Count)
             {
                 LocalCard[a].Body = Ui.CardBody[i];
@@ -171,7 +179,7 @@ public class CardConstructor : MonoBehaviour
     void CardCouner()
     {
         if(curentNum != -1)
-            Ui.CounterCard.text = $"{curentNum}/{LocalCard.Count}";
+            Ui.CounterCard.text = $"{curentNum+1}/{LocalCard.Count}";
         else
             Ui.CounterCard.text = $"0/{LocalCard.Count}";
     }
@@ -211,27 +219,27 @@ public class CardConstructor : MonoBehaviour
         
         str += "\nВыход на стол: ";
         str1 = (cardBase.WalkMood != null) ? cardBase.WalkMood.Name : "Null";
-        str += LinkSupport(color, "Selector_Rule_Walk", $"{str1}");
+        str += LinkSupport(color, "Selector_Rule*Walk", $"{str1}");
 
         str += "\nБазовый набор атак: ";
         str1 = (cardBase.ActionMood != null) ?  cardBase.ActionMood.Name : "Null";
-        str += LinkSupport(color, "Selector_Rule_Acton", $"{str1}");
+        str += LinkSupport(color, "Selector_Rule*Acton", $"{str1}");
 
         str += "\nБазовый набор защиты: ";
         str1 = (cardBase.DefMood != null) ?  cardBase.DefMood.Name : "Null";
-        str += LinkSupport(color, "Selector_Rule_Def", $"{str1}");
+        str += LinkSupport(color, "Selector_Rule*Def", $"{str1}");
 
         str += "\nХарактеристики\n";
         for (int i =0; i < cardBase.Stat.Count; i++)
         {
-            str += LinkSupport(color, $"Selector_Stat_{i}", $"<sprite name={cardBase.Stat[i].IconName}> {cardBase.Stat[i].Name}");
+            str += LinkSupport(color, $"Selector_Stat*{i}", $"<sprite name={cardBase.Stat[i].IconName}> {cardBase.Stat[i].Name}");
             str += $"   { cardBase.StatSize[i]} *{cardBase.Stat[i].Cost}/4 "; 
-            str += LinkSupport(color, $"Stat_Minus_{i}", $"-");
+            str += LinkSupport(color, $"Stat_Down_{i}", $"-");
             str += " ";
-            str += LinkSupport(color, $"Stat_Plus_{i}", $"+");
+            str += LinkSupport(color, $"Stat_Up_{i}", $"+");
             str += "\n";
         }
-        str += LinkSupport(color, $"Selector_Stat_{cardBase.Stat.Count}", $"Дополнительный параметр");
+        str += LinkSupport(color, $"Selector_Stat*{cardBase.Stat.Count}", $"Дополнительный параметр");
 
         HeadSimpleTrigger head = null;
         str += "\nНавыки\n";
@@ -239,14 +247,14 @@ public class CardConstructor : MonoBehaviour
         {
             head = gameSetting.Rule[cardBase.TraitSize[i]];
             //Debug.Log(cardBase.Trait[i]);
-            str += LinkSupport(color, $"Selector_Rule_{i}", $"{  head.Name} ");
+            str += LinkSupport(color, $"Selector_Rule*{i}", $"{head.Name} ");
             str += $"  {head.Cost}/4 ";
-            str += LinkSupport(color, $"Rule_Minus_{i}", $"-");
+            str += LinkSupport(color, $"Rule_Down_{i}", $"-");
            // str += " ";
            // str += LinkSupport(color, $"Rule_Plus_{i}", $"+");
             str += "\n";
         }
-        str += LinkSupport(color, $"Selector_Rule_{cardBase.Trait.Count}", $"Дополнительный Навык");
+        str += LinkSupport(color, $"Selector_Rule*{cardBase.Trait.Count}", $"Дополнительный Навык");
         str += "\n";
         str += $"\nЦена карты ({cardBase.Mana})";
 
@@ -362,6 +370,19 @@ public class CardConstructor : MonoBehaviour
     //}
     //#endregion
     #region IO card System
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+            PointerClick();
+        if (Input.GetMouseButtonDown(1))
+        {
+            selector.gameObject.active = false;
+            //Ui.TextWindow.active = false;
+            //ComandClear();
+            // Ui.TextWindow.active = false;
+        }
+    }
+
     void Enject()
     {
 
@@ -437,6 +458,7 @@ public class CardConstructor : MonoBehaviour
             CardView.ViewCard(card);
 
         }
+        CardCouner();
 
         //Sort();
     }
@@ -481,8 +503,9 @@ public class CardConstructor : MonoBehaviour
 
             //Выгрузка данных в редактор героев
             Ui.NameFlied.text = cardBase.Name;
+            ReCalculate();
+            CardCouner();
         }
-        ReCalculate();
     }
     void Delite()
     {
@@ -721,6 +744,7 @@ public class CardConstructor : MonoBehaviour
 
     void StatUp(int a)
     {
+        Debug.Log(a);
         cardBase.StatSize[a]++;
         ReCalculate();
         if (cardBase.Mana > 10)
@@ -732,6 +756,7 @@ public class CardConstructor : MonoBehaviour
     }
     void StatDown(int a)
     {
+        Debug.Log(a);
         if (cardBase.StatSize[a] > 1)
         {
             cardBase.StatSize[a]--;
@@ -805,10 +830,12 @@ public class CardConstructor : MonoBehaviour
         //if (a == -1)
         //    return;
         // Ui.RuleSelectorMain.active = false;
+        Debug.Log($"{a} {b} {c}");
         //Debug.Log(a);
         string str = gameSetting.Library.Rule[b].Name + "_" + gameSetting.Library.Rule[b].Rule[c];
         int d = gameSetting.Rule.FindIndex(x => x.Name == gameSetting.Library.Rule[b].Rule[c]);
 
+       // Debug.Log(cardBase.Trait.Count);
         if (a >= cardBase.Trait.Count)
         {
             cardBase.Trait.Add(str);
@@ -820,10 +847,10 @@ public class CardConstructor : MonoBehaviour
 
         //StatCaseUi caseUi = Ui.RuleUi[a];
         //int b = gameSetting.Rule.Find(x => x.Name == str);
-        cardBase.StatSize[a] = b;
+        cardBase.TraitSize[a] = d;
         // caseUi.Name.text = str;
         ReCalculate();
-
+        selector.gameObject.active = false;
     }
 
     void SwitchStat(int a, int b)
@@ -841,6 +868,7 @@ public class CardConstructor : MonoBehaviour
         cardBase.StatSize[a] = 0;
         cardBase.Stat[a] = gameSetting.Library.Constants[b];
         StatUp(a);
+        selector.gameObject.active = false;
 
         // caseUi.Name.text = cardBase.Stat[a].Name;
         // caseUi.Icon.sprite = cardBase.Stat[a].Icon;
@@ -979,10 +1007,12 @@ public class CardConstructor : MonoBehaviour
     void LoadSelector(string data)
     {
 
-        string[] com = data.Split('_');
+        //Debug.Log($"{data}");
+        string[] com = data.Split('*');
         int a = 0; 
         int b = 0;
         int sizeData =0;
+        //Debug.Log($"{data} {sizeData} {a} {b}");
         switch (com[0])
         {
             case("Race"):
@@ -1008,26 +1038,33 @@ public class CardConstructor : MonoBehaviour
                 break;
             default:
                 a=int.Parse(com[1]);
-                b = gameSetting.Rule.FindIndex(x => x.Name == com[0]);
+                b = int.Parse(com[2]);
                 sizeData = gameSetting.Library.Rule[b].Rule.Count;
 
                 break;
         }
         selector.gameObject.active = true;
+        //Debug.Log($"{data} {sizeData} {a} {b}");
 
         //if(selector.ChildCount > sizeData)
         //for(int i = sizeData; i< selector.ChildCount;)
 
         GameObject GO = null;
-        while(selector.childCount > sizeData)
+        if (selector.childCount > sizeData) 
         {
-            Destroy(selector.GetChild(0).gameObject);
+            for (int i = selector.childCount; i > sizeData; i--)
+            {
+                Debug.Log($"{sizeData} {selector.childCount} {i}");
+                Destroy(selector.GetChild(i-1).gameObject);
+            } 
         }
-
-        while (selector.childCount < sizeData)
+        else if  (selector.childCount < sizeData)
         {
-            GO = Instantiate(Ui.OrigButton);
-            GO.transform.SetParent(selector);
+            for (int i = selector.childCount; i < sizeData; i++)
+            {
+                GO = Instantiate(Ui.OrigButton);
+                GO.transform.SetParent(selector);
+            }
         }
 
         //gameSetting.Library.Legions.Count;
@@ -1056,8 +1093,9 @@ public class CardConstructor : MonoBehaviour
                     text.text = gameSetting.Library.Rule[b].Rule[i];
                     break;
             }
-
-            SetSwitchButton(i, GO.GetComponent<Button>(), data, a,b);
+            Debug.Log(text.text);
+            //Debug.Log($"{data} {i} {a} {b}");
+            SetSwitchButton(i, GO.GetComponent<Button>(), com[0], a,b);
         }
     }
 
@@ -1080,10 +1118,10 @@ public class CardConstructor : MonoBehaviour
                 //text.text = gameSetting.Lybrary.Constants[i].Name;
                 break;
             case ("Rule"):
-                button.onClick.AddListener(() => LoadSelector(gameSetting.Library.Rule[a].Name +"_"+b));
+                button.onClick.AddListener(() => LoadSelector(gameSetting.Library.Rule[a].Name +"*"+b + "*" + a));
                 break;
             default:
-                button.onClick.AddListener(() => SwitchRule(a, b,c));
+                button.onClick.AddListener(() => SwitchRule(b, c,a));
                 //text.text = gameSetting.Lybrary.Rule[b].Rule[i].Name;
                 break;
         }
@@ -1092,6 +1130,7 @@ public class CardConstructor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         CreateCore();
 
         PreLoad();
@@ -1100,12 +1139,8 @@ public class CardConstructor : MonoBehaviour
 
 
         // CreateStatButton();
-        Inject();
+       // Inject();
 
-        GameObject GO = Instantiate(Ui.SelectorOrigin);
-        selector = GO.transform;
-        selector.SetParent(Ui.SelectorOrigin.transform);
-        GO.active = false;
         //CreateRuleList();
         //LoadRuleSelector(0);
 
@@ -1118,8 +1153,12 @@ public class CardConstructor : MonoBehaviour
         XMLSaver.SetGameSetting(gameSetting);
         XMLSaver.LoadMainRule(gameSetting.Library);
 
+        GameObject GO = Instantiate(Ui.SelectorOrigin);
+        selector = GO.transform;
+        selector.SetParent(Ui.SelectorOrigin.transform);
+        GO.active = false;
 
-       // CreateSystemButton();
+        // CreateSystemButton();
 
 
         // gameSetting.library.Ru

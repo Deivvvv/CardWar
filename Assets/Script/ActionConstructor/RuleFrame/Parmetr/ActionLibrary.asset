@@ -32,16 +32,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 065c84027d5bdfa498e6ccc0535fd02e, type: 2}
   - {fileID: 11400000, guid: 1306ef1596e24244197eb800d48d7479, type: 2}
   - {fileID: 11400000, guid: 9ac3b8f2d51e142459286049200ce410, type: 2}
-  Effects:
-  - {fileID: 11400000, guid: 6b2991ef6a22d6846b4b35bf439af38c, type: 2}
-  - {fileID: 11400000, guid: f2aba4f49361b024cbf61e739fc6b3ca, type: 2}
-  - {fileID: 11400000, guid: 331fbbe9408c04f4dbec7745bf818585, type: 2}
-  - {fileID: 11400000, guid: a57eac89fd8a8134584b301a70bdc54c, type: 2}
-  - {fileID: 11400000, guid: fd28fcbde4080af4db891b8637140f32, type: 2}
-  - {fileID: 11400000, guid: 8be5ef80d9efdec4c94ee843e8f7d2e2, type: 2}
-  RuleName:
-  - Walk
-  - atk1
-  - atk2
-  - Double damage
-  - thorns
+  Rule:
+  - Name: Null
+    Rule:
+    - World1
+    - World
