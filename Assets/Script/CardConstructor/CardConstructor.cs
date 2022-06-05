@@ -23,7 +23,6 @@ public class CardConstructor : MonoBehaviour
     private int curentConstant;
 
     //ResetSystem
-    private CardConstructor cardConstructor;
     private int oldAllCard;
     private List<CardBase> oldCard;
     private List<int> newCard;
@@ -32,7 +31,7 @@ public class CardConstructor : MonoBehaviour
     private int cardModSize= 0;
     private int curentNum;
     private CardBase cardBase;
-    public List<CardBase> LocalCard;
+    //public List<CardBase> LocalCard;
     // [SerializeField]
     [SerializeField]
     private CardConstructorUi Ui;
@@ -152,55 +151,13 @@ public class CardConstructor : MonoBehaviour
         }
     }
 
-    void CardViews()
-    {
-        int a;
-        for(int i=0; i < Ui.CardBody.Count; i++)
-        {
-            a = cardModSize + i;
-            if (a == curentNum)
-                Ui.CardBody[i].gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
-            else
-                Ui.CardBody[i].gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
-
-
-            if (a < LocalCard.Count)
-            {
-                LocalCard[a].Body = Ui.CardBody[i];
-                CardView.ViewCard(LocalCard[a]);
-            }
-            else
-            {
-                CardView.ClearCard(Ui.CardBody[i]);
-            }
-
-        }
-    }
+    
     void CardCouner()
     {
         if(curentNum != -1)
-            Ui.CounterCard.text = $"{curentNum+1}/{LocalCard.Count}";
+            Ui.CounterCard.text = $"{curentNum+1}/{gameSetting.AllCard.Count}";
         else
-            Ui.CounterCard.text = $"0/{LocalCard.Count}";
-    }
-    void Mod(bool up)
-    {
-        if (up)
-        {
-            if (cardModSize + Ui.CardBody.Count < LocalCard.Count)
-            {
-                cardMod++;
-                //SwitchCard(-1);
-            }
-        }
-        else if (cardMod > 0)
-        {
-            //SwitchCard(-1);
-            cardMod--;
-        }
-
-        cardModSize = cardMod * Ui.CardBody.Count;
-        CardViews();
+            Ui.CounterCard.text = $"0/{gameSetting.AllCard.Count}";
     }
 
     private string LinkSupport(string colorText, string linkText, string mainText)
@@ -350,14 +307,14 @@ public class CardConstructor : MonoBehaviour
 
     //    if (curentFiltr == -1)
     //    {
-    //        items = LocalCard;
+    //        items = gameSetting.AllCard;
     //    }
     //    else
     //    {
     //        if (filterRevers)
-    //            items = LocalCard.OrderBy(i => i.Stat[curentFiltr]);
+    //            items = gameSetting.AllCard.OrderBy(i => i.Stat[curentFiltr]);
     //        else
-    //            items = LocalCard.OrderByDescending(i => i.Stat[curentFiltr]);
+    //            items = gameSetting.AllCard.OrderByDescending(i => i.Stat[curentFiltr]);
 
 
     //    }
@@ -423,18 +380,18 @@ public class CardConstructor : MonoBehaviour
                 //path = $"/Resources/Hiro{a}";
                 //gameData.AllCard[a] = path;
 
-                LocalCard[a].Body.gameObject.active = true;
-                card.Body = LocalCard[a].Body;
-                LocalCard[a] = card;
+                //gameSetting.AllCard[a].Body.gameObject.active = true;
+                //card.Body = gameSetting.AllCard[a].Body;
+                //gameSetting.AllCard[a] = card;
 
-                CardView.ViewCard(card);
+                //CardView.ViewCard(card);
 
 
                 gameData.BlackList.RemoveAt(0);
             }
             else
             {
-                // path = origPath + $"{LocalCard.Count}";
+                // path = origPath + $"{gameSetting.AllCard.Count}";
 
                 AddEdit(LocalCard.Count, card);
                 //    AddEdit(LocalCard.Count);
@@ -509,15 +466,16 @@ public class CardConstructor : MonoBehaviour
     }
     void Delite()
     {
+        ReLoadCard();
         if (curentNum != -1)
         {
-            gameData.BlackList.Add(curentNum);
+           // gameData.BlackList.Add(curentNum);
             //LocalCard[curentNum].Body.gameObject.active = false;
             // Ui.
             SwitchCard(-1);
         }
 
-        ReLoadCard();
+        //ReLoadCard();
 
         Ui.NameFlied.text = cardBase.Name;
        // ViewCard();
@@ -533,7 +491,6 @@ public class CardConstructor : MonoBehaviour
 
         Core.LoadGameSetting(gameSetting);
         Core.LoadRules();
-        cardConstructor = gameObject.GetComponent<CardConstructor>();
 
 
         curentNum = -1;
@@ -547,9 +504,9 @@ public class CardConstructor : MonoBehaviour
 
 
         //GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
-        //GO.GetComponent<Image>().color = Ui.SelectColor[0];
+        //GO.GetComponent<Image>().color = gameSetting.SelectColor[0];
         //GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
-        Ui.NewCardButton.GetComponent<Image>().color = Ui.SelectColor[0];
+        Ui.NewCardButton.GetComponent<Image>().color = gameSetting.SelectColor[0];
         Ui.NewCardButton.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); 
 
         Ui.ModButton[0].onClick.AddListener(() => Mod(false)); 
@@ -562,12 +519,9 @@ public class CardConstructor : MonoBehaviour
         Ui.SaveButton.onClick.AddListener(() => Save());
         Ui.ResetButton.onClick.AddListener(() => Reset());
 
-        gameData = new GameData();
-        gameData.BlackList = new List<int>();
+        gameData = XMLSaver.LoadGameData(origPathAlt);
 
         oldAllCard = gameData.AllCard;
-
-        XMLSaver.LoadGameData(origPathAlt, cardConstructor);
 
         LoadBase();
 
@@ -615,7 +569,7 @@ public class CardConstructor : MonoBehaviour
             Button button = Ui.CardBody[i].gameObject.GetComponent<Button>();
             SwitchCardButton(i, button);
 
-            Ui.CardBody[i].gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+            Ui.CardBody[i].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[1];
             //SwitchCardButton
         }
     }
@@ -728,7 +682,7 @@ public class CardConstructor : MonoBehaviour
         Button button = GO.GetComponent<Button>();
         SwitchCardButton(a, button);
 
-        GO.GetComponent<Image>().color = Ui.SelectColor[1];
+        GO.GetComponent<Image>().color = gameSetting.SelectColor[1];
 
         LocalCard[i].Body = GO.transform;
 
@@ -795,12 +749,12 @@ public class CardConstructor : MonoBehaviour
             if(curentNum < cardModSize + Ui.CardBody.Count && curentNum >= cardModSize)
             //if (cardModSize + curentNum < LocalCard.Count)
             {
-                Ui.CardBody[curentNum - cardModSize].gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
-               // Ui.NewCardButton.gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+                Ui.CardBody[curentNum - cardModSize].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[1];
+               // Ui.NewCardButton.gameObject.GetComponent<Image>().color = gameSetting.SelectColor[0];
             }
         }
         else
-            Ui.NewCardButton.gameObject.GetComponent<Image>().color = Ui.SelectColor[1];
+            Ui.NewCardButton.gameObject.GetComponent<Image>().color = gameSetting.SelectColor[1];
 
         if (a == -1)
             curentNum = -1;
@@ -808,9 +762,9 @@ public class CardConstructor : MonoBehaviour
             curentNum = cardModSize + a;
 
         if (curentNum != -1)
-            Ui.CardBody[a].gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+            Ui.CardBody[a].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[0];
         else
-            Ui.NewCardButton.gameObject.GetComponent<Image>().color = Ui.SelectColor[0];
+            Ui.NewCardButton.gameObject.GetComponent<Image>().color = gameSetting.SelectColor[0];
         //CardCouner();
     }
     #endregion

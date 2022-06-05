@@ -1640,11 +1640,14 @@ namespace BattleTable
             hiro.Ui.text = $"Hp {hiro.Hp} Card: { hiro.CardHandFull.Count - hiro.NextCard} Mana ({hiro.ManaMax}|{hiro.Mana}|{hiro.ManaCurent})";
         }
        
-}
+    }
+
+
 
     public static class CardView
     {
         public static GameSetting gameSetting;
+        private int cardMod = 0;
         public static void ViewCard(CardBase card)
         {
             CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
@@ -1696,5 +1699,80 @@ namespace BattleTable
 
         }
 
+       /*
+        функция поэтаной загрузки для гильдии и не гилбьдии
+       доп функция разбивающия списки на несколько категорий и затем собирающая обратно
+       существа-спелы = нормальные, разработчика, легендарки
+        гильдия_категория_под раздел_имя карты в виде номера
+        */
+       void PreLoad()
+        {
+            //запрос в систему использованием имени гильдии.
+            //если команда(all)- система принудительно вернет всю библиотеку
+            //если команда(не neitral)- система вернет ее + neitral
+            //формат запроса (гильдия) (перечесление запрашиваемых областей)
+            /*
+             гильдия
+                группа
+                    тип достпа группы
+                        карты внутри группы
+             
+             */
+
+        }
+        public void LoadAllCard()
+        {
+            
+        }
+
+        public static void CardList(ref List<CardBase> CardBody, List<Transform> CardBody, int cardModSize)
+        {
+            int a;
+            int cardModSize = 
+            for (int i = 0; i < CardBody.Count; i++)
+            {
+                a = cardModSize + i;
+                if (a == curentNum)
+                    Ui.CardBody[i].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[0];
+                else
+                    Ui.CardBody[i].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[1];
+
+
+                if (a < CardSize.Count)
+                {
+                    LocalCard[a].Body = CardBody[i];
+                    CardView.ViewCard(CardOrig[a]);
+                }
+                else
+                {
+                    CardView.ClearCard(CardBody[i]);
+                }
+
+            }
+        }
+
     }
+
+
+    void Mod(bool up)
+    {
+        if (up)
+        {
+            if (cardModSize + Ui.CardBody.Count < LocalCard.Count)
+            {
+                cardMod++;
+                //SwitchCard(-1);
+            }
+        }
+        else if (cardMod > 0)
+        {
+            //SwitchCard(-1);
+            cardMod--;
+        }
+
+        cardModSize = cardMod * Ui.CardBody.Count;
+        CardViews();
+    }
+
+    public static void Next
 }

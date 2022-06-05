@@ -37,6 +37,12 @@ MonoBehaviour:
     Player: 0
     NeedRule: []
     EnemyRule: []
+  AllCard: []
+  PlayAnotherCardBody: 
+  AnotherDieBody: 
+  AnotherActionBody: 
+  NextTurnBody: 
+  NextTurnBodyElse: 
   Library: {fileID: 11400000, guid: 6450eba1d97923e4aa556c41f7c46209, type: 2}
   origPath: /Resources/Data/Hiro
   TargetColor:
@@ -49,3 +55,6 @@ MonoBehaviour:
   RuleSize: 5
   SlotSize: 5
   StartHandSize: 5
+  SelectColor:
+  - {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 1}
+  - {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}

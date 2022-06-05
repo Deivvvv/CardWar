@@ -9,6 +9,9 @@ public class GameSetting : ScriptableObject
     public List<HeadSimpleTrigger> Rule;
     public List<CardBase> AllCard;
 
+    public string[] AllCardPath;
+   // public int AllCardSize;
+
 
     public List<SimpleTrigger> PlayCard;
 
@@ -55,5 +58,8 @@ public class GameSetting : ScriptableObject
     [Space(10)]
     public int SlotSize = 5;
     public int StartHandSize = 5;
-    // public Color[] SelectColor; ??
+
+
+
+    public Color[] SelectColor;
 }

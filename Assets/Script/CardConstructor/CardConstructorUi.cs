@@ -15,17 +15,6 @@ public class CardConstructorUi : MonoBehaviour
 
     public Button GuildButton;
 
-    public Button RaceButton;
-    public Text RaceText;
-
-    public Button LegionButton;
-    public Text LegionText;
-
-    public Button CivilianButton;
-    public Text CivilianText;
-
-    public List<StatCaseUi> StatUi;
-    public List<StatCaseUi> RuleUi;
 
 
 
@@ -34,8 +23,6 @@ public class CardConstructorUi : MonoBehaviour
 
     public Transform BaseFiltr;
 
-
-    public Text ManaCount;
 
     public GameObject OrigStat;
     public GameObject OrigCard;
@@ -52,7 +39,7 @@ public class CardConstructorUi : MonoBehaviour
     public Button SaveButton;
     public Button ResetButton;
 
-    public Color[] SelectColor;
+   // public Color[] SelectColor;
 
 
     public Transform ConstantSelectorMain;

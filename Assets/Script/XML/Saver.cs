@@ -43,14 +43,14 @@ namespace Saver
             File.WriteAllText($"{path}.xml", saveDoc.ToString());
 
         }
-        public static void LoadGameData(string path, CardConstructor cardConstructor)
+        public static GameData LoadGameData(string path)
         {
+            GameData gameData = new GameData();
 
             if (path != "")
             {
                 XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
 
-                GameData gameData = new GameData();
 
                 gameData.AllCard = int.Parse(root.Element("AllCard").Value);
 
@@ -62,10 +62,11 @@ namespace Saver
                     gameData.BlackList.Add(int.Parse(root.Element($"BlackList{i}").Value));
                 }
 
-                cardConstructor.TransfData(gameData, null);
+               // cardConstructor.TransfData(gameData, null);
 
             }
 
+            return gameData;
         }
 
         //CardSet
@@ -194,7 +195,7 @@ string someString = Encoding.ASCII.GetString(bytes);
             if (path != "")
             {
                 XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
-
+                Debug.Log(path);
 
                 cardBase.Name = root.Element("Name").Value;
                 //Debug.Log(path);

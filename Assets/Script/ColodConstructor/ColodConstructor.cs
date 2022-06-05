@@ -47,31 +47,18 @@ public class ColodConstructor : MonoBehaviour
     void Start()
     {
         XMLSaver.SetGameSetting(gameSetting);
-        origPath = Application.dataPath + $"/Resources/Hiro";
+        origPath = Application.dataPath + $"/Resources/Data/Hiro";
         origPathAlt = Application.dataPath + $"/Resources/CardSet";
         LoadBase();
         Calculation();
     }
 
-    public void TransfData(CardSet cardSet1)
-    {
-        cardSet = cardSet1;
-    }
-
     void LoadBase()
     {
-      //  cardSet =  new CardSet();
-        //GameObject GO = Ui.BaseCard.GetChild(0).gameObject;
-        //GO.GetComponent<Image>().color = Ui.SelectColor[0];
-        //GO.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); ;
-
-        //Ui.EjectButton.onClick.AddListener(() => Enject());
-        //Ui.InjectButton.onClick.AddListener(() => Inject());
-        //Ui.DeliteButton.onClick.AddListener(() => Delite());
-
         Ui.SaveButton.onClick.AddListener(() => Save());
 
-        gameData = new GameData();
+        gameData = XMLSaver.LoadGameData(Application.dataPath + $"/Resources/Data");
+        //gameData = new GameData();
         LocalCard = new List<CardBase>();
         int a = gameData.AllCard;
         string path = "";
@@ -79,7 +66,7 @@ public class ColodConstructor : MonoBehaviour
         for (int i = 0; i < a; i++)
         {
             path = origPath + $"{i}";
-            LocalCard.Add(XMLSaver.Load(origPathAlt));
+            LocalCard.Add(XMLSaver.Load(path));
             NewCard(i);
         }
 
@@ -89,6 +76,8 @@ public class ColodConstructor : MonoBehaviour
             LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
         }
         //XMLSaver.LoadCardSet(origPathAlt, "Colod");
+
+        cardSet = XMLSaver.LoadCardSet(origPathAlt);
 
         SetNewSet();
     }
@@ -157,7 +146,7 @@ public class ColodConstructor : MonoBehaviour
 
                         origCount[i]++;
                         Calculation();
-                        ViewCardTable(i);
+                       // ViewCardTable(i);
                     }
 
                     return;
@@ -174,7 +163,7 @@ public class ColodConstructor : MonoBehaviour
                 origCount[b] = 1;
 
                 origTrans[b].gameObject.active = true;
-                ViewCardTable(b);
+              //  ViewCardTable(b);
             }
             else
             {
@@ -201,7 +190,7 @@ public class ColodConstructor : MonoBehaviour
         Button button = GO.GetComponent<Button>();
         RemoveCardButton(a, button);
 
-        ViewCardTable(a);
+       // ViewCardTable(a);
         // GO.GetComponent<Image>().color = Ui.SelectColor[1];
 
         // LocalCard[i].Body = GO.transform;
@@ -233,7 +222,7 @@ public class ColodConstructor : MonoBehaviour
         }
         else
         {
-            ViewCardTable(a);
+            //ViewCardTable(a);
         }
         Calculation();
         //  if(origCount)
@@ -263,52 +252,54 @@ public class ColodConstructor : MonoBehaviour
         text.text = "" + card.Stat[card.Stat.Count - 1];
         //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
     }
-    void ViewCardTable(int a)
-    {
-
-        CardBase card = LocalCard[origCard[a]];
-
-        Transform body = Ui.DeskCard.GetChild(a);
 
 
-        if (origCount[a] > 1)
-        {
-            body.GetChild(1).gameObject.active = true;
-        }
-        else
-            body.GetChild(1).gameObject.active = false;
+    //void ViewCardTable(int a)
+    //{
 
-       // Debug.Log(a);
-        if (origCount[a] > 2)
-            body.GetChild(0).gameObject.active = true;
-        else
-            body.GetChild(0).gameObject.active = false;
+    //    CardBase card = LocalCard[origCard[a]];
 
-        Transform trans = body.GetChild(2);
+    //    Transform body = Ui.DeskCard.GetChild(a);
 
-      //  Debug.Log(a);
-        //trans.GetChild(1).//портреты
 
-        TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = card.Name;
+    //    if (origCount[a] > 1)
+    //    {
+    //        body.GetChild(1).gameObject.active = true;
+    //    }
+    //    else
+    //        body.GetChild(1).gameObject.active = false;
 
-        text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = "";
-        for (int i = 0; i < card.Stat.Count - 1; i++)
-        {
-           // if (card.Stat[i] > 0)
-        //        text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
-        }
-        // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
+    //   // Debug.Log(a);
+    //    if (origCount[a] > 2)
+    //        body.GetChild(0).gameObject.active = true;
+    //    else
+    //        body.GetChild(0).gameObject.active = false;
 
-     //   Debug.Log(a);
+    //    Transform trans = body.GetChild(2);
 
-        text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = "" + card.Stat[card.Stat.Count - 1];
+    //  //  Debug.Log(a);
+    //    //trans.GetChild(1).//портреты
 
-        trans.GetChild(4).GetChild(0).gameObject.GetComponent<Text>().text = $"X{origCount[a]}";
-      //  text.text = $"X{origCount[a]}";
-     //   Debug.Log(a);
-        //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
-    }
+    //    TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
+    //    text.text = card.Name;
+
+    //    text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
+    //    text.text = "";
+    //    for (int i = 0; i < card.Stat.Count - 1; i++)
+    //    {
+    //       // if (card.Stat[i] > 0)
+    //    //        text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
+    //    }
+    //    // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
+
+    // //   Debug.Log(a);
+
+    //    text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
+    //    text.text = "" + card.Stat[card.Stat.Count - 1];
+
+    //    trans.GetChild(4).GetChild(0).gameObject.GetComponent<Text>().text = $"X{origCount[a]}";
+    //  //  text.text = $"X{origCount[a]}";
+    // //   Debug.Log(a);
+    //    //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
+    //}
 }
