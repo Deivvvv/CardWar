@@ -15,11 +15,24 @@ public class RuleMainFrame : ScriptableObject
 
     [Space(10)]
     public string[] Trigger;
-    public string[] Tag;
+    public FrameExtend[] Tag;
     public string[] Status;
     public string[] Action;
 
     [Space(10)]
     public List<string> KeyWord;
     public List<string> KeyWordStatus;
+
+
+    [Space(10)]
+    public List<string> ClassCard;
+    public List<string> CardTayp;
+}
+
+[System.Serializable]
+public class FrameExtend
+{
+    public string Name = "Null";
+    public string[] Guild;
+
 }

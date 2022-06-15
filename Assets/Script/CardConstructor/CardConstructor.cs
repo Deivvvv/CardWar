@@ -14,40 +14,43 @@ public class CardConstructor : MonoBehaviour
     private List<Legion> actualLegion = new List<Legion>();
 
     private Transform selector;
-    private Transform ruleSelector;
+    //private Transform ruleSelector;
 
     private Guild curentGuild;
+    private string cardChar;
 
     //constant
-    private List<Constant> constants;
-    private int curentConstant;
+    //private List<Constant> constants;
+    //private int curentConstant;
 
     //ResetSystem
-    private int oldAllCard;
-    private List<CardBase> oldCard;
-    private List<int> newCard;
+    //private int oldAllCard;
+    //private List<CardBase> oldCard;
+    //private List<int> newCard;
 
-    private int cardMod;
-    private int cardModSize= 0;
-    private int curentNum;
+    //private int cardMod;
+    //private int cardModSize= 0;
+    //private int selectId;
     private CardBase cardBase;
     //public List<CardBase> LocalCard;
     // [SerializeField]
+
+    [SerializeField]
+    private RuleMainFrame frame;
     [SerializeField]
     private CardConstructorUi Ui;
     //  [SerializeField]
-    private GameData gameData;
-    private GameData gameDataReserv;
+   // private GameData gameData;
 
     [SerializeField]
     private GameSetting gameSetting;
+    private int selectId;
+    //private List<int> newData;
+    //private int curentFiltr;
+    //private bool filterRevers;
 
-    private List<int> newData;
-    private int curentFiltr;
-    private bool filterRevers;
-
-    private string origPath;
-    private string origPathAlt;
+    //private string origPath;
+   // private string origPathAlt;
 
     public RenderTexture rTex;
     public Camera captureCamera;
@@ -154,10 +157,10 @@ public class CardConstructor : MonoBehaviour
     
     void CardCouner()
     {
-        if(curentNum != -1)
-            Ui.CounterCard.text = $"{curentNum+1}/{gameSetting.AllCard.Count}";
+        if(selectId != -1)
+            Ui.CounterCard.text = $"{selectId+1}/{gameSetting.AllCardPath.Count}";
         else
-            Ui.CounterCard.text = $"0/{gameSetting.AllCard.Count}";
+            Ui.CounterCard.text = $"0/{gameSetting.AllCardPath.Count}";
     }
 
     private string LinkSupport(string colorText, string linkText, string mainText)
@@ -168,12 +171,19 @@ public class CardConstructor : MonoBehaviour
     {
         string color = "#F4FF04";
         string str1;
-        string str = $"Имя{cardBase.Name}";
+        string str = $"Имя {cardBase.Name}";
         str += "\nРасса: " + LinkSupport(color, "Selector_Races", $"{cardBase.Races.Name}");
         //str += "\nЛегион: " + LinkSupport(color, "Selector_Legions", $"{cardBase.Legions.Name}");
         //str += "\nСоицальная группа: " + LinkSupport(color, "Selector_CivilianGroups", $"{cardBase.CivilianGroups.Name}");
-        
-        
+
+        str += "\nВид: ";
+        str1 = cardBase.Tayp;
+        str += LinkSupport(color, "Selector_Tayp", $"{str1}");
+
+        str += "\nТип: ";
+        str1 = cardChar;
+        str += LinkSupport(color, "Selector_CardChar", $"{str1}");
+
         str += "\nВыход на стол: ";
         str1 = (cardBase.WalkMood != null) ? cardBase.WalkMood.Name : "Null";
         str += LinkSupport(color, "Selector_Rule*Walk", $"{str1}");
@@ -254,10 +264,6 @@ public class CardConstructor : MonoBehaviour
 
 
         TT1.text = str;
-    }
-    string LoadStatText(string str)
-    {
-        return str;
     }
 
     //#region Filtr System
@@ -360,103 +366,166 @@ public class CardConstructor : MonoBehaviour
             texture.Apply();
             captureCamera.targetTexture = rTex;
 
-           // cardBase.Image = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
-            cardBase.Image = texture.EncodeToPNG();
+            cardBase.Image = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+            // cardBase.Image = texture.EncodeToPNG();
         }
 
         cardBase.Name = Ui.NameFlied.text;
 
-        CardBase card = Core.CardClone(cardBase);
+        // CardBase card = Core.CardClone(cardBase);
 
-
-        if (curentNum < 0)
+        string path;
+        if (selectId != -1)
         {
-            //  string path = "";
-
-            if (gameData.BlackList.Count > 0)
-            {
-                int a = gameData.BlackList[0];
-
-                //path = $"/Resources/Hiro{a}";
-                //gameData.AllCard[a] = path;
-
-                //gameSetting.AllCard[a].Body.gameObject.active = true;
-                //card.Body = gameSetting.AllCard[a].Body;
-                //gameSetting.AllCard[a] = card;
-
-                //CardView.ViewCard(card);
-
-
-                gameData.BlackList.RemoveAt(0);
-            }
-            else
-            {
-                // path = origPath + $"{gameSetting.AllCard.Count}";
-
-                AddEdit(LocalCard.Count, card);
-                //    AddEdit(LocalCard.Count);
-
-                LocalCard.Add(card);
-                CardCouner();
-                CardViews();
-                //  NewCard(LocalCard.Count - 1);
-            }
-
+            int a = gameSetting.AllCard.FindIndex(x => x.Id == cardBase.Id);
+            if (a != -1)
+                gameSetting.AllCard[a] = Core.CardClone(cardBase);
+            CardView.ViewCard(cardBase);
+            path = gameSetting.AllCardPath[cardBase.Id];
         }
         else
         {
-
-            card.Body = LocalCard[curentNum].Body;
-
-            AddEdit(curentNum, LocalCard[curentNum]);
-
-            LocalCard[curentNum] = card;
-
-            CardView.ViewCard(card);
-
+            //path = curentGuild.Name
+            //    + "/" + cardBase.Tayp
+            //    + "/" + cardChar
+            //    + "/" + cardBase.Id;
+            //path = gameSetting.AllCardPath[gameSetting.AllCard[gameSetting.AllCard.Count - 1].Id];
+            if (gameSetting.AllCard.Count < 20)
+            {
+                cardBase.Body = gameSetting.CardBody[gameSetting.AllCard.Count];
+                CardView.ViewCard(cardBase);
+                gameSetting.AllCard.Add(Core.CardClone(cardBase));
+            }
+            path = SetID();
+            CardCouner();
+            //string[] com = path.Split('_');
+            //path = com[0];
+            //for (int i = 1; i < com.Length; i++)
+            //    if (path[i] == '_')
+            //        path[i] = '/';
+            //Debug.Log(path);
+            //path.Replace('_', '/');
+            //Debug.Log(path);
         }
-        CardCouner();
 
-        //Sort();
+        XMLSaver.Save(cardBase, path );
     }
+    string SetID()
+    {
+        string path;
+        gameSetting.GameDataFile.Size++;
+        path = curentGuild.Name
+              + "/" + cardBase.Tayp
+              + "/" + cardChar
+              + "/" + cardBase.Id;
+        //gameSetting.GameDataFile.Guild
+
+
+        string[] com = path.Split('/');
+        GameDataData gameData = gameSetting.GameDataFile.Guild.Find(x => x.Name == com[0]);
+        Debug.Log(gameData);
+        Debug.Log(com[0]);
+        Debug.Log(gameSetting.GameDataFile.Guild[0].Name);
+        //gameData.Size++;
+        //com[1] = cardBase.Tayp;
+        //com[2] = cardChar;
+
+        for (int i = 1; i < com.Length-1; i++)
+        {
+            //Debug.Log(gameData.Name);
+            gameData.Size++;
+            //Debug.Log(com[i]);
+            gameData = gameData.Data.Find(x => x.Name == com[i]);
+            //Debug.Log(gameData.Name);
+            //gameData.Size++;
+        }
+        int a = com.Length - 1;
+        gameData = gameData.Data[0];
+        gameData.Size++;
+        cardBase.Id = gameData.Size;
+        com[a] = "" + cardBase.Id;
+        if(gameData.Name !="")
+            gameData.Name += "_" + com[a];
+        else
+            gameData.Name = com[a];
+
+
+        string str = com[0];
+        for (int i = 1; i < com.Length; i++)
+            str += "_" + com[i];
+
+        gameSetting.AllCardPath.Add(str);
+        Debug.Log(gameSetting.AllCardPath.Count);
+
+        return path;
+    }
+
+    //       // CardCouner();
+    //        //string str = gameSetting.AllCardPath[cardBase.Id];
+    //        //string[] com = str.Split('_');
+    //        //int a = com[com.Length - 1];
+    //        //com[com.Length - 1] = "" + (a + 1);
+    //        //for()
+
+    //        //gameSetting.AllCardPath[cardBase.Id] = ""
+
+
+    //        //  string path = "";
+
+    //        if (gameData.BlackList.Count > 0)
+    //        {
+    //            int a = gameData.BlackList[0];
+
+    //            //path = $"/Resources/Hiro{a}";
+    //            //gameData.AllCard[a] = path;
+
+    //            //gameSetting.AllCard[a].Body.gameObject.active = true;
+    //            //card.Body = gameSetting.AllCard[a].Body;
+    //            //gameSetting.AllCard[a] = card;
+
+    //            //CardView.ViewCard(card);
+
+
+    //            gameData.BlackList.RemoveAt(0);
+    //        }
+    //        else
+    //        {
+    //            // path = origPath + $"{gameSetting.AllCard.Count}";
+
+    //            AddEdit(LocalCard.Count, card);
+    //            //    AddEdit(LocalCard.Count);
+
+    //            LocalCard.Add(card);
+    //            CardCouner();
+    //            CardViews();
+    //            //  NewCard(LocalCard.Count - 1);
+    //        }
+
+    //    }
+    //    else
+    //    {
+
+    //        card.Body = LocalCard[selectId].Body;
+
+    //        AddEdit(selectId, LocalCard[selectId]);
+
+    //        LocalCard[selectId] = card;
+
+    //        CardView.ViewCard(card);
+
+    //    }
+    //    CardCouner();
+
+    //    //Sort();
+    //}
     void Inject()
     {
         //ReLoadCard();
 
-        if (curentNum > -1)
+        if (selectId > -1)
         {
-            cardBase = Core.CardClone(LocalCard[curentNum]);
-           // Debug.Log(cardBase.Stat.Count);
-            //Debug.Log(Ui.StatUi.Count);
-            //if (cardBase.Stat.Count < Ui.StatUi.Count)
-            //{
-            //    for (int i = cardBase.Stat.Count ; i < Ui.StatUi.Count; i++)
-            //    {
-            //        DeliteStat(cardBase.Stat.Count);
-            //    }
-            //}
-            //else if (cardBase.Stat.Count > Ui.StatUi.Count)
-            //{
-            //    //for (int i = Ui.StatUi.Count ; i < cardBase.Stat.Count; i++)
-            //    //{
-            //    //    AddStatUi();
-            //    //}
-            //}
+            cardBase = Core.CardClone(gameSetting.AllCard[selectId]);
 
-            //if (cardBase.Trait.Count < Ui.RuleUi.Count)
-            //{
-            //    for (int i = cardBase.Trait.Count; i < Ui.RuleUi.Count; i++)
-            //    {
-            //        DeliteRule(cardBase.Trait.Count);
-            //    }
-            //}
-            //else if (cardBase.Trait.Count > Ui.RuleUi.Count)
-            //{
-            //    //for (int i = Ui.RuleUi.Count; i < cardBase.Trait.Count; i++)
-            //    //{
-            //    //    AddRuleUi();
-            //    //}
-            //}
 
             //Выгрузка данных в редактор героев
             Ui.NameFlied.text = cardBase.Name;
@@ -467,18 +536,11 @@ public class CardConstructor : MonoBehaviour
     void Delite()
     {
         ReLoadCard();
-        if (curentNum != -1)
+        if (selectId != -1)
         {
-           // gameData.BlackList.Add(curentNum);
-            //LocalCard[curentNum].Body.gameObject.active = false;
-            // Ui.
             SwitchCard(-1);
         }
-
-        //ReLoadCard();
-
         Ui.NameFlied.text = cardBase.Name;
-       // ViewCard();
     }
     #endregion
 
@@ -486,20 +548,18 @@ public class CardConstructor : MonoBehaviour
 
     void PreLoad()
     {
-        origPath = Application.dataPath + $"/Resources/Data/Hiro";
-        origPathAlt = Application.dataPath + $"/Resources/Data";
+        //origPath = $"/Resources/Data/Hiro";
+        //origPathAlt = $"/Resources/Data";
 
         Core.LoadGameSetting(gameSetting);
         Core.LoadRules();
 
 
-        curentNum = -1;
-        cardMod = 0;
-        // Delite();
+        selectId = -1;
 
-        LocalCard = new List<CardBase>();
-        newCard = new List<int>();
-        oldCard = new List<CardBase>();
+        //LocalCard = new List<CardBase>();
+        //newCard = new List<int>();
+        //oldCard = new List<CardBase>();
 
 
 
@@ -509,8 +569,8 @@ public class CardConstructor : MonoBehaviour
         Ui.NewCardButton.GetComponent<Image>().color = gameSetting.SelectColor[0];
         Ui.NewCardButton.GetComponent<Button>().onClick.AddListener(() => SwitchCard(-1)); 
 
-        Ui.ModButton[0].onClick.AddListener(() => Mod(false)); 
-        Ui.ModButton[1].onClick.AddListener(() => Mod(true)); 
+        Ui.ModButton[0].onClick.AddListener(() => CardView.Mod(false)); 
+        Ui.ModButton[1].onClick.AddListener(() => CardView.Mod(true)); 
 
         Ui.EjectButton.onClick.AddListener(() => Enject());
         Ui.InjectButton.onClick.AddListener(() => Inject());
@@ -519,50 +579,56 @@ public class CardConstructor : MonoBehaviour
         Ui.SaveButton.onClick.AddListener(() => Save());
         Ui.ResetButton.onClick.AddListener(() => Reset());
 
-        gameData = XMLSaver.LoadGameData(origPathAlt);
 
-        oldAllCard = gameData.AllCard;
+
+        gameSetting.CardBody = Ui.CardBody;
+        DataManager.UseData();
+        //gameSetting.Game
+        //   gameData = XMLSaver.LoadGameData(origPathAlt);
+
+        // oldAllCard = gameData.AllCard;
 
         LoadBase();
 
         CardCouner();
-        CardViews();
+        //CardView.CardList();
+        //CardViews();
     }
 
-    public void TransfData(GameData gameData1, GameData gameData2)
-    {
-        gameData2 = new GameData();
+    //public void TransfData(GameData gameData1, GameData gameData2)
+    //{
+    //    gameData2 = new GameData();
 
-        gameData2.AllCard = gameData1.AllCard;
-        int a = gameData1.BlackList.Count;
-        gameData2.BlackList = new List<int>();
-        for (int i = 0; i < a; i++)
-        {
-            gameData2.BlackList.Add(gameData1.BlackList[i]);
-        }
+    //    gameData2.AllCard = gameData1.AllCard;
+    //    int a = gameData1.BlackList.Count;
+    //    gameData2.BlackList = new List<int>();
+    //    for (int i = 0; i < a; i++)
+    //    {
+    //        gameData2.BlackList.Add(gameData1.BlackList[i]);
+    //    }
 
-        gameData = gameData1;
-        gameDataReserv = gameData2;
-    }
+    //    gameData = gameData1;
+    //    gameDataReserv = gameData2;
+    //}
 
 
     void LoadBase()
     {
 
-        string path = "";
-        int a = gameData.AllCard;
-        for (int i = 0; i < a; i++)
-        {
-            path = origPath + $"{i}";
-            LocalCard.Add(XMLSaver.Load(path));
-           // NewCard(i);
-        }
+        //string path = "";
+        //int a = gameData.AllCard;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    path = origPath + $"{i}";
+        //    LocalCard.Add(XMLSaver.Load(path));
+        //   // NewCard(i);
+        //}
 
-        a = gameData.BlackList.Count;
-        for (int i = 0; i < a; i++)
-        {
-            LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
-        }
+        //a = gameData.BlackList.Count;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
+        //}
 
         for(int i =0;i< Ui.CardBody.Count; i++)
         {
@@ -576,84 +642,85 @@ public class CardConstructor : MonoBehaviour
 
     void Reset()
     {
-        int a = newCard.Count;
-        int b = 0;
-        for (int i = 0; i < a; i++)
-        {
-            b = newCard[i];
-            LocalCard[b] = oldCard[i];
-            CardView.ViewCard(oldCard[i]);
-        }
+        //int a = newCard.Count;
+        //int b = 0;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    b = newCard[i];
+        //    LocalCard[b] = oldCard[i];
+        //    CardView.ViewCard(oldCard[i]);
+        //}
 
-        //Remove add LocalCard
-        a = LocalCard.Count;
-        if (oldAllCard < a)
-        {
-            a--;
-            for (int i = oldAllCard - 1; i < a; i++)
-            {
-                Destroy(LocalCard[oldAllCard].Body.gameObject);
-                LocalCard.RemoveAt(oldAllCard);
-            }
-        }
+        ////Remove add LocalCard
+        //a = LocalCard.Count;
+        //if (oldAllCard < a)
+        //{
+        //    a--;
+        //    for (int i = oldAllCard - 1; i < a; i++)
+        //    {
+        //        Destroy(LocalCard[oldAllCard].Body.gameObject);
+        //        LocalCard.RemoveAt(oldAllCard);
+        //    }
+        //}
 
-        //BlackList
+        ////BlackList
 
-        TransfData(gameDataReserv, gameData);
+        //TransfData(gameDataReserv, gameData);
 
-        // a = gameData.BlackList.Count;
-        // for (int i = 0; i < a; i++)
-        // {
-        //     b = gameData.BlackList[i];
-        //     if (LocalCard.Count > b)
-        //     {
-        //         LocalCard[b].Body.gameObject.active = true;
-        //     }
-        // }
+        //// a = gameData.BlackList.Count;
+        //// for (int i = 0; i < a; i++)
+        //// {
+        ////     b = gameData.BlackList[i];
+        ////     if (LocalCard.Count > b)
+        ////     {
+        ////         LocalCard[b].Body.gameObject.active = true;
+        ////     }
+        //// }
 
-        //// TransfData(gameSetting.GlobalMyData, gameData);
+        ////// TransfData(gameSetting.GlobalMyData, gameData);
 
 
-        // a = gameData.BlackList.Count;
-        // for (int i = 0; i < a; i++)
-        // {
-        //     b = gameData.BlackList[i];
-        //     LocalCard[b].Body.gameObject.active = false;
-        // }
+        //// a = gameData.BlackList.Count;
+        //// for (int i = 0; i < a; i++)
+        //// {
+        ////     b = gameData.BlackList[i];
+        ////     LocalCard[b].Body.gameObject.active = false;
+        //// }
 
-        //ResetData
-        newCard = new List<int>();
-        oldCard = new List<CardBase>();
+        ////ResetData
+        //newCard = new List<int>();
+        //oldCard = new List<CardBase>();
     }
 
-    void AddEdit(int a, CardBase card)
-    {
-        for (int i = 0; i < newCard.Count; i++)
-        {
-            if (a == newCard[i])
-                return;
-        }
-        newCard.Add(a);
-        oldCard.Add(card);
-    }
+    //void AddEdit(int a, CardBase card)
+    //{
+    //    for (int i = 0; i < newCard.Count; i++)
+    //    {
+    //        if (a == newCard[i])
+    //            return;
+    //    }
+    //    newCard.Add(a);
+    //    oldCard.Add(card);
+    //}
     void Save()
     {
-        TransfData(gameData, gameDataReserv);
-        // gameData.AllCard = LocalCard.Count;
-        // TransfData(gameData, gameSetting.GlobalMyData);
-        int b = 0;
-        string path = "";
-        for (int i = 0; i < newCard.Count; i++)
-        {
-            b = newCard[i];
-            path = origPath + $"{b}";
-            XMLSaver.Save(LocalCard[b], path);
-        }
 
-        XMLSaver.SaveGameData(gameData, origPathAlt);
-        oldAllCard = gameData.AllCard;
-        newCard = new List<int>();
-        oldCard = new List<CardBase>();
+        XMLSaver.SaveGameData(gameSetting.GameDataFile, "/Resources/Data");
+        //// gameData.AllCard = LocalCard.Count;
+        //// TransfData(gameData, gameSetting.GlobalMyData);
+        //int b = 0;
+        //string path = "";
+        //for (int i = 0; i < newCard.Count; i++)
+        //{
+        //    b = newCard[i];
+        //    path = origPath + $"{b}";
+        //    XMLSaver.Save(LocalCard[b], path);
+        //}
+
+        //XMLSaver.SaveGameData(gameData, origPathAlt);
+        //oldAllCard = gameData.AllCard;
+        //newCard = new List<int>();
+        //oldCard = new List<CardBase>();
     }
     #endregion
 
@@ -673,21 +740,21 @@ public class CardConstructor : MonoBehaviour
         button.onClick.AddListener(() => SwitchCard(a));
     }
 
-    void NewCard(int i)
-    {
-        int a = Ui.BaseCard.childCount - 1;
-        GameObject GO = Instantiate(Ui.OrigCard);
-        GO.transform.SetParent(Ui.BaseCard);
+    //void NewCard(int i)
+    //{
+    //    int a = Ui.BaseCard.childCount - 1;
+    //    GameObject GO = Instantiate(Ui.OrigCard);
+    //    GO.transform.SetParent(Ui.BaseCard);
 
-        Button button = GO.GetComponent<Button>();
-        SwitchCardButton(a, button);
+    //    Button button = GO.GetComponent<Button>();
+    //    SwitchCardButton(a, button);
 
-        GO.GetComponent<Image>().color = gameSetting.SelectColor[1];
+    //    GO.GetComponent<Image>().color = gameSetting.SelectColor[1];
 
-        LocalCard[i].Body = GO.transform;
+    //    LocalCard[i].Body = GO.transform;
 
-        CardView.ViewCard(LocalCard[i]);
-    }
+    //    CardView.ViewCard(LocalCard[i]);
+    //}
 
 
 
@@ -698,7 +765,6 @@ public class CardConstructor : MonoBehaviour
 
     void StatUp(int a)
     {
-        Debug.Log(a);
         cardBase.StatSize[a]++;
         ReCalculate();
         if (cardBase.Mana > 10)
@@ -710,7 +776,6 @@ public class CardConstructor : MonoBehaviour
     }
     void StatDown(int a)
     {
-        Debug.Log(a);
         if (cardBase.StatSize[a] > 1)
         {
             cardBase.StatSize[a]--;
@@ -741,31 +806,26 @@ public class CardConstructor : MonoBehaviour
 
     void SwitchCard(int a)
     {
-        if (cardModSize + a > LocalCard.Count)
+        if (a == -1)
+        {
+            if(selectId != -1)
+                CardView.CardColor(selectId, 1);
+            selectId = -1;
+            Ui.NewCardButton.GetComponent<Image>().color = gameSetting.SelectColor[0];
+
+        }
+        else if(a >gameSetting.AllCard.Count)
             return;
 
-        if (curentNum != -1)
-        {
-            if(curentNum < cardModSize + Ui.CardBody.Count && curentNum >= cardModSize)
-            //if (cardModSize + curentNum < LocalCard.Count)
-            {
-                Ui.CardBody[curentNum - cardModSize].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[1];
-               // Ui.NewCardButton.gameObject.GetComponent<Image>().color = gameSetting.SelectColor[0];
-            }
-        }
-        else
-            Ui.NewCardButton.gameObject.GetComponent<Image>().color = gameSetting.SelectColor[1];
+        if (selectId == -1)
+            Ui.NewCardButton.GetComponent<Image>().color = gameSetting.SelectColor[0];
 
-        if (a == -1)
-            curentNum = -1;
-        else
-            curentNum = cardModSize + a;
+        CardView.CardColor(selectId, 1);
+        selectId = a;
+        CardView.CardColor(a,0);
 
-        if (curentNum != -1)
-            Ui.CardBody[a].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[0];
-        else
-            Ui.NewCardButton.gameObject.GetComponent<Image>().color = gameSetting.SelectColor[0];
-        //CardCouner();
+        CardCouner();
+
     }
     #endregion
     void DeliteStat(int a)
@@ -805,6 +865,25 @@ public class CardConstructor : MonoBehaviour
         // caseUi.Name.text = str;
         ReCalculate();
         selector.gameObject.active = false;
+    }
+    void SwitchTayp(int a)
+    {
+        if(cardBase.Tayp != frame.ClassCard[a])
+        {
+            cardBase.Trait = new List<string>();
+            cardBase.TraitSize = new List<int>();
+            SwitchCard(-1);
+            
+        }
+        cardBase.Tayp = frame.ClassCard[a];
+        selector.gameObject.active = false;
+        GenerateText();
+    }
+    void SwitchCardChar(int a )
+    {
+        cardChar = frame.CardTayp[a];
+        selector.gameObject.active = false;
+        GenerateText();
     }
 
     void SwitchStat(int a, int b)
@@ -888,6 +967,7 @@ public class CardConstructor : MonoBehaviour
         //    Ui.StatUi[0].ButtonSwitch.enabled = false;
         //}
 
+        cardBase.Tayp = frame.ClassCard[0];
         cardBase.Guilds = curentGuild;
         actualLegion = new List<Legion>();
 
@@ -990,6 +1070,13 @@ public class CardConstructor : MonoBehaviour
                 a = int.Parse(com[1]);
                 sizeData = gameSetting.Library.Rule.Count;
                 break;
+
+            case ("Tayp"):
+                sizeData = frame.ClassCard.Count;
+                break;
+            case ("CardChar"):
+                sizeData = frame.CardTayp.Count;
+                break;
             default:
                 a=int.Parse(com[1]);
                 b = int.Parse(com[2]);
@@ -1008,7 +1095,7 @@ public class CardConstructor : MonoBehaviour
         {
             for (int i = selector.childCount; i > sizeData; i--)
             {
-                Debug.Log($"{sizeData} {selector.childCount} {i}");
+                //Debug.Log($"{sizeData} {selector.childCount} {i}");
                 Destroy(selector.GetChild(i-1).gameObject);
             } 
         }
@@ -1043,6 +1130,13 @@ public class CardConstructor : MonoBehaviour
                 case ("Rule"):
                     text.text = gameSetting.Library.Rule[i].Name + $"({gameSetting.Library.Rule[i].Rule.Count})";
                     break;
+
+                case ("Tayp"):
+                    text.text = frame.ClassCard[i];
+                    break;
+                case ("CardChar"):
+                    text.text = frame.CardTayp[i];
+                    break;
                 default:
                     text.text = gameSetting.Library.Rule[b].Rule[i];
                     break;
@@ -1074,6 +1168,12 @@ public class CardConstructor : MonoBehaviour
             case ("Rule"):
                 button.onClick.AddListener(() => LoadSelector(gameSetting.Library.Rule[a].Name +"*"+b + "*" + a));
                 break;
+            case ("Tayp"):
+                button.onClick.AddListener(() => SwitchTayp(a));
+                break;
+            case ("CardChar"):
+                button.onClick.AddListener(() => SwitchCardChar(a));
+                break;
             default:
                 button.onClick.AddListener(() => SwitchRule(b, c,a));
                 //text.text = gameSetting.Lybrary.Rule[b].Rule[i].Name;
@@ -1084,6 +1184,7 @@ public class CardConstructor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        cardChar = frame.CardTayp[0];
 
         CreateCore();
 

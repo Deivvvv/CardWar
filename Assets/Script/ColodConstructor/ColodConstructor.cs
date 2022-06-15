@@ -55,31 +55,31 @@ public class ColodConstructor : MonoBehaviour
 
     void LoadBase()
     {
-        Ui.SaveButton.onClick.AddListener(() => Save());
+        //Ui.SaveButton.onClick.AddListener(() => Save());
 
-        gameData = XMLSaver.LoadGameData(Application.dataPath + $"/Resources/Data");
-        //gameData = new GameData();
-        LocalCard = new List<CardBase>();
-        int a = gameData.AllCard;
-        string path = "";
+        //gameData = XMLSaver.LoadGameData(Application.dataPath + $"/Resources/Data");
+        ////gameData = new GameData();
+        //LocalCard = new List<CardBase>();
+        //int a = gameData.AllCard;
+        //string path = "";
 
-        for (int i = 0; i < a; i++)
-        {
-            path = origPath + $"{i}";
-            LocalCard.Add(XMLSaver.Load(path));
-            NewCard(i);
-        }
+        //for (int i = 0; i < a; i++)
+        //{
+        //    path = origPath + $"{i}";
+        //    LocalCard.Add(XMLSaver.Load(path));
+        //    NewCard(i);
+        //}
 
-        a = gameData.BlackList.Count;
-        for (int i = 0; i < a; i++)
-        {
-            LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
-        }
-        //XMLSaver.LoadCardSet(origPathAlt, "Colod");
+        //a = gameData.BlackList.Count;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
+        //}
+        ////XMLSaver.LoadCardSet(origPathAlt, "Colod");
 
-        cardSet = XMLSaver.LoadCardSet(origPathAlt);
+        //cardSet = XMLSaver.LoadCardSet(origPathAlt);
 
-        SetNewSet();
+        //SetNewSet();
     }
     void SetNewSet()
     {

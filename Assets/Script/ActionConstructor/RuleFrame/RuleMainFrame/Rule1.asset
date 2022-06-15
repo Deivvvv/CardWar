@@ -42,7 +42,6 @@ MonoBehaviour:
   - Null
   - Tag
   - Status
-  - Action
   Trigger:
   - Action
   - AnotherAction
@@ -55,10 +54,10 @@ MonoBehaviour:
   - PostAction
   - ActionFlash
   Tag:
-  - Null
-  - Walk
-  - Attack
-  - Defence
+  - Name: Null
+    Guild: []
+  - Name: War
+    Guild: []
   Status:
   - Fly
   - Stan
@@ -83,10 +82,16 @@ MonoBehaviour:
   - Iniciativa|Plus
   - Iniciativa|Minus
   KeyWord:
-  - Eky
-  - size
+  - Human
   KeyWordStatus:
   - Null
   - All
   - My
   - Enemy
+  ClassCard:
+  - creature
+  - Spell
+  CardTayp:
+  - N
+  - P
+  - L

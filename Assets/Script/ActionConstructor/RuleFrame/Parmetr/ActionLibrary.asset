@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Guilds:
   - {fileID: 11400000, guid: 9704b43f29524b045915e295ee8a4d21, type: 2}
-  - {fileID: 11400000, guid: 9704b43f29524b045915e295ee8a4d21, type: 2}
   Legions:
   - {fileID: 11400000, guid: 4f3221af9fe33364290397432f81a51d, type: 2}
   CivilianGroups:
@@ -32,8 +31,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 065c84027d5bdfa498e6ccc0535fd02e, type: 2}
   - {fileID: 11400000, guid: 1306ef1596e24244197eb800d48d7479, type: 2}
   - {fileID: 11400000, guid: 9ac3b8f2d51e142459286049200ce410, type: 2}
+  - {fileID: 11400000, guid: 0701d30230a35034d90e0a336679ab06, type: 2}
   Rule:
   - Name: Null
     Rule:
-    - World1
+    - Atk1
+    - Ark2
+    - World
     - World

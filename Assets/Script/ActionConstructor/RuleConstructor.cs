@@ -106,21 +106,21 @@ public class RuleConstructor : MonoBehaviour
         mainText += LinkSupport(color, "Text_RuleNameText", $"\nИмя -- { head.NameText}");
         mainText += LinkSupport(color, "Tag_Tag", $"\nTag { head.Tag}");
 
-        if (head.CostExtend == 0)
-            mainText += LinkSupport(color, "Text_CostExtend", $"\nЦена за доп очки: -- идентично");
-        else
-            mainText += LinkSupport(color, "Text_CostExtend", $"\nЦена за доп очки: -- { head.CostExtend}");
+        //if (head.CostExtend == 0)
+        //    mainText += LinkSupport(color, "Text_CostExtend", $"\nЦена за доп очки: -- идентично");
+        //else
+        //    mainText += LinkSupport(color, "Text_CostExtend", $"\nЦена за доп очки: -- { head.CostExtend}");
 
 
-        if (head.LevelCap == 0)
-            mainText += LinkSupport(color, "Text_LevelCap", $"\nМаксимальный уровень - без ограничений");
-        else
-            mainText += LinkSupport(color, "Text_LevelCap", $"\nМаксимальный уровень - { head.LevelCap}");
+        //if (head.LevelCap == 0)
+        //    mainText += LinkSupport(color, "Text_LevelCap", $"\nМаксимальный уровень - без ограничений");
+        //else
+        //    mainText += LinkSupport(color, "Text_LevelCap", $"\nМаксимальный уровень - { head.LevelCap}");
 
-        if (!head.Player)
-            mainText += LinkSupport(color, "Text_Player", $"\nУровень доступа - Разработчик");
-        else
-            mainText += LinkSupport(color, "Text_Player", $"\nУровень доступа - Игрок");
+        //if (!head.Player)
+        //    mainText += LinkSupport(color, "Text_Player", $"\nУровень доступа - Разработчик");
+        //else
+        //    mainText += LinkSupport(color, "Text_Player", $"\nУровень доступа - Игрок");
 
         mainText += "\nТребуемые механики";
         mainText += LinkSupport(color, "MainAdd_NeedRule", $"\nСоздать связь");
@@ -550,7 +550,7 @@ public class RuleConstructor : MonoBehaviour
                 str = frame.Status[a];
                 break;
             case ("Tag"):
-                str = frame.Tag[a];
+                str = frame.Tag[a].Name;
                 break;
             case ("Action"):
                 str = frame.Action[a];
@@ -754,7 +754,8 @@ public class RuleConstructor : MonoBehaviour
                         return;
                         break;
                     case ("Tag"):
-                        head.Tag = frame.Tag[a];//frame.Tag[a];
+                        head.Tag = frame.Tag[a].Name;
+                        LoadMainText();
                         break;
                     case ("TagRule"):
                         GenerateComand($"_Rule_{a}");
@@ -868,16 +869,17 @@ public class RuleConstructor : MonoBehaviour
 
             case ("Save"):
                 CreateRule();
+                SaveRuleSample();
                 //SaveRule(curentRule);
                 break;
             case ("SaveAll"):
                 break;
-            case ("Zip"):
-                SaveRuleSample();
-                break;
-            case ("ZipAll"):
-                SaveRuleSampleAll();
-                break;
+            //case ("Zip"):
+            //    SaveRuleSample();
+            //    break;
+            //case ("ZipAll"):
+            //    SaveRuleSampleAll();
+            //    break;
 
             case ("Tag"):
                 GenerateComand("_"+text);
@@ -965,9 +967,10 @@ public class RuleConstructor : MonoBehaviour
                     int b = 0;
                     // int b1 = 0;
                     TriggerAction triggerAction = head.TriggerActions[a];
-                    if (com.Length == 4)
-                        b = int.Parse(com[3]);
-                    else if (com.Length > 4)
+                    //if (com.Length == 4)
+                    //    b = int.Parse(com[3]);
+                    //else
+                    if (com.Length > 4)
                     {
                         b = int.Parse(com[4]);
 
@@ -1386,7 +1389,7 @@ public class RuleConstructor : MonoBehaviour
         Application.targetFrameRate = 30;
 
         head = new HeadRule();
-        oldTag = head.Tag = frame.Tag[0];
+        oldTag = head.Tag = frame.Tag[0].Name;
         XMLSaver.SetRuleMainFrame(frame);
         Ui.TextWindowButton.onClick.AddListener(() => LoadData());
 
@@ -1401,6 +1404,7 @@ public class RuleConstructor : MonoBehaviour
         LoadMainText();
         LoadAllText();
 
+        BattleTable.DataManager.GenerateData(frame, library);
     }
 
     #region CreateSystemData
@@ -1453,7 +1457,7 @@ public class RuleConstructor : MonoBehaviour
                 break;
             case ("Tag"):
                 for (int i = 0; i < frame.Tag.Length; i++)
-                    actionLable += LinkSupport(defColor, $"Select_Tag_{i}", $"{frame.Tag[i]}\n");
+                    actionLable += LinkSupport(defColor, $"Select_Tag_{i}", $"{frame.Tag[i].Name}\n");
                 break;
             case ("Status"):
                 for (int i = 0; i < frame.Status.Length; i++)
@@ -1505,7 +1509,7 @@ public class RuleConstructor : MonoBehaviour
         }
 
 
-        TT2.text = comLable + actionLable;
+        TT2.text = actionLable;
     }
 
     void ComandClear()
@@ -1532,9 +1536,9 @@ public class RuleConstructor : MonoBehaviour
 
         comLable = "";
         comLable += LinkSupport(defColor, $"Save_", "Save      ");
-        comLable += LinkSupport(defColor, $"SaveAll_", "   SaveAll    ");
-        comLable += LinkSupport(defColor, $"Zip_", "   Zip     ");
-        comLable += LinkSupport(defColor, $"ZipAll_", "    ZipAll\n");
+        //comLable += LinkSupport(defColor, $"SaveAll_", "   SaveAll    ");
+        //comLable += LinkSupport(defColor, $"Zip_", "   Zip     ");
+        //comLable += LinkSupport(defColor, $"ZipAll_", "    ZipAll\n");
         comLable += "\n";
 
         TT2.text = comLable;

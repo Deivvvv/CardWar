@@ -9,9 +9,13 @@ public class GameSetting : ScriptableObject
     public List<HeadSimpleTrigger> Rule;
     public List<CardBase> AllCard;
 
-    public string[] AllCardPath;
-   // public int AllCardSize;
+    public string SelectPath;
+    public string SystemKey;
+    public List<string> AllCardPath;
 
+    public GameData GameDataFile;
+    //public int AllCardSize;
+    #region Triggers
 
     public List<SimpleTrigger> PlayCard;
 
@@ -39,7 +43,7 @@ public class GameSetting : ScriptableObject
 
     public List<SimpleTrigger> PreAction;
     public List<SimpleTrigger> PostAction;
-
+    #endregion
 
     //public List<HeadSimpleTrigger> DefRule;
     //public List<string> DefRuleText;
@@ -62,4 +66,6 @@ public class GameSetting : ScriptableObject
 
 
     public Color[] SelectColor;
+
+    public List<Transform> CardBody;
 }

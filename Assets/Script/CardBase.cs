@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+//[System.Serializable]
 public class CardBase
 {
     public int Id;
@@ -33,9 +33,9 @@ public class CardBase
 
     public Transform Body;
 
-    //public Sprite ImageFull;
-    [HideInInspector]
-    public byte[] Image;
+    public Sprite Image;
+    //[HideInInspector]
+    //public byte[] Image;
 
 
     //extend
