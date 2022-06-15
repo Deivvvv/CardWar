@@ -9,8 +9,7 @@ public class GameSetting : ScriptableObject
     public List<HeadSimpleTrigger> Rule;
     public List<CardBase> AllCard;
 
-    public string SelectPath;
-    public string SystemKey;
+    public int SystemKey;
     public List<string> AllCardPath;
 
     public GameData GameDataFile;

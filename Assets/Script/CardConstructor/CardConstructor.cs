@@ -374,89 +374,75 @@ public class CardConstructor : MonoBehaviour
 
         // CardBase card = Core.CardClone(cardBase);
 
-        string path;
+        string path = curentGuild.Name
+             + "/" + cardBase.Tayp
+             + "/" + cardChar
+             + "/";
         if (selectId != -1)
         {
-            int a = gameSetting.AllCard.FindIndex(x => x.Id == cardBase.Id);
-            if (a != -1)
-                gameSetting.AllCard[a] = Core.CardClone(cardBase);
-            CardView.ViewCard(cardBase);
-            path = gameSetting.AllCardPath[cardBase.Id];
+            //int a = gameSetting.AllCard.FindIndex(x => x.Id == cardBase.Id);
+            //if (a != -1)
+            //{
+            //    cardBase.Body = gameSetting.AllCard[a].Body;
+            //    gameSetting.AllCard[a] = Core.CardClone(cardBase);
+            //}
+            //CardView.ViewCard(cardBase);
+
+            //if (gameSetting.GameDataFile.Data[gameSetting.SystemKey].MasterKey != path)//Delite old card
+            //{
+            //    gameSetting.SystemKey = gameSetting.AllCard.FindIndex(x => x.Id == cardBase.Id);
+            //    //int a = gameSetting.GameDataFile.Data.FindIndex(x => x.MasterKey == path);
+            //    //string cod = gameSetting.AllCard[selectId];
+
+            //}
+            //int a = gameSetting.AllCard.FindIndex(x => x.Id == cardBase.Id);
+            //if (a != -1)
+            //    gameSetting.AllCard[a] = Core.CardClone(cardBase);
+            //CardView.ViewCard(cardBase);
+            //path = gameSetting.AllCardPath[cardBase.Id];
+            //string[] com = path.Split('_');
+            //a = int.Parse(com[0]);
+            //path = gameSetting.GameDataFile.Data[a].MasterKey + "/" + com[1];
         }
         else
         {
-            //path = curentGuild.Name
-            //    + "/" + cardBase.Tayp
-            //    + "/" + cardChar
-            //    + "/" + cardBase.Id;
-            //path = gameSetting.AllCardPath[gameSetting.AllCard[gameSetting.AllCard.Count - 1].Id];
             if (gameSetting.AllCard.Count < 20)
             {
                 cardBase.Body = gameSetting.CardBody[gameSetting.AllCard.Count];
                 CardView.ViewCard(cardBase);
                 gameSetting.AllCard.Add(Core.CardClone(cardBase));
             }
-            path = SetID();
-            CardCouner();
-            //string[] com = path.Split('_');
-            //path = com[0];
-            //for (int i = 1; i < com.Length; i++)
-            //    if (path[i] == '_')
-            //        path[i] = '/';
-            //Debug.Log(path);
-            //path.Replace('_', '/');
-            //Debug.Log(path);
+            path = SetID(path);
         }
 
+        CardCouner();
         XMLSaver.Save(cardBase, path );
+        CardView.CardList();
     }
-    string SetID()
+    string SetID(string path)
     {
-        string path;
-        gameSetting.GameDataFile.Size++;
-        path = curentGuild.Name
-              + "/" + cardBase.Tayp
-              + "/" + cardChar
-              + "/" + cardBase.Id;
-        //gameSetting.GameDataFile.Guild
-
-
-        string[] com = path.Split('/');
-        GameDataData gameData = gameSetting.GameDataFile.Guild.Find(x => x.Name == com[0]);
-        Debug.Log(gameData);
-        Debug.Log(com[0]);
-        Debug.Log(gameSetting.GameDataFile.Guild[0].Name);
-        //gameData.Size++;
-        //com[1] = cardBase.Tayp;
-        //com[2] = cardChar;
-
-        for (int i = 1; i < com.Length-1; i++)
+        int a = gameSetting.GameDataFile.Data.FindIndex(x => x.MasterKey == path);
+        SubGameData sub = gameSetting.GameDataFile.Data[a];
+        if (sub.Key != " ")
         {
-            //Debug.Log(gameData.Name);
-            gameData.Size++;
-            //Debug.Log(com[i]);
-            gameData = gameData.Data.Find(x => x.Name == com[i]);
-            //Debug.Log(gameData.Name);
-            //gameData.Size++;
+            sub.Key += $"/{sub.Size}";
+            sub.KeyComplite += $"/{a}_{sub.Size}";
         }
-        int a = com.Length - 1;
-        gameData = gameData.Data[0];
-        gameData.Size++;
-        cardBase.Id = gameData.Size;
-        com[a] = "" + cardBase.Id;
-        if(gameData.Name !="")
-            gameData.Name += "_" + com[a];
         else
-            gameData.Name = com[a];
+        {
+            sub.Key = $"{sub.Size}";
+            sub.KeyComplite = $"{a}_{sub.Size}";
+        }
+        Debug.Log(sub.MasterKey);
 
+        cardBase.Id = sub.Size;
 
-        string str = com[0];
-        for (int i = 1; i < com.Length; i++)
-            str += "_" + com[i];
+        selectId = gameSetting.AllCardPath.Count;
+        gameSetting.SystemKey = a;
 
-        gameSetting.AllCardPath.Add(str);
-        Debug.Log(gameSetting.AllCardPath.Count);
-
+        gameSetting.AllCardPath.Add($"{a}_{sub.Size}");
+       // path += ""+sub.Size;
+        sub.Size++;
         return path;
     }
 
@@ -582,7 +568,7 @@ public class CardConstructor : MonoBehaviour
 
 
         gameSetting.CardBody = Ui.CardBody;
-        DataManager.UseData();
+        DataManager.GenerateKey(frame, gameSetting.Library);
         //gameSetting.Game
         //   gameData = XMLSaver.LoadGameData(origPathAlt);
 
@@ -705,7 +691,7 @@ public class CardConstructor : MonoBehaviour
     void Save()
     {
 
-        XMLSaver.SaveGameData(gameSetting.GameDataFile, "/Resources/Data");
+        XMLSaver.SaveGameData(gameSetting.GameDataFile);
         //// gameData.AllCard = LocalCard.Count;
         //// TransfData(gameData, gameSetting.GlobalMyData);
         //int b = 0;
@@ -814,8 +800,13 @@ public class CardConstructor : MonoBehaviour
             Ui.NewCardButton.GetComponent<Image>().color = gameSetting.SelectColor[0];
 
         }
-        else if(a >gameSetting.AllCard.Count)
+        else if(a >=gameSetting.AllCard.Count)
             return;
+        else
+        {
+            string[] com = gameSetting.AllCardPath[a].Split('_');
+            gameSetting.SystemKey = int.Parse(com[0]);
+        }
 
         if (selectId == -1)
             Ui.NewCardButton.GetComponent<Image>().color = gameSetting.SelectColor[0];
@@ -841,11 +832,7 @@ public class CardConstructor : MonoBehaviour
 
     void SwitchRule(int a, int b, int c)
     {
-        //if (a == -1)
-        //    return;
-        // Ui.RuleSelectorMain.active = false;
-        Debug.Log($"{a} {b} {c}");
-        //Debug.Log(a);
+       // Debug.Log($"{a} {b} {c}");
         string str = gameSetting.Library.Rule[b].Name + "_" + gameSetting.Library.Rule[b].Rule[c];
         int d = gameSetting.Rule.FindIndex(x => x.Name == gameSetting.Library.Rule[b].Rule[c]);
 

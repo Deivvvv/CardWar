@@ -20,150 +20,41 @@ namespace Saver
 
 
         #region GameData
-        static void SaveGameDataRoot(string path, string name, GameDataData gameData)
+
+        public static void SaveGameData(GameData gameData)
         {
-           // Debug.Log(path);
-            //if (gameData.Data == null)
-            //    return;
-            //if (gameData.Data.Count == 0)
-            //    return;
-
-            if (gameData.Data != null)
-            {
-                path += "/" + name;
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-            }
-
-            XElement root = new XElement("root");
-            string str = "";
-
-
-            root.Add(new XElement("Size", gameData.Size));
-            root.Add(new XElement("End", gameData.End));
-
-            if (gameData.Data != null)
-                for (int i = 0; i < gameData.Data.Count; i++)
-                {
-                    name = gameData.Data[i].Name;
-                    str += name;
-                    SaveGameDataRoot(path, name, gameData.Data[i]);
-                    if (i < gameData.Data.Count - 1)
-                        str += "_";
-                }
-            else
-                str = gameData.Name;
-
-            root.Add(new XElement("Data", str));
-
-
-            XDocument saveDoc = new XDocument(root);
-            File.WriteAllText($"{path}/Data.xml", saveDoc.ToString());
-
-        }
-
-        public static void SaveGameData(GameData gameData, string path)
-        {
-
-
             if (gameData == null)
                 return;
-            //Debug.Log(path);
 
-            //if (!Directory.Exists(path))
-            //    Directory.CreateDirectory(path);
-            path = Application.dataPath + path;
-           // Directory.CreateDirectory(path + "1/");
-            //Directory.CreateDirectory(path + "/1/1");
-
-
-            XElement root = new XElement("root");
-            string str = "";
-            string name ;
-
-            root.Add(new XElement("Size", gameData.Size));
-            for (int i = 0; i < gameData.Guild.Count; i++)
+            SubGameData sub = null;
+            for (int i = 0; i < gameData.Data.Count; i++)
             {
-                name = gameData.Guild[i].Name;
-                str += name;
-                SaveGameDataRoot(path, name, gameData.Guild[i]);
-                if(i< gameData.Guild.Count-1)
-                    str += "_";
+                sub = gameData.Data[i];
+
+                if (sub.Size > 0)
+                {
+                    XElement root = new XElement("root");
+
+                    root.Add(new XElement("Size", sub.Size));
+                    root.Add(new XElement("Key", sub.Key));
+
+                    XDocument saveDoc = new XDocument(root);
+                    File.WriteAllText(Application.dataPath + "/Resources/Data/" + sub.MasterKey + "Data.xml", saveDoc.ToString());
+                }
             }
-
-            root.Add(new XElement("Data", str));
-
-            XDocument saveDoc = new XDocument(root);
-            File.WriteAllText($"{path}/Data.xml", saveDoc.ToString());
-
         }
 
-        static GameDataData LoadGameDataRoot(string path, string name)
-        {
-            GameDataData gameData = new GameDataData();
-           // Debug.Log(path);
-            if(File.Exists($"{path}/{name}/Data.xml"))
-            {
-                path += "/" + name;
-
-               // Debug.Log(path);
-                XElement root = XDocument.Parse(File.ReadAllText($"{path}/Data.xml")).Element("root");
-                gameData.Size = int.Parse(root.Element("Size").Value);
-                gameData.End = bool.Parse(root.Element("End").Value);
-
-                gameData.Name = name;
-                string str = root.Element("Data").Value;
-
-
-                gameData.Data = new List<GameDataData>();
-                //if (gameData.Size >= 0)
-                //{
-                if (!gameData.End)
-                {
-                    //Debug.Log(str);
-                    string[] com = str.Split('_');
-                    for (int i = 0; i < com.Length; i++)
-                        gameData.Data.Add(LoadGameDataRoot(path, com[i]));
-                }
-                else
-                {
-                    GameDataData gameData1 = new GameDataData();
-                    gameData1.Name = str;
-                    //gameData1.End = true;
-                    //gameData.End = false;
-                    gameData.Data.Add(gameData1);
-                }
-                //}
-                //else
-                //{
-                //    GameDataData gameData1 = new GameDataData();
-                //    gameData1.Name = str;
-                //    //gameData1.Name = str;
-                //    gameData.Data.Add(gameData1);
-                //    //Debug.Log(name);
-                //}
-                // return gameData;
-            }
-            //else
-            //{
-            //    XElement root = XDocument.Parse(File.ReadAllText($"{path}/Data.xml")).Element("root");
-            //    gameData.Size = int.Parse(root.Element("Size").Value);
-            //    gameData.Name = root.Element("Data").Value;
-
-            //}
-               // gameData.Name = root.Element("Data").Value;
-
-            return gameData;
-        }
+      
         public static void LoadGameData(SubGameData sub)
         {
-            string path = Application.dataPath + sub.MasterKey + "Data.xml";
+            string path = Application.dataPath + "/Resources/Data/"+ sub.MasterKey + "Data.xml";
+            Debug.Log(path);
             if (!File.Exists(path))
                 return;
-            XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
+            XElement root = XDocument.Parse(File.ReadAllText(path)).Element("root");
             sub.Key = root.Element("Key").Value;
             sub.Size = int.Parse(root.Element("Size").Value);
-
+            Debug.Log(sub.Key);
             //Debug.Log(path);
             //GameData gameData = new GameData();
             //string str;
@@ -257,7 +148,7 @@ namespace Saver
             Sprite sprite;
             // Load a PNG or JPG file from disk to a Texture2D
             // Returns null if load fails
-            byte[] FileData = File.ReadAllBytes(FilePath);
+            byte[] FileData = File.ReadAllBytes(FilePath+".X");
             Texture2D texture = new Texture2D(2, 2);
             texture.LoadImage(FileData);
 
@@ -269,6 +160,9 @@ namespace Saver
         public static void Save(CardBase cardBase, string path)
         {
             path = Application.dataPath + $"/Resources/Data/" + path;
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            path += ""+cardBase.Id;
             XElement root = new XElement("root");
 
             root.Add(new XElement("Name", cardBase.Name));
@@ -327,9 +221,10 @@ namespace Saver
         public static CardBase Load(string path)
         {
             path = Application.dataPath + $"/Resources/Data/" + path;
+          //  Debug.Log(path);
             CardBase cardBase = new CardBase();
             XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
-            Debug.Log(path);
+            
 
             #region Main
             cardBase.Name = root.Element("Name").Value;
@@ -365,27 +260,31 @@ namespace Saver
 
             data = root.Element("Stat").Value;
             string[] com = data.Split('_');
-            cardBase.Stat = new List<Constant>(com.Length);
-            cardBase.StatSize = new List<int>(com.Length);
-            cardBase.StatSizeLocal = new List<int>(com.Length);
+            cardBase.Stat = new List<Constant>();
             for (int i = 0; i < com.Length; i++)
             {
-                cardBase.Stat[i] = gameSetting.Library.Constants.Find(x => x.Name == com[i]);
+                cardBase.Stat.Add( gameSetting.Library.Constants.Find(x => x.Name == com[i]));
             }
 
             data = root.Element("StatSize").Value;
             com = data.Split('_');
+            cardBase.StatSize = new List<int>();
+            cardBase.StatSizeLocal = new List<int>();
             for (int i = 0; i < com.Length; i++)
             {
-                cardBase.StatSize[i] = int.Parse(com[i]);
+                cardBase.StatSize.Add(int.Parse(com[i]));
+                cardBase.StatSizeLocal.Add(0);
             }
             data = root.Element("Trait").Value;
             com = data.Split('_');
             if (com[0] != " ")
+                cardBase.Trait = new List<string>(com);
+            else
+                cardBase.Trait = new List<string>();
+
+            for(int i =0;i<cardBase.Trait.Count; i++)
             {
-                cardBase.Trait = new List<string>(com.Length);
-                for (int i = 0; i < com.Length; i++)
-                    cardBase.Trait[i] = com[i];
+                cardBase.TraitSize.Add(0);
             }
 
 

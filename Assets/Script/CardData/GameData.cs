@@ -49,20 +49,10 @@ public class SubGameData
     public string MasterKey;
     public string Key = " ";
     public int Size;
+    public string KeyComplite = " ";
+
+    public bool Use = true;
 }
 
-//public class GameDataTayp
-//{
-//    public int AllSize;
-//    public string Name;
-//    public List<GameDataForm> Form;//data
-//}
-
-//public class GameDataForm
-//{
-//    public int AllSize;
-//    public string Name;
-//    public List<GameDataForm> Form;//data
-//}
 
 

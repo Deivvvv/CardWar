@@ -1403,8 +1403,6 @@ public class RuleConstructor : MonoBehaviour
 
         LoadMainText();
         LoadAllText();
-
-        BattleTable.DataManager.GenerateData(frame, library);
     }
 
     #region CreateSystemData

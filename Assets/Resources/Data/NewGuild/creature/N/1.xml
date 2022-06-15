@@ -1,0 +1,12 @@
+<root>
+  <Name>New Hiro</Name>
+  <Guild>NewGuild</Guild>
+  <Races>Human</Races>
+  <Legions>Undead</Legions>
+  <CivilianGroups>Warior</CivilianGroups>
+  <Tayp>creature</Tayp>
+  <Mana>1</Mana>
+  <Stat>Hp</Stat>
+  <StatSize>1</StatSize>
+  <Trait> </Trait>
+</root>

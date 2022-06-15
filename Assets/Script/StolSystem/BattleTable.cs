@@ -1759,6 +1759,7 @@ namespace BattleTable
         {
             gameSetting.AllCard = new List<CardBase>();
 
+            string[] com;
             int a;
             int cardModSize = cardMod * gameSetting.CardBody.Count;
             for (int i = 0; i < gameSetting.CardBody.Count; i++)
@@ -1766,7 +1767,8 @@ namespace BattleTable
                 a = cardModSize + i;
                 if (a < gameSetting.AllCardPath.Count)
                 {
-                    CardBase card = XMLSaver.Load(gameSetting.AllCardPath[a]);
+                    com = gameSetting.AllCardPath[a].Split('_');
+                    CardBase card = XMLSaver.Load(gameSetting.GameDataFile.Data[int.Parse(com[0])].MasterKey +com[1]);
                     card.Id = a;
                     gameSetting.AllCard.Add(card);
                     card.Body = gameSetting.CardBody[i];
@@ -1800,174 +1802,191 @@ namespace BattleTable
     public static class DataManager
     {
         public static GameSetting gameSetting;
-        public static void GenerateData(RuleMainFrame frame, ActionLibrary Library)
-        {
-            string path = $"/Resources/Data";
-            //gameSetting.GameDataFile = XMLSaver.LoadGameData(path);
+        //public static void GenerateData(RuleMainFrame frame, ActionLibrary Library)
+        //{
+        //    string path = $"/Resources/Data";
+        //    //gameSetting.GameDataFile = XMLSaver.LoadGameData(path);
 
-            GameData gameData = new GameData();
-            gameData.Guild = new List<GameDataData>();
-            for (int i = 0; i < Library.Guilds.Count; i++)
-            {
-                gameData.Guild.Add(new GameDataData());
-                gameData.Guild[i].Name = Library.Guilds[i].Name;
-                gameData.Guild[i].Data = new List<GameDataData>();
-                for (int i1 = 0; i1 < frame.ClassCard.Count; i1++)
-                {
-                    gameData.Guild[i].Data.Add(new GameDataData());
-                    gameData.Guild[i].Data[i1].Name = frame.ClassCard[i1];
-                    gameData.Guild[i].Data[i1].Data = new List<GameDataData>(frame.CardTayp.Count);
-                    for (int i2 = 0; i2 < frame.CardTayp.Count; i2++)
-                    {
-                        gameData.Guild[i].Data[i1].Data.Add(new GameDataData());
-                        gameData.Guild[i].Data[i1].Data[i2].Name = frame.CardTayp[i2];
-                        gameData.Guild[i].Data[i1].Data[i2].End = true;
+        //    GameData gameData = new GameData();
+        //    gameData.Guild = new List<GameDataData>();
+        //    for (int i = 0; i < Library.Guilds.Count; i++)
+        //    {
+        //        gameData.Guild.Add(new GameDataData());
+        //        gameData.Guild[i].Name = Library.Guilds[i].Name;
+        //        gameData.Guild[i].Data = new List<GameDataData>();
+        //        for (int i1 = 0; i1 < frame.ClassCard.Count; i1++)
+        //        {
+        //            gameData.Guild[i].Data.Add(new GameDataData());
+        //            gameData.Guild[i].Data[i1].Name = frame.ClassCard[i1];
+        //            gameData.Guild[i].Data[i1].Data = new List<GameDataData>(frame.CardTayp.Count);
+        //            for (int i2 = 0; i2 < frame.CardTayp.Count; i2++)
+        //            {
+        //                gameData.Guild[i].Data[i1].Data.Add(new GameDataData());
+        //                gameData.Guild[i].Data[i1].Data[i2].Name = frame.CardTayp[i2];
+        //                gameData.Guild[i].Data[i1].Data[i2].End = true;
 
-                       // gameData.Guild[i].Data[i1].Data[i2].Data = new List<GameDataData>();
-                        //gameData.Guild[i].Data[i1].Data[i2].Size = -1;
+        //               // gameData.Guild[i].Data[i1].Data[i2].Data = new List<GameDataData>();
+        //                //gameData.Guild[i].Data[i1].Data[i2].Size = -1;
 
-                       // gameData.Guild[i].Data[i1].Data[i2].Data.Add(new GameDataData());
-                        //gameData.Guild[i].Data[i1].Data[i2].Data[0].Size = -1;
-                       // gameData.Guild[i].Data[i1].Data[i2].Data[0].Name = " ";
-                       // gameData.Guild[i].Data[i1].Data[i2].Data[0].End = true;
-                       // gameData.Guild[i].Data[i1].Data[i2].Data[0].Data = new List<GameDataData>();
-                        //gameData.Guild[i].Data[i1].Data[i2].Data[0].Data.Add(new GameDataData());
-                    }
+        //               // gameData.Guild[i].Data[i1].Data[i2].Data.Add(new GameDataData());
+        //                //gameData.Guild[i].Data[i1].Data[i2].Data[0].Size = -1;
+        //               // gameData.Guild[i].Data[i1].Data[i2].Data[0].Name = " ";
+        //               // gameData.Guild[i].Data[i1].Data[i2].Data[0].End = true;
+        //               // gameData.Guild[i].Data[i1].Data[i2].Data[0].Data = new List<GameDataData>();
+        //                //gameData.Guild[i].Data[i1].Data[i2].Data[0].Data.Add(new GameDataData());
+        //            }
 
-                }
-            }
+        //        }
+        //    }
 
-            XMLSaver.SaveGameData(gameData,path);
-        }
+        //    XMLSaver.SaveGameData(gameData,path);
+        //}
         public static void GenerateKey(RuleMainFrame frame, ActionLibrary Library)
         {
+            string[] com;
             string path = $"/Resources/Data";
-            string path1 = "";
             gameSetting.GameDataFile = new GameData();
             gameSetting.GameDataFile.Data = new List<SubGameData>();
             for (int i = 0; i < Library.Guilds.Count; i++)
-            {
-                //GameDataData gameData = new GameDataData();
-                //gameData.Name = Library.Guilds[i].Name;
-                //gameData.Data = new List<GameDataData>();
                 for (int i1 = 0; i1 < frame.ClassCard.Count; i1++)
-                {
-                    //gameData.Data.Add(new GameDataData());
-                    //gameData.Data[i1].Name = frame.ClassCard[i1];
-                    //gameData.Data[i1].Data = new List<GameDataData>(frame.CardTayp.Count);
                     for (int i2 = 0; i2 < frame.CardTayp.Count; i2++)
                     {
-                        //gameData.Data[i1].Data.Add(new GameDataData());
-                        //gameData.Data[i1].Data[i2].Name = frame.CardTayp[i2];
-                        //gameData.Data[i1].Data[i2].End = true;
-
                         SubGameData sub = new SubGameData();
                         sub.MasterKey = Library.Guilds[i].Name + "/" + frame.ClassCard[i1] + "/" + frame.CardTayp[i2] + "/";
                         XMLSaver.LoadGameData(sub);
-                        //sub.Key =;
-                        //sub.Size =;
-    }
+                        int a = gameSetting.GameDataFile.Data.Count;
+                        gameSetting.GameDataFile.Data.Add(sub);
+
+                        if (sub.Key != " ")
+                        {
+                            com = sub.Key.Split('/');
+                            for (int i3 = 0; i3 < com.Length; i3++)
+                            {
+                                if (sub.KeyComplite != " ")
+                                    sub.KeyComplite += "/";
+                                sub.KeyComplite += $"{a}_{com[i3]}";
+                            }
+                        }
+                    }
+            SetKey();
+        }
+        public static void SetKey()
+        {
+            string path = " ";
+            for (int i = 0; i < gameSetting.GameDataFile.Data.Count; i++)
+                if (gameSetting.GameDataFile.Data[i].Use
+                    && gameSetting.GameDataFile.Data[i].Key != " ")
+                {
+                    if (path != " ")
+                        path += "/";
+                    path += gameSetting.GameDataFile.Data[i].KeyComplite;
+
                 }
 
-            }
-        }
-
-        public static void UseData()
-        {
-            string path = $"/Resources/Data";
-            gameSetting.GameDataFile = XMLSaver.LoadGameData(path);
-           // mainData = " ";
-            gameSetting.GameDataFile.Data = new List<SubGameData>();
-            for (int i = 0; i < gameSetting.GameDataFile.Guild.Count; i++)
-            {
-                DataSupport(gameSetting.GameDataFile.Guild[i], "");
-            }
-
-
-           // Debug.Log(mainData);
-            //if(mainData != " ")
-            //{
-            //    string[] com = mainData.Split('_');
-            //    gameSetting.AllCardPath = new List<string>(com);
-            //}
-            //else
-            //    gameSetting.AllCardPath = new List<string>();
-
+            //Debug.Log(path);
+            if(path !=" ")
+                gameSetting.AllCardPath = new List<string>(path.Split('/'));
+            else
+                gameSetting.AllCardPath = new List<string>();
             CardView.CardReset();
         }
 
-       // static string mainData;
-
-        static void DataSupport(GameDataData gameData, string path)
-        {
-            if (gameData == null)
-                return;
-            if (gameData.Use)
-                return;
-
-            if (gameData.End)
-            {
-                SubGameData gd = new SubGameData();
-                gd.MasterKey = path;
-                gd.Key = gameData.Data[0].Name;
-                gd.Size = gameData.Size;
-                int a = gameSetting.GameDataFile.Data.Count;
-                if (a > 0)
-                    gd.Size += gameSetting.GameDataFile.Data[a - 1].Size;// += gameData.Size;
-                gameSetting.GameDataFile.Data.Add(gd);
-            }
-            else if (gameData.Data != null)
-                for (int i = 0; i < gameData.Data.Count; i++)
-                    DataSupport(gameData.Data[i], path + i + "/");
-        }
-
-        public static void DataTravel(string key,string path)
-        {
-            //if (path == "ViewAll")
-            //{
-            //    mainData = " ";
-            //    for (int i = 0; i < gameSetting.GameDataFile.Guild.Count; i++)
-            //    {
-            //        DataSupport(gameSetting.GameDataFile.Guild[i], "");
-            //    }
-            //    string[] com = mainData.Split('_');
-            //    gameSetting.AllCardPath = new List<string>(com);
-            //}
-            CardView.CardReset();
-            //string[] com = key.Split('_');
-            //switch (path) 
-            //{
-            //    case ("Back"):
-            //        main = com[0];
-            //        for (int i = 1; i < com.Length - 1; i++)
-            //        {
-            //            main +="_" +com[i];
-            //        }
-            //        break;
-            //    case ("All"):
-            //        int a = int.Parse(com[0]);
-            //        GameDataData = gameSetting.GameDataFile.Guild[a];
-            //        break;
-
-            //}
+       // public static void UseData()
+       // {
+       //     string path = $"/Resources/Data";
+       //     gameSetting.GameDataFile = XMLSaver.LoadGameData(path);
+       //    // mainData = " ";
+       //     gameSetting.GameDataFile.Data = new List<SubGameData>();
+       //     for (int i = 0; i < gameSetting.GameDataFile.Guild.Count; i++)
+       //     {
+       //         DataSupport(gameSetting.GameDataFile.Guild[i], "");
+       //     }
 
 
-            //string[] com = path.Split('_');
-            //switch (com[com.Length - 1])
-            //{
+       //    // Debug.Log(mainData);
+       //     //if(mainData != " ")
+       //     //{
+       //     //    string[] com = mainData.Split('_');
+       //     //    gameSetting.AllCardPath = new List<string>(com);
+       //     //}
+       //     //else
+       //     //    gameSetting.AllCardPath = new List<string>();
 
-            //}
+       //     CardView.CardReset();
+       // }
 
-        }
-        public static void LoadData()
-        {
+       //// static string mainData;
 
-        }
+       // static void DataSupport(GameDataData gameData, string path)
+       // {
+       //     if (gameData == null)
+       //         return;
+       //     if (gameData.Use)
+       //         return;
 
-        public static void ReadPath()
-        {
-           // main
-        }
+       //     if (gameData.End)
+       //     {
+       //         SubGameData gd = new SubGameData();
+       //         gd.MasterKey = path;
+       //         gd.Key = gameData.Data[0].Name;
+       //         gd.Size = gameData.Size;
+       //         int a = gameSetting.GameDataFile.Data.Count;
+       //         if (a > 0)
+       //             gd.Size += gameSetting.GameDataFile.Data[a - 1].Size;// += gameData.Size;
+       //         gameSetting.GameDataFile.Data.Add(gd);
+       //     }
+       //     else if (gameData.Data != null)
+       //         for (int i = 0; i < gameData.Data.Count; i++)
+       //             DataSupport(gameData.Data[i], path + i + "/");
+       // }
+
+       // public static void DataTravel(string key,string path)
+       // {
+       //     //if (path == "ViewAll")
+       //     //{
+       //     //    mainData = " ";
+       //     //    for (int i = 0; i < gameSetting.GameDataFile.Guild.Count; i++)
+       //     //    {
+       //     //        DataSupport(gameSetting.GameDataFile.Guild[i], "");
+       //     //    }
+       //     //    string[] com = mainData.Split('_');
+       //     //    gameSetting.AllCardPath = new List<string>(com);
+       //     //}
+       //     CardView.CardReset();
+       //     //string[] com = key.Split('_');
+       //     //switch (path) 
+       //     //{
+       //     //    case ("Back"):
+       //     //        main = com[0];
+       //     //        for (int i = 1; i < com.Length - 1; i++)
+       //     //        {
+       //     //            main +="_" +com[i];
+       //     //        }
+       //     //        break;
+       //     //    case ("All"):
+       //     //        int a = int.Parse(com[0]);
+       //     //        GameDataData = gameSetting.GameDataFile.Guild[a];
+       //     //        break;
+
+       //     //}
+
+
+       //     //string[] com = path.Split('_');
+       //     //switch (com[com.Length - 1])
+       //     //{
+
+       //     //}
+
+       // }
+       // public static void LoadData()
+       // {
+
+       // }
+
+       // public static void ReadPath()
+       // {
+       //    // main
+       // }
 
     }
     
