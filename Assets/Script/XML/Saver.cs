@@ -6,6 +6,15 @@ using System.Xml;
 using System.Xml.Linq;
 using System.IO;
 using System.Text;
+using TMPro;
+
+using UnityEditor;
+using UnityEngine.TextCore;
+using UnityEngine.U2D;
+using System.Linq;
+
+
+
 
 namespace Saver
 {
@@ -77,59 +86,131 @@ namespace Saver
         #endregion
 
 
-        //CardSet
-        public static void SaveCardSet(CardSet cardSet, string path)
+        public static void LoadAtlas(SpriteRenderer sr, TMP_SpriteAsset  tmp)
         {
+            string path = Application.dataPath + $"/Resources/Icon/";
+            string[] com = Directory.GetFiles(path, "*.png");
+
+            Texture2D[] textures = new Texture2D[1024];
+            Texture2D tx;
+            for (int i = 0; i < com.Length; i++)
+            {
+                tx = new Texture2D(2, 2);
+                byte[] FileData = File.ReadAllBytes(com[i]);
+                tx.LoadImage(FileData);
+                textures[i] = tx;
+            }
+
+
+
+
+            tx = new Texture2D(1024, 1024);
+            tx.PackTextures(textures, 0, 1024);
+
+            //sr.sprite = Sprite.Create(tx, new Rect(0.0f, 0.0f, tx.width, tx.height), new Vector2(0.5f, 0.5f), 100.0f);
+
+            //tmp.spriteSheet = tx;
+            //tmp.UpdateLookupTables();
+            path = Application.dataPath + $"/Resources/D.png";
+
+            byte[] bytes = tx.EncodeToPNG();
+            File.WriteAllBytes(path, bytes);//.png
+
+        }
+
+
+        //CardSet
+        public static void SaveCardSets(List<string> list, string guild)
+        {
+            string path = Application.dataPath + $"/Resources/CardSet/{guild}.xml";
+
 
             XElement root = new XElement("root");
-
-            root.Add(new XElement("Name", cardSet.Name));
-
-            int a = cardSet.OrigCard.Count;
-            root.Add(new XElement("OrigCard", a));
-            for (int i = 0; i < a; i++)
+            string str;
+            if (list.Count == 0)
+                str = " ";
+            else
             {
-                root.Add(new XElement("OrigCard" + i, cardSet.OrigCard[i]));
+                str = list[0];
+                for (int i = 1; i < list.Count; i++)
+                    str += "/" + list[i];
             }
-
-            root.Add(new XElement("OrigCount", a));
-            for (int i = 0; i < a; i++)
-            {
-                root.Add(new XElement("OrigCount" + i, cardSet.OrigCount[i]));
-            }
-
-            root.Add(new XElement("AllCard", 40));
+            root.Add(new XElement("Path", str));
 
             XDocument saveDoc = new XDocument(root);
             File.WriteAllText($"{path}.xml", saveDoc.ToString());
+        }
+        public static List<string> LoadCardSets(string guild)
+        {
+            List<string> colod;
+
+            string path = Application.dataPath + $"/Resources/CardSet/{guild}";
+            if (Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            path += ".xml";
+            if (File.Exists(path))
+            {
+                XElement root = XDocument.Parse(File.ReadAllText(path)).Element("root");
+
+                string str = root.Element("Path").Value;
+                if (str != " ")
+                    colod = new List<string>(str.Split('/'));
+                else
+                    colod = new List<string>();
+            }
+            else
+                colod = new List<string>();
+
+            return colod;
+        }
+        public static void SaveCardSet(CardSet cardSet, string path)
+        {
+            path = Application.dataPath + $"/Resources/CardSet/" + path + ".xml";
+            XElement root = new XElement("root");
+
+            string str = " ";
+            if (cardSet.Path.Count > 0)
+            {
+                str = cardSet.Path[0];
+                for (int i = 1; i < cardSet.Path.Count; i++)
+                    str += "/" + cardSet.Path;
+            }
+            root.Add(new XElement("Path", str));
+
+
+            str = " ";
+            if (cardSet.Size.Count > 0)
+            {
+                str = ""+cardSet.Size[0];
+                for (int i = 1; i < cardSet.Size.Count; i++)
+                    str += "/" + cardSet.Size;
+            }
+            root.Add(new XElement("Size", str));
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path, saveDoc.ToString());
 
         }
-        public static CardSet LoadCardSet( string path)
+        public static CardSet LoadCardSet( string name)
         {
+            string path = Application.dataPath + $"/Resources/CardSet/" + name+".xml";
             CardSet cardSet = new CardSet();
-            if (path != "")
+            string[] com = name.Split('/');
+            cardSet.Name = com[1];
+            cardSet.Path = new List<string>();
+            cardSet.Size = new List<int>();
+            if (File.Exists(path))
             {
-                XElement root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
+                XElement root = XDocument.Parse(File.ReadAllText(path)).Element("root");
 
-                cardSet.Name = root.Element("Name").Value;
+                string str = root.Element("Path").Value;
+                cardSet.Path = new List<string>(str.Split('/'));
 
-                cardSet.AllCard = int.Parse(root.Element("AllCard").Value);
-
-                int a = int.Parse(root.Element("OrigCard").Value); 
-                cardSet.OrigCard = new List<int>();
-                for (int i = 0; i < a; i++)
-                {
-                    cardSet.OrigCard.Add(int.Parse(root.Element($"OrigCard{i}").Value));
-                }
-
-                cardSet.OrigCount = new List<int>();
-                for (int i = 0; i < a; i++)
-                {
-                    cardSet.OrigCount.Add(int.Parse(root.Element($"OrigCount{i}").Value));
-                }
-
-
-                //colodConstructor.TransfData(cardSet);
+                str = root.Element("Size").Value;
+                com = str.Split('/');
+                foreach (string str1 in com)
+                    cardSet.Size.Add(int.Parse(str1));
 
             }
             return cardSet;
@@ -137,15 +218,14 @@ namespace Saver
 
         # region Card
         
-        public static void SetData(string path)
-        {
-            root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
-            //card = 
-        }
+        //public static void SetData(string path)
+        //{
+        //    root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
+        //    //card = 
+        //}
 
         public static Sprite LoadTexture(string FilePath)
         {
-            Sprite sprite;
             // Load a PNG or JPG file from disk to a Texture2D
             // Returns null if load fails
             byte[] FileData = File.ReadAllBytes(FilePath+".X");

@@ -4,302 +4,284 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using Saver;
-using TMPro;
+using BattleTable;
 
 
 public class ColodConstructor : MonoBehaviour
 {
     [SerializeField]
     private GameSetting gameSetting;
-    private GameData gameData;
+    [SerializeField]
+    private RuleMainFrame frame;
     [SerializeField]
     private ColodConstructorUi Ui;
 
-    private CardSet cardSet;
 
-    private int allCard;
+    private List<string> colod;
+    private string nameGuild;
     private int maxCard = 40;
 
-    private string origPath;
-    private string origPathAlt;
-    public List<CardBase> LocalCard;
-
-
-    private List<int> blackList;
-    private List<int> origCard;
-    private List<int> origCount;
-    private List<Transform> origTrans;
-    // public List<Transform> OrigBody;
-
-    void Save()
-    {
-        cardSet.OrigCard = new List<int>();
-        cardSet.OrigCount = new List<int>();
-        int a = origCard.Count;
-        for (int i = 0; i < a; i++)
-        {
-            cardSet.OrigCard.Add(origCard[i]);
-            cardSet.OrigCount.Add(origCount[i]);
-        }
-        XMLSaver.SaveCardSet(cardSet, origPathAlt);
-    }
+    private CardSet cardSet;
+    private List<CardBase> card;
+    private List<Transform> body;
+    private int mod;
 
     void Start()
     {
         XMLSaver.SetGameSetting(gameSetting);
-        origPath = Application.dataPath + $"/Resources/Data/Hiro";
-        origPathAlt = Application.dataPath + $"/Resources/CardSet";
-        LoadBase();
-        Calculation();
+        Core.LoadGameSetting(gameSetting);
+        gameSetting.CardBody = Ui.GBody;
+        body = Ui.Body;
+        DataManager.GenerateKey(frame, gameSetting.Library);
+        SetGuild(gameSetting.ActualGuild);
+
+        CardView.CardListLite(card, cardSet.Size, body, mod);
+        SetButton();       // Calculation();
     }
-
-    void LoadBase()
+    void SetGuild(int a)
     {
-        //Ui.SaveButton.onClick.AddListener(() => Save());
+        gameSetting.ActualGuild = a;
+        nameGuild = gameSetting.Library.Guilds[a].Name;
+        colod = XMLSaver.LoadCardSets(nameGuild);
+        cardSet = XMLSaver.LoadCardSet(nameGuild+"/"+ gameSetting.ActualColod);
+        Ui.NameFlied.text = cardSet.Name; 
 
-        //gameData = XMLSaver.LoadGameData(Application.dataPath + $"/Resources/Data");
-        ////gameData = new GameData();
-        //LocalCard = new List<CardBase>();
-        //int a = gameData.AllCard;
-        //string path = "";
-
-        //for (int i = 0; i < a; i++)
-        //{
-        //    path = origPath + $"{i}";
-        //    LocalCard.Add(XMLSaver.Load(path));
-        //    NewCard(i);
-        //}
-
-        //a = gameData.BlackList.Count;
-        //for (int i = 0; i < a; i++)
-        //{
-        //    LocalCard[gameData.BlackList[i]].Body.gameObject.active = false;
-        //}
-        ////XMLSaver.LoadCardSet(origPathAlt, "Colod");
-
-        //cardSet = XMLSaver.LoadCardSet(origPathAlt);
-
-        //SetNewSet();
-    }
-    void SetNewSet()
-    {
-        ClearTable();
-        origCard = new List<int>();
-        origCount = new List<int>();
-        blackList = new List<int>();
-        origTrans = new List<Transform>();
-        int a = cardSet.OrigCard.Count;
-        int b = 0;
-        for(int i = 0; i < a; i++)
+        card = new List<CardBase>();
+        string[] com;
+        for (int i = 0; i < cardSet.Path.Count; i++)
         {
-            b = cardSet.OrigCard[i];
-            origCard.Add(b);
-            origCount.Add(cardSet.OrigCount[i]);
-            AddCardTable(b);
-          
+            com = cardSet.Path[i].Split('_');
+            card.Add( XMLSaver.Load(gameSetting.GameDataFile.Data[int.Parse(com[0])].MasterKey + com[1]));
+        }
+
+    }
+
+
+    void SetButton()
+    {
+        Ui.SaveButton.onClick.AddListener(() => Save());
+
+        Ui.GUp.onClick.AddListener(() => CardView.Mod(true));
+        Ui.GDown.onClick.AddListener(() => CardView.Mod(false));
+        Ui.CUp.onClick.AddListener(() => Mod(true));
+        Ui.CDown.onClick.AddListener(() => Mod(false));
+
+        for(int i =0;i<Ui.GBody.Count;i++)
+            AddCardButton(i, Ui.GBody[i].gameObject.GetComponent<Button>());
+
+        for (int i = 0; i < body.Count; i++)
+            RemoveCardButton(i, body[i].gameObject.GetComponent<Button>());
+    }
+
+    void Mod(bool up)
+    {
+        int oldMod = mod;
+        if (up)
+        {
+            if((mod+1) * body.Count < card.Count)
+                mod++;
+        }else if(mod > 0)
+            mod--;
+
+        if(mod != oldMod)
+        {
+            int a;
+            CardView.CardListLite(card, cardSet.Size, body, mod);
+            //for (int i = 0; i < body.Count; i++)
+            //{
+            //    a = mod * body.Count + i;
+            //    if (a < localCard.Count)
+            //    {
+            //        RemoveCardButton(a, body[i].gameObject.GetComponent<Button>());
+            //    }
+            //    else
+            //        RemoveButton(body[i].gameObject.GetComponent<Button>());
+            //}
         }
     }
-    void ClearTable()
+    void Save()
     {
-        int a = Ui.DeskCard.childCount;
-        for(int i = 0; i < a; i++)
+        cardSet.Name = Ui.NameFlied.text;
+        XMLSaver.SaveCardSet(cardSet, nameGuild + "/" + cardSet.Name);
+        XMLSaver.SaveCardSets(colod, nameGuild);
+    }
+
+    void Load(int a)
+    {
+        cardSet = XMLSaver.LoadCardSet(nameGuild + "/" + colod[a]);
+        Ui.NameFlied.text = cardSet.Name;
+
+        card = new List<CardBase>();
+        string[] com;
+        for (int i = 0; i < cardSet.Path.Count; i++)
         {
-            Destroy(Ui.DeskCard.GetChild(0).gameObject);
+            com = cardSet.Path[i].Split('_');
+            card.Add(XMLSaver.Load(gameSetting.GameDataFile.Data[int.Parse(com[0])].MasterKey + com[1]));
         }
-    }
+    }   
+    //void SetNewSet()
+    //{
+    //    ClearTable();
+    //    origCard = new List<int>();
+    //    origCount = new List<int>();
+    //    blackList = new List<int>();
+    //    origTrans = new List<Transform>();
+    //    int a = cardSet.OrigCard.Count;
+    //    int b = 0;
+    //    for(int i = 0; i < a; i++)
+    //    {
+    //        b = cardSet.OrigCard[i];
+    //        origCard.Add(b);
+    //        origCount.Add(cardSet.OrigCount[i]);
+    //        AddCardTable(b);
 
-    void NewCard(int i)
+    //    }
+    //}
+
+    //void NewCard(int i)
+    //{
+    //    int a = Ui.BaseCard.childCount;
+    //    GameObject GO = Instantiate(Ui.OrigCard);
+    //    GO.transform.SetParent(Ui.BaseCard);
+
+    //    Button button = GO.GetComponent<Button>();
+    //    AddCardButton(a, button);
+
+    //   // GO.GetComponent<Image>().color = Ui.SelectColor[1];
+
+    //    LocalCard[i].Body = GO.transform;
+    //    //  LocalCard.Add(new CardBase());
+    //    //  Save();
+
+    //    ViewCardBase(i);
+    //}
+    //void AddCardButton(int a, Button button)
+    //{
+    //    button.onClick.AddListener(() => AddCard(a));
+    //}
+    //void AddCard(int a)
+    //{
+    //    if (allCard < maxCard)
+    //    {
+
+    //        int b = origCard.Count;
+    //        for (int i = 0; i < b; i++)
+    //        {
+    //            if (a == origCard[i])
+    //            {
+    //                if (origCount[i] < 3)
+    //                {
+    //                    if (origCount[i] == 0)
+    //                        origTrans[i].gameObject.active = true;
+
+    //                    origCount[i]++;
+    //                    Calculation();
+    //                   // ViewCardTable(i);
+    //                }
+
+    //                return;
+    //            }
+
+    //        }
+
+
+    //        if (blackList.Count > 0)
+    //        {
+    //            b = blackList[0];
+    //            blackList.RemoveAt(0);
+    //            origCard[b] = a;
+    //            origCount[b] = 1;
+
+    //            origTrans[b].gameObject.active = true;
+    //          //  ViewCardTable(b);
+    //        }
+    //        else
+    //        {
+    //            origCard.Add(a);
+    //            origCount.Add(1);
+    //            AddCardTable(a);
+    //        }
+
+
+    //        // ViewCardTable(b);
+    //        Calculation();
+    //    }
+    //   // NewCardTable(b);
+    //}
+    //void AddCardTable(int i)
+    //{
+    //    int a = Ui.DeskCard.childCount;
+
+    //    GameObject GO = Instantiate(Ui.OrigCardColod);
+    //    GO.transform.SetParent(Ui.DeskCard);
+
+    //    origTrans.Add(GO.transform);
+
+    //    Button button = GO.GetComponent<Button>();
+    //    RemoveCardButton(a, button);
+
+    //   // ViewCardTable(a);
+    //    // GO.GetComponent<Image>().color = Ui.SelectColor[1];
+
+    //    // LocalCard[i].Body = GO.transform;
+    //}
+
+    //void Calculation()
+    //{
+    //    int a = origCard.Count;
+    //    allCard = 0;
+
+    //    for(int i = 0; i < a; i++)
+    //    {
+    //        allCard += origCount[i];
+    //    }
+
+    //    Ui.CardCount.text = $"{allCard}/{maxCard}";
+    //}
+
+    void RemoveButton(Button button) { button.onClick.RemoveAllListeners(); }
+    void RemoveCardButton(int a, Button button)
     {
-        int a = Ui.BaseCard.childCount;
-        GameObject GO = Instantiate(Ui.OrigCard);
-        GO.transform.SetParent(Ui.BaseCard);
-
-        Button button = GO.GetComponent<Button>();
-        AddCardButton(a, button);
-
-       // GO.GetComponent<Image>().color = Ui.SelectColor[1];
-
-        LocalCard[i].Body = GO.transform;
-        //  LocalCard.Add(new CardBase());
-        //  Save();
-
-        ViewCardBase(i);
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(() => RemoveCard(a));
     }
-    void AddCardButton(int a, Button button)
+    void AddCardButton(int a, Button button)  {  button.onClick.AddListener(() => AddCard(a)); }
+
+    void RemoveCard(int i)
     {
-        button.onClick.AddListener(() => AddCard(a));
+        int a = mod * body.Count + i; 
+        if (a < card.Count)
+        {
+            if (cardSet.Size[a] == 1)
+            {
+                card.RemoveAt(a);
+                cardSet.Path.RemoveAt(a);
+                cardSet.Size.RemoveAt(a);
+            }
+            else
+                cardSet.Size[a]--;
+            CardView.CardListLite(card, cardSet.Size, body, mod);
+        }
+
     }
     void AddCard(int a)
     {
-        if (allCard < maxCard)
+        string path = gameSetting.AllCardPath[gameSetting.AllCard[a].Id];
+        int b = cardSet.Path.FindIndex(x => x == path);
+        if(b != -1)
         {
-
-            int b = origCard.Count;
-            for (int i = 0; i < b; i++)
-            {
-                if (a == origCard[i])
-                {
-                    if (origCount[i] < 3)
-                    {
-                        if (origCount[i] == 0)
-                            origTrans[i].gameObject.active = true;
-
-                        origCount[i]++;
-                        Calculation();
-                       // ViewCardTable(i);
-                    }
-
-                    return;
-                }
-
-            }
-
-
-            if (blackList.Count > 0)
-            {
-                b = blackList[0];
-                blackList.RemoveAt(0);
-                origCard[b] = a;
-                origCount[b] = 1;
-
-                origTrans[b].gameObject.active = true;
-              //  ViewCardTable(b);
-            }
-            else
-            {
-                origCard.Add(a);
-                origCount.Add(1);
-                AddCardTable(a);
-            }
-
-
-            // ViewCardTable(b);
-            Calculation();
-        }
-       // NewCardTable(b);
-    }
-    void AddCardTable(int i)
-    {
-        int a = Ui.DeskCard.childCount;
-
-        GameObject GO = Instantiate(Ui.OrigCardColod);
-        GO.transform.SetParent(Ui.DeskCard);
-
-        origTrans.Add(GO.transform);
-
-        Button button = GO.GetComponent<Button>();
-        RemoveCardButton(a, button);
-
-       // ViewCardTable(a);
-        // GO.GetComponent<Image>().color = Ui.SelectColor[1];
-
-        // LocalCard[i].Body = GO.transform;
-    }
-
-    void Calculation()
-    {
-        int a = origCard.Count;
-        allCard = 0;
-
-        for(int i = 0; i < a; i++)
-        {
-            allCard += origCount[i];
-        }
-
-        Ui.CardCount.text = $"{allCard}/{maxCard}";
-    }
-
-    void RemoveCardButton(int a, Button button)
-    {
-        button.onClick.AddListener(() => RemoveCard(a));
-    }
-    void RemoveCard(int a)
-    {
-        origCount[a]--;
-        if (origCount[a] < 1)
-        {
-            origTrans[a].gameObject.active = false;
+            if (cardSet.Size[b] < 3)
+                cardSet.Size[b]++;
         }
         else
         {
-            //ViewCardTable(a);
+            card.Add(gameSetting.AllCard[a]);
+            cardSet.Path.Add(path);
+            cardSet.Size.Add(1);
         }
-        Calculation();
-        //  if(origCount)
-    }
-
-    void ViewCardBase(int a)
-    {
-        CardBase card = LocalCard[a];
-        Transform trans = card.Body;
-
-        //trans.GetChild(1).//портреты
-
-        TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = card.Name;
-
-        text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = "";
-        //for (int i = 0; i < card.Stat.Count - 1; i++)
-        //{
-        //    //if (card.Stat[i] > 0)
-        //        text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
-        //}
-        // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
-
-
-        text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
-        text.text = "" + card.Stat[card.Stat.Count - 1];
-        //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
+        CardView.CardListLite(card, cardSet.Size, body, mod);
     }
 
 
-    //void ViewCardTable(int a)
-    //{
 
-    //    CardBase card = LocalCard[origCard[a]];
-
-    //    Transform body = Ui.DeskCard.GetChild(a);
-
-
-    //    if (origCount[a] > 1)
-    //    {
-    //        body.GetChild(1).gameObject.active = true;
-    //    }
-    //    else
-    //        body.GetChild(1).gameObject.active = false;
-
-    //   // Debug.Log(a);
-    //    if (origCount[a] > 2)
-    //        body.GetChild(0).gameObject.active = true;
-    //    else
-    //        body.GetChild(0).gameObject.active = false;
-
-    //    Transform trans = body.GetChild(2);
-
-    //  //  Debug.Log(a);
-    //    //trans.GetChild(1).//портреты
-
-    //    TMP_Text text = trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>();
-    //    text.text = card.Name;
-
-    //    text = trans.GetChild(2).GetChild(0).gameObject.GetComponent<TMP_Text>();
-    //    text.text = "";
-    //    for (int i = 0; i < card.Stat.Count - 1; i++)
-    //    {
-    //       // if (card.Stat[i] > 0)
-    //    //        text.text += $"<sprite name={gameSetting.NameIcon[i]}>{card.Stat[i]} ";
-    //    }
-    //    // trans.GetChild(1).GetChild(0).gameObject.GetComponent<TMP_Text>().text = LocalCard[a].Name;
-
-    // //   Debug.Log(a);
-
-    //    text = trans.GetChild(3).GetChild(0).gameObject.GetComponent<TMP_Text>();
-    //    text.text = "" + card.Stat[card.Stat.Count - 1];
-
-    //    trans.GetChild(4).GetChild(0).gameObject.GetComponent<Text>().text = $"X{origCount[a]}";
-    //  //  text.text = $"X{origCount[a]}";
-    // //   Debug.Log(a);
-    //    //   GameObject GO = Ui.BaseCard.GetChild(a + 1).gameObject;
-    //}
 }

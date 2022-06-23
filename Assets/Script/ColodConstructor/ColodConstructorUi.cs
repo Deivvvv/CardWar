@@ -5,13 +5,16 @@ using UnityEngine.UI;
 
 public class ColodConstructorUi : MonoBehaviour
 {
-    public GameObject OrigCard;
-    public GameObject OrigCardColod;
-
-    public Transform BaseCard;
-    public Transform DeskCard;
+    public List<Transform> Body;
+    public List< Transform> GBody;
 
     public Text CardCount;
+    public InputField NameFlied;
 
     public Button SaveButton;
+
+    public Button GUp;
+    public Button GDown;
+    public Button CUp;
+    public Button CDown;
 }

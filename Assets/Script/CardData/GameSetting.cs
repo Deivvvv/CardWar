@@ -9,6 +9,8 @@ public class GameSetting : ScriptableObject
     public List<HeadSimpleTrigger> Rule;
     public List<CardBase> AllCard;
 
+    public int ActualGuild = 0;
+    public string ActualColod = "Red Knigth";
     public int SystemKey;
     public List<string> AllCardPath;
 

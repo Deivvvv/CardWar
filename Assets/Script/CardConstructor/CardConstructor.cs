@@ -266,72 +266,6 @@ public class CardConstructor : MonoBehaviour
         TT1.text = str;
     }
 
-    //#region Filtr System
-    //void GenerateFiltr()
-    //{
-    //    int a = gameSetting.SellCount.Length + 1;
-
-    //    GameObject GO = null;
-
-    //    GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
-    //    GO.transform.SetParent(Ui.BaseFiltr);
-
-    //    AddFiltr(-1, GO.GetComponent<Button>());
-
-
-    //    for (int i = 0; i < a; i++)
-    //    {
-
-    //        GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
-    //        GO.transform.SetParent(Ui.BaseFiltr);
-
-    //        GO.GetComponent<Image>().sprite = gameSetting.Icon[i];
-    //        AddFiltr(i, GO.GetComponent<Button>());
-    //    }
-    //}
-    //void AddFiltr(int a, Button button)
-    //{
-
-    //    button.onClick.AddListener(() => SetFiltr(a));
-    //}
-    //void SetFiltr(int a)
-    //{
-    //    if (curentFiltr == a)
-    //        filterRevers = !filterRevers;
-    //    else
-    //        filterRevers = false;
-
-    //    curentFiltr = a;
-
-    //    Sort();
-    //}
-
-    //void Sort()
-    //{
-    //    IEnumerable<CardBase> items = null;//biomData.Arsenal.OrderBy(i => i.Class).ThenBy(x => x.CostMin).ThenBy(x => x.Qvailty);
-
-
-    //    if (curentFiltr == -1)
-    //    {
-    //        items = gameSetting.AllCard;
-    //    }
-    //    else
-    //    {
-    //        if (filterRevers)
-    //            items = gameSetting.AllCard.OrderBy(i => i.Stat[curentFiltr]);
-    //        else
-    //            items = gameSetting.AllCard.OrderByDescending(i => i.Stat[curentFiltr]);
-
-
-    //    }
-
-    //    foreach (CardBase item in items)
-    //    {
-    //        item.Body.SetParent(Ui.TraitCard);
-    //        item.Body.SetParent(Ui.BaseCard);
-    //    }
-    //}
-    //#endregion
     #region IO card System
     void Update()
     {
@@ -618,8 +552,7 @@ public class CardConstructor : MonoBehaviour
 
         for(int i =0;i< Ui.CardBody.Count; i++)
         {
-            Button button = Ui.CardBody[i].gameObject.GetComponent<Button>();
-            SwitchCardButton(i, button);
+            SwitchCardButton(i, Ui.CardBody[i].gameObject.GetComponent<Button>());
 
             Ui.CardBody[i].gameObject.GetComponent<Image>().color = gameSetting.SelectColor[1];
             //SwitchCardButton

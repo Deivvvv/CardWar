@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: IconSet
   m_EditorClassIdentifier: 
   hashCode: 320255657
-  material: {fileID: 8481725065005716910}
+  material: {fileID: 5165913883058107537}
   materialHashCode: 0
   m_Version: 1.1.0
   m_FaceInfo:
@@ -39,12 +39,6 @@ MonoBehaviour:
     m_TabWidth: 0
   spriteSheet: {fileID: 2800000, guid: 9a1e5d2af59607545afd327dc74a1180, type: 3}
   m_SpriteCharacterTable:
-  - m_ElementType: 2
-    m_Unicode: 65534
-    m_GlyphIndex: 89
-    m_Scale: 1
-    m_Name: IconSet_89
-    m_HashCode: -1484862441
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 0
@@ -85,8 +79,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 6
     m_Scale: 1
-    m_Name: Hp
-    m_HashCode: 2360
+    m_Name: IconSet_6
+    m_HashCode: 866057824
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 7
@@ -427,44 +421,44 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 63
     m_Scale: 1
-    m_Name: Move
-    m_HashCode: 2650193
+    m_Name: IconSet_63
+    m_HashCode: -1484862893
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 64
     m_Scale: 1
-    m_Name: Stat9
-    m_HashCode: 99187467
+    m_Name: IconSet_64
+    m_HashCode: -1484862892
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 65
     m_Scale: 1
-    m_Name: Stat10
-    m_HashCode: -1021781165
+    m_Name: IconSet_65
+    m_HashCode: -1484862891
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 66
     m_Scale: 1
-    m_Name: Stat12
-    m_HashCode: -1021781167
+    m_Name: IconSet_66
+    m_HashCode: -1484862890
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 67
     m_Scale: 1
-    m_Name: Slash
-    m_HashCode: 100049125
+    m_Name: IconSet_67
+    m_HashCode: -1484862889
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 68
     m_Scale: 1
-    m_Name: NoArmorSlash
-    m_HashCode: -1841187321
+    m_Name: IconSet_68
+    m_HashCode: -1484862888
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 69
     m_Scale: 1
-    m_Name: ArmorBreaker
-    m_HashCode: 1851473483
+    m_Name: IconSet_69
+    m_HashCode: -1484862887
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 70
@@ -481,14 +475,14 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 72
     m_Scale: 1
-    m_Name: Def
-    m_HashCode: 72871
+    m_Name: IconSet_72
+    m_HashCode: -1484862797
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 73
     m_Scale: 1
-    m_Name: Stat11
-    m_HashCode: -1021781166
+    m_Name: IconSet_73
+    m_HashCode: -1484862798
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 74
@@ -499,8 +493,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 75
     m_Scale: 1
-    m_Name: Stat5
-    m_HashCode: 99187463
+    m_Name: IconSet_75
+    m_HashCode: -1484862796
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 76
@@ -541,20 +535,20 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 82
     m_Scale: 1
-    m_Name: Stat1
-    m_HashCode: 99187459
+    m_Name: IconSet_82
+    m_HashCode: -1484862436
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 83
     m_Scale: 1
-    m_Name: Stat4
-    m_HashCode: 99187462
+    m_Name: IconSet_83
+    m_HashCode: -1484862435
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 84
     m_Scale: 1
-    m_Name: Stat3
-    m_HashCode: 99187457
+    m_Name: IconSet_84
+    m_HashCode: -1484862438
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 85
@@ -577,8 +571,14 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 88
     m_Scale: 1
-    m_Name: Stat2
-    m_HashCode: 99187456
+    m_Name: IconSet_88
+    m_HashCode: -1484862442
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 89
+    m_Scale: 1
+    m_Name: IconSet_89
+    m_HashCode: -1484862441
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 90
@@ -703,8 +703,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 110
     m_Scale: 1
-    m_Name: Stat7
-    m_HashCode: 99187461
+    m_Name: IconSet_110
+    m_HashCode: -1755825658
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 111
@@ -715,8 +715,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 112
     m_Scale: 1
-    m_Name: Stat6
-    m_HashCode: 99187460
+    m_Name: IconSet_112
+    m_HashCode: -1755825660
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 113
@@ -751,20 +751,20 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 118
     m_Scale: 1
-    m_Name: Stat8
-    m_HashCode: 99187466
-  - m_ElementType: 2
-    m_Unicode: 65534
-    m_GlyphIndex: 120
-    m_Scale: 1
-    m_Name: IconSet_120
-    m_HashCode: -1755825627
+    m_Name: IconSet_118
+    m_HashCode: -1755825650
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 119
     m_Scale: 1
     m_Name: IconSet_119
     m_HashCode: -1755825649
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 120
+    m_Scale: 1
+    m_Name: IconSet_120
+    m_HashCode: -1755825627
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 121
@@ -865,8 +865,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 137
     m_Scale: 1
-    m_Name: Mana
-    m_HashCode: 2664387
+    m_Name: IconSet_137
+    m_HashCode: -1755825725
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 138
@@ -1682,8 +1682,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 32
       m_Height: 32
-      m_HorizontalBearingX: 0
-      m_HorizontalBearingY: 0
+      m_HorizontalBearingX: -16
+      m_HorizontalBearingY: 16
       m_HorizontalAdvance: 32
     m_GlyphRect:
       m_X: 32
@@ -1772,8 +1772,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 32
       m_Height: 32
-      m_HorizontalBearingX: 0
-      m_HorizontalBearingY: 25
+      m_HorizontalBearingX: -16
+      m_HorizontalBearingY: 16
       m_HorizontalAdvance: 32
     m_GlyphRect:
       m_X: 224
@@ -5775,7 +5775,7 @@ MonoBehaviour:
     sprite: {fileID: 5429209080522211007, guid: 9a1e5d2af59607545afd327dc74a1180, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []
---- !u!21 &8481725065005716910
+--- !u!21 &5165913883058107537
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 1

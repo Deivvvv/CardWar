@@ -264,7 +264,6 @@ namespace BattleTable
                 newCard.Stat.Add(card.Stat[i]);
                 newCard.StatSize.Add(card.StatSize[i]);
                 newCard.StatSizeLocal.Add(card.StatSizeLocal[i]);
-                //card.StatSizeLocal.Add(card.StatSize[i]);
             }
 
             for (int i = 0; i < card.Trait.Count; i++)
@@ -273,16 +272,9 @@ namespace BattleTable
                 newCard.TraitSize.Add(card.TraitSize[i]);
             }
 
-            //for (int i = 0; i < card.StatSizeLocal.Count; i++)
-            //{
-            //    newCard.StatSizeLocal.Add(card.StatSizeLocal[i]);
-            //}
             newCard.Tayp = card.Tayp;
 
             newCard.Image =  card.Image;
-
-            //newCard.Body = card.Body;// Возможно времнная мера, после обнокления интерфеса конструктора точно будет  не нужно
-
             return newCard;
         }
         public static void CardCloneExtended(CardBase card1, CardBase card2)
@@ -1161,11 +1153,16 @@ namespace BattleTable
             //интегрирывать из старгого метода позже
             List<int> cardBaseFast = new List<int>();
             List<int> cardBaseSlow = new List<int>();
-            CardSet cardSet = XMLSaver.LoadCardSet(Application.dataPath + $"/Resources/CardSet");
+            CardSet cardSet = XMLSaver.LoadCardSet(
+                gameSetting.Library.Guilds[gameSetting.ActualGuild].Name 
+                + "/" + gameSetting.ActualColod);
 
-            for (int i = 0; i < cardSet.OrigCard.Count; i++)
+            string[] com;
+            for (int i = 0; i < cardSet.Path.Count; i++)
             {
-                card = XMLSaver.Load(Application.dataPath + $"/Resources/Data/Hiro{cardSet.OrigCard[i]}");
+                com = cardSet.Path[i].Split('_');
+                card = XMLSaver.Load(gameSetting.GameDataFile.Data[int.Parse(com[0])].MasterKey + com[1]);
+                //card = XMLSaver.Load(Application.dataPath + $"/Resources/Data/Hiro{cardSet.OrigCard[i]}");
 
                 card.MyHiro = hiro;
                 Core.CardClear(card);
@@ -1175,11 +1172,9 @@ namespace BattleTable
                 hiro.CardColod.Add(card);
 
 
-
-                for (int i1 = 0; i1 < cardSet.OrigCount[i]; i1++)
-                {
-                    cardBase.Add(cardSet.OrigCard[i]);
-                }
+                int a = cardSet.Size[i];
+                for (int i1 = 0; i1 < a; i1++)
+                    cardBase.Add(a);
             }
 
             foreach(CardBase card1 in hiro.CardColod)
@@ -1646,6 +1641,76 @@ namespace BattleTable
     }
 
 
+    public static class Filtr
+    {
+
+        //#region Filtr System
+        //void GenerateFiltr()
+        //{
+        //    int a = gameSetting.SellCount.Length + 1;
+
+        //    GameObject GO = null;
+
+        //    GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
+        //    GO.transform.SetParent(Ui.BaseFiltr);
+
+        //    AddFiltr(-1, GO.GetComponent<Button>());
+
+
+        //    for (int i = 0; i < a; i++)
+        //    {
+
+        //        GO = Instantiate(Ui.OrigFiltr);// BaseCard.GetChild(a + 1).gameObject;
+        //        GO.transform.SetParent(Ui.BaseFiltr);
+
+        //        GO.GetComponent<Image>().sprite = gameSetting.Icon[i];
+        //        AddFiltr(i, GO.GetComponent<Button>());
+        //    }
+        //}
+        //void AddFiltr(int a, Button button)
+        //{
+
+        //    button.onClick.AddListener(() => SetFiltr(a));
+        //}
+        //void SetFiltr(int a)
+        //{
+        //    if (curentFiltr == a)
+        //        filterRevers = !filterRevers;
+        //    else
+        //        filterRevers = false;
+
+        //    curentFiltr = a;
+
+        //    Sort();
+        //}
+
+        //void Sort()
+        //{
+        //    IEnumerable<CardBase> items = null;//biomData.Arsenal.OrderBy(i => i.Class).ThenBy(x => x.CostMin).ThenBy(x => x.Qvailty);
+
+
+        //    if (curentFiltr == -1)
+        //    {
+        //        items = gameSetting.AllCard;
+        //    }
+        //    else
+        //    {
+        //        if (filterRevers)
+        //            items = gameSetting.AllCard.OrderBy(i => i.Stat[curentFiltr]);
+        //        else
+        //            items = gameSetting.AllCard.OrderByDescending(i => i.Stat[curentFiltr]);
+
+
+        //    }
+
+        //    foreach (CardBase item in items)
+        //    {
+        //        item.Body.SetParent(Ui.TraitCard);
+        //        item.Body.SetParent(Ui.BaseCard);
+        //    }
+        //}
+        //#endregion
+    }
 
     public static class CardView
     {
@@ -1703,27 +1768,41 @@ namespace BattleTable
 
         }
 
-       /*
-        функция поэтаной загрузки для гильдии и не гилбьдии
-       доп функция разбивающия списки на несколько категорий и затем собирающая обратно
-       существа-спелы = нормальные, разработчика, легендарки
-        гильдия_категория_под раздел_имя карты в виде номера
-        */
-       //void PreLoad()
-       // {
-       //     //запрос в систему использованием имени гильдии.
-       //     //если команда(all)- система принудительно вернет всю библиотеку
-       //     //если команда(не neitral)- система вернет ее + neitral
-       //     //формат запроса (гильдия) (перечесление запрашиваемых областей)
-       //     /*
-       //      гильдия
-       //         группа
-       //             тип достпа группы
-       //                 карты внутри группы
-             
-       //      */
+        public static string CardInfo(CardBase card)
+        {
+            string str = " ";
+            /*имя карты, расса, легион и прочее
+             * 
+             */
 
-       // }
+            return str;
+        }
+        public static string Info(string path, string tayp)
+        {
+            string str = " ";
+            string[] com;
+            switch (tayp)
+            {
+                case ("Main"):
+                    com = path.Split('_');
+                    switch (com[0])
+                    {
+                        case ("Name"):
+                            return gameSetting.AllCard[int.Parse(com[1])].Name;
+                            break;
+                    }
+                    break;
+                case ("Rule"):
+                    break;
+                case ("Stat"):
+                    break;
+                case ("Status"):
+                    break;
+            }
+               
+
+            return str;
+        }
 
         public static void CardColor(int a, int b)
         {
@@ -1754,6 +1833,27 @@ namespace BattleTable
             cardMod = 0;
             CardList();
         }
+
+        public static void CardListLite(List<CardBase> card, List<int> size, List<Transform> body, int mod)
+        {
+            int a =0;
+            for(int i = 0; i < body.Count; i++)
+            {
+                a = (mod * body.Count) + i;
+                if(a < card.Count)
+                {
+                    body[i].GetChild(body[i].childCount - 1).GetChild(0).gameObject.GetComponent<Text>().text = "" + size[i];
+                    card[i].Body = body[i];
+                    ViewCard(card[i]);
+                }
+                else
+                {
+                    body[i].GetChild(body[i].childCount - 1).GetChild(0).gameObject.GetComponent<Text>().text = "";
+                    ClearCard(body[i]);
+                }
+            }
+        }
+
 
         public static void CardList()
         {
@@ -1841,18 +1941,17 @@ namespace BattleTable
 
         //    XMLSaver.SaveGameData(gameData,path);
         //}
-        public static void GenerateKey(RuleMainFrame frame, ActionLibrary Library)
+        public static void GenerateKey(RuleMainFrame frame, ActionLibrary library)
         {
             string[] com;
-            string path = $"/Resources/Data";
             gameSetting.GameDataFile = new GameData();
             gameSetting.GameDataFile.Data = new List<SubGameData>();
-            for (int i = 0; i < Library.Guilds.Count; i++)
+            for (int i = 0; i < library.Guilds.Count; i++)
                 for (int i1 = 0; i1 < frame.ClassCard.Count; i1++)
                     for (int i2 = 0; i2 < frame.CardTayp.Count; i2++)
                     {
                         SubGameData sub = new SubGameData();
-                        sub.MasterKey = Library.Guilds[i].Name + "/" + frame.ClassCard[i1] + "/" + frame.CardTayp[i2] + "/";
+                        sub.MasterKey = library.Guilds[i].Name + "/" + frame.ClassCard[i1] + "/" + frame.CardTayp[i2] + "/";
                         XMLSaver.LoadGameData(sub);
                         int a = gameSetting.GameDataFile.Data.Count;
                         gameSetting.GameDataFile.Data.Add(sub);
