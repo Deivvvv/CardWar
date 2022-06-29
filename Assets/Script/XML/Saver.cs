@@ -85,36 +85,157 @@ namespace Saver
         }
         #endregion
 
+        #region LoadData
+        public static BD LoadBD(string path)
+        {
+            BD bd = new BD();
+            if (File.Exists(path))
+            {
+                XElement root = XDocument.Parse(File.ReadAllText(path)).Element("root");
+                bd.Name = root.Element("Name").Value;
+                bd.Info = root.Element("Info").Value;
+            }
+
+            return bd;
+        }
+        public static void SaveAllBD(List<BD> bD)
+        {
+            string path = Application.dataPath + $"/Resources/Data/";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            for (int i = 0; i < bD.Count; i++)
+            {
+                if (!Directory.Exists(path + $"/{i}/"))
+                    Directory.CreateDirectory(path + $"/{i}/");
+                SaveBD(bD[i], path + $"{i}.{lang}");
+            }
+
+        }
+
+        public static void SaveBD(BD bD, string path)
+        {
+            XElement root = new XElement("root");
+            root.Add(new XElement("Name", bD.Name));
+            root.Add(new XElement("Info", bD.Info));
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path, saveDoc.ToString());
+
+        }
+
+        private static string lang;
+        public static void LoadDataLang(string str)
+        {
+            lang = str;
+        }
+
+        public static List<BD> LoadAllData()
+        {
+            List<BD> bD = new List<BD>();
+            string path = Application.dataPath + $"/Resources/Data/";
+            string[] tayp = Directory.GetFiles(path, $"*.{lang}");
+            {
+                string[] tayp1 = Directory.GetFiles(path, $"*.Eng");
+                if (tayp.Length != tayp1.Length)
+                    tayp = tayp1;
+            }
+
+            for (int i = 0; i < tayp.Length; i++)
+            {
+                bD.Add(LoadBD(tayp[i]));
+
+               string[] com = Directory.GetFiles(path + $"/{i}/", "*.H");
+
+
+                for (int i1 = 0; i1 < com.Length; i1++) 
+                {
+                    bD[i].Base.Add(LoadBase(com[i1], tayp[i])); 
+                }
+
+            }
+            return bD;
+
+        }
+        public static MainBase LoadBase(string path, string tayp)
+        {
+            MainBase mainBase = new MainBase();
+            XElement root = XDocument.Parse(File.ReadAllText(path)).Element("root");
+
+           // mainBase.SysName = root.Element("Sys").Value;
+           // mainBase.Tayp = tayp;
+            mainBase.ColorName = root.Element("ColorName").Value;
+
+            //switch(tayp){}
+
+
+            if (File.Exists(path + "_" + lang))
+            {
+                root = XDocument.Parse(File.ReadAllText(path + "_" + lang)).Element("root");
+            }
+            else if (File.Exists(path + "_Eng"))
+            {
+                root = XDocument.Parse(File.ReadAllText(path + "_Eng")).Element("root");
+            }
+            else
+                return mainBase;
+
+            mainBase.Name = root.Element("Name").Value;
+            mainBase.Info = root.Element("Info").Value;
+
+            return mainBase;
+        }
+
+        public static void SaveBase(int a, int b, MainBase mainBase)
+        {
+            string path = Application.dataPath + $"/Resources/Data/{a}/{b}.H_{lang}";
+            XElement root = new XElement("root");
+            root.Add(new XElement("Name", mainBase.Name));
+            root.Add(new XElement("Info", mainBase.Info));
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path, saveDoc.ToString());
+
+
+            path = Application.dataPath + $"/Resources/Data/{a}/{b}.H";
+            root = new XElement("root");
+            root.Add(new XElement("ColorName", mainBase.ColorName));
+            //root.Add(new XElement("Info", mainBase.Info));
+
+            saveDoc = new XDocument(root);
+            File.WriteAllText(path, saveDoc.ToString());
+        }
+        #endregion
+
 
         public static void LoadAtlas(SpriteRenderer sr, TMP_SpriteAsset  tmp)
         {
-            string path = Application.dataPath + $"/Resources/Icon/";
-            string[] com = Directory.GetFiles(path, "*.png");
+            //string path = Application.dataPath + $"/Resources/Icon/";
+            //string[] com = Directory.GetFiles(path, "*.png");
 
-            Texture2D[] textures = new Texture2D[1024];
-            Texture2D tx;
-            for (int i = 0; i < com.Length; i++)
-            {
-                tx = new Texture2D(2, 2);
-                byte[] FileData = File.ReadAllBytes(com[i]);
-                tx.LoadImage(FileData);
-                textures[i] = tx;
-            }
-
-
+            //Texture2D[] textures = new Texture2D[1024];
+            //Texture2D tx;
+            //for (int i = 0; i < com.Length; i++)
+            //{
+            //    tx = new Texture2D(2, 2);
+            //    byte[] FileData = File.ReadAllBytes(com[i]);
+            //    tx.LoadImage(FileData);
+            //    textures[i] = tx;
+            //}
 
 
-            tx = new Texture2D(1024, 1024);
-            tx.PackTextures(textures, 0, 1024);
 
-            //sr.sprite = Sprite.Create(tx, new Rect(0.0f, 0.0f, tx.width, tx.height), new Vector2(0.5f, 0.5f), 100.0f);
 
-            //tmp.spriteSheet = tx;
-            //tmp.UpdateLookupTables();
-            path = Application.dataPath + $"/Resources/D.png";
+            //tx = new Texture2D(1024, 1024);
+            //tx.PackTextures(textures, 0, 1024);
 
-            byte[] bytes = tx.EncodeToPNG();
-            File.WriteAllBytes(path, bytes);//.png
+            ////sr.sprite = Sprite.Create(tx, new Rect(0.0f, 0.0f, tx.width, tx.height), new Vector2(0.5f, 0.5f), 100.0f);
+
+            ////tmp.spriteSheet = tx;
+            ////tmp.UpdateLookupTables();
+            //path = Application.dataPath + $"/Resources/D.png";
+
+            //byte[] bytes = tx.EncodeToPNG();
+            //File.WriteAllBytes(path, bytes);//.png
 
         }
 
