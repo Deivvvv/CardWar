@@ -16,17 +16,15 @@ using System.Linq;
 
 
 
-namespace Saver
+namespace XMLSaver
 {
-    static class XMLSaver
+    static class Saver
     {
-        private static GameSetting gameSetting;
-        private static RuleMainFrame frame;
+        private static CoreSys core;
+        // private static GameSetting gameSetting;
+        // private static RuleMainFrame frame;
 
-        public static void SetGameSetting(GameSetting _gameSetting) { gameSetting = _gameSetting; }
-
-        public static void SetRuleMainFrame(RuleMainFrame _frame){ frame = _frame; }
-
+        public static void SetCore(CoreSys coreSys) { core = coreSys; }
 
         #region GameData
 
@@ -84,8 +82,9 @@ namespace Saver
             //return gameData;
         }
         #endregion
-
         #region LoadData
+        private static string lang;
+
         public static BD LoadBD(string path)
         {
             BD bd = new BD();
@@ -108,10 +107,10 @@ namespace Saver
                 if (!Directory.Exists(path + $"/{i}/"))
                     Directory.CreateDirectory(path + $"/{i}/");
                 SaveBD(bD[i], path + $"{i}.{lang}");
+                //SaveBase(i, 0, new MainBase());
             }
 
         }
-
         public static void SaveBD(BD bD, string path)
         {
             XElement root = new XElement("root");
@@ -123,7 +122,6 @@ namespace Saver
 
         }
 
-        private static string lang;
         public static void LoadDataLang(string str)
         {
             lang = str;
@@ -205,8 +203,6 @@ namespace Saver
             File.WriteAllText(path, saveDoc.ToString());
         }
         #endregion
-
-
         public static void LoadAtlas(SpriteRenderer sr, TMP_SpriteAsset  tmp)
         {
             //string path = Application.dataPath + $"/Resources/Icon/";
@@ -238,9 +234,7 @@ namespace Saver
             //File.WriteAllBytes(path, bytes);//.png
 
         }
-
-
-        //CardSet
+        #region CardSet
         public static void SaveCardSets(List<string> list, string guild)
         {
             string path = Application.dataPath + $"/Resources/CardSet/{guild}.xml";
@@ -336,9 +330,9 @@ namespace Saver
             }
             return cardSet;
         }
+        #endregion
+        #region Card
 
-        # region Card
-        
         //public static void SetData(string path)
         //{
         //    root = XDocument.Parse(File.ReadAllText($"{path}.xml")).Element("root");
@@ -498,9 +492,6 @@ namespace Saver
             return cardBase;
         }
         #endregion
-
-
-
         #region Rule
         public static void LoadMainRule( ActionLibrary library)
         {

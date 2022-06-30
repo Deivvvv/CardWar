@@ -750,8 +750,8 @@ MonoBehaviour:
   nameFlied: {fileID: 1996412598}
   loadButton: {fileID: 1788925668}
   tmp: {fileID: 11400000, guid: ed679c780404a30458fcf9986711d58a, type: 2}
-  TT1: {fileID: 669972573}
-  TT2: {fileID: 86277763}
+  TT1: {fileID: 86277763}
+  TT2: {fileID: 669972573}
   colors:
   - {r: 1, g: 0.9728835, b: 0, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
@@ -2397,7 +2397,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1996412597
 RectTransform:
   m_ObjectHideFlags: 0

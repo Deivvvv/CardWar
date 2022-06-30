@@ -12,10 +12,11 @@ public class RuleMainFrame : ScriptableObject
     public string[] PlayerString;
     public string[] CardString;
     public string[] StatTayp;
+    public string[] Tayp = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass" };
 
     [Space(10)]
     public string[] Trigger;
-    public FrameExtend[] Tag;
+  //  public FrameExtend[] Tag;
     public string[] Status;
     public string[] Action;
 
@@ -29,10 +30,10 @@ public class RuleMainFrame : ScriptableObject
     public List<string> CardTayp;
 }
 
-[System.Serializable]
-public class FrameExtend
-{
-    public string Name = "Null";
-    public string[] Guild;
+//[System.Serializable]
+//public class FrameExtend
+//{
+//    public string Name = "Null";
+//    public string[] Guild;
 
-}
+//}

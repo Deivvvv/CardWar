@@ -54,7 +54,7 @@ public class DataConstructor : MonoBehaviour
      */
 
     // Start is called before the first frame update
-    private string[] tayp = {"Guild","Legion", "Stat","Tayp","Tag" };
+    private string[] tayp = {"Guild","Legion", "Stat","Tag","Plan", "Association", "CivilGroup", "Status","CardTayp","CardClass"};
     public Color[] colors;
     private string[] colorsStr;
     int iconSize = 0;
@@ -88,10 +88,13 @@ public class DataConstructor : MonoBehaviour
         //XMLSaver.LoadAtlas(gameObject.GetComponent<SpriteRenderer>(), tmp);
         CreateColor();
 
-        //Reset();
+        Reset();
 
 
         bD =  XMLSaver.LoadAllData();
+
+        mainBase = bD[0].Base[0];
+
         HeadText();
         BaseInfo();
     }
@@ -110,12 +113,9 @@ public class DataConstructor : MonoBehaviour
     }
     void HeadText()
     {
-        string text = AddLink("Sys|Menu", " Open SysMenu");
-        Debug.Log(bD.Count);
+        string text = AddLink("Sys|Menu", " Open SysMenu") + "\n"; ;
         for (int i = 0; i < tayp.Length; i++)
         {
-            Debug.Log(bD[i].Name);
-            Debug.Log(bD[i].Base.Count);
             text += AddLink($"Open|Text_{i}", bD[i].Name + $"({bD[i].Base.Count})") + "\n";
         }
 
@@ -155,7 +155,7 @@ public class DataConstructor : MonoBehaviour
         colorsStr = new string[colors.Length];
         for (int i = 0; i < colorsStr.Length; i++)
         {
-            colorsStr[i] = colors[i].ToString();
+            colorsStr[i] = ColorUtility.ToHtmlStringRGB(colors[i]);// colors[i].ToString();
         }
     }
 
@@ -182,7 +182,7 @@ public class DataConstructor : MonoBehaviour
     #region Info
     void BaseInfo()
     {
-        string text = "";
+        string text = "" +bD[sysA].Name +"\n";
         /*
          SAVE()     LOAD()
 
@@ -191,7 +191,7 @@ public class DataConstructor : MonoBehaviour
         Info
          
          */
-        text += AddLink("Re|Name", mainBase.Name, mainBase.ColorName);
+        text += AddLink("Re|Name", "Name "+ mainBase.Name, mainBase.ColorName);
         if (mainBase.Info == "Void")
             text += AddLink("Re|Info", "[!]", colorsStr[1]);
         else
@@ -433,6 +433,7 @@ public class MainBase
     public string Name = "Void";
     public string ColorName = "ffff00";
     public string Info = "Void";
+    public int Cost;
 
     /*
      */
