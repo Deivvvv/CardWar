@@ -12,7 +12,7 @@ public class RuleMainFrame : ScriptableObject
     public string[] PlayerString;
     public string[] CardString;
     public string[] StatTayp;
-    public string[] Tayp = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass" };
+    public List<string> Tayp;
 
     [Space(10)]
     public string[] Trigger;
@@ -28,6 +28,20 @@ public class RuleMainFrame : ScriptableObject
     [Space(10)]
     public List<string> ClassCard;
     public List<string> CardTayp;
+
+    [Space(10)]
+    [SerializeField] private Color[] colors;
+    [HideInInspector] public string[] ColorsStr;
+
+
+    public void Convert()
+    {
+        string[] com = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass" };
+        Tayp = new List<string>( com );
+        ColorsStr = new string[colors.Length];
+        for (int i = 0; i < ColorsStr.Length; i++)
+            ColorsStr[i] = ColorUtility.ToHtmlStringRGB(colors[i]);
+    }
 }
 
 //[System.Serializable]
