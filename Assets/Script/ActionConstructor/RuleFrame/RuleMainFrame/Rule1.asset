@@ -32,16 +32,17 @@ MonoBehaviour:
   - Card1
   - Card2
   - All
-  StatTayp:
+  Tayp:
+  - Guild
   - Legion
   - Stat
-  - Stat-Max
-  - Rule
-  - StatTayp
-  - CivilianGroups
-  - Null
   - Tag
+  - Plan
+  - Association
+  - CivilGroup
   - Status
+  - CardTayp
+  - CardClass
   Trigger:
   - Action
   - AnotherAction
@@ -53,15 +54,6 @@ MonoBehaviour:
   - PreAction
   - PostAction
   - ActionFlash
-  Tag:
-  - Name: Null
-    Guild: []
-  - Name: War
-    Guild: []
-  Status:
-  - Fly
-  - Stan
-  - Provacator
   Action:
   - Attack|Melee
   - Attack|Shot
@@ -81,17 +73,18 @@ MonoBehaviour:
   - UseAction
   - Iniciativa|Plus
   - Iniciativa|Minus
-  KeyWord:
-  - Human
   KeyWordStatus:
   - Null
   - All
   - My
   - Enemy
-  ClassCard:
-  - creature
-  - Spell
-  CardTayp:
-  - N
-  - P
-  - L
+  colors:
+  - {r: 0.96815324, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0.10876796, g: 0.6603774, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0.7704165, a: 1}
+  - {r: 0, g: 0.64228487, b: 1, a: 1}
+  - {r: 1, g: 0, b: 0.7332492, a: 1}
+  - {r: 1, g: 0.61345816, b: 0, a: 1}
+  - {r: 0.49451208, g: 1, b: 0, a: 1}
+  ColorsStr: []

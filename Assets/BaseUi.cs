@@ -8,8 +8,8 @@ using TMPro;
 
 public class BaseUi : MonoBehaviour
 {
-    public GameObject origButton;
-    public Transform menu;
+    public GameObject OrigButton;
+    public Transform Menu;
     public Button ExitButton;
 
     public List<TextMeshProUGUI> TT;

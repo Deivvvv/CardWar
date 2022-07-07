@@ -11,23 +11,23 @@ public class RuleMainFrame : ScriptableObject
 
     public string[] PlayerString;
     public string[] CardString;
-    public string[] StatTayp;
-    public List<string> Tayp;
+    //public string[] StatTayp;
+    [HideInInspector] public List<string> Tayp;
 
     [Space(10)]
     public string[] Trigger;
   //  public FrameExtend[] Tag;
-    public string[] Status;
+    //public string[] Status;
     public string[] Action;
 
     [Space(10)]
-    public List<string> KeyWord;
+    //public List<string> KeyWord;
     public List<string> KeyWordStatus;
 
 
     [Space(10)]
-    public List<string> ClassCard;
-    public List<string> CardTayp;
+   // public List<string> ClassCard;
+   // public List<string> CardTayp;
 
     [Space(10)]
     [SerializeField] private Color[] colors;
@@ -36,14 +36,72 @@ public class RuleMainFrame : ScriptableObject
 
     public void Convert()
     {
-        string[] com = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass" };
-        Tayp = new List<string>( com );
+        string[] com = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass" , "Race"};
+        Tayp = new List<string>(com);
+        //    for(int i = 0; i < com.Length; i++)
+        //    {
+        //        Tayp[i].Name = com[i];
+        //        switch (com[i])
+        //        {
+        //            case ("Guild"):
+        //                {
+        //                    string[] com1 = { "Guild", "Legion" };
+        //                    Tayp[i].Key = com1;
+        //                }
+        //                break;
+        //        }
+        //        Tayp[i].Hide = new bool[Tayp[i].Key.Length];
+        //    }
+
+        //Tayp = new List<string>( com );
         ColorsStr = new string[colors.Length];
         for (int i = 0; i < ColorsStr.Length; i++)
             ColorsStr[i] = ColorUtility.ToHtmlStringRGB(colors[i]);
     }
-}
 
+    public List<string> SetKey(int a)
+    {
+        switch (Tayp[a]) 
+        {
+            case ("Guild"):
+                {
+                    string[] com1 = { "Legion","Tag"};
+                    return new List<string>(com1);
+                }
+                break;
+        }
+        return new List<string>();
+    }
+}
+/*
+ гильдии
+    Выбор статов для открытия
+    выбор легионов для открытия
+
+легионы
+    Выбор статов для открытия
+    выбор соц групп для открытия
+    выбор гильдий для открытия
+
+соц группы
+    Выбор статов для открытия
+    выбор легионов для открытия
+
+стат
+    Выбор статов для открытия
+    выбор соц групп для открытия
+    
+
+ 
+ */
+
+//[System.Serializable]
+//public class SubTayp
+//{
+//    public string Name;
+//    public string[] Key;// = new List<string>();
+//    public bool[] Hide;
+//}
 //[System.Serializable]
 //public class FrameExtend
 //{

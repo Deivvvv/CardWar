@@ -521,9 +521,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a027b4db9ab314384706132e75a6bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  origButton: {fileID: 824818245}
-  menu: {fileID: 1453662756}
-  ExitButton: {fileID: 0}
+  OrigButton: {fileID: 824818245}
+  Menu: {fileID: 1453662756}
+  ExitButton: {fileID: 824818247}
   TT: []
   NameTT: {fileID: 0}
 --- !u!4 &1576256685

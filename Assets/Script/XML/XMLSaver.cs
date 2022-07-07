@@ -22,12 +22,14 @@ namespace XMLSaver
 {
     static class Saver
     {
+        static List<string> nullString = new List<string>();
+        static List<int> nullInt = new List<int>();
+
         static XElement root = null;
         static string mainPath = Application.dataPath + $"/Resources/";
         static CoreSys core;
         public static void SetCore(CoreSys coreSys) { core = coreSys; }
-
-        static int ReturnIndex(string str) { return core.frame.Tayp.FindIndex(x => x == str); }
+        static string v = "V1", actualV = "V1";
 
         #region Lang
         static string lang;
@@ -156,6 +158,42 @@ namespace XMLSaver
         #endregion
 
         #region BD
+        //static void NewKeyConfig()
+        //{
+        //    if (v != actualV)
+        //    {
+        //        root = XDocument.Parse(File.ReadAllText($"{path}{i}/-1.H")).Element("root");
+        //        str = root.Element("Key").Value;
+        //        bd.Key = new List<string>(str.Split('/'));
+        //    }
+        //    else
+        //    {
+        //        root = XDocument.Parse(File.ReadAllText($"{path}{i}/-1.H")).Element("root");
+        //        str = root.Element("Key").Value;
+        //        List<string> list1 = new List<string>(str.Split('/'));
+        //        List<string> list2 = core.frame.SetKey(i); 
+        //        if (list1.Count != list2.Count)
+        //        {
+        //            NewKeyConfig(i);
+        //        }
+        //        else
+        //        {
+
+        //        }
+        //    }
+        //    root = XDocument.Parse(File.ReadAllText($"{path}{i}/-1.H")).Element("root");
+        //    str = root.Element("Key").Value;
+        //    List<string> list1 = new List<string>(str.Split('/'));
+        //    List<string> list2 = core.frame.SetKey(i);
+        //    if(list1.Count == list2.Count)
+        //    {
+
+        //    }
+        //    bool indent = true;
+        //    for (int i1 =0;i1<)
+
+        //}
+
         static void BDReload(int a)
         { 
             core.bD = new List<BD>(new BD[core.frame.Tayp.Count]);
@@ -165,12 +203,15 @@ namespace XMLSaver
                 {
                     Directory.CreateDirectory($"{path}{a}/");
                     core.bD[a] = new BD();
+                    core.bD[a].Name = core.frame.Tayp[a];
+                    core.bD[a].Key =core.frame.SetKey(a);
                     SaveBDMain(a);
                 }
         }
 
         public static void LoadBDAll()
         {
+            mainPath = Application.dataPath + $"/Resources/{v}";
             int l = core.frame.Tayp.Count;
             List<BD> bD = new List<BD>(new BD[l]);
             string path = mainPath + "BD/";
@@ -179,9 +220,7 @@ namespace XMLSaver
             
             int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
             if (fCount + 1 < l)
-            {
                 BDReload(fCount);
-            }
 
             string[] com;
             string str = "";
@@ -193,40 +232,86 @@ namespace XMLSaver
                 com = str.Split('/');
                 bd.Name = com[0];
                 bd.Info = com[1];
+                bD[i] = bd;
+                root = XDocument.Parse(File.ReadAllText($"{path}{i}/-1.H")).Element("root");
+                str = root.Element("Key").Value;
+                bd.Key = new List<string>(str.Split('/'));
+                bd.KeyId = new int[bd.Key.Count];
+                bd.Hide = new bool[bd.Key.Count];
+                for (int i1=0; i1 < bd.Key.Count;i1++)
+                    bd.KeyId[i1] = DeCoder.ReturnIndex(bd.Key[i1]);
 
                 // com = Directory.GetFiles($"{path}{i}/", "*.H");
                 fCount = Directory.GetFiles($"{path}{i}/", "*.H").Length;
                 bd.Base = new List<MainBase>(new MainBase[fCount]);
                 for (int i1 = 0; i1 < fCount; i1++)
-                    bd.Base[i1] = LoadBD($"{path}{i}/", i1);
+                  LoadBD(i, i1);
 
 
-                bD[i] = bd;
             }
 
 
             core.bD = bD;
         }
-        static void SaveBDMain(int a)
+        public static void SaveBDMain(int a)
         {
             string path = mainPath + $"BD/{a}/";
             string str = $"{core.bD[a].Name}/{core.bD[a].Info}";
-            Debug.Log(str);
+            //Debug.Log(str);
             AddLangFile(path, str, -1);
+            root = new XElement("root");
+
+            root.Add(new XElement("Key", ReturnListData(core.bD[a].Key)));
+
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path + $"-1.H", saveDoc.ToString());
         }
 
-        static MainBase LoadBD(string path, int a)
+        public static void LoadBD( int a, int b)
         {
-            string[] com;
+            string path = mainPath + $"BD/{a}/";
+            string[] com, com1;
             string str = "";
             MainBase mainBase = new MainBase();
-            root = XDocument.Parse(File.ReadAllText($"{path}{a}.H")).Element("root");
+            root = XDocument.Parse(File.ReadAllText($"{path}{b}.H")).Element("root");
 
             mainBase.Color = root.Element("Color").Value;
             mainBase.Cost = int.Parse( root.Element("Cost").Value);
+            mainBase.Look = bool.Parse(root.Element("Look").Value);
+
+            if(core.frame.Tayp[a] == "Stat")
+            {
+                mainBase.Sub = new SubInt();
+                mainBase.Sub.Regen = bool.Parse(root.Element("Regen").Value);
+                mainBase.Sub.Antipod = int.Parse(root.Element("Antipod").Value);
+                str = root.Element("AntiStat").Value;
+                if (str != " ")
+                    mainBase.Sub.AntiStat = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+                else
+                    mainBase.Sub.AntiStat = nullInt;
+
+               str = root.Element("DefStat").Value;
+                if (str != " ")
+                    mainBase.Sub.DefStat = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+                else
+                    mainBase.Sub.DefStat = nullInt;
+            }
+
+            mainBase.Text = new List<SubText>(new SubText[core.bD[a].Key.Count]);
 
 
-            str = FindLang(path, a);
+            for (int i = 0; i < mainBase.Text.Count; i++)
+            {
+                str = root.Element("Text"+i).Value;
+
+                if (str != " ")
+                    mainBase.Text[i].Text = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+                else
+                    mainBase.Text[i].Text = nullInt;
+            }
+
+            str = FindLang(path, b);
             if (str != "")
             {
                 com = str.Split('/');
@@ -234,10 +319,34 @@ namespace XMLSaver
                 mainBase.Info = com[1];
             }
 
-            return mainBase;
+            core.bD[a].Base[b] = mainBase;
         }
+        static string ReturnListData(List<int> list)
+        {
+            string str = " ";
+            if (list.Count > 0)
+            {
+                str = ""+list[0];
+                for (int i = 1; i < list.Count; i++)
+                    str += $"/{list[i]}";
+            }
+            return str;
+        }
+        static string ReturnListData(List<string> list)
+        {
+            string str = " ";
+            if (list.Count > 0)
+            {
+                str = list[0];
+                for (int i = 1; i < list.Count; i++)
+                    str += $"/{list[i]}";
+            }
+            return str;
+        }
+
         public static void SaveBD( int a, int b)
         {
+            string[] com = null;
             string str ="";
             string path = mainPath + $"BD/{a}/";
             MainBase mainBase = core.bD[a].Base[b];
@@ -245,6 +354,28 @@ namespace XMLSaver
             str = $"{mainBase.Name}/{mainBase.Info}";
             AddLangFile(path, str, a);
 
+            root = new XElement("root");
+
+            root.Add(new XElement("Color", mainBase.Color));
+            root.Add(new XElement("Cost", mainBase.Cost));
+            root.Add(new XElement("Look", mainBase.Look));
+
+            for (int i = 0; i < core.bD[a].Key.Count; i++)
+                root.Add(new XElement("Text" + i, ReturnListData(core.bD[a].Base[b].Text[i].Text)));
+
+            if (core.frame.Tayp[a] == "Stat")
+            {
+                root.Add(new XElement("Regen", mainBase.Sub.Regen));
+
+                root.Add(new XElement("Antipod", mainBase.Sub.Antipod));
+
+                root.Add(new XElement("AntiStat", ReturnListData(mainBase.Sub.AntiStat)));
+                root.Add(new XElement("DefStat", ReturnListData(mainBase.Sub.DefStat)));
+            }
+
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path + $"{a}.H", saveDoc.ToString());
         }
 
 
@@ -272,7 +403,7 @@ namespace XMLSaver
             string path = mainPath + "Rule/";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            int f = ReturnIndex("Tag");
+            int f = DeCoder.ReturnIndex("Tag");
 
             int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
             if (fCount+1 < core.bD[f].Base.Count)

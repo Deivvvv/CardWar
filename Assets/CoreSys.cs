@@ -12,14 +12,15 @@ using XMLSaver;
 
 public class CoreSys : MonoBehaviour
 {
-    private BaseUi ui;
+    BaseUi ui;
     public RuleMainFrame frame;
     public List<BD> bD;
     public List<SubRuleHead> head;
+    string mood = "Main";
     //ImageBd
 
-    private List<TextMeshProUGUI> TT;
-    private TMP_InputField nameTT;
+    //private List<TextMeshProUGUI> TT;
+    //private TMP_InputField nameTT;
 
     // Start is called before the first frame update
     void Awake()
@@ -44,15 +45,14 @@ public class CoreSys : MonoBehaviour
     }
     void LoadScene(string str)
     {
-        SceneManager.LoadScene(str, LoadSceneMode.Single);
+        if (str == "Exit")
+            Application.Quit();
+        else
+        {
+            mood = str;
+            SceneManager.LoadScene(str, LoadSceneMode.Single);
+        }
     }
-
-    public void Load(string name, BaseUi _ui)
-    {
-        ui = _ui;
-        OpenScene(name);
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -69,12 +69,12 @@ public class CoreSys : MonoBehaviour
     {
         TMP_LinkInfo linkInfo = new TMP_LinkInfo();
         int linkIndex = -1;
-        for(int i = 0; i < TT.Count; i++)
+        for(int i = 0; i < ui.TT.Count; i++)
         {
-            linkIndex = TMP_TextUtilities.FindIntersectingLink(TT[i], Input.mousePosition, Camera.main);
+            linkIndex = TMP_TextUtilities.FindIntersectingLink(ui.TT[i], Input.mousePosition, Camera.main);
             if (linkIndex != -1)
             {
-                linkInfo = TT[i].textInfo.linkInfo[linkIndex];
+                linkInfo = ui.TT[i].textInfo.linkInfo[linkIndex];
                 break;
             }
         }
@@ -86,13 +86,13 @@ public class CoreSys : MonoBehaviour
         DeCoder.Read(selectedLink);
     }
 
-    void OpenScene(string str)
+    public void OpenScene( BaseUi _ui)
     {
-        if(str == "Exit")
-            Application.Quit();
+        ui = _ui;
+
 
        // BaseUi ui = null;
-        DeCoder.SetMood(str);
+        //DeCoder.SetMood(str);
         //SceneManager.LoadScene(str, LoadSceneMode.Single);
         //return;
 
@@ -103,36 +103,44 @@ public class CoreSys : MonoBehaviour
 
         //if (go == null)
         //    return;
-        //Debug.Log(go);
-        switch (str)
+        Debug.Log(mood);
+        string str = "";
+        switch (mood)
         {
             case ("Main"):
                 string[] name = {"Колоды","Карты", "Механика", "База данных", "Выход" };
                 string[] com = {"Colod", "Card" , "Rule", "BD", "Exit"};
                 for(int i = 0; i < com.Length; i++)
                 {
-                    go = Instantiate(ui.origButton);
-                    go.transform.SetParent(ui.menu);
-                    go.GetComponent<Button>().onClick.AddListener(() => OpenScene(com[i]));
+                    go = Instantiate(ui.OrigButton);
+                    go.transform.SetParent(ui.Menu);
+                    SetLoader(go.GetComponent<Button>(), com[i]);
                     go.transform.GetChild(0).gameObject.GetComponent<Text>().text = name[i];
                 }
                 break;
             case ("BD"):
-                TT = ui.TT;
-                nameTT = ui.NameTT;
+                //TT = ui.TT;
+                //nameTT = ui.NameTT;
 
-                ui.ExitButton.onClick.AddListener(() => OpenScene("Main"));
+             //   ui.ExitButton.onClick.AddListener(() => OpenScene("Main"));
                 break;
             case ("Rule"):
-                TT = ui.TT;
-                nameTT = ui.NameTT;
+                //TT = ui.TT;
+                //nameTT = ui.NameTT;
 
 
-                ui.ExitButton.onClick.AddListener(() => OpenScene("Main"));
+             //   ui.ExitButton.onClick.AddListener(() => OpenScene("Main"));
                 break;
 
         }
-        DeCoder.SetTT(TT, nameTT);
-        DeCoder.Starter();
+        ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
+        DeCoder.SetTT(ui.TT, ui.NameTT);
+        DeCoder.Starter(mood);
     }
+
+    void SetLoader(Button button, string str)
+    {
+        button.onClick.AddListener(() => LoadScene(str));
+    }
+
 }

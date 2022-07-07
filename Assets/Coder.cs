@@ -14,10 +14,12 @@ namespace Coder
     class DeCoder
     {
         #region Seters
-        static int keyA, keyB;
+        static List<string> edit;// = new List<string>();
+        static int keyA, keyB, keyStat;
 
         static string mood;
-        public static void SetMood(string str) { mood = str; }
+        static MainBase mainBase;
+        //public static void SetMood(string str) { mood = str; }
 
         static CoreSys core;
         public static void SetCore(CoreSys coreSys) {core = coreSys; }
@@ -36,6 +38,31 @@ namespace Coder
             keyB = 0;
             //keyC = 0;
         }
+        static void SetKey(string str)
+        {
+            string[] com = str.Split('-');
+            keyA = int.Parse(com[0]);
+            keyB = int.Parse(com[1]);
+
+            switch (mood)
+            {
+                case ("BD"):
+                    mainBase = core.bD[keyA].Base[keyB];
+                    TextBD("Info");
+                    break;
+            }
+        }
+
+        public static int ReturnIndex(string str) { return core.frame.Tayp.FindIndex(x => x == str); }
+
+        static void AddEdit(string str)
+        {
+            edit.Add(str);
+        }
+        static void ClearEdit()
+        {
+            edit = new List<string>();
+        }
         #endregion
         /*
          * Sys - раздел системных комманд
@@ -44,13 +71,19 @@ namespace Coder
          * Link - сформировать ссылку для текста
          * Re - взять текст из поля
          */
-        public static void Starter()
+
+        public static void Starter(string str)
         {
+            mood = str;
+            ResetKey();
+            ClearEdit();
+            keyStat = ReturnIndex("Stat");
+            //Debug.Log(mood);
+            
             switch (mood)
             {
                 case ("BD"):
-                    TextBD("Main");
-                    //TextBD("Info");
+                    TextBD("MenuHead");
                     break;
             }
         }
@@ -58,68 +91,240 @@ namespace Coder
         #region Coder
         public static void Read(string str)
         {
-            
-            
+            Debug.Log(str);
             string[] com = str.Split('|');
             switch (com[0])
             {
-                case ("Sys"):
-                    //ReadSys(com[1]);
+                case ("Key"):
+                    SetKey(com[1]);
                     break;
+                case ("Sys"):
+                    Sys(com[1]);
+                    break;
+
+
                 case ("GetIO"):
                     GetIO(com[1]);
                     break;
                 case ("SetIO"):
                     SetIO(com[1]);
                     break;
+                case ("ClearIO"):
+                    ClearIO();
+                    break;
                 case ("Open"):
-                   // ReadOpen(com[1]);
+                    switch (mood)
+                    {
+                        case ("BD"):
+                            TextBD(com[1]);
+                            break;
+                    }
                     break;
-                case ("Switch"):
-                    ReadSwitch(com[1]);
+                case ("Edit"):
+                    switch (mood)
+                    {
+                        case ("BD"):
+                            EditBDCase(com[1]);
+                            break;
+                    }
                     break;
-                case ("Link"):
-                    //ReadLink(com[1]);
-                    break;
-                //case ("Re"):
-                //    if (com.Length > 2)
-                //        GetLocText(com[1], int.Parse(com[2]));
-                //    else
-                //        GetLocText(com[1]);
-                //    break;
 
-                case ("Color"):
-                    str =SwitchColor();
+                case ("Switch"):
+                    Switch(com[1]);
                     break;
-                case ("Icon"):
-                    str = SwitchIcon();
+                case ("SetSwitch"):
+                    SetSwitch(com[1]);
                     break;
             }
         }
 
-        static void ReadSwitch(string str)
+        static void Sys(string str)
         {
+            int a, b;
             string[] com = str.Split('_');
-            switch (com[0])
+            switch (mood)
             {
-                case ("ID"):
-                    switch (com[1])
+                case ("BD"):
+                    switch (com[0])
                     {
-                        case ("Base"):
-                            keyA = int.Parse(com[2]);
-                            keyB = int.Parse(com[3]);
+                        case ("New"):
+                            keyB = core.bD[keyA].Base.Count;
+                            keyA = int.Parse(com[1]);
+                            core.bD[keyA].Base.Add(NewMainBase());
+                            //Debug.Log(core.bD[keyA].Base.Count);
+                            //AddEdit($"{keyA}-{keyB}");
+                            Saver.SaveBD(keyA, keyB);
+                            //Sys("Save");
+                            return;
+                            break;
+                        case ("Save"):
+                            for(int i = 0; i < edit.Count; i++)
+                            {
+                                com = edit[i].Split('-');
+                                a =int.Parse(com[0]);
+                                b = int.Parse(com[1]);
+
+                                Saver.SaveBD(a, b);
+                            }
+                            ClearEdit();
+                            break;
+                        case ("Load"):
+                            for (int i = 0; i < edit.Count; i++)
+                            {
+                                com = edit[i].Split('-');
+                                a = int.Parse(com[0]);
+                                b = int.Parse(com[1]);
+
+                                Saver.LoadBD(a, b);
+                            }
+                            ClearEdit();
+                            break;
+                        case ("Clear"):
+                            core.bD[keyA].Base[keyB] = NewMainBase(); 
+                            AddEdit($"{keyA}-{keyB}");
                             break;
                     }
+                    ClearIO();
                     break;
-                case ("Color"):
-                    core.bD[keyA].Base[keyB].Color = core.frame.ColorsStr[int.Parse(com[1])];
+            }
+
+        }
+
+        static List<int> AddListText(List<int> list, int b, bool add)
+        {
+            int a;
+            if (add)
+            {
+                if (list.Count == 0)
+                    list = new List<int>();
+                a = list.FindIndex(x => x == b);
+                if (a == -1)
+                    list.Add(b);
+            }
+            else if (list.Count > 0)
+            {
+                a = list.FindIndex(x => x == b);
+                if (a == -1)
+                    list.RemoveAt(a);
+
+            }
+
+            return list;
+        }
+        static MainBase ReturnMainBase(string str)
+        {
+            string[] com = str.Split('-');
+            return core.bD[int.Parse(com[0])].Base[int.Parse(com[1])];
+        }
+
+        static void EditBDCase(string str)
+        {
+            AddEdit($"{keyA}-{keyB}");
+            int a, b,c;
+            string[] com = str.Split('_');
+            bool add = (com[2] == "1");
+            switch (com[0])
+            {
+                case ("AntiStat"):
+                    AddListText(mainBase.Sub.AntiStat, int.Parse(com[1]), add);
                     break;
-                case ("Icon"):
-                   // core.bD[keyA].Base[keyB].Color = core.frame.ColorStr[int.Parse(com[1])];
+                case ("DefStat"):
+                    AddListText(mainBase.Sub.DefStat, int.Parse(com[1]), add);
+                    break;
+                default:
+                    a = int.Parse(com[0]);
+                    b = int.Parse(com[1]);
+
+
+                    AddListText(mainBase.Text[a].Text, b, add);
+
+                    a = core.bD[keyA].KeyId[a];
+
+                    AddEdit($"{a}-{b}");
+
+                    c = core.bD[a].Key.FindIndex(x => x == core.frame.Tayp[keyA]);
+                    AddListText(core.bD[a].Base[b].Text[c].Text, keyB, add);
                     break;
             }
 
 
+
+
+        }
+        static void Switch(string str)
+        {
+            int a;
+            string[] com = str.Split('_');
+
+            str = AddLink("ClearIO", "Back") + "\n\n";
+
+            switch (com[0])
+            {
+
+                case ("Antipod"):
+                    //a = ReturnIndex("Stat");
+                    str += AddLink("SetSwitch|Antipod_Null", "Null") + "\n";
+                    for(int i = 0; i < core.bD[keyStat].Base.Count; i++)
+                        str += AddLink($"SetSwitch|Antipod_{keyStat}-{i}", core.bD[keyStat].Base[i].Name) + "\n";
+                    //mainBase.Antipod = bool.Parse(root.Element("Antipod").Value);
+                    break;
+                case ("Color"):
+                    str += SwitchColor();
+                    break;
+                case ("Icon"):
+                    str += SwitchIcon();
+                    break;
+            }
+            TT[0].text = str;
+
+
+        }
+        static void SetSwitch(string str)
+        {
+            int a, b;
+            MainBase mainBase1 = null;
+            string[] com = str.Split('_');
+            AddEdit($"{keyA}-{keyB}");
+            switch (com[0])
+            {
+
+                case ("Antipod"):
+                    a = int.Parse(com[1]);
+                    if (a == -1)
+                        if (mainBase.Sub.Antipod == -1)
+                            return;
+
+                    AddEdit(com[1]);
+                    mainBase1 = ReturnMainBase(com[1]);
+                    if (mainBase1.Sub.Antipod != -1) 
+                    {
+
+                        AddEdit($"{keyStat}-{mainBase1.Sub.Antipod}");
+                        core.bD[keyStat].Base[mainBase1.Sub.Antipod].Sub.Antipod = -1;
+
+                    }
+
+                    mainBase.Sub.Antipod = a;
+                    mainBase1.Sub.Antipod = keyB;
+
+                    break;
+                case ("Color"):
+                    break;
+                case ("Icon"):
+                    break;
+                case ("Look"):
+                    mainBase.Look = !mainBase.Look;
+                    break;
+                case ("Regen"):
+                    mainBase.Sub.Regen = !mainBase.Sub.Regen;
+                    break;
+                case ("Hide"):
+                    a = int.Parse(com[1]);
+                    b = int.Parse(com[2]);
+                    core.bD[a].Hide[b] = !core.bD[a].Hide[b];
+                    break;
+            }
+            ClearIO();
         }
 
         #endregion
@@ -129,9 +334,7 @@ namespace Coder
         {
             string[] com = str.Split('_');
 
-            keyA = int.Parse(com[1]);
-            keyB = int.Parse(com[2]);
-
+            Debug.Log(nameTT.text);
             switch (com[0])
             {
                 case ("HeadBase"):
@@ -141,10 +344,10 @@ namespace Coder
                     nameTT.text = core.bD[keyA].Info;
                     break;
                 case ("Base"):
-                    nameTT.text = core.bD[keyA].Base[keyB].Name;
+                    nameTT.text = mainBase.Name;
                     break;
                 case ("Info"):
-                    nameTT.text = core.bD[keyA].Base[keyB].Info;
+                    nameTT.text = mainBase.Info;
                     break;
 
                 case ("CardName"):
@@ -155,6 +358,10 @@ namespace Coder
                     //  cardBase = nameTT.text;
                     break;
             }
+            TT[0].text = "";
+            Debug.Log(nameTT.text);
+            nameTT.gameObject.active = true;
+            GetIOText(com[0]);
         }
 
         static void SetIO(string str)
@@ -163,15 +370,17 @@ namespace Coder
             {
                 case ("HeadBase"):
                     core.bD[keyA].Name = nameTT.text;
+                    Saver.SaveBDMain(keyA);
                     break;
                 case ("HeadInfo"):
                     core.bD[keyA].Info = nameTT.text;
+                    Saver.SaveBDMain(keyA);
                     break;
                 case ("Base"):
-                    core.bD[keyA].Base[keyB].Name = nameTT.text;
+                    mainBase.Name = nameTT.text;
                     break;
                 case ("Info"):
-                    core.bD[keyA].Base[keyB].Info = nameTT.text;
+                    mainBase.Info = nameTT.text;
                     break;
 
                 case ("CardName"):
@@ -182,48 +391,239 @@ namespace Coder
                   //  cardBase = nameTT.text;
                     break;
             }
+            ClearIO();
         }
 
+        static void ClearIO()
+        {
+            nameTT.gameObject.active = false;
+            switch (mood)
+            {
+                case ("BD"):
+                    TextBD($"Menu_{keyA}");
+                    TextBD("Info");
+                    break;
+            }
+        }
+
+        static void GetIOText(string str)
+        {
+            string str1 = "";
+            switch (mood)
+            {
+                case ("BD"):
+
+                    str1 = AddLink("ClearIO", "Back") +"      " + AddLink($"SetIO|{str}", "OK") +"\n\n";
+                    //if (str == "HeadBase" || str == "Base")
+                    //{
+                    //}
+                    TT[1].text = str1;
+                    //switch (str)
+                    //{
+                    //    case ("HeadBase"):
+                    //        nameTT.text = core.bD[keyA].Name;
+                    //        break;
+                    //    case ("HeadInfo"):
+                    //        nameTT.text = core.bD[keyA].Info;
+                    //        break;
+                    //    case ("Base"):
+                    //        nameTT.text = mainBase.Name;
+                    //        break;
+                    //    case ("Info"):
+                    //        nameTT.text = mainBase.Info;
+                    //        break;
+                    //        break;
+                    //}
+                        
+                    break;
+            }
+        }
         #endregion
 
         #region Text
-        public static void Text(string str)
+        static string WebText(int a)
         {
-            string[] com = str.Split('|');
-            switch (com[0])
+            string str = "";
+            for (int i = 0; i < core.bD[a].Base.Count; i++)
             {
-                case ("BD"):
-                    TextBD(com[1]);
-                    break;
+                str += "\n  " + AddLink($"Key|{a}-{i}", core.bD[a].Base[i].Name + IfLook(core.bD[a].Base[i].Look)) ;
             }
 
+            return str;
+        }
+        static string WebText(int a, int b)
+        {
+            string str = "";
+            for (int i = 0; i < core.bD[a].Base.Count; i++)
+            {
+                str += "\n  " + AddLink($"Edit|{b}_{i}_1", core.bD[a].Base[i].Name + IfLook(core.bD[a].Base[i].Look) + "-Add") ;
+            }
+
+            return str;
+        }
+        static string WebText( string mood)
+        {
+            string str = "";
+            for (int i = 0; i < core.bD[keyStat].Base.Count; i++)
+            {
+                str += "\n  " + AddLink($"Edit|{mood}_{i}_1", core.bD[keyStat].Base[i].Name + IfLook(core.bD[keyStat].Base[i].Look) + "-Add");
+            }
+
+            return str;
         }
 
+        static string WebText(List<int> list, int a)
+        {
+            int c = core.bD[keyA].KeyId[a];
+            int b;
+            string str = "";
+            for (int i = 0; i < list.Count; i++)
+            {
+                b = list[i];
+                str += "\n  " + AddLink($"Key|{c}-{b}", core.bD[c].Base[b].Name) + IfLook(core.bD[c].Base[b].Look);
+                str += "     " + AddLink($"Edit|{a}_{b}_0", "-Remove", core.frame.ColorsStr[1]);
+            }
+            str += "\n  " +AddLink($"Open|NewInfo_{a}_{c}", "-Add");
+            
+
+            return str;
+        }
+        static string WebText(List<int> list, string mood)
+        {
+            int b;
+            string str = "";
+            for (int i = 0; i < list.Count; i++)
+            {
+                b = list[i];
+                str += "\n  " + AddLink($"Key|{keyStat}-{b}", core.bD[keyStat].Base[b].Name) + IfLook(core.bD[keyStat].Base[b].Look);
+                str += "     " + AddLink($"Edit|{mood}_{b}_0", "-Remove", core.frame.ColorsStr[1]);
+            }
+            str += "\n  " + AddLink($"Open|NewInfo_{mood}", "-Add");
+
+
+            return str;
+        }
+
+        static string IfLook(bool use)
+        {
+            return(use) ? "[]" : "[ ]";
+        }
 
         static void TextBD(string str)
         {
+            int a, b;
             string[] com = str.Split('_');
             switch (com[0])
             {
-                case ("Menu"):
-                    str = AddLink("Sys|Menu", "Open SysMenu") + "\n"; ;
-                    for (int i = 0; i < core.frame.Tayp.Count; i++)
-                    {
-                        str += AddLink($"Open|Text_{i}", core.bD[i].Name + $"({core.bD[i].Base.Count})") + "\n";
-                    }
+                case ("MenuHead"):
+                    str = "";//AddLink("Open|Menu", "Open SysMenu") + "\n"; ;
+                    for (int i = 0; i < core.bD.Count; i++)
+                        str += AddLink($"Open|Menu_{i}", core.bD[i].Name + $"({core.bD[i].Base.Count})") + "\n";
+
                     TT[0].text = str;
                     break;
-                case ("Info"):
-                    str = AddLink("Sys|Menu", "Open SysMenu") + "\n"; ;
-                    for (int i = 0; i < core.frame.Tayp.Count; i++)
+
+                case ("Menu"):
+                    a = int.Parse(com[1]);
+                   // bool look = (0 <= core.frame.Tayp[a].Key.FindIndex(x => x == "Look"));
+                    str = AddLink("Open|MenuHead", "Back") + "\n";
+                    str += AddLink($"Sys|New_{a}", "New " + core.bD[a].Name);
+                    str += "\n";
+                    str += WebText(a);
+                    TT[0].text = str;
+                    break;
+
+                case ("NewInfo"):
+                    str = AddLink("ClearIO", "Back") + "\n\n";
+                    switch (com[1])
                     {
-                        str += AddLink($"Open|Text_{i}", core.bD[i].Name + $"({core.bD[i].Base.Count})") + "\n";
+                        case ("AntiStat"):
+                            str += WebText("AntiStat");
+                            break;
+                        case ("DefStat"):
+                            str += WebText("DefStat");
+                            break;
+                        default:
+                            str += WebText(int.Parse(com[1]), int.Parse(com[2]));
+                            break;
                     }
+                    TT[0].text = str; 
+                    break;
+
+                case ("Info"):
+                    str = HeadBDInfo();
+                    if(keyA == keyStat)
+                    {
+                        str += AddLink("SetSwitch|Regen", "Regen " + ((mainBase.Sub.Regen) ? "Yes" : "No")) + "\n";
+                        str += AddLink("Switch|Antipod", (mainBase.Sub.Antipod == -1) ? "Null" : core.bD[keyStat].Base[mainBase.Sub.Antipod].Name) + "\n";
+
+                        str += "\nСписок AntiStat для доступа";
+                        str += WebText(mainBase.Sub.AntiStat, "AntiStat"); 
+
+                        str += "\nСписок DefStat для доступа";
+                        str += WebText(mainBase.Sub.DefStat, "DefStat");
+
+                    }
+                    for (int i = 0; i < mainBase.Text.Count; i++)
+                    {
+                        str += $"\nСписок {core.bD[keyA].Key[i]} для доступа";
+                        str += AddLink($"SetSwitch|Hide_{keyA}_{i}", (core.bD[keyA].Hide[i]) ? "Close" : $"Open ({mainBase.Text[i].Text.Count})") + "\n";
+                        if (core.bD[keyA].Hide[i])
+                        {
+                            str += WebText(mainBase.Text[i].Text, i);
+                        }
+                    }
+
                     TT[1].text = str;
                     break;
             }
             //return str;
         }
+        //static string TextBDExtend( int i)
+        //{
+        //    int a;
+        //    string str = AddLink($"SetSwitch|Hide_{keyA}_{i}", (tayp.Hide[i]) ? "Close" : $"Open ({list.Count})") + "\n";
+        //    if (core.bD[keyA].Hide[i])
+        //    {
+        //        str += WebText(core.bD[keyA].Base[keyB].Text[i].Text, i);
+        //        str += AddLink($"Edit|{keyA}_{keyB}_{core.bD[keyA].Key[i]}_1", "-Add") + "\n";
+        //    }
+        //    return str;
+        //}
+
+
+        static string HeadBDInfo()
+        {
+            string str = "";
+
+            str += AddLink($"Sys|Save", "Save");
+            str += "    ";
+            str += AddLink($"Sys|Load", "Load");
+            str += "    ";
+            str += AddLink($"Sys|Clear", "Clear");
+            str += "\n\n";
+
+
+            str += AddLink($"GetIO|HeadBase", "Head name :" + core.bD[keyA].Name);
+
+            string link = $"GetIO|HeadInfo";
+            str +=(core.bD[keyA].Info == "Void") ? AddLink(link, "[!]", core.frame.ColorsStr[1]) : AddLink(link, "[?]", core.frame.ColorsStr[0]);
+
+            str += $"\n";
+            str += $"\n{keyB}- ";
+
+            str += AddLink("GetIO|Base", "Name " + mainBase.Name, mainBase.Color);
+            link = $"GetIO|Info";
+            str += (mainBase.Info == "Void") ? AddLink(link, "[!]", core.frame.ColorsStr[1]) : AddLink(link, "[?]", core.frame.ColorsStr[0]);
+
+            str += "\n" + AddLink("Open|SwicthColor", $"Color = {mainBase.Color}", mainBase.Color);
+
+            str += "\n" + $"Cost {mainBase.Cost}";
+            str += AddLink("SetSwitch|Look", (mainBase.Look) ? "Close" : "Open" + IfLook(mainBase.Look)) + "\n";
+
+            return str;
+        }
+
         #endregion
 
 
@@ -249,11 +649,11 @@ namespace Coder
 
         static string AddLinkIcon(int i)
         {
-            return $"<link=Switch|Icon_{i}><index={i}></link>";
+            return $"<link=SetSwitch|Icon_{i}><index={i}></link>";
         }
         static string AddLinkColor(int i)
         {
-            return $"<link=Switch|Color_{i}><color=#{core.frame.ColorsStr[i]}>{core.frame.ColorsStr[i]}</color></link>";
+            return $"<link=SetSwitch|Color_{i}><color=#{core.frame.ColorsStr[i]}>{core.frame.ColorsStr[i]}</color></link>";
         }
 
         //string AddLinkTayp(int a,int b)
@@ -277,14 +677,35 @@ namespace Coder
         }
 
         #endregion
+        #region BD Extend
+        static MainBase NewMainBase()
+        {
+            MainBase mainBase = new MainBase();
+            if(keyA == keyStat)
+            {
+                mainBase.Sub = new SubInt();
+                mainBase.Sub.AntiStat = new List<int>();
+                mainBase.Sub.DefStat = new List<int>();
+            }
+            //mainBase.Guild = new List<string>();
+            //mainBase.Legion = new List<string>();
+            //mainBase.Civilian = new List<string>();
+            //mainBase.Stat = new List<string>();
+            //mainBase.AntiStat = new List<string>();
+            //mainBase.DefStat = new List<string>();
+            //switch (mood)
+            //{
 
-
-        #region CardRedactor Extend
+            //}
+            return mainBase;
+        }
+        #endregion
+        #region Card Extend
         CardBase cardBase;
 
         #endregion
 
-        #region RuleRedactor Extend
+        #region Rule Extend
         static HeadRule ruleMain;
         #region Create
         static void CreateHeadRule()
@@ -310,30 +731,6 @@ namespace Coder
             //    ruleMain = Saver.LoadRule(0, 0);
             //}
         }
-        static void SaveRule()
-        {
-            //if (ruleHead.Count == 0)
-            //    ruleHead.Add(new SubRuleHead(ruleMain.Tag));
-
-            //if(ruleHead[keyA].Name != ruleMain.Tag)
-            //{
-            //    ruleHead[keyA].Rule.RemoveAt(keyB);
-            //    Saver.DeliteRule(keyA, keyB);
-            //    Saver.SaveRuleMain(ruleHead[keyA], keyA);
-
-            //    keyA = ruleHead.FindIndex(x => x.Name == ruleMain.Tag);
-            //    keyB = ruleHead[keyA].Rule.Count;
-            //    ruleHead[keyA].Rule.Add(keyB);
-            //}
-
-            //Saver.SaveRuleMain(ruleHead[keyA], keyA);
-            //Saver.SaveRule(ruleMain, keyA, keyB);
-            //Saver.SaveRuleZip(ruleMain, keyA, keyB);
-        }
-        static void LoadRule()
-        {
-            //XMLSaver.LoadRule(tag);
-        }
         #endregion
 
         #endregion
@@ -351,7 +748,10 @@ namespace Coder
     {
         public string Name = "Void";
         public string Info = "Void";
-        public List<MainBase> Base = new List<MainBase>();
+        public List<MainBase> Base = new List<MainBase>(); 
+        public List<string> Key;
+        public int[] KeyId;
+        public bool[] Hide;
     }
 
     public class MainBase
@@ -363,16 +763,31 @@ namespace Coder
         public string Info = "Void";
         public int Cost;
 
-        /*
-         */
+        //Race
+       // public List<string> Key; 
+        public List<SubText> Text = new List<SubText>();
+        //public List<string> Legion;
+        //public List<string> Civilian;
+        //public List<string> Stat;
+        public SubInt Sub;
+
+        public bool Look;
+
+    }
+    public class SubInt
+    {
+        public bool Regen;
+        public int Antipod = -1;
+        public List<int> AntiStat = new List<int>();
+        public List<int> DefStat = new List<int>();
     }
 
-    //public class MainGuild { }
-    //public class MainLegion { }
-    //public class MainRace { }
-    //public class MainCivilianGroup { }
-    //public class MainTag { }
-    //public class MainStat { }
+    public class SubText
+    {
+        public List<int> Text = new List<int>();
+    }
+
+
     #endregion
     #region classRule
 
