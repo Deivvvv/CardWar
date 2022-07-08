@@ -65,10 +65,71 @@ public class RuleMainFrame : ScriptableObject
         {
             case ("Guild"):
                 {
-                    string[] com1 = { "Legion","Tag"};
+                    string[] com1 = { "Legion","Tag","Stat"};
                     return new List<string>(com1);
                 }
                 break;
+            case ("Legion"):
+                {
+                    string[] com1 = { "Guild", "Tag", "CivilGroup", "Stat" };
+                    return new List<string>(com1);
+                }
+                break;
+            case ("Stat"):
+                {
+                    string[] com1 = { "Legion", "Guild", "Tag", "CivilGroup", "Race" };
+                    return new List<string>(com1);
+                }
+                break;
+            case ("Tag"):
+                {
+                    string[] com1 = { "Legion", "Guild", "CivilGroup", "Race", "Stat" };//mainStat = stat=0
+                    return new List<string>(com1);
+                }
+                break;
+            case ("Plan"):
+                {
+                    string[] com1 = { "CivilGroup" };
+                    return new List<string>(com1);
+                }
+                break;
+            case ("Association"):
+                //{
+                //    string[] com1 = { "Legion", "Tag" };
+                //    return new List<string>(com1);
+                //}
+                break;
+            case ("CivilGroup"):
+                {
+                    string[] com1 = { "Legion", "Tag", "CardTayp" , "Stat","Plan", "Race" };
+                    return new List<string>(com1);
+                }
+                break;
+            case ("Status"):
+                //{
+                //    string[] com1 = new string[0];// { };
+                //    return new List<string>(com1);
+                //}
+                break;
+            case ("CardTayp"):
+                {
+                    string[] com1 = { "CivilGroup" };
+                    return new List<string>(com1);
+                }
+                break;
+            case ("CardClass"):
+                //{
+                //    string[] com1 = { "Legion", "Tag" };
+                //    return new List<string>(com1);
+                //}
+                break;
+            case ("Race"):
+                {
+                    string[] com1 = { "CivilGroup", "Tag", "CivilGroup" };
+                    return new List<string>(com1);
+                }
+                break;
+
         }
         return new List<string>();
     }

@@ -141,6 +141,7 @@ namespace Coder
         static void Sys(string str)
         {
             int a, b;
+
             string[] com = str.Split('_');
             switch (mood)
             {
@@ -148,14 +149,13 @@ namespace Coder
                     switch (com[0])
                     {
                         case ("New"):
-                            keyB = core.bD[keyA].Base.Count;
                             keyA = int.Parse(com[1]);
+                            keyB = core.bD[keyA].Base.Count;
                             core.bD[keyA].Base.Add(NewMainBase());
-                            //Debug.Log(core.bD[keyA].Base.Count);
-                            //AddEdit($"{keyA}-{keyB}");
+                            mainBase = core.bD[keyA].Base[keyB];
                             Saver.SaveBD(keyA, keyB);
-                            //Sys("Save");
-                            return;
+                            //ClearIO();
+                            //return;
                             break;
                         case ("Save"):
                             for(int i = 0; i < edit.Count; i++)
@@ -182,6 +182,7 @@ namespace Coder
                         case ("Clear"):
                             core.bD[keyA].Base[keyB] = NewMainBase(); 
                             AddEdit($"{keyA}-{keyB}");
+                            //ClearIO();
                             break;
                     }
                     ClearIO();
@@ -204,6 +205,7 @@ namespace Coder
             else if (list.Count > 0)
             {
                 a = list.FindIndex(x => x == b);
+                Debug.Log(a);
                 if (a == -1)
                     list.RemoveAt(a);
 
@@ -226,30 +228,30 @@ namespace Coder
             switch (com[0])
             {
                 case ("AntiStat"):
-                    AddListText(mainBase.Sub.AntiStat, int.Parse(com[1]), add);
+                    mainBase.Sub.AntiStat = AddListText(mainBase.Sub.AntiStat, int.Parse(com[1]), add);
                     break;
                 case ("DefStat"):
-                    AddListText(mainBase.Sub.DefStat, int.Parse(com[1]), add);
+                    mainBase.Sub.DefStat = AddListText(mainBase.Sub.DefStat, int.Parse(com[1]), add);
                     break;
                 default:
                     a = int.Parse(com[0]);
                     b = int.Parse(com[1]);
 
 
-                    AddListText(mainBase.Text[a].Text, b, add);
+                    mainBase.Text[a].Text= AddListText(mainBase.Text[a].Text, b, add);
 
                     a = core.bD[keyA].KeyId[a];
 
                     AddEdit($"{a}-{b}");
 
                     c = core.bD[a].Key.FindIndex(x => x == core.frame.Tayp[keyA]);
-                    AddListText(core.bD[a].Base[b].Text[c].Text, keyB, add);
+                    core.bD[a].Base[b].Text[c].Text = AddListText(core.bD[a].Base[b].Text[c].Text, keyB, add);
                     break;
             }
 
 
 
-
+            ClearIO();
         }
         static void Switch(string str)
         {
@@ -263,7 +265,7 @@ namespace Coder
 
                 case ("Antipod"):
                     //a = ReturnIndex("Stat");
-                    str += AddLink("SetSwitch|Antipod_Null", "Null") + "\n";
+                    str += AddLink("SetSwitch|Antipod_-1", "Null") + "\n";
                     for(int i = 0; i < core.bD[keyStat].Base.Count; i++)
                         str += AddLink($"SetSwitch|Antipod_{keyStat}-{i}", core.bD[keyStat].Base[i].Name) + "\n";
                     //mainBase.Antipod = bool.Parse(root.Element("Antipod").Value);
@@ -296,7 +298,7 @@ namespace Coder
 
                     AddEdit(com[1]);
                     mainBase1 = ReturnMainBase(com[1]);
-                    if (mainBase1.Sub.Antipod != -1) 
+                    if (mainBase1.Sub.Antipod != -1)
                     {
 
                         AddEdit($"{keyStat}-{mainBase1.Sub.Antipod}");
@@ -309,8 +311,10 @@ namespace Coder
 
                     break;
                 case ("Color"):
+                    mainBase.Color = com[1];
                     break;
                 case ("Icon"):
+                    mainBase.Sub.Image = int.Parse(com[1]);
                     break;
                 case ("Look"):
                     mainBase.Look = !mainBase.Look;
@@ -377,9 +381,11 @@ namespace Coder
                     Saver.SaveBDMain(keyA);
                     break;
                 case ("Base"):
+                    AddEdit($"{keyA}-{keyB}");
                     mainBase.Name = nameTT.text;
                     break;
                 case ("Info"):
+                    AddEdit($"{keyA}-{keyB}");
                     mainBase.Info = nameTT.text;
                     break;
 
@@ -391,6 +397,7 @@ namespace Coder
                   //  cardBase = nameTT.text;
                     break;
             }
+
             ClearIO();
         }
 
@@ -454,9 +461,9 @@ namespace Coder
         static string WebText(int a, int b)
         {
             string str = "";
-            for (int i = 0; i < core.bD[a].Base.Count; i++)
+            for (int i = 0; i < core.bD[b].Base.Count; i++)
             {
-                str += "\n  " + AddLink($"Edit|{b}_{i}_1", core.bD[a].Base[i].Name + IfLook(core.bD[a].Base[i].Look) + "-Add") ;
+                str += "\n  " + AddLink($"Edit|{a}_{i}_1", core.bD[b].Base[i].Name + IfLook(core.bD[b].Base[i].Look) + "-Add") ;
             }
 
             return str;
@@ -555,6 +562,8 @@ namespace Coder
                     if(keyA == keyStat)
                     {
                         str += AddLink("SetSwitch|Regen", "Regen " + ((mainBase.Sub.Regen) ? "Yes" : "No")) + "\n";
+
+                        str += AddLink("Switch|Icon", $"Icon <index={mainBase.Sub.Image}>") + "\n";
                         str += AddLink("Switch|Antipod", (mainBase.Sub.Antipod == -1) ? "Null" : core.bD[keyStat].Base[mainBase.Sub.Antipod].Name) + "\n";
 
                         str += "\nСписок AntiStat для доступа";
@@ -616,10 +625,10 @@ namespace Coder
             link = $"GetIO|Info";
             str += (mainBase.Info == "Void") ? AddLink(link, "[!]", core.frame.ColorsStr[1]) : AddLink(link, "[?]", core.frame.ColorsStr[0]);
 
-            str += "\n" + AddLink("Open|SwicthColor", $"Color = {mainBase.Color}", mainBase.Color);
+            str += "\n" + AddLink("Swicth|Color", $"Color = {mainBase.Color}", mainBase.Color);
 
             str += "\n" + $"Cost {mainBase.Cost}";
-            str += AddLink("SetSwitch|Look", (mainBase.Look) ? "Close" : "Open" + IfLook(mainBase.Look)) + "\n";
+            str += "\n" + AddLink("SetSwitch|Look", ((mainBase.Look) ? "Close" : "Open") + IfLook(mainBase.Look)) + "\n";
 
             return str;
         }
@@ -653,7 +662,8 @@ namespace Coder
         }
         static string AddLinkColor(int i)
         {
-            return $"<link=SetSwitch|Color_{i}><color=#{core.frame.ColorsStr[i]}>{core.frame.ColorsStr[i]}</color></link>";
+            string str = core.frame.ColorsStr[i];
+            return $"<link=SetSwitch|Color_{str}><color=#{str}>{str}</color></link>";
         }
 
         //string AddLinkTayp(int a,int b)
@@ -687,6 +697,16 @@ namespace Coder
                 mainBase.Sub.AntiStat = new List<int>();
                 mainBase.Sub.DefStat = new List<int>();
             }
+
+            if ("Race" == core.frame.Tayp[keyA])
+            {
+                mainBase.Race = new SybRace();
+                //mainBase.Race.MainRace
+            }
+
+            mainBase.Text = new List<SubText>();
+            for (int i = 0; i < core.bD[keyA].Key.Count; i++)
+                mainBase.Text.Add(new SubText());
             //mainBase.Guild = new List<string>();
             //mainBase.Legion = new List<string>();
             //mainBase.Civilian = new List<string>();
@@ -696,7 +716,7 @@ namespace Coder
             //switch (mood)
             //{
 
-            //}
+                //}
             return mainBase;
         }
         #endregion
@@ -770,13 +790,26 @@ namespace Coder
         //public List<string> Civilian;
         //public List<string> Stat;
         public SubInt Sub;
+        public SybRace Race;
 
         public bool Look;
 
     }
+    //public class SybCivil
+    //{
+    //    public int MainStat = 0;
+    //    public int MainRace = -1;
+    //}
+    public class SybRace
+    {
+        public int MainStat =0;
+        public int MainRace =-1;
+    }
+
     public class SubInt
     {
         public bool Regen;
+        public int Image = 0;
         public int Antipod = -1;
         public List<int> AntiStat = new List<int>();
         public List<int> DefStat = new List<int>();
