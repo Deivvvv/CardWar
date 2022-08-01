@@ -311,8 +311,8 @@ namespace XMLSaver
             {
                 mainBase.Text[i] = new SubText();
                 str = root.Element("Text"+i).Value;
-                Debug.Log(str);
-                Debug.Log(mainBase.Text[i]);
+                //Debug.Log(str);
+                //Debug.Log(mainBase.Text[i]);
                 if (str != "")
                     mainBase.Text[i].Text = new List<int>(str.Split('/').Select(int.Parse).ToArray());
                 else
@@ -395,13 +395,20 @@ namespace XMLSaver
         #region Rule
         static void RuleReload( int a, int f)
         {
+            int b  = DeCoder.ReturnIndex("Tag");
+
             string path = mainPath + "Rule/";
+            core.head = new List<SubRuleHead>(new SubRuleHead[f]);
             for (; a < f; a++)
             {
                 if (!Directory.Exists($"{path}{a}/"))
                 {
                     Directory.CreateDirectory($"{path}{a}/");
-                    SaveRuleMain(new SubRuleHead(),a);
+                    core.head[a] = new SubRuleHead();
+                    core.head[a].Index = new List<int>();
+                    core.head[a].Rule = new List<string>();
+                    //  core.head[a].Name = core.bd[b].Base[a].Name;
+                    SaveRuleMain(a);
                 }
             }
         }
@@ -419,6 +426,7 @@ namespace XMLSaver
             if (fCount+1 < core.bD[f].Base.Count)
                 RuleReload( fCount, core.bD[f].Base.Count);
 
+            int a=0,b = 0;
             List<SubRuleHead> head = new List<SubRuleHead>(new SubRuleHead[core.bD[f].Base.Count]);
             for(int i =0; i < head.Count;i++)
             {
@@ -426,94 +434,357 @@ namespace XMLSaver
                 head[i].Name = core.bD[f].Base[i].Name;
                 root = XDocument.Parse(File.ReadAllText($"{path}{i}.HR")).Element("root");
                 str = root.Element("Id").Value;
-                //com = str.Split('/');
-                head[i].Index = new List<int>(str.Split('/').Select(int.Parse).ToArray());
-                f = head[i].Index.Count;
-                head[i].Rule = new List<string>(new string[f]);
-                if (f > 0)
-                    head[i].LastIndex = head[i].Index[f - 1] +1;
-
-                str = FindLang($"{path}{i}", -1);
-                com = str.Split('/');
-                if (com.Length < f)
+                if(str != "")
+                    head[i].Index = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+                else
+                    head[i].Index = new List<int>();
+                b= head[i].Index.Count;
+                if (b > 0)
                 {
-                    int a = com.Length;
-                    string oldLang = lang;
-                    lang = "Eng";
-                    str = FindLang($"{path}{i}", -1);
-                    com = str.Split('/');
+                    head[i].Rule = new List<string>(new string[b]);
+                    head[i].LastIndex = head[i].Index[b - 1] + 1;
 
-                    for (int i1 = a; i1 < f; i1++)
+                    str = FindLang($"{path}", i);
+                    com = str.Split('/');
+                    
+                    a =com.Length ;
+                    if (a < b)
+                    {
+                        string oldLang = lang;
+                        lang = "Eng";
+                        str = FindLang($"{path}{i}", -1);
+                        com = str.Split('/');
+
+                        for (int i1 = a; i1 < b; i1++)
+                            head[i].Rule[i1] = com[i1];
+
+                        lang = oldLang;
+                        str = FindLang($"{path}{i}", -1);
+                        com = str.Split('/');
+                    }
+
+                    Debug.Log(com.Length);
+                    Debug.Log(head[i].Rule.Count);
+                    for (int i1 = 0; i1 < com.Length; i1++)
                         head[i].Rule[i1] = com[i1];
-
-                    lang = oldLang;
-                    str = FindLang($"{path}{i}", -1);
-                    com = str.Split('/');
+                    
+                    if (com.Length != a)
+                        SaveRuleMain( i);
                 }
-
-                for (int i1 = 0; i1 < com.Length; i1++)
-                    head[i].Rule[i1] = com[i1];
-
-                if (com.Length < f)
-                    SaveRuleMain(head[i], i);
+                else
+                    head[i].Rule = new List<string>();
 
             }
 
             core.head = head;
         }
-        static void SaveRuleMain(SubRuleHead head, int a)
+        public static void SaveRuleMain( int a)
         {
+            Debug.Log(a);
+            Debug.Log(core.head.Count);
+            SubRuleHead head = core.head[a];
             string path = mainPath + "Rule/";
             root = new XElement("root");
 
+            string str2 = " ";
             if (head.Index.Count > 0)
             {
-                string str1 = "" +head.Index[0];
-                string str2 = head.Rule[0];
+                string str1 = "" + head.Index[0];
+                str2 = head.Rule[0];
                 for (int i = 1; i < head.Index.Count; i++)
                 {
                     str1 += "/" + head.Index[i];
                     str2 += "/" + head.Rule[i];
                 }
                 root.Add(new XElement("Id", str1));
-                AddLangFile(path, str2, a);
-
             }
             else
                 root.Add(new XElement("Id", " "));
+
+            AddLangFile(path, str2, a);
+
+            Debug.Log(path);
 
             XDocument saveDoc = new XDocument(root);
             File.WriteAllText(path +$"{a}.HR", saveDoc.ToString());
 
         }
 
+        static RuleForm ReturnCore(string str )
+        {
+            string[] com = str.Split('*');
+            RuleForm core = new RuleForm();
+
+            core.Card = int.Parse(com[0]);
+            core.Tayp = int.Parse(com[1]);
+            core.TaypId = int.Parse(com[2]);
+            core.Mod = int.Parse(com[3]);
+            core.Num = int.Parse(com[4]);
+
+            return core;
+        }
+        static IfAction ReturnIfAction(string str)
+        {
+            string[] com = str.Split('|'); 
+            IfAction core = new IfAction();
+            core.Point = int.Parse(com[0]);
+
+            core.Result = new List<int>(com[1].Split('!').Select(int.Parse).ToArray());
+            
+            com = com[2].Split('!');
+            for (int i =0;i<com.Length;i++)
+                core.Core[i] = ReturnCore(com[i]);
+            return core;
+        }
+        static RuleAction ReturnRuleAction(string str)
+        {
+            string[] com = str.Split('|');
+            RuleAction core = new RuleAction();
+            core.Action = int.Parse(com[0]);
+            core.ActionExtend = int.Parse(com[1]);
+
+            core.Min = int.Parse(com[2]);
+            core.Max = int.Parse(com[3]);
+
+            core.Team = int.Parse(com[4]);
+
+            core.RuleTag = int.Parse(com[5]);
+            core.Rule = int.Parse(com[6]);
+
+            core.ForseMood = int.Parse(com[7]);
+
+            com = com[8].Split('!');
+            for (int i = 0; i < com.Length; i++)
+                core.Core[i] = ReturnCore(com[i]);
+
+            return core;
+        }
+
         public static HeadRule LoadRule(int a, int b)
         {
             HeadRule head = new HeadRule();
-            string path = mainPath + $"Rule/{a}/{b}.R";
-            XElement root = XDocument.Parse(File.ReadAllText(path)).Element("root");
+            head.Tag = a;
+            //string path = mainPath + $"Rule/{a}/{b};
+
+            string str = "";
+            string[] com, com1;
+            XElement root = XDocument.Parse(File.ReadAllText(mainPath +$"Rule/{a}/{b}.R")).Element("root");
+            head.Cost = int.Parse(root.Element("Cost").Value);
+            //  str = root.Element("Cost").Value;
+            //int c = int.Parse(root.Element("Triggers").Value);
+
+            head.Trigger = new List<TriggerAction>(new TriggerAction[int.Parse(root.Element("Triggers").Value)] );
+            for (int i = 0; i < head.Trigger.Count; i++)
+            {
+                TriggerAction trigger = new TriggerAction();
+                com = root.Element($"Trigger{i}").Value.Split('/');
+                trigger.Plan = int.Parse(com[0]);
+                trigger.Trigger = int.Parse(com[1]);
+
+                trigger.CountMod = bool.Parse(com[2]);
+                trigger.CountModExtend = bool.Parse(com[3]);
+
+                trigger.Team = int.Parse(com[4]);
+
+                if (com[5] == " ")
+                    trigger.PlusAction = new List<IfAction>();
+                else
+                {
+                    com1 = com[5].Split('?');
+                    trigger.PlusAction = new List<IfAction>(new IfAction[com1.Length]);
+                    for (int i1 = 0; i1 < com1.Length; i1++)
+                        trigger.PlusAction[i1] = ReturnIfAction(com1[i1]);
+                }
+
+
+                if (com[6] == " ")
+                    trigger.MinusAction = new List<IfAction>();
+                else
+                {
+                    com1 = com[6].Split('?');
+                    trigger.MinusAction = new List<IfAction>(new IfAction[com1.Length]);
+                    for (int i1 = 0; i1 < com1.Length; i1++)
+                        trigger.MinusAction[i1] = ReturnIfAction(com1[i1]);
+                }
+
+
+                if (com[7] == " ")
+                    trigger.Action = new List<RuleAction>();
+                else
+                {
+                    com1 = com[7].Split('?');
+                    trigger.Action = new List<RuleAction>(new RuleAction[com1.Length]);
+                    for (int i1 = 0; i1 < com1.Length; i1++)
+                        trigger.Action[i1] = ReturnRuleAction(com1[i1]);
+                }
+
+              
+
+
+
+
+                head.Trigger[i] = trigger;
+            }
+
+
+            // str = root.Element("Cost").Value;
+
+            if (root.Element("NeedRule").Value == "")
+                head.NeedRule = new List<string>();
+            else
+                head.NeedRule = new List<string>(root.Element("NeedRule").Value.Split('/'));
+
+
+            if (root.Element("EnemyRule").Value == "")
+                head.EnemyRule = new List<string>();
+            else
+                head.EnemyRule = new List<string>(root.Element("EnemyRule").Value.Split('/'));
+
+
+
+
+            com = FindLang(mainPath+$"Rule/{a}/", b).Split('/');
+            //head.Name = com[0];
+            if(com.Length > 0)
+            {
+                b = 1;
+                for (int i = 0; i < head.Trigger.Count; i++)
+                    for (int i1 = 0; i1 < head.Trigger[i].Action.Count; i1++)
+                        if (head.Trigger[i].Action[i1].Action == 1) //a = 1;//Trigger =Action;
+                        {
+                            head.Trigger[i].Action[i1].Name = com[b];
+                            b++;
+                            if (b == com.Length)
+                            {
+                                i = head.Trigger.Count;
+                                i1= head.Trigger[i].Action.Count;
+                            }
+                        }
+            }
 
             return head;
         }
-        public static void SaveRule(int a, int b)
+
+
+        static string GetCore(RuleForm core)
         {
-            string path = mainPath + $"Rule/{a}/{b}.R";
+            string str = $"{core.Card}*{core.Tayp}*{core.TaypId}*{core.Mod}*{core.Num}";
+
+            return str;
+        }
+        static string GetIfAction(IfAction core)
+        {
+
+            string str = $"{core.Point}|";
+            string str1 = $"{core.Result[0]}";
+            for (int i = 1; i < core.Result.Count; i++)
+                str1 += $"!{core.Result[i]}";
+            str += str1;
+
+            str += "|";
+
+            str1 = GetCore(core.Core[0]);
+            for (int i = 1; i < core.Core.Count; i++)
+                str += "!" + GetCore(core.Core[i]);
+            str += str1;
+
+            return str;
+        }
+        static string GetRuleAction(RuleAction core)
+        {
+            string str = $"{core.Action}|{core.ActionExtend}|{core.Min}|{core.Max}|{core.Team}|{core.RuleTag}|{core.Rule}|{core.ForseMood}|";
+            str += GetCore(core.Core[0]);
+            for (int i = 1; i < core.Core.Count; i++)
+                str += "!" + GetCore(core.Core[i]);
+
+            return str;
+        }
+
+        public static void SaveRule(HeadRule head,int a, int b)
+        {
+            string str, str1, str2 = " ";
+
+            string path = mainPath + $"Rule/{a}/";
             root = new XElement("root");
             
-            root.Add(new XElement("Id", " "));
+            root.Add(new XElement("Cost", head.Cost));
+            root.Add(new XElement("Triggers", head.Trigger.Count));
+            for (int i = 0; i < head.Trigger.Count; i++) {
+
+                TriggerAction trigger = head.Trigger[i];
+                str = $"{trigger.Plan}/{trigger.Trigger}/{trigger.CountMod}/{trigger.CountModExtend}/{trigger.Team}";
+                if (trigger.PlusAction.Count == 0)
+                    str += "/ ";
+                else
+                {
+                    str1 = "/"+ GetIfAction(trigger.PlusAction[0]);
+                    for (int i1 = 1; i1 < trigger.PlusAction.Count; i1++)
+                        str1 += "?" + GetIfAction(trigger.PlusAction[i1]);
+
+                    str += str1;
+                }
+
+                if (trigger.MinusAction.Count == 0)
+                    str += "/ ";
+                else
+                {
+                    str1 = "/" + GetIfAction(trigger.MinusAction[0]);
+                    for (int i1 = 1; i1 < trigger.MinusAction.Count; i1++)
+                        str1 += "?" + GetIfAction(trigger.MinusAction[i1]);
+
+                    str += str1;
+                }
+
+                if (trigger.Action.Count == 0)
+                    str += "/ ";
+                else
+                {
+                    str1 = "/" + GetRuleAction(trigger.Action[0]);
+                    for (int i1 = 1; i1 < trigger.Action.Count; i1++)
+                        str1 += "?" + GetRuleAction(trigger.Action[i1]);
+
+                    for (int i1 = 0; i1 < trigger.Action.Count; i1++)
+                        if (trigger.Action[i1].Action == 1) //a = 1;//Trigger =Action;
+                        {
+                            if(str2 ==" ")
+                                str2 = trigger.Action[i1].Name;
+                            else
+                                str2 +="/" + trigger.Action[i1].Name;
+                        }
+
+                    str += str1;
+                }
+                root.Add(new XElement("Trigger", str));
+            }
+
+            if(head.NeedRule.Count > 0)
+            { 
+                str = head.NeedRule[0];
+                for (int i1 = 1; i1 < head.NeedRule.Count; i1++)
+                    str += "/" + head.NeedRule[i1];
+            }
+            else
+                str = " ";
+            root.Add(new XElement("NeedRule", str));
+
+            if (head.EnemyRule.Count > 0)
+            {
+                str = head.EnemyRule[0];
+                for (int i1 = 1; i1 < head.EnemyRule.Count; i1++)
+                    str += "/" + head.EnemyRule[i1];
+            }
+            else
+                str = " ";
+            root.Add(new XElement("EnemyRule", str));
+
+            AddLangFile(path, str2, b);
+
 
             XDocument saveDoc = new XDocument(root);
-            File.WriteAllText(path + $"{a}.R", saveDoc.ToString());
+            File.WriteAllText(path + $"{b}.R", saveDoc.ToString());
 
         }
 
-        public static void TransfRule(int a, int b, bool full)
-        {
-            //Over - мега верси€, востанваливающа€ маршруты в механиках и картах
-            //full - ут€желенна€ верси€ с востановливающа€ маршруты в механиках
-            //lite - стандарнаы€ веср€и где мигрирует только локализаци€
-            //easy - онли перенос без миграции локализации
-        }
 
         public static void DeliteRule(int a, int b)
         {
@@ -528,7 +799,7 @@ namespace XMLSaver
             core.head[a].Index.RemoveAt(b);
             if (core.head[a].Index.Count == 0)
                 core.head[a].LastIndex = 0;
-            SaveBDMain(a);
+            SaveRuleMain(a);
         }
         #endregion
 

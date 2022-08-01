@@ -15,10 +15,8 @@ public class RuleMainFrame : ScriptableObject
     [HideInInspector] public List<string> Tayp;
 
     [Space(10)]
-    public string[] Trigger;
-  //  public FrameExtend[] Tag;
-    //public string[] Status;
-    public string[] Action;
+    [HideInInspector] public string[] Trigger;
+    [HideInInspector] public List<SubAction> Action;
 
     [Space(10)]
     //public List<string> KeyWord;
@@ -34,26 +32,53 @@ public class RuleMainFrame : ScriptableObject
     [HideInInspector] public string[] ColorsStr;
 
 
+    /*
+     Triggers
+    action - создает кнопку для вызова механики за очко действия
+
+     
+     comand
+    transf plan - перемещает систему из одного плана в дургой
+    StstAdd - увеличивает/уменьшает стат
+    StatusAdd - Добаляет статус, если его нет
+    StatusRemove - Убирает статус, если он есть
+    attak - иницирует действие атаки
+
+
+     */
     public void Convert()
     {
-        string[] com = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass" , "Race"};
-        Tayp = new List<string>(com);
-        //    for(int i = 0; i < com.Length; i++)
-        //    {
-        //        Tayp[i].Name = com[i];
-        //        switch (com[i])
-        //        {
-        //            case ("Guild"):
-        //                {
-        //                    string[] com1 = { "Guild", "Legion" };
-        //                    Tayp[i].Key = com1;
-        //                }
-        //                break;
-        //        }
-        //        Tayp[i].Hide = new bool[Tayp[i].Key.Length];
-        //    }
+        {
+            string[] com = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass", "Race" };
+            Tayp = new List<string>(com);
+        }
 
-        //Tayp = new List<string>( com );
+        {
+            //создать кнопку действия , кто-то выполнил действие // перенос на другой план // кого-то перенесли на другой план
+            string[] com = { "NextTurn", "Action", "AnotherAction", "Transf", "AnotherTransf", "Destroy", "Equip", "AnotherDestroy", "AnotherEquip" ,"PreAction", "PostAction", "SeconAction" };
+            Trigger = com;
+        }
+
+        Action = new List<SubAction>();
+        Action.Add(new SubAction("Attack", "Meele_Shot"));
+        Action.Add(new SubAction("Speed", " "));
+        Action.Add(new SubAction("MainStat", " "));
+        Action.Add(new SubAction("Karma", "Clear_Add_Remove"));//karma_{global}_{all}_Stat
+        /*
+           karma
+          global = общая статистика за весь матч
+          turn
+          local
+
+          positiv
+          negativ
+          all
+
+           */
+       
+
+
+
         ColorsStr = new string[colors.Length];
         for (int i = 0; i < ColorsStr.Length; i++)
             ColorsStr[i] = ColorUtility.ToHtmlStringRGB(colors[i]);
@@ -155,6 +180,17 @@ public class RuleMainFrame : ScriptableObject
 
  
  */
+
+public class SubAction
+{
+    public SubAction(string name, string str)
+    {
+        Name = name;
+        Extend = str.Split('_');
+    }
+    public string Name;
+    public string[] Extend;
+}
 
 //[System.Serializable]
 //public class SubTayp

@@ -1,3 +1,3 @@
 <root>
-  <I>Legion/This Legion</I>
+  <I>Legion/Void</I>
 </root>
