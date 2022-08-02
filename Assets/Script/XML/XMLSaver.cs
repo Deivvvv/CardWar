@@ -794,8 +794,10 @@ namespace XMLSaver
             RemoveLocal(path, b);
             path += $"{b}.R";
             File.Delete(path);
+            b= core.head[a].Index.FindIndex(x => x == b);
+        
 
-            core.head[a].Rule.RemoveAt(b);
+        core.head[a].Rule.RemoveAt(b);
             core.head[a].Index.RemoveAt(b);
             if (core.head[a].Index.Count == 0)
                 core.head[a].LastIndex = 0;

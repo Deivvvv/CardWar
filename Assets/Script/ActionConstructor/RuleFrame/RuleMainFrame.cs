@@ -11,6 +11,7 @@ public class RuleMainFrame : ScriptableObject
 
     public string[] PlayerString;
     public string[] CardString;
+    public string[] SysStat = { "Skip","MainStat","Mana"};
     //public string[] StatTayp;
     [HideInInspector] public List<string> Tayp;
 
@@ -62,8 +63,8 @@ public class RuleMainFrame : ScriptableObject
         Action = new List<SubAction>();
         Action.Add(new SubAction("Attack", "Meele_Shot"));
         Action.Add(new SubAction("Speed", " "));
-        Action.Add(new SubAction("MainStat", " "));
-        Action.Add(new SubAction("Karma", "Clear_Add_Remove"));//karma_{global}_{all}_Stat
+       // Action.Add(new SubAction("MainStat", " "));//Вероятно комманда на смену основного стата?
+        Action.Add(new SubAction("Karma", "Clear_Add_Remove"));//karma_{global}_{all}_Stat   .. перобсудить этот раздел
         /*
            karma
           global = общая статистика за весь матч

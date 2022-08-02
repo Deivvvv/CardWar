@@ -1,5 +1,5 @@
 <root>
-  <Cost>0</Cost>
+  <Cost>3</Cost>
   <Triggers>0</Triggers>
   <NeedRule> </NeedRule>
   <EnemyRule> </EnemyRule>
