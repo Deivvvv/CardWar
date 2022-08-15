@@ -18,7 +18,7 @@ namespace Coder
         static int keyA, keyB, keyStat, keyTag, keyPlan, keyAssociation;
 
         static string mood;
-        static string subMood = "HeadInfo";
+        static int subMood = -1;
         static MainBase mainBase;
         static HeadRule mainRule;
         //public static void SetMood(string str) { mood = str; }
@@ -54,7 +54,7 @@ namespace Coder
                     break;
                 case ("Rule"):
                     mainRule = Saver.LoadRule(keyA, core.head[keyA].Index[keyB]);
-                    SetSubMood("HeadInfo");
+                    SetSubMood(-1);
                     break;
             }
         }
@@ -157,7 +157,7 @@ namespace Coder
                     SetSwitch(com[1]);
                     break;
                 case ("SetMood"):
-                    SetSubMood(com[1]);
+                    SetSubMood(int.Parse(com[1]));
                     break;
             }
         }
@@ -302,28 +302,28 @@ namespace Coder
             switch (com[0])
             {
                 case ("ResultPlus"):
-                    core = mainRule.Trigger[int.Parse(com[1])].PlusAction[int.Parse(com[2])].ResultCore[int.Parse(com[2])];
+                    core = mainRule.Trigger[subMood].PlusAction[int.Parse(com[1])].ResultCore[int.Parse(com[2])];
                     break;
                 case ("ResultMinus"):
-                    core = mainRule.Trigger[int.Parse(com[1])].MinusAction[int.Parse(com[2])].ResultCore[int.Parse(com[3])];
+                    core = mainRule.Trigger[subMood].MinusAction[int.Parse(com[1])].ResultCore[int.Parse(com[2])];
                     break;
                 case ("Plus"):
-                    core = mainRule.Trigger[int.Parse(com[1])].PlusAction[int.Parse(com[2])].Core[int.Parse(com[2])];
+                    core = mainRule.Trigger[subMood].PlusAction[int.Parse(com[1])].Core[int.Parse(com[2])];
                     break;
                 case ("Minus"):
-                    core = mainRule.Trigger[int.Parse(com[1])].MinusAction[int.Parse(com[2])].Core[int.Parse(com[3])];
+                    core = mainRule.Trigger[subMood].MinusAction[int.Parse(com[1])].Core[int.Parse(com[2])];
                     break;
                 case ("Action"):
-                    core = mainRule.Trigger[int.Parse(com[1])].Action[int.Parse(com[2])].Core[int.Parse(com[3])];
+                    core = mainRule.Trigger[subMood].Action[int.Parse(com[1])].Core[int.Parse(com[2])];
                     break;
             }
 
             return core;
         }
 
-        static void SetSubMood(string str)
+        static void SetSubMood(int a)
         {
-            subMood = str;
+            subMood = a;
             TextRule("HeadInfo");
         }
         static void EditRule(string str)
@@ -335,7 +335,8 @@ namespace Coder
                 switch (com[1])
                 {
                     case ("Return"):
-                        ReturnRuleList(com[2], com[3]));
+                        Debug.Log(str);
+                        ReturnRuleList(com[2], com[3]);
                         break;
                     case ("Set"):
                         RuleForm core = null;
@@ -370,26 +371,26 @@ namespace Coder
                                 core.TaypId = a;
                                 break;
                             case ("Tayp"):
-                                com = com[1].Split('?'); 
-                                int d = int.Parse(com[1]), f = int.Parse(com[2])
+                                com = com[1].Split('?');
+                                int f = int.Parse(com[1]);
                                 if (com[0] == "Result")
                                 {
-                                    core = mainRule.Trigger[d].Action[f].ResultCore;
+                                    core = mainRule.Trigger[subMood].Action[f].ResultCore;
                                     core.Tayp = a;
                                     TextRule("HeadInfo");
                                     return;
                                 }
 
-                                int e = int.Parse(com[3]);
+                                int e = int.Parse(com[2]);
                                 bool plus = (com[0] == "Plus");
-                                core = (plus) ? mainRule.Trigger[d].PlusAction[f].Core[e]: mainRule.Trigger[d].MinusAction[f].Core[e];
+                                core = (plus) ? mainRule.Trigger[subMood].PlusAction[f].Core[e]: mainRule.Trigger[subMood].MinusAction[f].Core[e];
                                
                                 if (a == keyStat && core.Tayp != a)
                                 {
                                     if (plus)
-                                        mainRule.Trigger[d].PlusAction[f].ResultCore.Add(new RuleForm(keyStat));
+                                        mainRule.Trigger[subMood].PlusAction[f].ResultCore.Add(new RuleForm(keyStat));
                                     else
-                                        mainRule.Trigger[d].MinusAction[f].ResultCore.Add(new RuleForm(keyStat));
+                                        mainRule.Trigger[subMood].MinusAction[f].ResultCore.Add(new RuleForm(keyStat));
                                 }
                                 else if (a != keyStat && core.Tayp == keyStat)
                                 {
@@ -397,16 +398,16 @@ namespace Coder
                                     for (int i = 0; i < e; i++)
                                         if (plus)
                                         {
-                                            if (mainRule.Trigger[d].PlusAction[f].Core[i].Tayp == keyStat)
+                                            if (mainRule.Trigger[subMood].PlusAction[f].Core[i].Tayp == keyStat)
                                                 h++;
                                         }
-                                        else if (mainRule.Trigger[d].MinusAction[f].Core[i].Tayp == keyStat)
+                                        else if (mainRule.Trigger[subMood].MinusAction[f].Core[i].Tayp == keyStat)
                                             h++;
 
                                     if (plus)
-                                        mainRule.Trigger[d].PlusAction[f].ResultCore.RemoveAt(h);
+                                        mainRule.Trigger[subMood].PlusAction[f].ResultCore.RemoveAt(h);
                                     else
-                                        mainRule.Trigger[d].MinusAction[f].ResultCore.RemoveAt(h);
+                                        mainRule.Trigger[subMood].MinusAction[f].ResultCore.RemoveAt(h);
                                 }
                                 
                                 core.Tayp = a;
@@ -415,72 +416,127 @@ namespace Coder
                                 core = ReturnCoreOrig(com[1]);
                                 core.Card = a;
                                 break;
-                            case ("Trigger"):
-                                mainRule.Trigger.Add(new TriggerAction(a));
-                                break;
                         }
+
+                        ClearIO();
                         break;
                     case ("Remove"):
                         a = int.Parse(com[3]);
                         switch (com[2])
                         {
                             case ("NeedRuleHead"):
-                                mainBase.NeedRule.RemoveAt(a);
+                                mainRule.NeedRule.RemoveAt(a);
                                 break;
                             case ("NeedRule"):
                                 b = int.Parse(com[4]);
-                                mainBase.NeedRule[b].Num.RemoveAt(a);
+                                mainRule.NeedRule[b].Num.RemoveAt(a);
                                 break;
                             case ("EnemyRuleHead"):
-                                mainBase.EnemyRule.RemoveAt(a);
+                                mainRule.EnemyRule.RemoveAt(a);
                                 break;
                             case ("EnemyRule"):
                                 b = int.Parse(com[4]);
-                                mainBase.EnemyRule[b].Num.RemoveAt(a);
+                                mainRule.EnemyRule[b].Num.RemoveAt(a);
                                 break;
                             case ("Trigger"):
                                 mainRule.Trigger.RemoveAt(a);
                                 break;
                         }
 
+                        TextRule("HeadInfo");
+                        break;
+                    case ("Add"):
+                        switch (com[2])
+                        {
+                            case ("Trigger"):
+                                mainRule.Trigger.Add(new TriggerAction());
+                                break;
+                        }
+
+                        TextRule("HeadInfo");
                         break;
                 }
+                return;
             }
 
 
-
-            a = int.Parse(com[2]);
-            switch (com[0])
+            Debug.Log(str);
+            if (com[1] == "Core")
             {
-                case ("Add"):
-                    switch (com[1])
-                    {
-                        case ("Plus"):
-                            mainRule.Trigger[a].PlusAction.Add(new IfAction());
-                            break;
-                        case ("Minus"):
-                            mainRule.Trigger[a].MinusAction.Add(new IfAction());
-                            break;
-                        case ("Action"):
-                            mainRule.Trigger[a].Action.Add(new RuleAction());
-                            break;
-                    }
-                    break;
-                case ("Remove"):
-                    b = int.Parse(com[3]);
-                    switch (com[1])
-                    {
-                        case ("Plus"):
-                            mainRule.Trigger[a].PlusAction.RemoveAt(b);
-                            break;
-                        case ("Minus"):
-                            mainRule.Trigger[a].MinusAction.RemoveAt(b);
-                            break;
-                        case ("Action"):
-                            mainRule.Trigger[a].Action.RemoveAt(b);
-                            break;
-                    }
-                    break;
+                a = int.Parse(com[3]); 
+                switch (com[0])
+                {
+                    case ("Add"):
+                        switch (com[2])
+                        {
+                            case ("Plus"):
+                                mainRule.Trigger[subMood].PlusAction[a].Core.Add(new RuleForm());
+                                mainRule.Trigger[subMood].PlusAction[a].Result.Add(0);
+                                break;
+                            case ("Minus"):
+                                mainRule.Trigger[subMood].MinusAction[a].Core.Add(new RuleForm());
+                                mainRule.Trigger[subMood].MinusAction[a].Result.Add(0);
+                                break;
+                        }
+                        break;
+                    case ("Remove"):
+                        b = int.Parse(com[4]);
+                        switch (com[2])
+                        {
+                            case ("Plus"):
+                                mainRule.Trigger[subMood].PlusAction[a].Core.RemoveAt(b);
+                                mainRule.Trigger[subMood].PlusAction[a].Result.RemoveAt(b);
+                                break;
+                            case ("Minus"):
+                                mainRule.Trigger[subMood].MinusAction[a].Core.RemoveAt(b);
+                                mainRule.Trigger[subMood].MinusAction[a].Result.RemoveAt(b);
+                                break;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                switch (com[0])
+                {
+                    case ("Add"):
+                        switch (com[1])
+                        {
+                            case ("Plus"):
+                                a = mainRule.Trigger[subMood].PlusAction.Count;
+                                mainRule.Trigger[subMood].PlusAction.Add(new IfAction());
+                                mainRule.Trigger[subMood].PlusAction[a].Core.Add(new RuleForm());
+                                mainRule.Trigger[subMood].PlusAction[a].Result.Add(0);
+                                break;
+                            case ("Minus"):
+                                a = mainRule.Trigger[subMood].MinusAction.Count;
+                                mainRule.Trigger[subMood].MinusAction.Add(new IfAction());
+                                mainRule.Trigger[subMood].MinusAction[a].Core.Add(new RuleForm());
+                                mainRule.Trigger[subMood].MinusAction[a].Result.Add(0);
+                                break;
+                            case ("Action"):
+                                a = mainRule.Trigger[subMood].Action.Count;
+                                mainRule.Trigger[subMood].Action.Add(new RuleAction());
+                                mainRule.Trigger[subMood].Action[a] = NewForm(mainRule.Trigger[subMood].Action[a]);
+                                break;
+                        }
+                        break;
+                    case ("Remove"):
+                        a = int.Parse(com[2]);
+                        switch (com[1])
+                        {
+                            case ("Plus"):
+                                mainRule.Trigger[subMood].PlusAction.RemoveAt(a);
+                                break;
+                            case ("Minus"):
+                                mainRule.Trigger[subMood].MinusAction.RemoveAt(a);
+                                break;
+                            case ("Action"):
+                                mainRule.Trigger[subMood].Action.RemoveAt(a);
+                                break;
+                        }
+                        break;
+                }
             }
             TextRule("HeadInfo");
 
@@ -593,6 +649,15 @@ namespace Coder
                     a = int.Parse(com[1]);
                     b = int.Parse(com[2]);
                     core.bD[a].Hide[b] = !core.bD[a].Hide[b];
+                    break;
+                case ("CountMod"):
+                    mainRule.Trigger[subMood].CountMod = !mainRule.Trigger[subMood].CountMod;
+                    break;
+                case ("CountModExtend"):
+                    mainRule.Trigger[subMood].CountModExtend = !mainRule.Trigger[subMood].CountModExtend;
+                    break;
+                default:
+                    Debug.Log(com[0]);
                     break;
             }
             ClearIO();
@@ -811,7 +876,7 @@ namespace Coder
             com = com[0].Split('_');
             if (com.Length > 1)
             {
-                a = int.Parse(com[0]);
+              //  a = int.Parse(com[0]);
                 b = int.Parse(com[1]);
             }
             switch (com[0])
@@ -825,58 +890,58 @@ namespace Coder
 
                 case ("Team"):
                     if (mood)
-                        mainRule.Trigger[a].Team--;
+                        mainRule.Trigger[subMood].Team--;
                     else
-                        mainRule.Trigger[a].Team++;
+                        mainRule.Trigger[subMood].Team++;
                     //mainRule.Trigger[a].Team = IfPlus(mainRule.Trigger[a].Team, core.frame.PlayerString.Length, mood);
                     break;
 
                 case ("ActionPlus"):
                     if (mood)
-                        mainRule.Trigger[a].PlusAction[b].Point--;
+                        mainRule.Trigger[subMood].PlusAction[b].Point--;
                     else
-                        mainRule.Trigger[a].PlusAction[b].Point++;
+                        mainRule.Trigger[subMood].PlusAction[b].Point++;
                     break;
                 case ("ActionMinus"):
                     if (mood)
-                        mainRule.Trigger[a].MinusAction[b].Point--;
+                        mainRule.Trigger[subMood].MinusAction[b].Point--;
                     else
-                        mainRule.Trigger[a].MinusAction[b].Point++;
+                        mainRule.Trigger[subMood].MinusAction[b].Point++;
                     break;
                 case ("ActionMin"):
                     if (mood)
-                        mainRule.Trigger[a].Action[b].Min--;
+                        mainRule.Trigger[subMood].Action[b].Min--;
                     else
-                        mainRule.Trigger[a].Action[b].Min++;
+                        mainRule.Trigger[subMood].Action[b].Min++;
 
-                    if (mainRule.Trigger[a].Action[b].Min > mainRule.Trigger[a].Action[b].Max)
-                        mainRule.Trigger[a].Action[b].Max = mainRule.Trigger[a].Action[b].Min;
+                    if (mainRule.Trigger[subMood].Action[b].Min > mainRule.Trigger[subMood].Action[b].Max)
+                        mainRule.Trigger[subMood].Action[b].Max = mainRule.Trigger[subMood].Action[b].Min;
                     break;
                 case ("ActionMax"):
-                    if (com[3])
-                        mainRule.Trigger[a].Action[b].Max--;
+                    if (mood)
+                        mainRule.Trigger[subMood].Action[b].Max--;
                     else
-                        mainRule.Trigger[a].Action[b].Max++;
+                        mainRule.Trigger[subMood].Action[b].Max++;
 
-                    if (mainRule.Trigger[a].Action[b].Min < mainRule.Trigger[a].Action[b].Max)
-                        mainRule.Trigger[a].Action[b].Min = mainRule.Trigger[a].Action[b].Max;
+                    if (mainRule.Trigger[subMood].Action[b].Min > mainRule.Trigger[subMood].Action[b].Max)
+                        mainRule.Trigger[subMood].Action[b].Min = mainRule.Trigger[subMood].Action[b].Max;
                     break;
 
 
                 case ("ActionPlusResult"):
                     c = int.Parse(com[2]);
-                    mainRule.Trigger[a].PlusAction[b].Result[c] = IfPlus(mainRule.Trigger[a].PlusAction[b].Result[c], core.frame.EqualString.Length, mood);
+                    mainRule.Trigger[subMood].PlusAction[b].Result[c] = IfPlus(mainRule.Trigger[subMood].PlusAction[b].Result[c], core.frame.EqualString.Length, mood);
                     break;
                 case ("ActionMinusResult"):
                     c = int.Parse(com[2]);
-                    mainRule.Trigger[a].MinusAction[b].Result[c] = IfPlus(mainRule.Trigger[a].MinusAction[b].Result[c], core.frame.EqualString.Length, mood);
+                    mainRule.Trigger[subMood].MinusAction[b].Result[c] = IfPlus(mainRule.Trigger[subMood].MinusAction[b].Result[c], core.frame.EqualString.Length, mood);
                     break;
 
                 case ("ActionTeam"):
-                    mainRule.Trigger[a].Action[b].Team = IfPlus(mainRule.Trigger[a].Action[b].Team, core.frame.PlayerString.Length, mood);
+                    mainRule.Trigger[subMood].Action[b].Team = IfPlus(mainRule.Trigger[subMood].Action[b].Team, core.frame.PlayerString.Length, mood);
                     break;
                 case ("ActionForse"):
-                    mainRule.Trigger[a].Action[b].ForseMood = IfPlus(mainRule.Trigger[a].Action[b].ForseMood, core.frame.ForseTayp.Length, mood);
+                    mainRule.Trigger[subMood].Action[b].ForseMood = IfPlus(mainRule.Trigger[subMood].Action[b].ForseMood, core.frame.ForseTayp.Length, mood);
                     break;
 
 
@@ -888,13 +953,13 @@ namespace Coder
                     switch (com[3])
                     {
                         case ("Plus"):
-                            form = mainRule.Trigger[a].PlusAction[b].Core[c]; 
+                            form = mainRule.Trigger[subMood].PlusAction[b].Core[c]; 
                             break;
                         case ("Minus"):
-                            form = mainRule.Trigger[a].MinusAction[b].Core[c];
+                            form = mainRule.Trigger[subMood].MinusAction[b].Core[c];
                             break;
                         default:
-                            form = mainRule.Trigger[a].Action[b].Core[c];
+                            form = mainRule.Trigger[subMood].Action[b].Core[c];
                             break;
                     }
 
@@ -903,13 +968,13 @@ namespace Coder
                     switch (com[3])
                     {
                         case ("Plus"):
-                            mainRule.Trigger[a].PlusAction[b].Core[c] = form;
+                            mainRule.Trigger[subMood].PlusAction[b].Core[c] = form;
                             break;
                         case ("Minus"):
-                            mainRule.Trigger[a].MinusAction[b].Core[c] = form;
+                            mainRule.Trigger[subMood].MinusAction[b].Core[c] = form;
                             break;
                         default:
-                            mainRule.Trigger[a].Action[b].Core[c] = form;
+                            mainRule.Trigger[subMood].Action[b].Core[c] = form;
                             break;
                     }
                     break;
@@ -919,62 +984,68 @@ namespace Coder
         static void EditMove(string str)
         {
 
-            int a = 0, b = 0, c = 0;
+            Debug.Log(str);
+            int b = 0, c = 0;
             string[] com = str.Split('*');
-            bool mood = (com[1] == "-");
-            com = str.Split('_');
+            bool minus = (com[1] == "-");
+            com = com[0].Split('_');
 
-            a = int.Parse(com[1]);
-            b = int.Parse(com[2]);
-            if (com.Length == 4)
+            // a = int.Parse(com[1]);
+            b = int.Parse(com[1]);
+            if (com.Length == 3)
             {
-                c = int.Parse(com[3]);
-                //RuleForm core = null;
-                switch (com[0])
+                c = int.Parse(com[2]);
+                int d = (minus) ? c - 1: c + 1;
+                
+                IfAction ifAction = (com[0] == "Plus") ? mainRule.Trigger[subMood].PlusAction[b] : mainRule.Trigger[subMood].MinusAction[b];
+
+                RuleForm form = ifAction.Core[c];
+                ifAction.Core[c] = ifAction.Core[d];
+                ifAction.Core[d] = form;
+
+                b = ifAction.Result[c];
+                ifAction.Result[c] = ifAction.Result[d];
+                ifAction.Result[d] = b;
+
+                if (ifAction.Core[d].Tayp == ifAction.Core[c].Tayp && ifAction.Core[d].Tayp == keyStat)
                 {
-                    case ("Plus"):
-                        if (mood)
-                            mainRule.Trigger[a].PlusAction[b].Core.Insert(c - 1, mainRule.Trigger[a].PlusAction[b].Core[c]);
-                        else
-                            mainRule.Trigger[a].PlusAction[b].Core.Insert(c + 1, mainRule.Trigger[a].PlusAction[b].Core[c]);
-                        break;
-                    case ("Minus"):
-                        if (mood)
-                            mainRule.Trigger[a].MinusAction[b].Core.Insert(c - 1, mainRule.Trigger[a].MinusAction[b].Core[c]);
-                        else
-                            mainRule.Trigger[a].MinusAction[b].Core.Insert(c + 1, mainRule.Trigger[a].MinusAction[b].Core[c]);
-                        break;
-                    default:
-                        if (mood)
-                            mainRule.Trigger[a].Action[b].Core.Insert(c - 1, mainRule.Trigger[a].Action[b].Core[c]);
-                        else
-                            mainRule.Trigger[a].Action[b].Core.Insert(c + 1, mainRule.Trigger[a].Action[b].Core[c]);
-                        break;
+                    int a1 = 0, a2 = 0;
+                    for (int i = 0; i < c; i++)
+                        if (ifAction.Core[i].Tayp == keyStat)
+                            a1++;
+
+                    a2 = (minus) ? a1 - 1 : a1 + 1;
+
+                    form = ifAction.ResultCore[a1];
+                    ifAction.ResultCore[a1] = ifAction.Core[a2];
+                    ifAction.ResultCore[a2] = form;
+
                 }
             }
             else
+            {
+                int d = (minus) ? b -1: b + 1;
+                IfAction ifAction = null;
                 switch (com[0])
                 {
                     case ("Plus"):
-                        if (mood)
-                            mainRule.Trigger[a].PlusAction.Insert(c - 1, mainRule.Trigger[a].PlusAction[b]);
-                        else
-                            mainRule.Trigger[a].PlusAction.Insert(c + 1, mainRule.Trigger[a].PlusAction[b]);
+                        ifAction = mainRule.Trigger[subMood].PlusAction[b];
+                        mainRule.Trigger[subMood].PlusAction[b] = mainRule.Trigger[subMood].PlusAction[d];
+                        mainRule.Trigger[subMood].PlusAction[d] = ifAction;
                         break;
                     case ("Minus"):
-                        if (mood)
-                            mainRule.Trigger[a].MinusAction.Insert(c - 1, mainRule.Trigger[a].MinusAction[b]);
-                        else
-                            mainRule.Trigger[a].MinusAction.Insert(c + 1, mainRule.Trigger[a].MinusAction[b]);
+                        ifAction = mainRule.Trigger[subMood].MinusAction[b];
+                        mainRule.Trigger[subMood].MinusAction[b] = mainRule.Trigger[subMood].MinusAction[d];
+                        mainRule.Trigger[subMood].MinusAction[d] = ifAction;
                         break;
                     default:
-                        if (mood)
-                            mainRule.Trigger[a].Action.Insert(c - 1, mainRule.Trigger[a].Action[b]);
-                        else
-                            mainRule.Trigger[a].Action.Insert(c + 1, mainRule.Trigger[a].Action[b]);
+                        RuleAction action = mainRule.Trigger[subMood].Action[b];
+                        mainRule.Trigger[subMood].Action[b] = mainRule.Trigger[subMood].Action[d];
+                        mainRule.Trigger[subMood].Action[d] = action;
                         break;
                 }
-
+            }
+            ClearIO();
         }
 
         static string TextEditInt(string path, string cost)  {  return AddLink($"Int|{path}*-", "<<") + $" ({cost}) " + AddLink($"Int|{path}*+", ">>");  }
@@ -983,10 +1054,11 @@ namespace Coder
         { 
             string str = "";
             if(a >0)
-                str += AddLink($"Move|{path}*-", "/\\/\\");
-            
-            if (a < size)
-                str += AddLink($"Move|{path}*+", "\/\/");
+                str += AddLink($"Move|{path}*-", " /\\/\\");
+
+
+            if (a < size -1)
+                str += AddLink($"Move|{path}*+", " \\/\\/");
 
             return str;
         }
@@ -1094,133 +1166,124 @@ namespace Coder
 
 
                 case ("HeadInfo"):
-                    str = AddLink($"Sys|Save", "Save");
-                    str += "    ";
-                    str += AddLink($"Sys|Load", "Load");
-                    str += "    ";
-                    str += AddLink($"Sys|Clear", "Clear");
-                    str += "    ";
-                    str += AddLink($"Sys|Del", "Delite");
-                    str += "\n\n";
-                    str += AddLink("GetIO|RuleName", $"({core.head[keyA].Index[keyB]})Правило -- { core.head[keyA].Rule[keyB]}");
-                    // str += AddLink("Edit_Cost", $"\nЦена: { mainBase.Cost}");
-                    str += $"\nЦена: " + TextEditInt("Cost", "" + mainRule.Cost);
-                    str += $"\nTag {core.bD[keyTag].Base[mainRule.Tag].Name}";
-                    // str += AddLink("Tag_Tag", $"\nTag { mainBase.Tag}");
-
-
-                    str += "\nТребуемые механики";
-                    str += AddLink("Edit|RuleList_Return_NeedRuleHead", $"\nСоздать заголовок");
-                    for (int i = 0; i < mainRule.NeedRule.Count; i++)
+                    if (subMood == -1)
                     {
-                        str += AddLink("Edit|RuleList_Remove_NeedRuleHead", $"\nУдалить заголовок {core.head[mainRule.NeedRule[i].Head].Name}");
-                        str += AddLink($"Edit|RuleList_Return_NeedRule_{i}", $"\nСоздать связь в {core.head[mainRule.NeedRule[i].Head].Name}");
-                        for (int i1 = 0; i1 < mainRule.NeedRule[i].Num.Count; i1++)
-                            str += AddLink($"Edit|RuleList_Remove_NeedRule_{i}_{i1}", $"\n    Разорвать связь с {core.head[mainRule.NeedRule[i].Head].Rule[mainRule.NeedRule[i].Num[i1]]}");
-
-                    }
-                    str += "\n";
-
-                    str += "\nИсключающие механики";
-                    str += AddLink("Edit|RuleList_Return_EnemyRuleHead", $"\nСоздать заголовок");
-                    for (int i = 0; i < mainRule.EnemyRule.Count; i++)
-                    {
-                        str += AddLink("Edit|RuleList_Remove_EnemyRuleHead", $"\nУдалить заголовок {core.head[mainRule.EnemyRule[i].Head].Name}");
-                        str += AddLink($"Edit|RuleList_Return_EnemyRule_{i}", $"\nСоздать связь в {core.head[mainRule.EnemyRule[i].Head].Name}");
-                        for (int i1 = 0; i1 < mainRule.EnemyRule[i].Num.Count; i1++)
-                            str += AddLink($"Edit|RuleList_Remove_EnemyRule_{i}_{i1}", $"\n    Разорвать связь с {core.head[mainRule.EnemyRule[i].Head].Rule[mainRule.EnemyRule[i].Num[i1]]}");
-
-                    }
-                    str += "\n";
+                        str = AddLink($"Sys|Save", "Save");
+                        str += "    ";
+                        str += AddLink($"Sys|Load", "Load");
+                        str += "    ";
+                        str += AddLink($"Sys|Clear", "Clear");
+                        str += "    ";
+                        str += AddLink($"Sys|Del", "Delite");
+                        str += "\n\n";
+                        str += AddLink("GetIO|RuleName", $"({core.head[keyA].Index[keyB]})Правило -- { core.head[keyA].Rule[keyB]}");
+                        // str += AddLink("Edit_Cost", $"\nЦена: { mainBase.Cost}");
+                        str += $"\nЦена: " + TextEditInt("Cost", "" + mainRule.Cost);
+                        str += $"\nTag {core.bD[keyTag].Base[mainRule.Tag].Name}";
+                        // str += AddLink("Tag_Tag", $"\nTag { mainBase.Tag}");
 
 
-                    str += "\n\nTriggers\n";
-                    for (int i = 0; i < mainRule.Trigger.Count; i++)
-                        str += AddLink($"SubMood|Trigger_{i}", $"\n    {NameTrigger(i)}") + "   " + AddLink($"Edit|RuleList_Remove_Trigger_{i}", "-Remove");
-                    str += "\n";
-                    str += AddLink($"Edit|RuleList_Return_Trigger", "-Add");
-                    TT[1].text = str;
-                    break;
-                case ("Info"):
-                    a = subMood;
-                    //b = mainRule.Trigger[a].Trigger;
-                    str = AddLink($"SetMood|HeadInfo", $"Back");
-                    //if (core.frame.Trigger[b].Extend.Length > 1)
-                    //    str += AddLink($"Edit|TriggerExtend_Open_{a}", $"Режим -- " + core.frame.Trigger[b].Extend[mainRule.Trigger[a].TriggerExtend]); 
+                        str += "\nТребуемые механики";
+                        str += AddLink("Edit|RuleList_Return_NeedRuleHead_0", $"\nСоздать заголовок");
+                        for (int i = 0; i < mainRule.NeedRule.Count; i++)
+                        {
+                            str += AddLink($"Edit|RuleList_Remove_NeedRuleHead_{i}", $"\nУдалить заголовок {core.head[mainRule.NeedRule[i].Head].Name}");
+                            str += AddLink($"Edit|RuleList_Return_NeedRule_{mainRule.NeedRule[i].Head}", $"\nСоздать связь в {core.head[mainRule.NeedRule[i].Head].Name}");
+                            for (int i1 = 0; i1 < mainRule.NeedRule[i].Num.Count; i1++)
+                            {
+                                a = core.head[mainRule.NeedRule[i].Head].Index.FindIndex(x => x == mainRule.NeedRule[i].Num[i1]);
+                                Debug.Log(mainRule.NeedRule[i].Num[i1]);
+                                Debug.Log(a);
+                                str += AddLink($"Edit|RuleList_Remove_NeedRule_{i}_{i1}", $"\n    Разорвать связь с {core.head[mainRule.NeedRule[i].Head].Rule[a]}");
+                            }
 
-                    str += AddLink($"SetSwitch|CountMod_{a}", $"Правило с счетчиком -- " + ((mainRule.Trigger[a].CountMod) ? "Yes" : "No"));
-                    str += AddLink($"SetSwitch|CountModExtend_{a}", $"Правило с разницей -- " + ((mainRule.Trigger[a].CountModExtend) ? "Yes" : "No"));
-
-
-                    str += $"\n Целевой план " + AddLink($"Edit|RuleList_Return_Plan_{a}", $"Текущий план " + ((mainRule.Trigger[a].Plan > -1) ? core.bD[keyPlan].Base[mainRule.Trigger[a].Plan].Name : "AllPlan"));
-
-                    if (mainRule.Trigger[a].Team > 0)
-                        str += AddLink($"Int|Team*-", "<<");
-
-                    str += $" ({core.frame.PlayerString[mainRule.Trigger[a].Team]}) ";
-
-                    if (mainRule.Trigger[a].Team < core.frame.EqualString.Length)
-                        str += AddLink($"Int|Team*+", ">>");
-
-                    //str += $"\n Целевой игрок " + TextEditInt($"Team", core.frame.PlayerString[mainRule.Trigger[a].Team]);
-
-
-                    str += "\n Положительные условия";
-                    str += AddLink($"Edit|Add_Plus_{a}", $"\nСоздать условие");
-                    for (int i = 0; i < mainRule.Trigger[a].PlusAction.Count; i++)
-                    {
-                        str += AddLink($"Edit|Remove_Plus_{a}", $"\nУдалить условие");
+                        }
                         str += "\n";
-                        str += IfActionCase(a, i, "Plus");
+
+                        str += "\nИсключающие механики";
+                        str += AddLink("Edit|RuleList_Return_EnemyRuleHead_0", $"\nСоздать заголовок");
+                        for (int i = 0; i < mainRule.EnemyRule.Count; i++)
+                        {
+                            str += AddLink($"Edit|RuleList_Remove_EnemyRuleHead_{i}", $"\nУдалить заголовок {core.head[mainRule.EnemyRule[i].Head].Name}");
+                            str += AddLink($"Edit|RuleList_Return_EnemyRule_{mainRule.EnemyRule[i].Head}", $"\nСоздать связь в {core.head[mainRule.EnemyRule[i].Head].Name}");
+                            for (int i1 = 0; i1 < mainRule.EnemyRule[i].Num.Count; i1++)
+                            {
+                                a = core.head[mainRule.EnemyRule[i].Head].Index.FindIndex(x => x == mainRule.EnemyRule[i].Num[i1]);
+                                str += AddLink($"Edit|RuleList_Remove_EnemyRule_{i}_{i1}", $"\n    Разорвать связь с {core.head[mainRule.EnemyRule[i].Head].Rule[a]}");
+                            }
+
+                        }
+                        str += "\n";
+
+
+                        str += "\n\nTriggers";
+                        for (int i = 0; i < mainRule.Trigger.Count; i++)
+                            str += AddLink($"SetMood|{i}", $"\n    {NameTrigger(i)}") + "   " + AddLink($"Edit|RuleList_Remove_Trigger_{i}", "-Remove");
+                        str += "\n";
+                        str += AddLink($"Edit|RuleList_Add_Trigger", "-Add");
                     }
-
-
-                    str += "\nИсключающие условия";
-                    str += AddLink($"Edit|Add_Minus_{a}", $"\nСоздать исключение");
-                    for (int i = 0; i < mainRule.Trigger[a].MinusAction.Count; i++)
+                    else
                     {
-                        str += AddLink($"Edit|Remove_Minus_{a}", $"\nУдалить исключение");
+                        //b = mainRule.Trigger[a].Trigger;
+                        str = AddLink($"SetMood|-1", $"Back");
+                        //if (core.frame.Trigger[b].Extend.Length > 1)
+                        //    str += AddLink($"Edit|TriggerExtend_Open_{a}", $"Режим -- " + core.frame.Trigger[b].Extend[mainRule.Trigger[a].TriggerExtend]); 
+
+                        str += "\n"+ AddLink($"SetSwitch|CountMod", $"Правило с счетчиком -- " + ((mainRule.Trigger[subMood].CountMod) ? "Yes" : "No"));
+                        str += "\n" + AddLink($"SetSwitch|CountModExtend", $"Правило с разницей -- " + ((mainRule.Trigger[subMood].CountModExtend) ? "Yes" : "No"));
+
+
+                        str += "\n" + AddLink($"Edit|RuleList_Return_Plan_{subMood}", $"Текущий план " + ((mainRule.Trigger[subMood].Plan > -1) ? core.bD[keyPlan].Base[mainRule.Trigger[subMood].Plan].Name : "AllPlan"));
+                        
+                        str += "\nTeam";
+                        if (mainRule.Trigger[subMood].Team > 0)
+                            str += AddLink($"Int|Team*-", "<<");
+
+                        str += $" ({core.frame.PlayerString[mainRule.Trigger[subMood].Team]}) ";
+
+                        //Debug.Log(mainRule.Trigger[subMood].Team);
+                       // Debug.Log(core.frame.EqualString.Length);
+                        if (mainRule.Trigger[subMood].Team < core.frame.PlayerString.Length-1)
+                            str += AddLink($"Int|Team*+", ">>");
+
+                        //str += $"\n Целевой игрок " + TextEditInt($"Team", core.frame.PlayerString[mainRule.Trigger[a].Team]);
+
+
                         str += "\n";
-                        str += IfActionCase(a, i, "Minus");
+                        str += "\n Положительные условия";
+                        str += AddLink($"Edit|Add_Plus", $"\nСоздать условие");
+                        for (int i = 0; i < mainRule.Trigger[subMood].PlusAction.Count; i++)
+                        {
+                            str += IfActionCase( i, "Plus");
+                            str += AddLink($"Edit|Remove_Plus_{i}", $"\nУдалить условие");
+                            str += "\n";
+                        }
+                        str += "\n";
+
+
+                        str += "\nИсключающие условия";
+                        str += AddLink($"Edit|Add_Minus", $"\nСоздать исключение");
+                        for (int i = 0; i < mainRule.Trigger[subMood].MinusAction.Count; i++)
+                        {
+                            str += IfActionCase( i, "Minus");
+                            str += AddLink($"Edit|Remove_Minus_{i}", $"\nУдалить исключение");
+                            str += "\n";
+                        }
+                        str += "\n";
+
+
+
+                        str += "\nДействия";
+                        str += AddLink($"Edit|Add_Action", $"\nСоздать действие");
+                        for (int i = 0; i < mainRule.Trigger[subMood].Action.Count; i++)
+                        {
+                            str += TextMove($"Action_{i}", i, mainRule.Trigger[subMood].Action.Count);
+                            str += "\n";
+                            str += ActionRule( i);
+                            str += "\n";
+                            str += AddLink($"Edit|Remove_Action_{i}", $"\nУдалить действие");
+                        }
                     }
-
-
-
-                    str += "\nДействия";
-                    str += AddLink($"Edit|Add_Minus_{a}", $"\nСоздать действие");
-                    for (int i = 0; i < mainRule.Trigger[a].Action.Count; i++)
-                    {
-                        str += AddLink($"Edit|Remove_Action_{a}", $"\nУдалить действие");
-                        str += "\n";
-                        str += TextMove($"Plus_{a}_{i}", i, mainRule.Trigger[a].Action.Count);
-                        str += "\n";
-                        str += ActionRule(a, i);
-                    }
-                    //str += AddLink($"Edit|TargetPalyer_{a}", $"\n Целевой игрок " + core.frame.PlayerString[mainRule.Trigger[a].Team]);
-
-
-                    //ReturnCoreInfo    ReturnCore
-
-                    //str += "\n Положительные условия";
-                    //str += AddLink($"Edit|Action_Plus_{a}", $"\nСоздать условие");
-                    //for (int i = 0; i < mainRule.Trigger[a].PlusAction.Count; i++)
-                    //    str += AddLink($"Edit|NeedRule_Edit_{i}", $"\n{ReturnCore(mainRule.Trigger[a].PlusAction[i])}";
-                    //str += AddLink($"Edit|NeedRule_Add", $"\n{ReturnCore(mainRule.Trigger[a].PlusAction[i])}";
-
-
-
-                    //str += AddLink($"Edit|NeedRule_Edit_{i}", $"\n    Разорвать связь с {ReturnCoreInfo(mainRule.Trigger[a].PlusAction[i])}");
-                    //str += AddLink($"Edit|NeedRule_Remove_{i}", $"\n    Разорвать связь с {ReturnRuleHead(mainRule.NeedRule[i])}");
-
-                    //str += "\nИсключающие условия";
-                    //str += AddLink("Edit|EnemyRule_Add", $"\nСоздать связь");
-                    //for (int i = 0; i < mainRule.EnemyRule.Count; i++)
-                    //    str += AddLink($"Edit|EnemyRule_Redact_{i}", $"\n    Разорвать связь с {ReturnMainRule(mainRule.EnemyRule[i]).Name}");
-
-                    //str += "\nДействия";
-                    //for (int i = 0; i < mainRule.Trigger.Count; i++)
-                    //    str += AddLink($"SubMood|Trigger_{i}", $"\n    {NameTrigger(i)}") + "   " + AddLink($"Edit|Trigger_Remove_{i}", "-Remove");
-                    //str += AddLink($"Edit|Trigger_Add", "-Add");
                     TT[1].text = str;
                     break;
                     /*
@@ -1232,38 +1295,39 @@ namespace Coder
 
             }
         }
-        static string IfActionCase(int a, int b, string plus)
+        static string IfActionCase(int b, string plus)
         {
             int c = 0;
-            IfAction ifAction = (plus == "Plus") ? mainRule.Trigger[a].PlusAction[b] : mainRule.Trigger[a].MinusAction[b];
-            string str = "",key = plus+$"?{a}?{b}?";
-            str += $"\n({b}) Point";
-            str += TextEditInt($"Action{plus}_{a}_{b}", "" + ifAction.Point);
-            str += " ";
-            str += TextMove($"{plus}_{a}_{b}",b, (plus == "Plus") ? mainRule.Trigger[a].PlusAction.Count : mainRule.Trigger[a].MinusAction.Count);
+            IfAction ifAction = (plus == "Plus") ? mainRule.Trigger[subMood].PlusAction[b] : mainRule.Trigger[subMood].MinusAction[b];
+            string str = "",key = plus+$"?{b}?";
+            str += $"\n({b})";
+            str += TextMove($"{plus}_{b}", b, (plus == "Plus") ? mainRule.Trigger[subMood].PlusAction.Count : mainRule.Trigger[subMood].MinusAction.Count);
+
+            str +=$" Point";
+            str += TextEditInt($"Action{plus}_{b}", "" + ifAction.Point);
             for (int i = 0; i < ifAction.Core.Count; i++)
             {
                 str += "\n";
-                str += TextMove($"{plus}_{a}_{b}_{i}", i, (plus == "Plus") ? mainRule.Trigger[a].PlusAction.Count : mainRule.Trigger[a].MinusAction.Count);
+                str += TextMove($"{plus}_{b}_{i}", i, ifAction.Core.Count);
 
                 bool use = (ifAction.Core[i].Tayp == keyStat);
-                str += "\n";
-
+                //str += "\n";
+                Debug.Log(key + i);
                 str += ReturnCore(ifAction.Core[i],key+i);
 
                 str += " ";
                 if (ifAction.Result[i] > 0)
-                    str += AddLink($"Int|Action{plus}Result_{a}_{b}*-", "<<");
+                    str += AddLink($"Int|Action{plus}Result_{b}_{i}*-", "<<");
 
                 str += $" ({core.frame.EqualString[ifAction.Result[i]]}) ";
                 if (use)
                 {
-                    if (ifAction.Result[i] < core.frame.EqualString.Length)
-                        str += AddLink($"Int|Action{plus}Result_{a}_{b}*+", ">>");
+                    if (ifAction.Result[i] < core.frame.EqualString.Length-1)
+                        str += AddLink($"Int|Action{plus}Result_{b}_{i}*+", ">>");
                 }
                 else
                     if (ifAction.Result[i] < 1)
-                    str += AddLink($"Int|Action{plus}Result_{a}_{b}*+", ">>");
+                    str += AddLink($"Int|Action{plus}Result_{b}_{i}*+", ">>");
 
 
                 str += " ";
@@ -1274,20 +1338,21 @@ namespace Coder
                     c++;
                 }
 
-                str += AddLink($"Edit|Remove_Core_{plus}_{a}_{b}_{i}", "-- Remove");
+                if (i != 0)
+                    str += AddLink($"Edit|Remove_Core_{plus}_{b}_{i}", "-- Remove");
             }
-            str += AddLink($"Edit|Add_Core_{plus}_{a}_{b}", "-- Add");
+            str += AddLink($"Edit|Add_Core_{plus}_{b}", "-- Add");
             return str;
         }
-        static string ActionRule(int a, int b)
+        static string ActionRule( int b)
         {
-            RuleAction action = mainRule.Trigger[a].Action[b];
-            string key = $"Action?{a}?{b}?";
+            RuleAction action = mainRule.Trigger[subMood].Action[b];
+            string key = $"Action?{b}?";
             string str = "";
             str += $"\n({b}) Point";
-            str += TextEditInt($"ActionMin_{a}_{b}", "" + action.Min);
+            str += TextEditInt($"ActionMin_{b}", "" + action.Min);
             str += "    ";
-            str += TextEditInt($"ActionMax_{a}_{b}", "" + action.Max);
+            str += TextEditInt($"ActionMax_{b}", "" + action.Max);
 
             // str += AddLink($"Edit|Remove_Core_{plus}_{a}_{b}_{i}", "-- Remove");
 
@@ -1298,18 +1363,20 @@ namespace Coder
 
             str += $" ({core.frame.PlayerString[action.Team]}) ";
 
-            if (action.Team < core.frame.EqualString.Length)
+            if (action.Team < core.frame.PlayerString.Length-1)
                 str += AddLink($"Int|ActionTeam*+", ">>");
 
             str += "\n";
 
             str += "\nAction ";
-            str += AddLink($"Edit|RuleList_Return_Action_{a}_{b}", core.frame.Action[action.Action].Name);
-            if (core.frame.Action[a].Extend.Count > 1)
+            str += AddLink($"Edit|RuleList_Return_Action_{b}", core.frame.Action[action.Action].Name);
+            if (core.frame.Action[subMood].Extend.Length > 1)
             {
                 str += "\nActionExtend ";
-                str += AddLink($"Edit|RuleList_Return_Action_{a}_{b}", core.frame.Action[action.Action].Extend[action.ActionExtend]);
+                str += AddLink($"Edit|RuleList_Return_Action_{b}", core.frame.Action[action.Action].Extend[action.ActionExtend]);
             }
+
+            str += "\n" + ReadForm(action);
             //редактирование через лист и затем обработка через форму
             // str +=  Action;
             //  str += ActionExtend;
@@ -1334,6 +1401,81 @@ namespace Coder
 
             return str;
         }
+        static RuleAction NewForm(RuleAction action)
+        {
+            int a = 0;
+            action.ResultCore = new RuleForm();
+            switch (core.frame.Action[action.Action].Name)
+            {
+                case ("Attack"):
+                    a = 2;
+                    action.Core = new List<RuleForm>(new RuleForm[a]);
+                    for (int i = 0; i < a; i++)
+                        action.Core[i] = new RuleForm(); 
+                    action.Core[0].Tayp = keyStat;
+                    action.Core[1].Tayp = keyStat;
+                   // action.ResultCore.Tayp = keyStat;
+                    break;
+                case ("Stat"):
+                    a = 2;
+                    action.Core = new List<RuleForm>(new RuleForm[a]);
+                    for (int i = 0; i < a; i++)
+                        action.Core[i] = new RuleForm();
+                    action.Core[0].Tayp = keyStat;
+                    action.Core[1].Tayp = keyStat;
+                   // action.ResultCore.Tayp = keyStat;
+                    break;
+                case ("Effect"):
+                    a = 2;
+                    action.Core = new List<RuleForm>(new RuleForm[a]);
+                    for (int i = 0; i < a; i++)
+                        action.Core[i] = new RuleForm();
+                    action.Core[0].Tayp = keyStat;
+                    action.Core[1].Tayp = keyStat;
+                   // action.ResultCore.Tayp = keyStat;
+                    break;
+                //case ("Rule"):
+                //    action.ResultCore.TaypId = keyStat; 
+                //    break;
+                default:
+                    action.Core = new List<RuleForm>();
+                   // action.ResultCore.Tayp = keyStat;
+                    break;
+            }
+            action.ResultCore.Tayp = keyStat;
+            return action;
+        }
+        static string ReadForm( RuleAction action)
+        {
+            string str = "";
+            switch (core.frame.Action[action.Action].Name)
+            {
+                case ("Attack"):
+                    str += "\nОснова" +ReturnCore(action.Core[0], "Action_0",true);
+                    str += "\nДелитель" + ReturnCore(action.Core[1], "Action_1", true);
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    break;
+                case ("Stat"):
+                    str += "\nОснова" + ReturnCore(action.Core[0], "Action_0", true);
+                    str += "\nДелитель" + ReturnCore(action.Core[1], "Action_1", true);
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    break;
+                case ("Effect"):
+                    str += "\nПриоритет" + ReturnCore(action.Core[0], "Action_0", true) + "/" + ReturnCore(action.Core[1], "Action_1", true);
+                    str += "\nПродолжительность" + ReturnCore(action.Core[2], "Action_2", true) +"/" + ReturnCore(action.Core[3], "Action_3", true);
+                    str += "\nСила" + ReturnCore(action.Core[4], "Action_4", true) + "/" + ReturnCore(action.Core[5], "Action_5", true);
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    break;
+                //case ("Rule"):
+                //    action.ResultCore.TaypId = keyStat; 
+                //    break;
+                default:
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    break;
+            }
+            return str;
+        }
+
 
         static string NameTrigger(int i)
         {
@@ -1382,8 +1524,7 @@ namespace Coder
         {
             string key = $"Edit|RuleList_Set_";//{text}_+path
             string str =  AddLink("ClearIO", "Back") ;
-            path = text + "*" + path;
-            if(text == "NeedRuleHead" || text == "EnemyRuleHead")
+            if (text == "NeedRuleHead" || text == "EnemyRuleHead")
             {
                 for (int i = 0; i < core.head.Count; i++)
                     if (core.head[i].Index.Count > 0)
@@ -1391,33 +1532,39 @@ namespace Coder
             }
             else if (text == "NeedRule" || text == "EnemyRule")
             {
-                string[] com = path.Split('|');
-                int a = int.Parse(com[0]);
+                int a =int.Parse( path);
                 int b = 0;
                 List<int> numbs = new List<int>();
-
 
                 for (int i = 0; i < core.head[a].Index.Count; i++)
                     numbs.Add(core.head[a].Index[i]);
 
+                if(a == keyA)
+                    numbs.RemoveAt(keyB);
+
+
                 b = mainRule.EnemyRule.FindIndex(x => x.Head == a);
-                if (b == -1)
+                if (b != -1)
                     for (int i = 0; i < mainRule.EnemyRule[b].Num.Count; i++)
                         numbs.Remove(mainRule.EnemyRule[b].Num[i]);
 
 
                 b = mainRule.NeedRule.FindIndex(x => x.Head == a);
-                if (b == -1)
+                if (b != -1)
                     for (int i = 0; i < mainRule.NeedRule[b].Num.Count; i++)
                         numbs.Remove(mainRule.NeedRule[b].Num[i]);
 
 
-
                 for (int i = 0; i < numbs.Count; i++)
-                        str += $"\n" + AddLink($"{key}{i}_{text}*{a}", $"Set { core.head[a].Rule[numbs[i]}");
+                {
+                    b = core.head[a].Index.FindIndex(x => x == numbs[i]);
+                    str += $"\n" + AddLink($"{key}{numbs[i]}_{text}*{a}", $"Set { core.head[a].Rule[b]}");
+                }
 
             }
             else
+            {
+                path = text + "*" + path;
                 switch (text)
                 {
                     case ("Trigger"):
@@ -1431,14 +1578,20 @@ namespace Coder
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.bD[i].Name}");
                         break;
                     case ("TaypId"):
-                        string[] com = path.Split('|');
-                        int a = int.Parse(com[0]);
+                        Debug.Log(path);
+                        Debug.Log(keyStat);
+                        string[] com = path.Split('?');
+                        int a = int.Parse(com[3]);
                         if (a == keyStat)
                             for (int i = 0; i < core.frame.SysStat.Length; i++)
-                                str += $"\n" + AddLink($"{key}-{i}_{com[1]}", $"Set {core.frame.SysStat[i]}");
+                                str += $"\n" + AddLink($"{key}-{i}_{path}", $"Set {core.frame.SysStat[i]}");
 
-                        for (int i = 0; i < core.bD[a].Base.Count; i++)
-                            str += $"\n" + AddLink($"{key}{i}_{com[1]}", $"Set { core.bD[a].Base[i].Name}");
+                       // if (a > -1)
+                            for (int i = 0; i < core.bD[a].Base.Count; i++)
+                                str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.bD[a].Base[i].Name}");
+                      //  else
+                        //    for (int i = 0; i < core.head[-a-1].Rule.Count; i++)
+                         //       str += $"\n" + AddLink($"{key}{i}_{com[2]}", $"Set { core.head[-a].Rule[i]}");
                         break;
                     case ("Card"):
                         for (int i = 0; i < core.frame.CardString.Length; i++)
@@ -1447,7 +1600,6 @@ namespace Coder
                         //core.frame.CardString[-(coreForm.Card + 1)]
                         for (int i = 0; i < core.bD[keyAssociation].Base.Count; i++)
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.bD[keyAssociation].Base[i].Name}");
-
                         break;
                     //case ("TaregtPlayer"):
                     //    for (int i = 0; i < core.frame.PlayerString.Length; i++)
@@ -1459,7 +1611,7 @@ namespace Coder
                         break;
                     case ("Action"):
                         //str += $"\n Add|-1 null";
-                        
+
                         for (int i = 0; i < core.frame.Action.Count; i++)
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.Action[i].Name}");
                         break;
@@ -1467,9 +1619,9 @@ namespace Coder
                         com = path.Split('|');
                         a = int.Parse(com[0]);
                         //str += $"\n Add|-1 null";
-                        
-                        for (int i = 0; i < core.frame.Action[a].Extend.Count; i++)
-                            str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.Action[a].Extend[i].Count}");
+
+                        for (int i = 0; i < core.frame.Action[a].Extend.Length; i++)
+                            str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.Action[a].Extend[i]}");
                         break;
                     case ("Plan"):
                         //ForseTayp
@@ -1477,24 +1629,38 @@ namespace Coder
                         for (int i = 0; i < core.bD[keyPlan].Base.Count; i++)
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.bD[keyPlan].Base[i].Name}");
                         break;
+                    case ("RuleTag"):
+                        for (int i = 0; i < core.head.Count; i++)
+                            if (core.head[i].Rule.Count > 0)
+                                str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.head[i].Name} ({core.head[i].Rule.Count})");
+                        break;
+                    case ("Rule"):
+                        com = path.Split('|');
+                        a = int.Parse(com[0]);
+                        for (int i = 0; i < core.head[a].Rule.Count; i++)
+                            str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.head[a].Rule[i]}");
+                        break;
                 }
+            }
             TT[0].text =str;
         }
+
 
         static string ReturnCore(RuleForm coreForm , string path, bool result = false)
         {
 
             string str = "", text ="";
             if (coreForm.Card < 0)
-                text = $"\n{core.frame.CardString[-(coreForm.Card +1)]}";
+                text = $"{core.frame.CardString[-(coreForm.Card +1)]}";
             else
-                text = $"\n{core.bD[keyAssociation].Base[coreForm.Card].Name}";
+                text = $"{core.bD[keyAssociation].Base[coreForm.Card].Name}";
 
             
             str += AddLink($"Edit|RuleList_Return_Card_{path}" , text);
 
             if (!result)
             {
+
                 if (coreForm.Tayp != -1)
                     text = $" {core.bD[coreForm.Tayp].Name}";
                 else
@@ -1511,10 +1677,12 @@ namespace Coder
                     text = $" {core.bD[coreForm.Tayp].Base[coreForm.TaypId].Name}";
 
 
-                str += $" " + AddLink($"Edit|RuleList_Return_TaypId_{coreForm.Tayp}|{path}", text);
-
-                str += TextEditInt("Mod_" + path, "" + coreForm.Mod);
-                str += TextEditInt("Num_" + path, "" + coreForm.Num);
+                str += $" " + AddLink($"Edit|RuleList_Return_TaypId_{path}?{coreForm.Tayp}", text);
+                if (coreForm.Tayp == keyStat)
+                {
+                    str += TextEditInt("Mod_" + path, "" + coreForm.Mod);
+                    str += TextEditInt("Num_" + path, "" + coreForm.Num);
+                }
             }
 
             return str;
@@ -1619,8 +1787,8 @@ namespace Coder
 
             mainRule.Trigger = new List<TriggerAction>();
 
-            mainRule.NeedRule = new List<string>();
-            mainRule.EnemyRule = new List<string>();
+            mainRule.NeedRule = new List<SubIntLite>();
+            mainRule.EnemyRule = new List<SubIntLite>();
         }
 
         #endregion
@@ -1727,10 +1895,6 @@ namespace Coder
 
     public class TriggerAction
     {
-        TriggerAction(int a)
-        {
-            Trigger = a;
-        }
 
         public int Plan =-1;
         public int Trigger;
@@ -1742,10 +1906,10 @@ namespace Coder
         public int Team;
 
 
-        public List<IfAction> PlusAction;
-        public List<IfAction> MinusAction;
+        public List<IfAction> PlusAction = new List<IfAction>();
+        public List<IfAction> MinusAction = new List<IfAction>();
 
-        public List<RuleAction> Action;
+        public List<RuleAction> Action = new List<RuleAction>();
     }
 
     public class IfAction
@@ -1759,13 +1923,13 @@ namespace Coder
 
     public class RuleForm
     {
-        RuleForm(int a =-1 )
+        public RuleForm(int a =-1 )
         {
-            Tayp == a;
+            Tayp = a;
         }
 
         public int Card = -1;//для конкретных значений использеются отрицательны значения, в противном случае используется асоциация "Null";//0-null 1-card1 2-card2
-        public int Tayp = -1; 
+        public int Tayp; 
         public int TaypId = 0;
         public int Mod = 1;
         public int Num = 0;
@@ -1786,7 +1950,6 @@ namespace Coder
         //public int Rule;
         public List<RuleForm> Core = new List<RuleForm>();
         public RuleForm ResultCore = new RuleForm();
-
         public int ForseMood;
 
     }
@@ -1795,7 +1958,7 @@ namespace Coder
     {
         public int Head;
         public List<int> Num = new List<int>();
-        SubIntLite(int a)
+        public SubIntLite(int a)
         {
             Head = a;
         }

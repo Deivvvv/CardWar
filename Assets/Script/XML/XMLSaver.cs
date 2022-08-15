@@ -530,10 +530,23 @@ namespace XMLSaver
             core.Point = int.Parse(com[0]);
 
             core.Result = new List<int>(com[1].Split('!').Select(int.Parse).ToArray());
-            
-            com = com[2].Split('!');
-            for (int i =0;i<com.Length;i++)
-                core.Core[i] = ReturnCore(com[i]);
+
+
+            string[] com1 = com[2].Split('!');
+            core.Core = new List<RuleForm>(new RuleForm[com1.Length]);
+            for (int i =0;i<com1.Length;i++)
+                core.Core[i] = ReturnCore(com1[i]);
+
+            if (com[3] == " ")
+                core.ResultCore = new List<RuleForm>();
+            else
+            {
+                com1 = com[3].Split('!');
+                core.ResultCore = new List<RuleForm>(new RuleForm[com1.Length]);
+                for (int i = 0; i < com1.Length; i++)
+                    core.ResultCore[i] = ReturnCore(com1[i]);
+            }
+
             return core;
         }
         static RuleAction ReturnRuleAction(string str)
@@ -548,14 +561,17 @@ namespace XMLSaver
 
             core.Team = int.Parse(com[4]);
 
-            core.RuleTag = int.Parse(com[5]);
-            core.Rule = int.Parse(com[6]);
+            //core.RuleTag = int.Parse(com[5]);
+            //core.Rule = int.Parse(com[6]);
 
-            core.ForseMood = int.Parse(com[7]);
+            core.ForseMood = int.Parse(com[5]);
 
-            com = com[8].Split('!');
-            for (int i = 0; i < com.Length; i++)
-                core.Core[i] = ReturnCore(com[i]);
+            string [] com1 = com[6].Split('!');
+            core.Core = new List<RuleForm>(new RuleForm[com1.Length]);
+            for (int i = 0; i < com1.Length; i++)
+                core.Core[i] = ReturnCore(com1[i]);
+
+            core.ResultCore = ReturnCore(com[7]);
 
             return core;
         }
@@ -574,10 +590,16 @@ namespace XMLSaver
             //int c = int.Parse(root.Element("Triggers").Value);
 
             head.Trigger = new List<TriggerAction>(new TriggerAction[int.Parse(root.Element("Triggers").Value)] );
-            for (int i = 0; i < head.Trigger.Count; i++)
-            {
-                TriggerAction trigger = new TriggerAction();
+            for (int i = 0; i < head.Trigger.Count; i++) 
+            { 
+
+                //Debug.Log(root.Element($"Trigger{i}").Value);
+                //str = root.Element($"Trigger{i}").Value;
+                //com = str.Split('/');
+                
                 com = root.Element($"Trigger{i}").Value.Split('/');
+                TriggerAction trigger = new TriggerAction();
+                //com1 = com[0].Split('|');
                 trigger.Plan = int.Parse(com[0]);
                 trigger.Trigger = int.Parse(com[1]);
 
@@ -630,15 +652,38 @@ namespace XMLSaver
             // str = root.Element("Cost").Value;
 
             if (root.Element("NeedRule").Value == "")
-                head.NeedRule = new List<string>();
+                head.NeedRule = new List<SubIntLite>();
             else
-                head.NeedRule = new List<string>(root.Element("NeedRule").Value.Split('/'));
-
+            {
+                com = root.Element("NeedRule").Value.Split('/');
+                head.NeedRule = new List<SubIntLite>(new SubIntLite[com.Length]);
+                for (int i = 0; i < com.Length;i++)
+                {
+                    com1 = com[i].Split('_');
+                    head.NeedRule[i] = new SubIntLite(int.Parse(com1[0]));
+                    if (com1[1] != " ")
+                        head.NeedRule[i].Num = new List<int>(com1[1].Split('-').Select(int.Parse).ToArray());
+                    else
+                        head.NeedRule[i].Num = new List<int>();
+                }
+            }
 
             if (root.Element("EnemyRule").Value == "")
-                head.EnemyRule = new List<string>();
+                head.EnemyRule = new List<SubIntLite>();
             else
-                head.EnemyRule = new List<string>(root.Element("EnemyRule").Value.Split('/'));
+            {
+                com = root.Element("EnemyRule").Value.Split('/');
+                head.EnemyRule = new List<SubIntLite>(new SubIntLite[com.Length]);
+                for (int i = 0; i < com.Length; i++)
+                {
+                    com1 = com[i].Split('_');
+                    head.EnemyRule[i] = new SubIntLite(int.Parse(com1[0]));
+                    if (com1[1] != " ")
+                        head.EnemyRule[i].Num = new List<int>(com1[1].Split('-').Select(int.Parse).ToArray());
+                    else
+                        head.EnemyRule[i].Num = new List<int>();
+                }
+            }
 
 
 
@@ -685,18 +730,50 @@ namespace XMLSaver
 
             str1 = GetCore(core.Core[0]);
             for (int i = 1; i < core.Core.Count; i++)
-                str += "!" + GetCore(core.Core[i]);
+                str1 += "!" + GetCore(core.Core[i]);
             str += str1;
+
+            str += "|";
+            if (core.ResultCore.Count > 0)
+            {
+                str1 = GetCore(core.ResultCore[0]);
+                for (int i = 1; i < core.ResultCore.Count; i++)
+                    str1 += "!" + GetCore(core.ResultCore[i]);
+                str += str1;
+            }
+            else
+                str += " ";
 
             return str;
         }
         static string GetRuleAction(RuleAction core)
         {
-            string str = $"{core.Action}|{core.ActionExtend}|{core.Min}|{core.Max}|{core.Team}|{core.RuleTag}|{core.Rule}|{core.ForseMood}|";
-            str += GetCore(core.Core[0]);
-            for (int i = 1; i < core.Core.Count; i++)
-                str += "!" + GetCore(core.Core[i]);
+            string str = $"{core.Action}|{core.ActionExtend}|{core.Min}|{core.Max}|{core.Team}|{core.ForseMood}|";
+            if (core.Core.Count > 0)
+            {
+                str += GetCore(core.Core[0]);
+                for (int i = 1; i < core.Core.Count; i++)
+                    str += "!" + GetCore(core.Core[i]);
+            }
+            else
+                str += " ";
+           str +="|" + GetCore(core.ResultCore);
 
+            return str;
+        }
+
+        static string GetNeedRule(SubIntLite subInt)
+        {
+            string str = $"{subInt.Head}_";
+            if (subInt.Num.Count == 0)
+                str += " ";
+            else
+            {
+                str += $"{subInt.Num[0]}";
+                for (int i = 1; i < subInt.Num.Count; i++)
+                    str += $"-{subInt.Num[i]}";
+            }
+            
             return str;
         }
 
@@ -754,14 +831,14 @@ namespace XMLSaver
 
                     str += str1;
                 }
-                root.Add(new XElement("Trigger", str));
+                root.Add(new XElement("Trigger"+i, str));
             }
 
             if(head.NeedRule.Count > 0)
             { 
-                str = head.NeedRule[0];
+                str = GetNeedRule(head.NeedRule[0]);
                 for (int i1 = 1; i1 < head.NeedRule.Count; i1++)
-                    str += "/" + head.NeedRule[i1];
+                    str += "/" + GetNeedRule(head.NeedRule[i1]);
             }
             else
                 str = " ";
@@ -769,9 +846,9 @@ namespace XMLSaver
 
             if (head.EnemyRule.Count > 0)
             {
-                str = head.EnemyRule[0];
+                str = GetNeedRule(head.EnemyRule[0]);
                 for (int i1 = 1; i1 < head.EnemyRule.Count; i1++)
-                    str += "/" + head.EnemyRule[i1];
+                    str += "/" + GetNeedRule(head.EnemyRule[i1]);
             }
             else
                 str = " ";

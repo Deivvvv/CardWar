@@ -11,7 +11,7 @@ public class RuleMainFrame : ScriptableObject
 
     public string[] PlayerString;
     public string[] CardString;
-    public string[] SysStat = { "Skip","MainStat","Mana"};
+    public string[] SysStat = { "Skip","MainStat","Mana","Speed"};
     //public string[] StatTayp;
     [HideInInspector] public List<string> Tayp;
 
@@ -62,9 +62,13 @@ public class RuleMainFrame : ScriptableObject
 
         Action = new List<SubAction>();
         Action.Add(new SubAction("Attack", "Meele_Shot"));
-        Action.Add(new SubAction("Speed", " "));
-       // Action.Add(new SubAction("MainStat", " "));//Вероятно комманда на смену основного стата?
-        Action.Add(new SubAction("Karma", "Clear_Add_Remove"));//karma_{global}_{all}_Stat   .. перобсудить этот раздел
+        Action.Add(new SubAction("Stat", "Add_Clear_MainStat_Replace"));//изсенить стат - удалить стат - заменить основной стат - заменить параметр
+        // Action.Add(new SubAction("Karma", "Clear_Add_Remove", "PG_PS_PL_PT_NG_NS_NL_NT"));//karma_{global}_{all}_Stat   .. перобсудить этот раздел
+       // Action.Add(new SubAction("Switch", "Guild_Ligion_Social_Race"));
+       // Action.Add(new SubAction("Effect", "Add_Remove_Replace", "Eternal_NoEternal"));
+        Action.Add(new SubAction("Rule", "Use_Add_Delite"));
+        Action.Add(new SubAction("Status", "Add_Remove_Replace"));
+        Action.Add(new SubAction("Transf", " "));
         /*
            karma
           global = общая статистика за весь матч
@@ -76,7 +80,7 @@ public class RuleMainFrame : ScriptableObject
           all
 
            */
-       
+
 
 
 
@@ -184,13 +188,15 @@ public class RuleMainFrame : ScriptableObject
 
 public class SubAction
 {
-    public SubAction(string name, string str)
+    public SubAction(string name, string str, string ext =" ")
     {
         Name = name;
         Extend = str.Split('_');
+        Dop = ext.Split('_');
     }
     public string Name;
     public string[] Extend;
+    public string[] Dop;
 }
 
 //[System.Serializable]
