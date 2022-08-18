@@ -313,6 +313,9 @@ namespace Coder
                 case ("Minus"):
                     core = mainRule.Trigger[subMood].MinusAction[int.Parse(com[1])].Core[int.Parse(com[2])];
                     break;
+                case ("ResultAction"):
+                    core = mainRule.Trigger[subMood].Action[int.Parse(com[1])].ResultCore;
+                    break;
                 case ("Action"):
                     core = mainRule.Trigger[subMood].Action[int.Parse(com[1])].Core[int.Parse(com[2])];
                     break;
@@ -345,6 +348,23 @@ namespace Coder
                         com = com[3].Split('*');
                         switch (com[0])
                         {
+                            case ("Action"):
+                                b = int.Parse(com[1]);
+                                mainRule.Trigger[subMood].Action[b].Action = a;
+                                mainRule.Trigger[subMood].Action[b].ActionExtend = 0;
+                                NewForm(mainRule.Trigger[subMood].Action[b]);
+                                break;
+
+                            case ("ActionExtend"):
+                                b = int.Parse(com[1]);
+                                mainRule.Trigger[subMood].Action[b].ActionExtend = a;
+                                NewForm(mainRule.Trigger[subMood].Action[b]);
+                                break;
+
+                            case ("Plan"):
+                                mainRule.Trigger[subMood].Plan = a;
+                                break;
+
                             case ("NeedRuleHead"):
                                 b = mainRule.NeedRule.FindIndex(x => x.Head == a);
                                 if (b != -1)
@@ -367,6 +387,7 @@ namespace Coder
                                 break;
 
                             case ("TaypId"):
+                                Debug.Log(com.Length);
                                 core = ReturnCoreOrig(com[1]);
                                 core.TaypId = a;
                                 break;
@@ -869,16 +890,15 @@ namespace Coder
 
         static void EditInt(string str)
         {
-            int a =0, b=0, c=0;
+            Debug.Log(str);
+            int b=0, c=0;
             string[] com = str.Split('*');
-            bool mood = (com[1] == "-");
-
+            bool mood = (com[1] == "-"); 
             com = com[0].Split('_');
-            if (com.Length > 1)
-            {
-              //  a = int.Parse(com[0]);
+
+            if (com.Length == 2)
                 b = int.Parse(com[1]);
-            }
+
             switch (com[0])
             {
                 case ("Cost"):
@@ -948,35 +968,48 @@ namespace Coder
 
 
                 default:
-                    c = int.Parse(com[2]);
+                    com = com[0].Split('?');
+                    b = int.Parse(com[2]);
+
+                    c = int.Parse(com[3]);
                     RuleForm form = null;
-                    switch (com[3])
+                    switch (com[1])
                     {
+                        case ("ResultPlus"):
+                            form = mainRule.Trigger[subMood].PlusAction[b].ResultCore[c];
+                            break;
+                        case ("ResultMinus"):
+                            form = mainRule.Trigger[subMood].MinusAction[b].ResultCore[c];
+                            break;
                         case ("Plus"):
                             form = mainRule.Trigger[subMood].PlusAction[b].Core[c]; 
                             break;
                         case ("Minus"):
                             form = mainRule.Trigger[subMood].MinusAction[b].Core[c];
                             break;
+                        case ("ResultAction"):
+                            form = mainRule.Trigger[subMood].Action[b].ResultCore;
+                            break;
                         default:
                             form = mainRule.Trigger[subMood].Action[b].Core[c];
                             break;
                     }
 
-                    form = EditCore(form, com[4], mood);
+                    //form = 
+                        EditCore(form, com[0], mood);
 
-                    switch (com[3])
-                    {
-                        case ("Plus"):
-                            mainRule.Trigger[subMood].PlusAction[b].Core[c] = form;
-                            break;
-                        case ("Minus"):
-                            mainRule.Trigger[subMood].MinusAction[b].Core[c] = form;
-                            break;
-                        default:
-                            mainRule.Trigger[subMood].Action[b].Core[c] = form;
-                            break;
-                    }
+                    //switch (com[3])
+                    //{
+                    //    case ("Plus"):
+                    //        mainRule.Trigger[subMood].PlusAction[b].Core[c] = form;
+                    //        break;
+                    //    case ("Minus"):
+                    //        mainRule.Trigger[subMood].MinusAction[b].Core[c] = form;
+                    //        break;
+                    //    default:
+                    //        mainRule.Trigger[subMood].Action[b].Core[c] = form;
+                    //        break;
+                    //}
                     break;
             }
             ClearIO();
@@ -1373,10 +1406,10 @@ namespace Coder
             if (core.frame.Action[subMood].Extend.Length > 1)
             {
                 str += "\nActionExtend ";
-                str += AddLink($"Edit|RuleList_Return_Action_{b}", core.frame.Action[action.Action].Extend[action.ActionExtend]);
+                str += AddLink($"Edit|RuleList_Return_ActionExtend_{b}", core.frame.Action[action.Action].Extend[action.ActionExtend]);
             }
 
-            str += "\n" + ReadForm(action);
+            str += "\n" + ReadForm(action, key);
             //редактирование через лист и затем обработка через форму
             // str +=  Action;
             //  str += ActionExtend;
@@ -1445,32 +1478,46 @@ namespace Coder
             action.ResultCore.Tayp = keyStat;
             return action;
         }
-        static string ReadForm( RuleAction action)
+        static string ReadForm( RuleAction action, string path)
         {
+            string result = "Result" + path + "0";
+            //+= ReturnCore(ifAction.Core[i], key + i);
             string str = "";
             switch (core.frame.Action[action.Action].Name)
             {
                 case ("Attack"):
-                    str += "\nОснова" +ReturnCore(action.Core[0], "Action_0",true);
-                    str += "\nДелитель" + ReturnCore(action.Core[1], "Action_1", true);
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    str += "\nОснова" +ReturnCore(action.Core[0], path+0,true);
+                    str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
                     break;
                 case ("Stat"):
-                    str += "\nОснова" + ReturnCore(action.Core[0], "Action_0", true);
-                    str += "\nДелитель" + ReturnCore(action.Core[1], "Action_1", true);
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
+                    str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
                     break;
                 case ("Effect"):
-                    str += "\nПриоритет" + ReturnCore(action.Core[0], "Action_0", true) + "/" + ReturnCore(action.Core[1], "Action_1", true);
-                    str += "\nПродолжительность" + ReturnCore(action.Core[2], "Action_2", true) +"/" + ReturnCore(action.Core[3], "Action_3", true);
-                    str += "\nСила" + ReturnCore(action.Core[4], "Action_4", true) + "/" + ReturnCore(action.Core[5], "Action_5", true);
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    str += "\nПриоритет" + ReturnCore(action.Core[0], path + 0, true) + "/" + ReturnCore(action.Core[1], path + 1, true);
+                    str += "\nПродолжительность" + ReturnCore(action.Core[2], path + 2, true) +"/" + ReturnCore(action.Core[3], path + 3, true);
+                    str += "\nСила" + ReturnCore(action.Core[4], path + 4, true) + "/" + ReturnCore(action.Core[5], path + 5, true);
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
                     break;
-                //case ("Rule"):
-                //    action.ResultCore.TaypId = keyStat; 
-                //    break;
+                case ("Rule"):
+                    switch (core.frame.Action[action.Action].Extend[action.ActionExtend])
+                    {
+                        case ("Add"):
+                            str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
+                            str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+                            str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
+                            break;
+
+                        default:
+                            str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
+                            break;
+                    
+                    }
+                    break;
                 default:
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, "ResultAction", true);
+                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
                     break;
             }
             return str;
@@ -1616,8 +1663,9 @@ namespace Coder
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.Action[i].Name}");
                         break;
                     case ("ActionExtend"):
-                        com = path.Split('|');
-                        a = int.Parse(com[0]);
+                        Debug.Log(path);
+                        com = path.Split('*');
+                        a = int.Parse(com[1]);
                         //str += $"\n Add|-1 null";
 
                         for (int i = 0; i < core.frame.Action[a].Extend.Length; i++)
@@ -1680,8 +1728,8 @@ namespace Coder
                 str += $" " + AddLink($"Edit|RuleList_Return_TaypId_{path}?{coreForm.Tayp}", text);
                 if (coreForm.Tayp == keyStat)
                 {
-                    str += TextEditInt("Mod_" + path, "" + coreForm.Mod);
-                    str += TextEditInt("Num_" + path, "" + coreForm.Num);
+                    str += TextEditInt("Mod?" + path, "" + coreForm.Mod);
+                    str += TextEditInt("Num?" + path, "" + coreForm.Num);
                 }
             }
 

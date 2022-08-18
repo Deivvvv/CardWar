@@ -28,10 +28,13 @@ MonoBehaviour:
   - My
   - Enemy
   CardString:
-  - Null
   - Card1
   - Card2
-  - All
+  SysStat:
+  - Skip
+  - MainStat
+  - Mana
+  - Speed
   Tayp:
   - Guild
   - Legion
@@ -43,36 +46,20 @@ MonoBehaviour:
   - Status
   - CardTayp
   - CardClass
+  - Race
   Trigger:
+  - NextTurn
   - Action
   - AnotherAction
-  - PlayCard
-  - PlayAnotherCard
-  - Die
-  - AnotherDie
-  - NextTurn
+  - Transf
+  - AnotherTransf
+  - Destroy
+  - Equip
+  - AnotherDestroy
+  - AnotherEquip
   - PreAction
   - PostAction
-  - ActionFlash
-  Action:
-  - Attack|Melee
-  - Attack|Shot
-  - Die
-  - Status|Add
-  - Status|Remove
-  - Effect|Eternal|All|Add
-  - Effect|Eterna|All|Remove
-  - Effect|Eternal|Add
-  - Effect|Eternal|Remove
-  - Effect|All|Add
-  - Effect|All|Remove
-  - Effect|Add
-  - Effect|Remove
-  - Stat|Add
-  - UseRule
-  - UseAction
-  - Iniciativa|Plus
-  - Iniciativa|Minus
+  - SeconAction
   KeyWordStatus:
   - Null
   - All
@@ -87,4 +74,12 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0.7332492, a: 1}
   - {r: 1, g: 0.61345816, b: 0, a: 1}
   - {r: 0.49451208, g: 1, b: 0, a: 1}
-  ColorsStr: []
+  ColorsStr:
+  - F7FF00
+  - FF0000
+  - 1CA800
+  - 00FFC4
+  - 00A4FF
+  - FF00BB
+  - FF9C00
+  - 7EFF00
