@@ -348,6 +348,9 @@ namespace Coder
                         com = com[3].Split('*');
                         switch (com[0])
                         {
+                            case ("Trigger"):
+                                mainRule.Trigger[subMood].Trigger = a;
+                                break;
                             case ("Action"):
                                 b = int.Parse(com[1]);
                                 mainRule.Trigger[subMood].Action[b].Action = a;
@@ -387,7 +390,7 @@ namespace Coder
                                 break;
 
                             case ("TaypId"):
-                                Debug.Log(com.Length);
+                                Debug.Log($"!{a}");
                                 core = ReturnCoreOrig(com[1]);
                                 core.TaypId = a;
                                 break;
@@ -1251,7 +1254,15 @@ namespace Coder
 
                         str += "\n\nTriggers";
                         for (int i = 0; i < mainRule.Trigger.Count; i++)
-                            str += AddLink($"SetMood|{i}", $"\n    {NameTrigger(i)}") + "   " + AddLink($"Edit|RuleList_Remove_Trigger_{i}", "-Remove");
+                        {
+                            string str1 = "Trigger";
+                            if (mainRule.Trigger[i].Plan != -1)
+                                str1 += "    " + core.bD[keyPlan].Base[mainRule.Trigger[i].Plan].Name;
+                            else
+                                str1 += "    AllPlan";
+                            str1 += "    " + core.frame.Trigger[mainRule.Trigger[i].Trigger];
+                            str += AddLink($"SetMood|{i}", $"\n    {str1}") + "   " + AddLink($"Edit|RuleList_Remove_Trigger_{i}", "-Remove");
+                        }
                         str += "\n";
                         str += AddLink($"Edit|RuleList_Add_Trigger", "-Add");
                     }
@@ -1259,6 +1270,7 @@ namespace Coder
                     {
                         //b = mainRule.Trigger[a].Trigger;
                         str = AddLink($"SetMood|-1", $"Back");
+                        str += "\n" + AddLink($"Edit|RuleList_Return_Trigger_{subMood}", $"Trigger -- " + core.frame.Trigger[mainRule.Trigger[subMood].Trigger]);
                         //if (core.frame.Trigger[b].Extend.Length > 1)
                         //    str += AddLink($"Edit|TriggerExtend_Open_{a}", $"Режим -- " + core.frame.Trigger[b].Extend[mainRule.Trigger[a].TriggerExtend]); 
 
@@ -1437,45 +1449,41 @@ namespace Coder
         static RuleAction NewForm(RuleAction action)
         {
             int a = 0;
-            action.ResultCore = new RuleForm();
             switch (core.frame.Action[action.Action].Name)
             {
                 case ("Attack"):
                     a = 2;
-                    action.Core = new List<RuleForm>(new RuleForm[a]);
-                    for (int i = 0; i < a; i++)
-                        action.Core[i] = new RuleForm(); 
-                    action.Core[0].Tayp = keyStat;
-                    action.Core[1].Tayp = keyStat;
-                   // action.ResultCore.Tayp = keyStat;
                     break;
                 case ("Stat"):
                     a = 2;
-                    action.Core = new List<RuleForm>(new RuleForm[a]);
-                    for (int i = 0; i < a; i++)
-                        action.Core[i] = new RuleForm();
-                    action.Core[0].Tayp = keyStat;
-                    action.Core[1].Tayp = keyStat;
-                   // action.ResultCore.Tayp = keyStat;
+                    break;
+                case ("Rule"):
+                    a = 2;
                     break;
                 case ("Effect"):
-                    a = 2;
-                    action.Core = new List<RuleForm>(new RuleForm[a]);
-                    for (int i = 0; i < a; i++)
-                        action.Core[i] = new RuleForm();
-                    action.Core[0].Tayp = keyStat;
-                    action.Core[1].Tayp = keyStat;
-                   // action.ResultCore.Tayp = keyStat;
+                    a = 6;
                     break;
                 //case ("Rule"):
                 //    action.ResultCore.TaypId = keyStat; 
                 //    break;
+            }
+
+            action.Core = new List<RuleForm>(new RuleForm[a]);
+            for (int i = 0; i < a; i++)
+                action.Core[i] = new RuleForm(keyStat);
+
+            switch (core.frame.Action[action.Action].Name)
+            {
+                case ("Rule"):
+                    action.ResultCore = new RuleForm(0);
+                    break;
+                case ("Transf"):
+                    action.ResultCore = new RuleForm(keyPlan);
+                    break;
                 default:
-                    action.Core = new List<RuleForm>();
-                   // action.ResultCore.Tayp = keyStat;
+                    action.ResultCore = new RuleForm(keyStat);
                     break;
             }
-            action.ResultCore.Tayp = keyStat;
             return action;
         }
         static string ReadForm( RuleAction action, string path)
@@ -1483,57 +1491,51 @@ namespace Coder
             string result = "Result" + path + "0";
             //+= ReturnCore(ifAction.Core[i], key + i);
             string str = "";
-            switch (core.frame.Action[action.Action].Name)
-            {
-                case ("Attack"):
-                    str += "\nОснова" +ReturnCore(action.Core[0], path+0,true);
-                    str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
-                    break;
-                case ("Stat"):
-                    str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
-                    str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
-                    break;
-                case ("Effect"):
-                    str += "\nПриоритет" + ReturnCore(action.Core[0], path + 0, true) + "/" + ReturnCore(action.Core[1], path + 1, true);
-                    str += "\nПродолжительность" + ReturnCore(action.Core[2], path + 2, true) +"/" + ReturnCore(action.Core[3], path + 3, true);
-                    str += "\nСила" + ReturnCore(action.Core[4], path + 4, true) + "/" + ReturnCore(action.Core[5], path + 5, true);
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
-                    break;
-                case ("Rule"):
-                    switch (core.frame.Action[action.Action].Extend[action.ActionExtend])
-                    {
-                        case ("Add"):
-                            str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
-                            str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
-                            str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
-                            break;
-
-                        default:
-                            str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
-                            break;
+            //switch (core.frame.Action[action.Action].Name)
+            //{
+            //    case ("Attack"):
+            //        str += "\nОснова" +ReturnCore(action.Core[0], path+0,true);
+            //        str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+            //        break;
+            //    case ("Stat"):
+            //        str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
+            //        str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+            //        break;
+            //    case ("Effect"):
+            //        str += "\nПриоритет" + ReturnCore(action.Core[0], path + 0, true) + "/" + ReturnCore(action.Core[1], path + 1, true);
+            //        str += "\nПродолжительность" + ReturnCore(action.Core[2], path + 2, true) +"/" + ReturnCore(action.Core[3], path + 3, true);
+            //        str += "\nСила" + ReturnCore(action.Core[4], path + 4, true) + "/" + ReturnCore(action.Core[5], path + 5, true);
+            //        break;
+            //    case ("Rule"):
+            //        switch (core.frame.Action[action.Action].Extend[action.ActionExtend])
+            //        {
+            //            case ("Add"):
+            //                str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
+            //                str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+            //                break;
                     
-                    }
-                    break;
-                default:
-                    str += "\nРезультат" + ReturnCore(action.ResultCore, result, true);
-                    break;
+            //        }
+            //        break;
+            //}
+            if(action.Core.Count == 6)
+            {
+                str += "\nПриоритет" + ReturnCore(action.Core[0], path + 0, true) + "/" + ReturnCore(action.Core[1], path + 1, true);
+                str += "\nПродолжительность" + ReturnCore(action.Core[2], path + 2, true) + "/" + ReturnCore(action.Core[3], path + 3, true);
+                str += "\nСила" + ReturnCore(action.Core[4], path + 4, true) + "/" + ReturnCore(action.Core[5], path + 5, true);
             }
+            else if (action.Core.Count == 2)
+            {
+                str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
+                str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+            }
+            int a = -1;
+            if (core.frame.Action[action.Action].Name == "Rule")
+                a = action.ActionExtend;
+            str += "\nРезультат" + ReturnCore(action.ResultCore, result, true,a);
             return str;
         }
 
 
-        static string NameTrigger(int i)
-        {
-            string str = "Trigger";
-            if(mainRule.Trigger[i].Plan != -1)
-                str += "    " + core.bD[keyPlan].Base[ mainRule.Trigger[i].Plan].Name ;
-            else
-                str += "    AllPlan" ;
-            str += "    " + core.frame.Trigger[mainRule.Trigger[i].Trigger] ;
-            return str;
-        }
 
 
         static string HeadBDInfo()
@@ -1611,12 +1613,18 @@ namespace Coder
             }
             else
             {
-                path = text + "*" + path;
+                if(text =="Rule")
+                    path = "TaypId*" + path;
+                else if (text == "RuleTag")
+                    path = "Tayp*" + path;
+                else
+                    path = text + "*" + path;
+
                 switch (text)
                 {
                     case ("Trigger"):
                         for (int i = 0; i < core.frame.Trigger.Length; i++)
-                            str += $"\n" + AddLink($"{key}{i}", $"Add {core.frame.Trigger[i]}");// " Add|-1 null";
+                            str += $"\n" + AddLink($"{key}{i}_{path}", $"Add {core.frame.Trigger[i]}");// " Add|-1 null";
                         break;
 
                     case ("Tayp"):
@@ -1631,7 +1639,7 @@ namespace Coder
                         int a = int.Parse(com[3]);
                         if (a == keyStat)
                             for (int i = 0; i < core.frame.SysStat.Length; i++)
-                                str += $"\n" + AddLink($"{key}-{i}_{path}", $"Set {core.frame.SysStat[i]}");
+                                str += $"\n" + AddLink($"{key}-{i+1}_{path}", $"Set {core.frame.SysStat[i]}");
 
                        // if (a > -1)
                             for (int i = 0; i < core.bD[a].Base.Count; i++)
@@ -1683,8 +1691,8 @@ namespace Coder
                                 str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.head[i].Name} ({core.head[i].Rule.Count})");
                         break;
                     case ("Rule"):
-                        com = path.Split('|');
-                        a = int.Parse(com[0]);
+                        com = path.Split('?');
+                        a = int.Parse(com[3]);
                         for (int i = 0; i < core.head[a].Rule.Count; i++)
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.head[a].Rule[i]}");
                         break;
@@ -1694,7 +1702,7 @@ namespace Coder
         }
 
 
-        static string ReturnCore(RuleForm coreForm , string path, bool result = false)
+        static string ReturnCore(RuleForm coreForm , string path, bool result = false, int rule = -1)
         {
 
             string str = "", text ="";
@@ -1706,30 +1714,43 @@ namespace Coder
             
             str += AddLink($"Edit|RuleList_Return_Card_{path}" , text);
 
-            if (!result)
+            if (rule != -1)
             {
+                str += $" " + AddLink($"Edit|RuleList_Return_RuleTag_{path}", $"{core.head[coreForm.Tayp].Name}");
+                str += $" " + AddLink($"Edit|RuleList_Return_Rule_{path}?{coreForm.Tayp}", core.head[coreForm.Tayp].Rule[coreForm.TaypId]);
 
-                if (coreForm.Tayp != -1)
-                    text = $" {core.bD[coreForm.Tayp].Name}";
-                else
-                    text = $" Null";
-
-                str += $" " + AddLink($"Edit|RuleList_Return_Tayp_{path}", text);
-            }
-
-            if (coreForm.Tayp > -1)
-            {
-                if (coreForm.Tayp == keyStat && coreForm.TaypId < 0)
-                    text = core.frame.SysStat[-coreForm.TaypId];
-                else
-                    text = $" {core.bD[coreForm.Tayp].Base[coreForm.TaypId].Name}";
-
-
-                str += $" " + AddLink($"Edit|RuleList_Return_TaypId_{path}?{coreForm.Tayp}", text);
-                if (coreForm.Tayp == keyStat)
+                if (rule == 0)
                 {
                     str += TextEditInt("Mod?" + path, "" + coreForm.Mod);
                     str += TextEditInt("Num?" + path, "" + coreForm.Num);
+                }
+            }
+            else
+            {
+                if (!result)
+                {
+
+                    if (coreForm.Tayp != -1)
+                        text = $" {core.bD[coreForm.Tayp].Name}";
+                    else
+                        text = $" Null";
+
+                    str += $" " + AddLink($"Edit|RuleList_Return_Tayp_{path}", text);
+                }
+                if (coreForm.Tayp > -1)
+                {
+                    if (coreForm.Tayp == keyStat && coreForm.TaypId < 0)
+                        text = core.frame.SysStat[-coreForm.TaypId-1];
+                    else
+                        text = $" {core.bD[coreForm.Tayp].Base[coreForm.TaypId].Name}";
+
+
+                    str += $" " + AddLink($"Edit|RuleList_Return_TaypId_{path}?{coreForm.Tayp}", text);
+                    if (coreForm.Tayp == keyStat)
+                    {
+                        str += TextEditInt("Mod?" + path, "" + coreForm.Mod);
+                        str += TextEditInt("Num?" + path, "" + coreForm.Num);
+                    }
                 }
             }
 
