@@ -1,3 +1,3 @@
 <root>
-  <Key> </Key>
+  <Key></Key>
 </root>

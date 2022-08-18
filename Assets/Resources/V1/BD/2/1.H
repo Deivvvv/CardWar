@@ -7,9 +7,10 @@
   <Text2> </Text2>
   <Text3> </Text3>
   <Text4> </Text4>
+  <Text5>0</Text5>
   <Regen>false</Regen>
   <Image>0</Image>
-  <Antipod>0</Antipod>
+  <Antipod>-1</Antipod>
   <AntiStat> </AntiStat>
   <DefStat> </DefStat>
 </root>

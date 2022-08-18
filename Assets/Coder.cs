@@ -644,17 +644,30 @@ namespace Coder
                             return;
 
                     AddEdit(key);
-                    mainBase1 = ReturnMainBase(key);
-                    if (mainBase1.Sub.Antipod != -1)
+                    if (a != -1)
                     {
+                        mainBase1 = ReturnMainBase(key);
+                        if (mainBase1.Sub.Antipod != -1)
+                        {
 
-                        AddEdit($"{keyStat}-{mainBase1.Sub.Antipod}");
-                        core.bD[keyStat].Base[mainBase1.Sub.Antipod].Sub.Antipod = -1;
+                            AddEdit($"{keyStat}-{mainBase1.Sub.Antipod}");
+                            core.bD[keyStat].Base[mainBase1.Sub.Antipod].Sub.Antipod = -1;
 
+                        }
+                        mainBase1.Sub.Antipod = keyB;
+                    }
+                    else
+                    {
+                        AddEdit($"{keyStat}-{mainBase.Sub.Antipod}");
+                        if (mainBase.Sub.Antipod != -1)
+                        {
+                            mainBase1 = ReturnMainBase($"{keyStat}-{mainBase.Sub.Antipod}");
+                            mainBase1.Sub.Antipod = -1;
+                        }
                     }
 
+
                     mainBase.Sub.Antipod = a;
-                    mainBase1.Sub.Antipod = keyB;
 
                     break;
                 case ("Color"):
@@ -1158,7 +1171,7 @@ namespace Coder
                     }
                     for (int i = 0; i < mainBase.Text.Count; i++)
                     {
-                        str += $"\nСписок {core.bD[keyA].Key[i]} для доступа";
+                        str += $"\nСписок {core.bD[keyA].Key[i]} для доступа ";
                         str += AddLink($"SetSwitch|Hide_{keyA}_{i}", (core.bD[keyA].Hide[i]) ? "Close" : $"Open ({mainBase.Text[i].Text.Count})") + "\n";
                         if (core.bD[keyA].Hide[i])
                         {
@@ -1417,8 +1430,8 @@ namespace Coder
             str += AddLink($"Edit|RuleList_Return_Action_{b}", core.frame.Action[action.Action].Name);
             if (core.frame.Action[subMood].Extend.Length > 1)
             {
-                str += "\nActionExtend ";
-                str += AddLink($"Edit|RuleList_Return_ActionExtend_{b}", core.frame.Action[action.Action].Extend[action.ActionExtend]);
+                str += " ";
+                str += AddLink($"Edit|RuleList_Return_ActionExtend_{b}*{action.Action}", core.frame.Action[action.Action].Extend[action.ActionExtend]);
             }
 
             str += "\n" + ReadForm(action, key);
@@ -1448,17 +1461,17 @@ namespace Coder
         }
         static RuleAction NewForm(RuleAction action)
         {
-            int a = 0;
+            int a = 1;
             switch (core.frame.Action[action.Action].Name)
             {
                 case ("Attack"):
-                    a = 2;
+                    a = 3;
                     break;
                 case ("Stat"):
-                    a = 2;
+                    a = 3;
                     break;
                 case ("Rule"):
-                    a = 2;
+                    a = 3;
                     break;
                 case ("Effect"):
                     a = 6;
@@ -1476,6 +1489,8 @@ namespace Coder
             {
                 case ("Rule"):
                     action.ResultCore = new RuleForm(0);
+                    action.Core[2].Tayp = keyPlan;
+                    Debug.Log(action.Core[2].Tayp);
                     break;
                 case ("Transf"):
                     action.ResultCore = new RuleForm(keyPlan);
@@ -1513,25 +1528,39 @@ namespace Coder
             //                str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
             //                str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
             //                break;
-                    
+
             //        }
             //        break;
             //}
-            if(action.Core.Count == 6)
+            switch (action.Core.Count)
             {
-                str += "\nПриоритет" + ReturnCore(action.Core[0], path + 0, true) + "/" + ReturnCore(action.Core[1], path + 1, true);
-                str += "\nПродолжительность" + ReturnCore(action.Core[2], path + 2, true) + "/" + ReturnCore(action.Core[3], path + 3, true);
-                str += "\nСила" + ReturnCore(action.Core[4], path + 4, true) + "/" + ReturnCore(action.Core[5], path + 5, true);
-            }
-            else if (action.Core.Count == 2)
-            {
-                str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
-                str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
+                case (6):
+                    str += "\nПриоритет " + ReturnCore(action.Core[0], path + 0, true) + "/" + ReturnCore(action.Core[1], path + 1, true);
+                    str += "\nПродолжительность " + ReturnCore(action.Core[2], path + 2, true) + "/" + ReturnCore(action.Core[3], path + 3, true);
+                    str += "\nСила " + ReturnCore(action.Core[4], path + 4, true) + "/" + ReturnCore(action.Core[5], path + 5, true);
+                    break;
+
+                case (2):
+                    str += "\nОснова " + ReturnCore(action.Core[0], path + 0, true);
+                    str += "\nДелитель " + ReturnCore(action.Core[1], path + 1, true);
+                    break;
+
+                case (3):
+                    str += "\nОснова " + ReturnCore(action.Core[0], path + 0, true);
+                    str += "\nДелитель " + ReturnCore(action.Core[1], path + 1, true);
+                    str += "\nНовый план " + ReturnCore(action.Core[2], path + 1, true);
+                    break;
+
+                case (1):
+                    str += "\nНовый план " + ReturnCore(action.Core[0], path + 1, true);
+                    break;
+
             }
             int a = -1;
             if (core.frame.Action[action.Action].Name == "Rule")
                 a = action.ActionExtend;
-            str += "\nРезультат" + ReturnCore(action.ResultCore, result, true,a);
+            Debug.Log(a);
+            str += "\nРезультат " + ReturnCore(action.ResultCore, result, true,a);
             return str;
         }
 
@@ -1673,7 +1702,7 @@ namespace Coder
                     case ("ActionExtend"):
                         Debug.Log(path);
                         com = path.Split('*');
-                        a = int.Parse(com[1]);
+                        a = int.Parse(com[2]);
                         //str += $"\n Add|-1 null";
 
                         for (int i = 0; i < core.frame.Action[a].Extend.Length; i++)
@@ -1691,6 +1720,7 @@ namespace Coder
                                 str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.head[i].Name} ({core.head[i].Rule.Count})");
                         break;
                     case ("Rule"):
+                        Debug.Log(path);
                         com = path.Split('?');
                         a = int.Parse(com[3]);
                         for (int i = 0; i < core.head[a].Rule.Count; i++)

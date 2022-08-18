@@ -423,7 +423,7 @@ namespace XMLSaver
             int f = DeCoder.ReturnIndex("Tag");
 
             int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
-            if (fCount+1 < core.bD[f].Base.Count)
+            if (fCount < core.bD[f].Base.Count)
                 RuleReload( fCount, core.bD[f].Base.Count);
 
             int a=0,b = 0;
@@ -812,25 +812,26 @@ namespace XMLSaver
                     str += str1;
                 }
 
-                if (trigger.Action.Count == 0)
-                    str += "/ ";
-                else
-                {
-                    str1 = "/" + GetRuleAction(trigger.Action[0]);
-                    for (int i1 = 1; i1 < trigger.Action.Count; i1++)
-                        str1 += "?" + GetRuleAction(trigger.Action[i1]);
+                str += "/ ";
+                //if (trigger.Action.Count == 0)
+                //    str += "/ ";
+                //else
+                //{
+                //    str1 = "/" + GetRuleAction(trigger.Action[0]);
+                //    for (int i1 = 1; i1 < trigger.Action.Count; i1++)
+                //        str1 += "?" + GetRuleAction(trigger.Action[i1]);
 
-                    for (int i1 = 0; i1 < trigger.Action.Count; i1++)
-                        if (trigger.Action[i1].Action == 1) //a = 1;//Trigger =Action;
-                        {
-                            if(str2 ==" ")
-                                str2 = trigger.Action[i1].Name;
-                            else
-                                str2 +="/" + trigger.Action[i1].Name;
-                        }
+                //    for (int i1 = 0; i1 < trigger.Action.Count; i1++)
+                //        if (trigger.Action[i1].Action == 1) //a = 1;//Trigger =Action;
+                //        {
+                //            if(str2 ==" ")
+                //                str2 = trigger.Action[i1].Name;
+                //            else
+                //                str2 +="/" + trigger.Action[i1].Name;
+                //        }
 
-                    str += str1;
-                }
+                //    str += str1;
+                //}
                 root.Add(new XElement("Trigger"+i, str));
             }
 

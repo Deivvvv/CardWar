@@ -1,3 +1,3 @@
 <root>
-  <I>Void2/Void</I>
+  <I>торговцы/Void</I>
 </root>

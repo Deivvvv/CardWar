@@ -50,13 +50,13 @@ public class RuleMainFrame : ScriptableObject
     public void Convert()
     {
         {
-            string[] com = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass", "Race" };
+            string[] com = { "Guild", "Legion", "Stat", "Tag", "Plan", "Association", "CivilGroup", "Status", "CardTayp", "CardClass", "Race","StatGroup" };
             Tayp = new List<string>(com);
         }
 
         {
             //создать кнопку действия , кто-то выполнил действие // перенос на другой план // кого-то перенесли на другой план
-            string[] com = { "NextTurn", "Action", "AnotherAction", "Transf", "AnotherTransf", "Destroy", "Equip", "AnotherDestroy", "AnotherEquip" ,"PreAction", "PostAction", "SeconAction" };
+            string[] com = { "NextTurn", "Action", "AnotherAction", "Transf", "AnotherTransf", "Destroy", "Equip", "AnotherDestroy", "AnotherEquip" ,"PreAction", "PostAction", "EndAction", "Target", "Usebel", "NoTarget" };
             Trigger = com;
         }
 
@@ -107,7 +107,7 @@ public class RuleMainFrame : ScriptableObject
                 break;
             case ("Stat"):
                 {
-                    string[] com1 = { "Legion", "Guild", "Tag", "CivilGroup", "Race" };
+                    string[] com1 = { "Legion", "Guild", "Tag", "CivilGroup", "Race", "StatGroup" };
                     return new List<string>(com1);
                 }
                 break;
@@ -159,7 +159,13 @@ public class RuleMainFrame : ScriptableObject
                     return new List<string>(com1);
                 }
                 break;
-
+            case ("StatGroup"):
+                {
+                    string[] com1 = { "Stat" };
+                    return new List<string>(com1);
+                }
+                break;
+                
         }
         return new List<string>();
     }

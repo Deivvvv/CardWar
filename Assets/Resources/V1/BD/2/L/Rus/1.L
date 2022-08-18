@@ -1,3 +1,3 @@
 <root>
-  <I>SuperStat/Void</I>
+  <I>кольчуга/Void</I>
 </root>

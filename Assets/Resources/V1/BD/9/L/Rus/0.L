@@ -1,3 +1,3 @@
 <root>
-  <I>Void/Void</I>
+  <I>легендарные карты/Void</I>
 </root>
