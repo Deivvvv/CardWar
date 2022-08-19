@@ -56,9 +56,11 @@ public class RuleMainFrame : ScriptableObject
 
         {
             //создать кнопку действия , кто-то выполнил действие // перенос на другой план // кого-то перенесли на другой план
-            string[] com = { "NextTurn", "Action", "AnotherAction", "Transf", "AnotherTransf", "Destroy", "Equip", "AnotherDestroy", "AnotherEquip" ,"PreAction", "PostAction", "EndAction", "Target", "Usebel", "NoTarget" };
+            string[] com = { "NextTurn", "Action", "AnotherAction", "Transf", "AnotherTransf", "Destroy", "Equip", "AnotherDestroy", "AnotherEquip" ,"PreAction", "PostAction", "EndAction", "Target", "Usebel", "NoTarget","SecondAction" };
             Trigger = com;
         }
+
+
 
         Action = new List<SubAction>();
         Action.Add(new SubAction("Attack", "Meele_Shot"));

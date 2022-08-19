@@ -343,11 +343,16 @@ namespace Coder
                         break;
                     case ("Set"):
                         RuleForm core = null;
-
+                        Debug.Log(str);
                         a = int.Parse(com[2]);
                         com = com[3].Split('*');
                         switch (com[0])
                         {
+                            case ("Forse"):
+                                b = int.Parse(com[1]);
+                                mainRule.Trigger[subMood].Action[b].ForseMood = a;
+                                break;
+
                             case ("Trigger"):
                                 mainRule.Trigger[subMood].Trigger = a;
                                 break;
@@ -573,6 +578,12 @@ namespace Coder
             bool add = (com[2] == "1");
             switch (com[0])
             {
+                case ("Cost"):
+                        if (add)
+                            mainBase.Cost++;
+                        else
+                            mainBase.Cost--;
+                    break;
                 case ("AntiStat"):
                     mainBase.Sub.AntiStat = AddListText(mainBase.Sub.AntiStat, int.Parse(com[1]), add);
                     break;
@@ -857,10 +868,7 @@ namespace Coder
             return str;
         }
 
-        static string IfLook(bool use)
-        {
-            return(use) ? "[]" : "[ ]";
-        }
+        static string IfLook(bool use)  { return(use) ? "[]" : "[ ]"; }
         static int IfPlus(int a,int size, bool mood)
         {
 
@@ -1497,6 +1505,7 @@ namespace Coder
                     break;
                 default:
                     action.ResultCore = new RuleForm(keyStat);
+                    action.ForseMood = 0;
                     break;
             }
             return action;
@@ -1504,34 +1513,7 @@ namespace Coder
         static string ReadForm( RuleAction action, string path)
         {
             string result = "Result" + path + "0";
-            //+= ReturnCore(ifAction.Core[i], key + i);
             string str = "";
-            //switch (core.frame.Action[action.Action].Name)
-            //{
-            //    case ("Attack"):
-            //        str += "\nОснова" +ReturnCore(action.Core[0], path+0,true);
-            //        str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
-            //        break;
-            //    case ("Stat"):
-            //        str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
-            //        str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
-            //        break;
-            //    case ("Effect"):
-            //        str += "\nПриоритет" + ReturnCore(action.Core[0], path + 0, true) + "/" + ReturnCore(action.Core[1], path + 1, true);
-            //        str += "\nПродолжительность" + ReturnCore(action.Core[2], path + 2, true) +"/" + ReturnCore(action.Core[3], path + 3, true);
-            //        str += "\nСила" + ReturnCore(action.Core[4], path + 4, true) + "/" + ReturnCore(action.Core[5], path + 5, true);
-            //        break;
-            //    case ("Rule"):
-            //        switch (core.frame.Action[action.Action].Extend[action.ActionExtend])
-            //        {
-            //            case ("Add"):
-            //                str += "\nОснова" + ReturnCore(action.Core[0], path + 0, true);
-            //                str += "\nДелитель" + ReturnCore(action.Core[1], path + 1, true);
-            //                break;
-
-            //        }
-            //        break;
-            //}
             switch (action.Core.Count)
             {
                 case (6):
@@ -1559,8 +1541,12 @@ namespace Coder
             int a = -1;
             if (core.frame.Action[action.Action].Name == "Rule")
                 a = action.ActionExtend;
-            Debug.Log(a);
+
             str += "\nРезультат " + ReturnCore(action.ResultCore, result, true,a);
+
+            if(action.ResultCore.Tayp == keyStat)
+                str += "\nForse " + AddLink($"Edit|RuleList_Return_Forse_{path}", $"{core.frame.ForseTayp[action.ForseMood]}");
+
             return str;
         }
 
@@ -1593,7 +1579,7 @@ namespace Coder
 
             str += "\n" + AddLink("Swicth|Color", $"Color = {mainBase.Color}", mainBase.Color);
 
-            str += "\n" + $"Cost {mainBase.Cost}";
+            str += "\n" + $"Cost " + AddLink("Edit|Cost_0_0", " << ") + $"{mainBase.Cost}" + AddLink("Edit|Cost_1_1", " >> ");
             str += "\n" + AddLink("SetSwitch|Look", ((mainBase.Look) ? "Close" : "Open") + IfLook(mainBase.Look)) + "\n";
 
             return str;
@@ -1646,6 +1632,11 @@ namespace Coder
                     path = "TaypId*" + path;
                 else if (text == "RuleTag")
                     path = "Tayp*" + path;
+                else if (text == "Forse")
+                {
+                    string[] com = path.Split('?');
+                    path = text + "*" + com[1];
+                }
                 else
                     path = text + "*" + path;
 
@@ -1691,7 +1682,7 @@ namespace Coder
                     //    break;
                     case ("Forse"):
                         for (int i = 0; i < core.frame.ForseTayp.Length; i++)
-                            str += $"\n" + AddLink($"{key}_{i}_{path}", $"Set { core.frame.ForseTayp[i]}");
+                            str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.ForseTayp[i]}");
                         break;
                     case ("Action"):
                         //str += $"\n Add|-1 null";
