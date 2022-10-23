@@ -1,3 +1,3 @@
 <root>
-  <I>summon/Void</I>
+  <I>Void/Void</I>
 </root>

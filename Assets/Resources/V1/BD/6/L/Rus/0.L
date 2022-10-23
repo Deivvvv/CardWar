@@ -1,3 +1,3 @@
 <root>
-  <I>феодальная система/Void</I>
+  <I>Void/Void</I>
 </root>

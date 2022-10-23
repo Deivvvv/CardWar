@@ -10,13 +10,13 @@ public class Hiro
 
     //SlotSystem
     public List<MeshRenderer> SlotMesh = new List<MeshRenderer>();
-    public List<CardBase> Slot = new List<CardBase>();
+    public List<CardCase> Slot = new List<CardCase>();
     public List<MeshRenderer> BackSlotMesh = new List<MeshRenderer>();
-    public List<CardBase> BackSlot = new List<CardBase>();
+    public List<CardCase> BackSlot = new List<CardCase>();
 
 
     //ColodSystem
-    public List<CardBase> CardColod = new List<CardBase>();
+    public List<CardCase> CardColod = new List<CardCase>();
     public List<int> CardHandFull = new List<int>();
 
     public List<int> CardHand = new List<int>();

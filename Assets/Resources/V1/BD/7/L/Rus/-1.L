@@ -1,3 +1,3 @@
 <root>
-  <I>Status/Void</I>
+  <I>CardTayp/Void</I>
 </root>

@@ -1,3 +1,3 @@
 <root>
-  <I>защита/Void</I>
+  <I>Void/Void</I>
 </root>

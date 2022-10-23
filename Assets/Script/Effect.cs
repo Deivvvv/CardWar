@@ -11,7 +11,7 @@ public class Effect : ScriptableObject
     public string EffectGroup;
     public string Mood;//All-Max-Local
 
-    public CardBase Target;
+    public CardCase Target;
 
     public string Com;
 }

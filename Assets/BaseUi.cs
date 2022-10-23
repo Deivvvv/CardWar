@@ -15,4 +15,8 @@ public class BaseUi : MonoBehaviour
     public List<TextMeshProUGUI> TT;
     public TMP_InputField NameTT;
 
+    public GameObject CardOrig;
+    public List<Button> Buttons;
+    public Transform MenuExtend;
+
 }

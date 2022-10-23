@@ -21,7 +21,7 @@ public class ColodConstructor : MonoBehaviour
     //private int maxCard = 40;
 
     //private CardSet cardSet;
-    //private List<CardBase> card;
+    //private List<CardCase> card;
     //private List<Transform> body;
     //private int mod;
 
@@ -45,7 +45,7 @@ public class ColodConstructor : MonoBehaviour
     //    cardSet = XMLSaver.LoadCardSet(nameGuild+"/"+ gameSetting.ActualColod);
     //    Ui.NameFlied.text = cardSet.Name; 
 
-    //    card = new List<CardBase>();
+    //    card = new List<CardCase>();
     //    string[] com;
     //    for (int i = 0; i < cardSet.Path.Count; i++)
     //    {
@@ -110,7 +110,7 @@ public class ColodConstructor : MonoBehaviour
     //    cardSet = XMLSaver.LoadCardSet(nameGuild + "/" + colod[a]);
     //    Ui.NameFlied.text = cardSet.Name;
 
-    //    card = new List<CardBase>();
+    //    card = new List<CardCase>();
     //    string[] com;
     //    for (int i = 0; i < cardSet.Path.Count; i++)
     //    {
@@ -149,7 +149,7 @@ public class ColodConstructor : MonoBehaviour
     ////   // GO.GetComponent<Image>().color = Ui.SelectColor[1];
 
     ////    LocalCard[i].Body = GO.transform;
-    ////    //  LocalCard.Add(new CardBase());
+    ////    //  LocalCard.Add(new CardCase());
     ////    //  Save();
 
     ////    ViewCardBase(i);

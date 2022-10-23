@@ -1,3 +1,3 @@
 <root>
-  <I>Охотники/Void</I>
+  <I>Void/Void</I>
 </root>

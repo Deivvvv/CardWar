@@ -24,14 +24,14 @@ public class CardConstructor : MonoBehaviour
 
    // //ResetSystem
    // //private int oldAllCard;
-   // //private List<CardBase> oldCard;
+   // //private List<CardCase> oldCard;
    // //private List<int> newCard;
 
    // //private int cardMod;
    // //private int cardModSize= 0;
    // //private int selectId;
-   // private CardBase cardBase;
-   // //public List<CardBase> LocalCard;
+   // private CardCase cardBase;
+   // //public List<CardCase> LocalCard;
    // // [SerializeField]
 
    // [SerializeField]
@@ -305,7 +305,7 @@ public class CardConstructor : MonoBehaviour
 
    //     cardBase.Name = Ui.NameFlied.text;
 
-   //     // CardBase card = Core.CardClone(cardBase);
+   //     // CardCase card = Core.CardClone(cardBase);
 
    //     string path = curentGuild.Name
    //          + "/" + cardBase.Tayp
@@ -476,9 +476,9 @@ public class CardConstructor : MonoBehaviour
 
    //     selectId = -1;
 
-   //     //LocalCard = new List<CardBase>();
+   //     //LocalCard = new List<CardCase>();
    //     //newCard = new List<int>();
-   //     //oldCard = new List<CardBase>();
+   //     //oldCard = new List<CardCase>();
 
 
 
@@ -607,10 +607,10 @@ public class CardConstructor : MonoBehaviour
 
    //     ////ResetData
    //     //newCard = new List<int>();
-   //     //oldCard = new List<CardBase>();
+   //     //oldCard = new List<CardCase>();
    // }
 
-   // //void AddEdit(int a, CardBase card)
+   // //void AddEdit(int a, CardCase card)
    // //{
    // //    for (int i = 0; i < newCard.Count; i++)
    // //    {
@@ -638,7 +638,7 @@ public class CardConstructor : MonoBehaviour
    //     //XMLSaver.SaveGameData(gameData, origPathAlt);
    //     //oldAllCard = gameData.AllCard;
    //     //newCard = new List<int>();
-   //     //oldCard = new List<CardBase>();
+   //     //oldCard = new List<CardCase>();
    // }
    // #endregion
 
@@ -875,7 +875,7 @@ public class CardConstructor : MonoBehaviour
    // void ReLoadCard()
    // {
 
-   //     cardBase = new CardBase();
+   //     cardBase = new CardCase();
    //     cardBase.Stat = new List<Constant>();
    //     cardBase.StatSize = new List<int>();
    //     //for (int i =0; i < gameSetting.StatSize; i++)

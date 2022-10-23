@@ -12,6 +12,7 @@ using XMLSaver;
 
 public class CoreSys : MonoBehaviour
 {
+    public int keyTayp,keyStat, keyTag, keyPlan, keyGuild, keyLegion, keyCivilian, keyRace, keyCardTayp, keyCardClass, keyStatus, keyStatGroup, keyMark;
     BaseUi ui;
     public RuleMainFrame frame;
     public List<BD> bD;
@@ -37,6 +38,20 @@ public class CoreSys : MonoBehaviour
         Saver.LoadBDAll();
         Saver.LoadAllRule();
 
+        keyStat = DeCoder.ReturnIndex("Stat");
+        keyTag = DeCoder.ReturnIndex("Tag");
+        keyPlan = DeCoder.ReturnIndex("Plan");
+        keyGuild = DeCoder.ReturnIndex("Guild");
+        keyLegion = DeCoder.ReturnIndex("Legion");
+        keyRace = DeCoder.ReturnIndex("Race");
+        keyCivilian = DeCoder.ReturnIndex("Civilian");
+
+        keyCardTayp = DeCoder.ReturnIndex("CardTayp");
+        keyCardClass = DeCoder.ReturnIndex("CardClass");
+        keyStatus = DeCoder.ReturnIndex("Status");
+        keyStatGroup = DeCoder.ReturnIndex("StatGroup");
+        keyMark = DeCoder.ReturnIndex("Mark");
+
         LoadScene("Main");
        // OpenScene("Main");
         gameObject.GetComponent<CoreSys>().enabled = true;
@@ -45,6 +60,16 @@ public class CoreSys : MonoBehaviour
     }
     void LoadScene(string str)
     {
+        switch (mood)
+        {
+            case ("Rule"):
+                DeCoder.Read("Sys|Save");
+                break;
+            case ("BD"):
+                DeCoder.Read("Sys|Save");
+                break;
+        }
+
         if (str == "Exit")
             Application.Quit();
         else
@@ -104,7 +129,6 @@ public class CoreSys : MonoBehaviour
         //if (go == null)
         //    return;
         Debug.Log(mood);
-        string str = "";
         switch (mood)
         {
             case ("Main"):
@@ -130,6 +154,18 @@ public class CoreSys : MonoBehaviour
 
 
              //   ui.ExitButton.onClick.AddListener(() => OpenScene("Main"));
+                break;
+            case ("Gallery"):
+
+                string[] s = { "NewCard", "Colod", "Edit" };
+                for (int i = 0; i < s.Length; i++)
+                {
+                    go = Instantiate(ui.OrigButton);
+                    go.transform.GetChild(0).gameObject.GetComponent<Text>().text = s[i];
+
+                    SceneManager.LoadScene(s[i], LoadSceneMode.Single);
+                    go.transform.SetParent(ui.Menu);
+                }
                 break;
 
         }

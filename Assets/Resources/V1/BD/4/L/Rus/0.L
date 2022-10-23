@@ -1,3 +1,3 @@
 <root>
-  <I>колода/Void</I>
+  <I>Void/Void</I>
 </root>

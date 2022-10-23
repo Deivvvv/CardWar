@@ -1,3 +1,3 @@
 <root>
-  <I>CardClass/Void</I>
+  <I>Race/Void</I>
 </root>

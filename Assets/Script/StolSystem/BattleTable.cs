@@ -44,7 +44,7 @@ namespace BattleTable
     //    }
 
     //    private static List<string> call = new List<string>();
-    //    public static void CallRuleLoad( CardBase card)
+    //    public static void CallRuleLoad( CardCase card)
     //    {
     //        int a =0;
     //        foreach(string str in card.Trait)
@@ -64,7 +64,7 @@ namespace BattleTable
     //        call = null;
     //    }
 
-    //    public static void GenerateActionCard(CardBase card)
+    //    public static void GenerateActionCard(CardCase card)
     //    {
     //        card.PlayCard = new List<int>();
     //        card.PlayAnotherCard = new List<int>();
@@ -247,9 +247,9 @@ namespace BattleTable
     //        }
     //    }
 
-    //    public static CardBase CardClone(CardBase card)
+    //    public static CardCase CardClone(CardCase card)
     //    {
-    //        CardBase newCard = new CardBase();
+    //        CardCase newCard = new CardCase();
 
     //        newCard.Name = card.Name;
 
@@ -277,7 +277,7 @@ namespace BattleTable
     //        newCard.Image =  card.Image;
     //        return newCard;
     //    }
-    //    public static void CardCloneExtended(CardBase card1, CardBase card2)
+    //    public static void CardCloneExtended(CardCase card1, CardCase card2)
     //    {
     //        if(gameSetting.AllCard.Count != 0)
     //            card2.Id = gameSetting.AllCard[ gameSetting.AllCard.Count-1 ].Id + 1;
@@ -343,7 +343,7 @@ namespace BattleTable
 
     //    }
 
-    //    public static void CardClear(CardBase card)
+    //    public static void CardClear(CardCase card)
     //    {
     //        //for (int i = 0; i < card.Stat.Count; i++)
     //        //{
@@ -506,10 +506,10 @@ namespace BattleTable
 
     //    public static GameSetting gameSetting;
     //    //private static List<Hiro> hiro;
-    //    private static CardBase card1, card2;
+    //    private static CardCase card1, card2;
 
     //    //public static void SetHiro(List<Hiro> _hiro) { List<Hiro> hiro = _hiro;  }
-    //    public static CardBase GetCard(string str)
+    //    public static CardCase GetCard(string str)
     //    {
     //        switch (str)
     //        {
@@ -522,7 +522,7 @@ namespace BattleTable
     //        }
     //        return null;
     //    }
-    //    public static bool CallMood(Hiro hiro, CardBase card, string mood)
+    //    public static bool CallMood(Hiro hiro, CardCase card, string mood)
     //    {
     //        switch (mood)
     //        {
@@ -541,12 +541,12 @@ namespace BattleTable
     //    static int UseKeyWord(string[] str , string attribute, int num =-1)
     //    {
     //        int sum = 0;
-    //        CardBase mainCard = GetCard("Card1");
+    //        CardCase mainCard = GetCard("Card1");
     //        if(mainCard == null)
     //            mainCard = GetCard("Card2");
 
     //        string[] com;
-    //        foreach (CardBase card in gameSetting.AllCard)
+    //        foreach (CardCase card in gameSetting.AllCard)
     //        {
     //            if (card.Id != num)
     //            {
@@ -574,7 +574,7 @@ namespace BattleTable
     //        float sum = 0;
     //        string[] com;
     //        string[] comAttribute = attribute.Split(':');
-    //        CardBase card = GetCard(comAttribute[0]);
+    //        CardCase card = GetCard(comAttribute[0]);
     //        if (card == null)
     //        {
     //            com = comAttribute[0].Split('_');
@@ -684,7 +684,7 @@ namespace BattleTable
     //        return false;
     //    }
 
-    //    public static bool UseRule(SimpleTrigger simpleTrigger, CardBase _card1, CardBase _card2, bool echo)
+    //    public static bool UseRule(SimpleTrigger simpleTrigger, CardCase _card1, CardCase _card2, bool echo)
     //    {// HeadSimpleTrigger head
 
     //        if (_card1 == null)
@@ -767,7 +767,7 @@ namespace BattleTable
     //            case ("Attack"):
     //                if(card2 != null)
     //                {
-    //                    CardBase card3 = card1, card4 = card2;
+    //                    CardCase card3 = card1, card4 = card2;
 
     //                    if(!echo)
     //                        for (int i = 0; i < card1.PreAction.Count; i++)
@@ -897,7 +897,7 @@ namespace BattleTable
     //        return false;
     //    }
 
-    //    static void NewStatus(CardBase card, string str, bool add)
+    //    static void NewStatus(CardCase card, string str, bool add)
     //    {
     //        int a =  card.Status.FindIndex(x => x == str);
     //        if(a != 0)
@@ -1030,7 +1030,7 @@ namespace BattleTable
     //    {
     //        string[] com = action.ActionFull.Split('|');
 
-    //        CardBase local3 = GetCard(com[4]);
+    //        CardCase local3 = GetCard(com[4]);
 
     //        string text = com[6];
     //        int sum = FindInt(com[1]);
@@ -1102,7 +1102,7 @@ namespace BattleTable
     //    public static List<Hiro> hiro = new List<Hiro>();
     //    public static StolUi stolUi;
 
-    //    public static void Die(CardBase card)
+    //    public static void Die(CardCase card)
     //    {
     //        Destroy(card.Body.gameObject);
     //        for (int i = 0; i < card.Die.Count; i++)
@@ -1135,8 +1135,8 @@ namespace BattleTable
     //    {
     //        for (int i = 0; i < a; i++)
     //        {
-    //            CardBase card = hiro.CardColod[hiro.CardHandFull[hiro.NextCard]];
-    //            CardBase newCard = Core.CardClone(card);
+    //            CardCase card = hiro.CardColod[hiro.CardHandFull[hiro.NextCard]];
+    //            CardCase newCard = Core.CardClone(card);
     //            Core.CardCloneExtended(card, newCard);
     //            hiro.CardHand.Add(newCard.Id);
 
@@ -1148,7 +1148,7 @@ namespace BattleTable
     //    static void LoadCardSet(Hiro hiro)
     //    {
     //        //Debug.Log(hiro);
-    //        CardBase card = null;
+    //        CardCase card = null;
     //        List<int> cardBase = new List<int>();
     //        //интегрирывать из старгого метода позже
     //        List<int> cardBaseFast = new List<int>();
@@ -1177,7 +1177,7 @@ namespace BattleTable
     //                cardBase.Add(a);
     //        }
 
-    //        foreach(CardBase card1 in hiro.CardColod)
+    //        foreach(CardCase card1 in hiro.CardColod)
     //            Core.CallRuleLoad(card1);
 
     //        //for (int i = 0; i < hiro.CardColod.Count; i++)
@@ -1314,7 +1314,7 @@ namespace BattleTable
     //    }
 
 
-    //    static void CreateUiCard(CardBase card)
+    //    static void CreateUiCard(CardCase card)
     //    {
     //        Transform myHand = (card.MyHiro.Team == 0) ? stolUi.MyHand : stolUi.EnemyHand;
 
@@ -1341,29 +1341,29 @@ namespace BattleTable
     //    private static List<SubString> calls = new List<SubString>();
     //    #region Start Table
     //    #region Echo
-    //    static void EchoPlayCard(CardBase card)
+    //    static void EchoPlayCard(CardCase card)
     //    {
     //        foreach (int a in gameSetting.PlayAnotherCardBody)
     //        {
-    //            CardBase cardLocal = gameSetting.AllCard[a];
+    //            CardCase cardLocal = gameSetting.AllCard[a];
     //            foreach (int i in cardLocal.PlayAnotherCard)
     //                AddCall(cardLocal, card, gameSetting.PlayAnotherCard[i], true);
     //        }
     //    }
-    //    static void EchoAction(CardBase card)
+    //    static void EchoAction(CardCase card)
     //    {
     //        foreach (int a in gameSetting.AnotherActionBody)
     //        {
-    //            CardBase cardLocal = gameSetting.AllCard[a];
+    //            CardCase cardLocal = gameSetting.AllCard[a];
     //            foreach (int i in cardLocal.AnotherAction)
     //                AddCall(cardLocal, card, gameSetting.AnotherAction[i], true);
     //        }
     //    }
-    //    public static void EchoDie(CardBase card)
+    //    public static void EchoDie(CardCase card)
     //    {
     //        foreach (int a in gameSetting.AnotherDieBody)
     //        {
-    //            CardBase cardLocal = gameSetting.AllCard[a];
+    //            CardCase cardLocal = gameSetting.AllCard[a];
     //            foreach (int i in cardLocal.AnotherDie)
     //                AddCall(cardLocal, card, gameSetting.AnotherDie[i], true);
     //        }
@@ -1372,7 +1372,7 @@ namespace BattleTable
     //    {
     //        foreach (int a in gameSetting.NextTurnBody)
     //        {
-    //            CardBase cardLocal = gameSetting.AllCard[a];
+    //            CardCase cardLocal = gameSetting.AllCard[a];
     //            foreach (int i in cardLocal.AnotherDie)
     //                if (team == cardLocal.MyHiro.Team)
     //                    AddCall(cardLocal, null, gameSetting.AnotherDie[i], true);
@@ -1380,7 +1380,7 @@ namespace BattleTable
 
     //        foreach (int a in gameSetting.NextTurnBodyElse)
     //        {
-    //            CardBase cardLocal = gameSetting.AllCard[a];
+    //            CardCase cardLocal = gameSetting.AllCard[a];
     //            foreach (int i in cardLocal.AnotherDie)
     //                if (team != cardLocal.MyHiro.Team)
     //                    AddCall(cardLocal, null, gameSetting.AnotherDie[i], true);
@@ -1403,7 +1403,7 @@ namespace BattleTable
     //        Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
     //    }
 
-    //    public static void ReplyCard(CardBase card)
+    //    public static void ReplyCard(CardCase card)
     //    {
     //        //Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
     //        if(calls.Count > 0)
@@ -1426,7 +1426,7 @@ namespace BattleTable
     //                    {
     //                        AddCall(card, null, card.WalkMood.SimpleTriggers[0], false);
     //                    }
-    //                    //TacticList(CardBase card);
+    //                    //TacticList(CardCase card);
     //                    break;
     //            }
     //        }
@@ -1437,7 +1437,7 @@ namespace BattleTable
     //        Hiro myHiro = (enemy) ? hiro[1] : hiro[0];
     //        if (calls.Count > 0)
     //        {
-    //            CardBase card = calls[0].Card1;
+    //            CardCase card = calls[0].Card1;
     //            string mood = calls[0].Action.TargetPalyer;
     //            //bool use = 
     //            switch (card.Tayp)
@@ -1511,7 +1511,7 @@ namespace BattleTable
     //    #endregion
 
 
-    //    static void TacticList(CardBase card)
+    //    static void TacticList(CardCase card)
     //    {
     //        AddCall(card, null, null, false);
     //        stolUi.TacticCase.gameObject.active = true;
@@ -1543,7 +1543,7 @@ namespace BattleTable
     //        //hiro = new Hiro[2];
     //        Create.gameSetting = gameSetting;
     //        Create.stolUi = stolUi;
-    //        gameSetting.AllCard = new List<CardBase>();
+    //        gameSetting.AllCard = new List<CardCase>();
 
     //        //Core.LoadRules();
     //        Core.GenerateAction();
@@ -1571,7 +1571,7 @@ namespace BattleTable
     //        // PlayCard(ca
     //    }
     //    #endregion
-    //    public static void AddCall (CardBase card1, CardBase card2, SimpleTrigger action, bool Echo)
+    //    public static void AddCall (CardCase card1, CardCase card2, SimpleTrigger action, bool Echo)
     //    {
         
     //        SubString call = new SubString();
@@ -1604,7 +1604,7 @@ namespace BattleTable
     //        newHiro.ManaCurent = newHiro.Mana;
     //        Create.AddCardInHand(newHiro, 1);
 
-    //        CardBase card = null;
+    //        CardCase card = null;
     //        for (int i = 0; i < newHiro.PlayColod.Count; i++)
     //        {
     //            card = gameSetting.AllCard[newHiro.PlayColod[i]];
@@ -1616,7 +1616,7 @@ namespace BattleTable
     //        HiroUi(newHiro);
     //    }
 
-    //    static void Regen(CardBase card)
+    //    static void Regen(CardCase card)
     //    {
     //        for (int i = 0; i < card.Stat.Count; i++)
     //            if (card.Stat[i].Regen)
@@ -1686,7 +1686,7 @@ namespace BattleTable
 
     //    //void Sort()
     //    //{
-    //    //    IEnumerable<CardBase> items = null;//biomData.Arsenal.OrderBy(i => i.Class).ThenBy(x => x.CostMin).ThenBy(x => x.Qvailty);
+    //    //    IEnumerable<CardCase> items = null;//biomData.Arsenal.OrderBy(i => i.Class).ThenBy(x => x.CostMin).ThenBy(x => x.Qvailty);
 
 
     //    //    if (curentFiltr == -1)
@@ -1703,7 +1703,7 @@ namespace BattleTable
 
     //    //    }
 
-    //    //    foreach (CardBase item in items)
+    //    //    foreach (CardCase item in items)
     //    //    {
     //    //        item.Body.SetParent(Ui.TraitCard);
     //    //        item.Body.SetParent(Ui.BaseCard);
@@ -1716,7 +1716,7 @@ namespace BattleTable
     //{
     //    public static GameSetting gameSetting;
     //    private static int cardMod = 0;
-    //    public static void ViewCard(CardBase card)
+    //    public static void ViewCard(CardCase card)
     //    {
     //        CardBaseUi Ui = card.Body.gameObject.GetComponent<CardBaseUi>();
 
@@ -1768,7 +1768,7 @@ namespace BattleTable
 
     //    }
 
-    //    public static string CardInfo(CardBase card)
+    //    public static string CardInfo(CardCase card)
     //    {
     //        string str = " ";
     //        /*имя карты, расса, легион и прочее
@@ -1834,7 +1834,7 @@ namespace BattleTable
     //        CardList();
     //    }
 
-    //    public static void CardListLite(List<CardBase> card, List<int> size, List<Transform> body, int mod)
+    //    public static void CardListLite(List<CardCase> card, List<int> size, List<Transform> body, int mod)
     //    {
     //        int a =0;
     //        for(int i = 0; i < body.Count; i++)
@@ -1857,7 +1857,7 @@ namespace BattleTable
 
     //    public static void CardList()
     //    {
-    //        gameSetting.AllCard = new List<CardBase>();
+    //        gameSetting.AllCard = new List<CardCase>();
 
     //        string[] com;
     //        int a;
@@ -1868,7 +1868,7 @@ namespace BattleTable
     //            if (a < gameSetting.AllCardPath.Count)
     //            {
     //                com = gameSetting.AllCardPath[a].Split('_');
-    //                CardBase card = XMLSaver.Load(gameSetting.GameDataFile.Data[int.Parse(com[0])].MasterKey +com[1]);
+    //                CardCase card = XMLSaver.Load(gameSetting.GameDataFile.Data[int.Parse(com[0])].MasterKey +com[1]);
     //                card.Id = a;
     //                gameSetting.AllCard.Add(card);
     //                card.Body = gameSetting.CardBody[i];

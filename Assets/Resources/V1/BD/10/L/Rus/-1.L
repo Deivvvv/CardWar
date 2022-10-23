@@ -1,3 +1,3 @@
 <root>
-  <I>Race/Void</I>
+  <I>StatGroup/Void</I>
 </root>

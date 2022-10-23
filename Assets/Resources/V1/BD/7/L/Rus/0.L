@@ -1,3 +1,3 @@
 <root>
-  <I>полёт/Void</I>
+  <I>Void/Void</I>
 </root>

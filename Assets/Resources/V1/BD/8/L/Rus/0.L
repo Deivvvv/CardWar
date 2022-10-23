@@ -1,3 +1,3 @@
 <root>
-  <I>существо/Void</I>
+  <I>Void/Void</I>
 </root>

@@ -1,3 +1,3 @@
 <root>
-  <I>CivilGroup/Void</I>
+  <I>Status/Void</I>
 </root>

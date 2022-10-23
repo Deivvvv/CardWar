@@ -1,3 +1,3 @@
 <root>
-  <I>StatGroup/Void</I>
+  <I>Mark/Void</I>
 </root>

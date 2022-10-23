@@ -1,3 +1,3 @@
 <root>
-  <I>АОЕAssociation/Void</I>
+  <I>Civilian/Void</I>
 </root>
