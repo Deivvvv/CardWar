@@ -1577,16 +1577,16 @@ namespace Coder
             switch (core.frame.Action[action.Action].Name)
             {
                 case ("Attack"):
-                    a = 3;
+                    a = 2;
                     break;
                 case ("Stat"):
-                    a = 3;
+                    a = 2;
                     break;
                 case ("Rule"):
-                    a = 3;
+                    a = 2;
                     break;
                 case ("Effect"):
-                    a = 6;
+                    a = 5;
                     break;
                 case ("Transf"):
                     a = 0;
