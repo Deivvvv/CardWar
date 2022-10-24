@@ -262,9 +262,8 @@ namespace Coder
                         mainBase = core.bD[keyA].Base[keyB];
                         Saver.SaveBD(keyA, keyB);
                         if (keyA == core.keyTag)
-                            Saver.LoadAllRule();
-                        //ClearIO();
-                        //return;
+                            Saver.RuleAdd();
+                       
                         break;
                     case ("Save"):
                         Saver.SaveBD(keyA, keyB);
@@ -294,6 +293,9 @@ namespace Coder
                         break;
                     case ("New"):
                         keyA = int.Parse(com[1]);
+                        Debug.Log(core.head.Count);
+                        Debug.Log(core.head[keyA].Index.Count);
+
                         key = KeyAConverter();
                         keyB = core.head[key].Index.Count;
                         if (keyB == 0)
@@ -627,6 +629,7 @@ namespace Coder
             {
                 case ("BD"):
                     SwitchBD();
+                    return;
                     break;
                 case ("Antipod"):
                     str += AddLink("SetSwitch|Antipod_-1", "Null") + "\n";
@@ -2145,7 +2148,6 @@ namespace Coder
         }
         public Accses(string str)
         {
-            Debug.Log(str);
             SubInt subInt = new SubInt(str, 4);
             Like = subInt.Num[0].Num;
             Debug.Log(Like.Count);
@@ -2200,7 +2202,6 @@ namespace Coder
                 subInt.Num.Add(new SubInt(0));
 
             subInt.Num[0].Num = Like;
-            Debug.Log(Like.Count);
             subInt.Num[1].Num = Need;
             subInt.Num[2].Num = DisLike;
             subInt.Num[3].Num = Use;
@@ -2578,7 +2579,7 @@ namespace Coder
     {
         public string Name;
         public List<string> Rule = new List<string>();
-        public List<int> Index;// = new List<int>();
+        public List<int> Index = new List<int>();
         public int LastIndex = 0;
     }
 

@@ -349,24 +349,17 @@ namespace XMLSaver
         #endregion
 
         #region Rule
-        static void RuleReload( int a, int f)
+        public static void RuleAdd()
         {
-            int b  = DeCoder.ReturnIndex("Tag");
-
+            int a = core.head.Count;
             string path = mainPath + "Rule/";
-            core.head = new List<SubRuleHead>(new SubRuleHead[f]);
-            for (; a < f; a++)
-            {
-                if (!Directory.Exists($"{path}{a}/"))
-                {
-                    Directory.CreateDirectory($"{path}{a}/");
-                    core.head[a] = new SubRuleHead();
-                    core.head[a].Index = new List<int>();
-                    core.head[a].Rule = new List<string>();
-                    //  core.head[a].Name = core.bd[b].Base[a].Name;
-                    SaveRuleMain(a);
-                }
-            }
+            //if (!Directory.Exists($"{path}{a}/"))
+           // {
+                Directory.CreateDirectory($"{path}{a}/");
+                core.head.Add(new SubRuleHead());
+                SaveRuleMain(a);
+           // }
+            LoadAllRule();
         }
 
         public static void LoadAllRule()
@@ -376,18 +369,18 @@ namespace XMLSaver
             string path = mainPath + "Rule/";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            int f = DeCoder.ReturnIndex("Tag");
+            //int f = DeCoder.ReturnIndex("Tag");
 
-            int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
-            if (fCount < core.bD[f].Base.Count)
-                RuleReload( fCount, core.bD[f].Base.Count);
+           // int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
+           // if (fCount <= core.bD[f].Base.Count)
+           //     RuleReload( fCount, core.bD[f].Base.Count);
 
             int a=0,b = 0;
-            List<SubRuleHead> head = new List<SubRuleHead>(new SubRuleHead[core.bD[f].Base.Count]);
+            List<SubRuleHead> head = new List<SubRuleHead>(new SubRuleHead[core.bD[core.keyTag].Base.Count]);
             for(int i =0; i < head.Count;i++)
             {
                 head[i] = new SubRuleHead();
-                head[i].Name = core.bD[f].Base[i].Name;
+                head[i].Name = core.bD[core.keyTag].Base[i].Name;
                 root = XDocument.Parse(File.ReadAllText($"{path}{i}.HR")).Element("root");
                 str = root.Element("Id").Value;
                 if(str != "")
