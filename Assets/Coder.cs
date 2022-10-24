@@ -1529,12 +1529,12 @@ namespace Coder
             str += "\nTeam ";
 
             if (action.Team > 0)
-                str += AddLink($"Int|ActionTeam*-", "<<");
+                str += AddLink($"Int|ActionTeam_{b}*-", "<<");
 
             str += $" ({core.frame.PlayerString[action.Team]}) ";
 
             if (action.Team < core.frame.PlayerString.Length-1)
-                str += AddLink($"Int|ActionTeam*+", ">>");
+                str += AddLink($"Int|ActionTeam_{b}*+", ">>");
 
             str += "\n";
 
