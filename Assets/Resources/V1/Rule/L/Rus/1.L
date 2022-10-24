@@ -1,3 +1,3 @@
 <root>
-  <I> </I>
+  <I>Void</I>
 </root>

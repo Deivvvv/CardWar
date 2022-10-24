@@ -70,7 +70,7 @@ namespace XMLSaver
             XElement root = null;
             //string str = $"{path}/{lang}/{a}.L" 
 
-            Debug.Log($"{path}L/{lang}/{a}.L");
+           // Debug.Log($"{path}L/{lang}/{a}.L");
             if (File.Exists($"{path}L/{lang}/{a}.L"))
                 root = XDocument.Parse(File.ReadAllText($"{path}/L/{lang}/{a}.L")).Element("root");
             else if(File.Exists($"{path}L/Eng/{a}.L"))
@@ -80,7 +80,7 @@ namespace XMLSaver
             if(root != null)
                 str = root.Element("I").Value;
 
-            Debug.Log(str);
+           // Debug.Log(str);
             return str;
 
         }

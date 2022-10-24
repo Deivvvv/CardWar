@@ -59,14 +59,16 @@ namespace Coder
             if (keyA < 0)
             {
                 mainRule = Saver.LoadRule(KeyAConverter(), core.head[KeyAConverter()].Index[keyB]);
-                TextRule("MenuHead");
+                //TextRule("MenuHead");
+                TextRule($"Menu_{keyA}");
                 SetSubMood(-1);
             }
             else
             {
                 mainBase = core.bD[keyA].Base[keyB];
                 TextBD("Info");
-                TextBD("MenuHead");
+                //TextBD("MenuHead");
+                TextBD($"Menu_{keyA}");
             }
         }
 
@@ -293,8 +295,8 @@ namespace Coder
                         break;
                     case ("New"):
                         keyA = int.Parse(com[1]);
-                        Debug.Log(core.head.Count);
-                        Debug.Log(core.head[keyA].Index.Count);
+                       // Debug.Log(core.head.Count);
+                      //  Debug.Log(core.head[keyA].Index.Count);
 
                         key = KeyAConverter();
                         keyB = core.head[key].Index.Count;
@@ -302,11 +304,14 @@ namespace Coder
                             core.head[key].Index.Add(0);
                         else
                             core.head[key].Index.Add(core.head[key].Index[keyB - 1] + 1);
-                        NewMainRule();
+                        NewMainRule(key);
                         core.head[key].Rule.Add("Void");
 
                         Saver.SaveRuleMain(key);
                         Saver.SaveRule(mainRule, key, core.head[key].Index[keyB]);
+                        if(keyA >-1)
+                            keyA = -key - 1;
+                        subMood = -1;
                         break;
                     case ("Save"):
                         if (keyB > -1)
@@ -316,7 +321,7 @@ namespace Coder
                         mainRule = Saver.LoadRule(key, core.head[key].Index[keyB]);
                         break;
                     case ("Clear"):
-                        NewMainRule();
+                        NewMainRule(mainRule.Tag);
                         break;
                     case ("Del"):
                         ui.TT[1].text = AddLink("ClearIO", "NO") + "      " + AddLink($"Sys|Delite", "YES");
@@ -1323,20 +1328,21 @@ namespace Coder
                 case ("MenuHead"):
                     str = AddLink("Switch|BD", "SwitchBD") + "\n";
                     for (int i = 0; i < core.head.Count; i++)
-                        str += AddLink($"Open|Menu_{i}", core.head[i].Name + IfLook(core.bD[core.keyTag].Base[i].Look) + $"({core.head[i].Index.Count})") + "\n";
+                        str += AddLink($"Open|Menu_{-i-1}", core.head[i].Name + IfLook(core.bD[core.keyTag].Base[i].Look) + $"({core.head[i].Index.Count})") + "\n";
 
                     ui.TT[0].text = str;
                     break;
 
                 case ("Menu"):
                     a = int.Parse(com[1]);
+                    b = -a - 1;
                     str = AddLink("Open|MenuHead", "Back") + "\n";
-                    str += AddLink($"Sys|New_{a}", "New Rule " + core.head[a].Name);
+                    str += AddLink($"Sys|New_{a}", "New Rule " + core.head[b].Name);
                     str += "\n";
 
-                    for (int i = 0; i < core.head[a].Index.Count; i++)
+                    for (int i = 0; i < core.head[b].Index.Count; i++)
                     {
-                        str += "\n  " + AddLink($"Key|{a}.{i}", $"({core.head[a].Index[i]})"+ core.head[a].Rule[i]);
+                        str += "\n  " + AddLink($"Key|{a}.{i}", $"({core.head[b].Index[i]})"+ core.head[b].Rule[i]);
                     }
 
                     ui.TT[0].text = str;
@@ -2051,10 +2057,10 @@ namespace Coder
         #region Rule Extend
         #region Create
 
-        static void NewMainRule()
+        static void NewMainRule(int a)
         {
             mainRule = new HeadRule();
-            mainRule.Tag = keyA;
+            mainRule.Tag = a;
             //mainRule.Name = "Void";
 
             mainRule.Trigger = new List<TriggerAction>();
@@ -2150,7 +2156,7 @@ namespace Coder
         {
             SubInt subInt = new SubInt(str, 4);
             Like = subInt.Num[0].Num;
-            Debug.Log(Like.Count);
+            //Debug.Log(Like.Count);
             Need = subInt.Num[1].Num;
             DisLike = subInt.Num[2].Num;
             Use = subInt.Num[3].Num;

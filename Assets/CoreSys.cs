@@ -53,8 +53,6 @@ public class CoreSys : MonoBehaviour
         Saver.SetCore(gameObject.GetComponent<CoreSys>());
         DeCoder.SetCore(gameObject.GetComponent<CoreSys>());
 
-        Saver.LoadBDAll();
-        Saver.LoadAllRule();
 
         keyStat = DeCoder.ReturnIndex("Stat");
         keyTag = DeCoder.ReturnIndex("Tag");
@@ -69,6 +67,9 @@ public class CoreSys : MonoBehaviour
         keyStatus = DeCoder.ReturnIndex("Status");
         keyStatGroup = DeCoder.ReturnIndex("StatGroup");
         keyMark = DeCoder.ReturnIndex("Mark");
+
+        Saver.LoadBDAll();
+        Saver.LoadAllRule();
 
         LoadScene("Main");
        // OpenScene("Main");
