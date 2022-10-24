@@ -759,7 +759,7 @@ namespace Coder
                     break;
 
                 case ("RuleName"):
-                    ui.NameTT.text = core.head[keyA].Rule[keyB];
+                    ui.NameTT.text = core.head[KeyAConverter()].Rule[keyB];
                     break;
             }
            // nameTT.gameObject.active = true;
@@ -793,8 +793,8 @@ namespace Coder
                     break;
 
                 case ("RuleName"):
-                    core.head[keyA].Rule[keyB] = ui.NameTT.text;
-                    Saver.SaveRuleMain(keyA);
+                    core.head[KeyAConverter()].Rule[keyB] = ui.NameTT.text;
+                    Saver.SaveRuleMain(KeyAConverter());
                     break;
             }
 
