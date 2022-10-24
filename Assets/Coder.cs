@@ -41,8 +41,8 @@ namespace Coder
 
         static void SetKey(string str)
         {
-           // if (keyA < 0)
-           //     TextRule("MenuHead");
+            // if (keyA < 0)
+            //     TextRule("MenuHead");
             //else
             //    TextBD("MenuHead");
 
@@ -80,14 +80,18 @@ namespace Coder
         {
             if (keyA > -1)
             {
+                Saver.SaveBD(keyA, keyB);
                 keyA = -1;
                 TextRule("MenuHead");
             }
             else
             {
+                Saver.SaveRule(mainRule, KeyAConverter(), keyB);
                 keyA = 0;
                 TextBD("MenuHead");
             }
+            keyB = -1;
+            ui.TT[1].text = "";
         }
 
         #region Sort

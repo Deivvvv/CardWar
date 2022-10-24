@@ -310,8 +310,6 @@ namespace XMLSaver
 
         public static void SaveBD( int a, int b)
         {
-            Debug.Log(a);
-            Debug.Log(b);
             if (b == -1)
                 return;
                 string[] com = null;
