@@ -166,4 +166,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0cacc6e710b4240876f99f5563985f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyTayp: 0
+  keyStat: 0
+  keyTag: 0
+  keyPlan: 0
+  keyGuild: 0
+  keyLegion: 0
+  keyCivilian: 0
+  keyRace: 0
+  keyCardTayp: 0
+  keyCardClass: 0
+  keyStatus: 0
+  keyStatGroup: 0
+  keyMark: 0
   frame: {fileID: 11400000, guid: a235f27ba8c53d44eb5f22e4c32b7116, type: 2}

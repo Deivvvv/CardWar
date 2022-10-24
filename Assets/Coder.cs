@@ -1184,7 +1184,7 @@ namespace Coder
                     {
                         str += AddLink("SetSwitch|Regen", "Regen " + ((mainBase.Sub.Regen) ? "Yes" : "No")) + "\n";
 
-                        str += AddLink("Switch|Icon", $"Icon <index={mainBase.Sub.Image}>") + "\n";
+                        str += AddLink("Switch|Icon", $"Icon <sprite index={mainBase.Sub.Image}>") + "\n";
                         str += AddLink("Switch|Antipod", (mainBase.Sub.Antipod == -1) ? "Antipod: Null" : "Antipod: "+ core.bD[core.keyStat].Base[mainBase.Sub.Antipod].Name) + "\n";
 
                         str += "\nСписок AntiStat для доступа";
@@ -1328,7 +1328,7 @@ namespace Coder
                 case ("MenuHead"):
                     str = AddLink("Switch|BD", "SwitchBD") + "\n";
                     for (int i = 0; i < core.head.Count; i++)
-                        str += AddLink($"Open|Menu_{-i-1}", core.head[i].Name + IfLook(core.bD[core.keyTag].Base[i].Look) + $"({core.head[i].Index.Count})") + "\n";
+                        str += AddLink($"Open|Menu_{-i-1}", core.bD[core.keyTag].Base[i].Name + IfLook(core.bD[core.keyTag].Base[i].Look) + $"({core.head[i].Index.Count})") + "\n";
 
                     ui.TT[0].text = str;
                     break;
@@ -1982,8 +1982,8 @@ namespace Coder
         static string SwitchIcon()
         {
             string str = AddLinkIcon(0);
-            //for (int i = 1; i < iconSize; i++)
-            //    str += "\n" + AddLinkIcon(i);
+            for (int i = 1; i < 160; i++)
+                str += "\n" + AddLinkIcon(i);
 
             return str;
 
@@ -1991,7 +1991,7 @@ namespace Coder
 
         static string AddLinkIcon(int i)
         {
-            return $"<link=SetSwitch|Icon_{i}><index={i}></link>";
+            return $"<link=SetSwitch|Icon_{i}><sprite index={i}></link>";
         }
         static string AddLinkColor(int i)
         {
