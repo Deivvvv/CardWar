@@ -1,3 +1,3 @@
 <root>
-  <I>CardClass/Void</I>
+  <I>принадлежность карт/Void</I>
 </root>

@@ -1,3 +1,3 @@
 <root>
-  <I>Void/Void</I>
+  <I>Механики при выходе на стол/Void</I>
 </root>

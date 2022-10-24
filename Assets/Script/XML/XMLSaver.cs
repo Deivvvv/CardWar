@@ -419,8 +419,8 @@ namespace XMLSaver
                         com = str.Split('/');
                     }
 
-                    Debug.Log(com.Length);
-                    Debug.Log(head[i].Rule.Count);
+                   // Debug.Log(com.Length);
+                   // Debug.Log(head[i].Rule.Count);
                     for (int i1 = 0; i1 < com.Length; i1++)
                         head[i].Rule[i1] = com[i1];
                     
@@ -521,11 +521,16 @@ namespace XMLSaver
             //core.Rule = int.Parse(com[6]);
 
             core.ForseMood = int.Parse(com[5]);
-
-            string [] com1 = com[6].Split('!');
-            core.Core = new List<RuleForm>(new RuleForm[com1.Length]);
-            for (int i = 0; i < com1.Length; i++)
-                core.Core[i] = ReturnCore(com1[i]);
+            if(com[6] == " ")
+                core.Core = new List<RuleForm>( );
+            else
+            {
+                string[] com1 = com[6].Split('!');
+                core.Core = new List<RuleForm>(new RuleForm[com1.Length]);
+                for (int i = 0; i < com1.Length; i++)
+                    core.Core[i] = ReturnCore(com1[i]);
+            }
+         
 
             core.ResultCore = ReturnCore(com[7]);
 
@@ -738,26 +743,25 @@ namespace XMLSaver
                     str += str1;
                 }
 
-                str += "/ ";
-                //if (trigger.Action.Count == 0)
-                //    str += "/ ";
-                //else
-                //{
-                //    str1 = "/" + GetRuleAction(trigger.Action[0]);
-                //    for (int i1 = 1; i1 < trigger.Action.Count; i1++)
-                //        str1 += "?" + GetRuleAction(trigger.Action[i1]);
+                if (trigger.Action.Count == 0)
+                    str += "/ ";
+                else
+                {
+                    str1 = "/" + GetRuleAction(trigger.Action[0]);
+                    for (int i1 = 1; i1 < trigger.Action.Count; i1++)
+                        str1 += "?" + GetRuleAction(trigger.Action[i1]);
 
-                //    for (int i1 = 0; i1 < trigger.Action.Count; i1++)
-                //        if (trigger.Action[i1].Action == 1) //a = 1;//Trigger =Action;
-                //        {
-                //            if(str2 ==" ")
-                //                str2 = trigger.Action[i1].Name;
-                //            else
-                //                str2 +="/" + trigger.Action[i1].Name;
-                //        }
+                    for (int i1 = 0; i1 < trigger.Action.Count; i1++)
+                        if (trigger.Action[i1].Action == 1) //a = 1;//Trigger =Action;
+                        {
+                            if (str2 == " ")
+                                str2 = trigger.Action[i1].Name;
+                            else
+                                str2 += "/" + trigger.Action[i1].Name;
+                        }
 
-                //    str += str1;
-                //}
+                    str += str1;
+                }
                 root.Add(new XElement("Trigger"+i, str));
             }
 

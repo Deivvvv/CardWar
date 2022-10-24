@@ -1,3 +1,3 @@
 <root>
-  <I>Mark/Void</I>
+  <I>теги/Void</I>
 </root>

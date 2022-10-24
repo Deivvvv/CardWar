@@ -3,7 +3,13 @@ guid: 40a027b4db9ab314384706132e75a6bf
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - OrigRedactor: {fileID: 1267363617391834249, guid: 1afdeff5866b3124db2e3a8e01a62176, type: 3}
+  - OrigButton: {instanceID: 0}
+  - Menu: {instanceID: 0}
+  - ExitButton: {instanceID: 0}
+  - CardOrig: {instanceID: 0}
+  - MenuExtend: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

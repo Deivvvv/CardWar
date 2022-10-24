@@ -1,3 +1,3 @@
 <root>
-  <I>Void/Void</I>
+  <I>оглушение/Void</I>
 </root>

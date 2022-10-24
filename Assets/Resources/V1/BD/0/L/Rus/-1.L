@@ -1,3 +1,3 @@
 <root>
-  <I>Guild/Void</I>
+  <I>Guild/классы из хардстоуна</I>
 </root>

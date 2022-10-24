@@ -2,7 +2,7 @@
   <Color>ffff00</Color>
   <Cost>0</Cost>
   <Look>true</Look>
-  <Accses>0|0?5:0|0|0|0|0</Accses>
+  <Accses>0|0?5:1?-1:1|0|0|0|0</Accses>
   <Regen>false</Regen>
   <Image>0</Image>
   <Antipod>-1</Antipod>

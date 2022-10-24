@@ -11,7 +11,8 @@ public class Starter : MonoBehaviour
     void Start()
     {
         GameObject go = GameObject.Find("Core");
-        go.GetComponent<CoreSys>().OpenScene(gameObject.GetComponent<BaseUi>());
+        GameObject go1 = GameObject.Find("Canvas");
+        go.GetComponent<CoreSys>().OpenScene(gameObject.GetComponent<BaseUi>(),go1.transform);
     }
 
 }

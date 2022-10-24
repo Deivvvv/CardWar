@@ -18,12 +18,30 @@ public class CoreSys : MonoBehaviour
     public List<BD> bD;
     public List<SubRuleHead> head;
     string mood = "Main";
+    GameObject redactor;
+    Transform canvasTransform;
     //ImageBd
 
     //private List<TextMeshProUGUI> TT;
     //private TMP_InputField nameTT;
 
     // Start is called before the first frame update
+
+    void ExitRedactor()
+    {
+        DeCoder.Read("Sys|Save");
+        Destroy(redactor);
+    }
+    void OpenRedactor()
+    {
+        if (redactor != null)
+            return;
+        redactor  = Instantiate(ui.OrigRedactor);
+        redactor.transform.SetParent(canvasTransform);
+        redactor.GetComponent<RedactorUi>().ExitButton.onClick.AddListener(() => ExitRedactor());
+       // redactor.active = false;
+    }
+
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
@@ -60,15 +78,15 @@ public class CoreSys : MonoBehaviour
     }
     void LoadScene(string str)
     {
-        switch (mood)
-        {
-            case ("Rule"):
-                DeCoder.Read("Sys|Save");
-                break;
-            case ("BD"):
-                DeCoder.Read("Sys|Save");
-                break;
-        }
+        //switch (mood)
+        //{
+        //    case ("Rule"):
+        //        DeCoder.Read("Sys|Save");
+        //        break;
+        //    case ("BD"):
+        //        DeCoder.Read("Sys|Save");
+        //        break;
+        //}
 
         if (str == "Exit")
             Application.Quit();
@@ -78,45 +96,15 @@ public class CoreSys : MonoBehaviour
             SceneManager.LoadScene(str, LoadSceneMode.Single);
         }
     }
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-            PointerClick();
-        if (Input.GetMouseButtonDown(1))
-        {
-           // Ui.TextWindow.active = false;
-           // ComandClear();
-            // Ui.TextWindow.active = false;
-        }
-    }
-    void PointerClick()
-    {
-        TMP_LinkInfo linkInfo = new TMP_LinkInfo();
-        int linkIndex = -1;
-        for(int i = 0; i < ui.TT.Count; i++)
-        {
-            linkIndex = TMP_TextUtilities.FindIntersectingLink(ui.TT[i], Input.mousePosition, Camera.main);
-            if (linkIndex != -1)
-            {
-                linkInfo = ui.TT[i].textInfo.linkInfo[linkIndex];
-                break;
-            }
-        }
-        if(linkIndex == -1)
-            return;
 
-        string selectedLink = linkInfo.GetLinkID();
-        Debug.Log("Open link " + selectedLink);
-        DeCoder.Read(selectedLink);
-    }
-
-    public void OpenScene( BaseUi _ui)
+    public void OpenScene( BaseUi _ui, Transform transform)
     {
         ui = _ui;
+        canvasTransform = transform;
+        ui.ExitButton.onClick.AddListener(() => OpenRedactor());
 
 
-       // BaseUi ui = null;
+        // BaseUi ui = null;
         //DeCoder.SetMood(str);
         //SceneManager.LoadScene(str, LoadSceneMode.Single);
         //return;
@@ -132,8 +120,8 @@ public class CoreSys : MonoBehaviour
         switch (mood)
         {
             case ("Main"):
-                string[] name = {"Колоды","Карты", "Механика", "База данных", "Выход" };
-                string[] com = {"Colod", "Card" , "Rule", "BD", "Exit"};
+                string[] name = {"Колоды","Карты", "Выход" };
+                string[] com = {"Colod", "Card" , "Exit"};
                 for(int i = 0; i < com.Length; i++)
                 {
                     go = Instantiate(ui.OrigButton);
@@ -169,9 +157,9 @@ public class CoreSys : MonoBehaviour
                 break;
 
         }
-        ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
-        DeCoder.SetTT(ui.TT, ui.NameTT);
-        DeCoder.Starter(mood);
+       // ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
+        //DeCoder.SetTT(ui.TT, ui.NameTT);
+        //DeCoder.Starter(mood);
     }
 
     void SetLoader(Button button, string str)

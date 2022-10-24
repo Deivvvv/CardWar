@@ -8,12 +8,10 @@ using TMPro;
 
 public class BaseUi : MonoBehaviour
 {
+    public GameObject OrigRedactor;
     public GameObject OrigButton;
     public Transform Menu;
     public Button ExitButton;
-
-    public List<TextMeshProUGUI> TT;
-    public TMP_InputField NameTT;
 
     public GameObject CardOrig;
     public List<Button> Buttons;

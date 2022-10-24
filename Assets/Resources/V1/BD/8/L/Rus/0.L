@@ -1,3 +1,3 @@
 <root>
-  <I>Void/Void</I>
+  <I>карты разработчика/Void</I>
 </root>

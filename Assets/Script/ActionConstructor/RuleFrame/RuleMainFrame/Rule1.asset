@@ -23,6 +23,8 @@ MonoBehaviour:
   - '!='
   - '>'
   - <
+  - '>='
+  - <=
   PlayerString:
   - All
   - My
@@ -30,23 +32,28 @@ MonoBehaviour:
   CardString:
   - Card1
   - Card2
+  - Hiro1
+  - Hiro2
+  - Plan
   SysStat:
   - Skip
   - MainStat
   - Mana
   - Speed
+  - PlanCount
   Tayp:
   - Guild
   - Legion
   - Stat
   - Tag
   - Plan
-  - Association
-  - CivilGroup
+  - Civilian
   - Status
   - CardTayp
   - CardClass
   - Race
+  - StatGroup
+  - Mark
   Trigger:
   - NextTurn
   - Action
@@ -59,7 +66,11 @@ MonoBehaviour:
   - AnotherEquip
   - PreAction
   - PostAction
-  - SeconAction
+  - EndAction
+  - Target
+  - Usebel
+  - NoTarget
+  - SecondAction
   KeyWordStatus:
   - Null
   - All

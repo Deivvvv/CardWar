@@ -11,7 +11,7 @@ public class RuleMainFrame : ScriptableObject
 
     public string[] PlayerString;
     public string[] CardString;
-    public string[] SysStat = { "Skip", "MainStat", "Mana", "Speed" };
+    public string[] SysStat = { "Skip", "MainStat", "Mana", "Speed", "ManaCard", "EnemyMana" };
     //public string[] StatTayp;
     [HideInInspector] public List<string> Tayp;
 
