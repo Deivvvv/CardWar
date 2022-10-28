@@ -6,6 +6,6 @@
   <Regen>false</Regen>
   <Image>0</Image>
   <Antipod>-1</Antipod>
-  <AntiStat>0</AntiStat>
-  <DefStat>0</DefStat>
+  <AntiStat> </AntiStat>
+  <DefStat> </DefStat>
 </root>

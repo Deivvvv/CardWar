@@ -237,7 +237,7 @@ namespace Coder
                     if (keyA < 0)
                         EditRule(com[1]);
                     else
-                        EditBDCase(com[1]);
+                        StatEdit(com[1]);
                     break;
 
                 case ("Switch"):
@@ -251,7 +251,86 @@ namespace Coder
                     break;
             }
         }
+        static void StatEdit(string str)
+        {
+            string[] com = str.Split('_');
+            bool add = (com[0] == "Add");
+            int a = int.Parse(com[1]);
 
+            switch (com[2])
+            {
+                case ("MainRace"):
+                    mainBase.Race.MainRace = a;
+                    break;
+                case ("MainStat"):
+                    mainBase.Race.MainStat = a;
+                    break;
+
+                case ("Cost"):
+                    if (add)
+                        mainBase.Cost++;
+                    else
+                        mainBase.Cost--;
+                    break;
+                case ("DefStat"):
+                    if (add)
+                        mainBase.Sub.DefStat.Add(a);
+                    else
+                        mainBase.Sub.DefStat.RemoveAt(a);
+                    break;
+                case ("AntiStat"):
+                    if (add)
+                        mainBase.Sub.AntiStat.Add(a);
+                    else
+                        mainBase.Sub.AntiStat.RemoveAt(a);
+                    break;
+                case ("GroupStatMain"):
+                    if (add)
+                    {
+                        mainBase.Group.MainSize++;
+                        if(mainBase.Group.MainSize ==0)
+                            mainBase.Group.MainSize++;
+
+                    }
+                    else
+                    {
+
+                        mainBase.Group.MainSize--;
+                        if (mainBase.Group.MainSize == 0)
+                            mainBase.Group.MainSize--;
+                    }
+                    
+                    break;
+                case ("GroupStat"):
+                    if (add)
+                    {
+                        mainBase.Group.Stat.Add(a);
+                        mainBase.Group.Size.Add(1);
+                    }
+                    else
+                    {
+                        mainBase.Group.Stat.RemoveAt(a);
+                        mainBase.Group.Size.RemoveAt(a);
+                    }
+                    break;
+                case ("GroupStatSize"):
+                    if (add)
+                    {
+                        mainBase.Group.Size[a]++;
+                        if (mainBase.Group.Size[a] == 0)
+                            mainBase.Group.Size[a]++;
+
+                    }
+                    else
+                    {
+                        mainBase.Group.Size[a]--;
+                        if (mainBase.Group.Size[a] == 0)
+                            mainBase.Group.Size[a]--;
+                    }
+                    break;
+            }
+            ClearIO();
+        }
         static void Sys(string str)
         {
             int a, b;
@@ -264,7 +343,7 @@ namespace Coder
                         Saver.SaveBD(keyA, keyB);
                         keyA = int.Parse(com[1]);
                         keyB = core.bD[keyA].Base.Count;
-                        core.bD[keyA].Base.Add(NewMainBase());
+                        core.bD[keyA].Base.Add(NewMainBase(keyA));
                         mainBase = core.bD[keyA].Base[keyB];
                         Saver.SaveBD(keyA, keyB);
                         if (keyA == core.keyTag)
@@ -349,17 +428,6 @@ namespace Coder
             }
             ClearIO();
         }
-       // static MainBase ReturnMainBase(string str)
-      //  {
-       //     string[] com = str.Split('-');
-       //     return core.bD[int.Parse(com[0])].Base[int.Parse(com[1])];
-       // }
-       // static HeadRule ReturnMainRule(string str)
-       // {
-       //     string[] com = str.Split('-');
-//
-       //     return Saver.LoadRule(int.Parse(com[0]), int.Parse(com[1]));
-       // }
 
         static RuleForm ReturnCoreOrig(string str)
         {
@@ -592,40 +660,7 @@ namespace Coder
             TextRule("HeadInfo");
 
         }
-        static void EditBDCase(string str)
-        {
-           // AddEdit($"{keyA}-{keyB}");
-            int a, b,c;
-            string[] com = str.Split('_');
-            bool add = (com[2] == "1");
-            switch (com[0])
-            {
-                case ("Cost"):
-                        if (add)
-                            mainBase.Cost++;
-                        else
-                            mainBase.Cost--;
-                    break;
-                case ("AntiStat"):
-                    mainBase.Sub.AntiStat.Edit(int.Parse(com[1]), add);
-                    break;
-                case ("DefStat"):
-                    mainBase.Sub.DefStat.Edit(int.Parse(com[1]), add);
-                    break;
-                default:
-                    a = int.Parse(com[1]);
-                    b = int.Parse(com[2]);
-                  //  if (mood == "BD")
-                   //     AddAccses(mainBase.accses, com[3], a, b, add);
-                   // else
-                   //     AddAccses(mainRule.accses, com[3], a, b, add);
-                    break;
-            }
-
-
-
-            ClearIO();
-        }
+       
         static void Switch(string str)
         {
             Debug.Log(str);
@@ -855,23 +890,21 @@ namespace Coder
 
             return str;
         }
-        /*
-        static string WebText(List<SubInt> list, int a)
+        static string WebText(List<int> list, int a, string mood)
         {
-            int c = core.bD[keyA].KeyId[a];
             int b;
             string str = "";
             for (int i = 0; i < list.Count; i++)
             {
                 b = list[i];
-                str += "\n  " + AddLink($"Key|{c}-{b}", core.bD[c].Base[b].Name) + IfLook(core.bD[c].Base[b].Look);
-                str += "     " + AddLink($"Edit|{a}_{b}_0", "-Remove", core.frame.ColorsStr[1]);
+                str += "\n  " + AddLink($"Key|{a}-{b}", core.bD[a].Base[b].Name) + IfLook(core.bD[a].Base[b].Look);
+                str += "     " + AddLink($"Edit|Remove_{b}_{mood}", "-Remove", core.frame.ColorsStr[1]);
             }
-            str += "\n  " +AddLink($"Open|NewInfo_{a}_{c}", "-Add");
+            str += "\n  " +AddLink($"Open|Add_{a}_{mood}", "-Add");
             
 
             return str;
-        }*/
+        }
         static string WebText(List<int> list, string mood)
         {
             int b;
@@ -1184,19 +1217,53 @@ namespace Coder
 
                 case ("Info"):
                     str = HeadBDInfo();
-                    if(keyA == core.keyStat)
+                    Debug.Log(keyA);
+                    Debug.Log(core.keyStat);
+                    Debug.Log(core.keyRace);
+                    if (keyA == core.keyStat)
                     {
                         str += AddLink("SetSwitch|Regen", "Regen " + ((mainBase.Sub.Regen) ? "Yes" : "No")) + "\n";
 
                         str += AddLink("Switch|Icon", $"Icon <sprite index={mainBase.Sub.Image}>") + "\n";
-                        str += AddLink("Switch|Antipod", (mainBase.Sub.Antipod == -1) ? "Antipod: Null" : "Antipod: "+ core.bD[core.keyStat].Base[mainBase.Sub.Antipod].Name) + "\n";
+                        str += AddLink("Switch|Antipod", (mainBase.Sub.Antipod == -1) ? "Antipod: Null" : "Antipod: " + core.bD[core.keyStat].Base[mainBase.Sub.Antipod].Name) + "\n";
 
                         str += "\nСписок AntiStat для доступа";
-                        //str += WebText(mainBase.Sub.AntiStat, "AntiStat"); 
+                        str += WebText(mainBase.Sub.AntiStat, core.keyStat, "AntiStat");
 
                         str += "\nСписок DefStat для доступа";
-                       // str += WebText(mainBase.Sub.DefStat, "DefStat");
+                        str += WebText(mainBase.Sub.DefStat, core.keyStat, "DefStat");
 
+                    }
+                    else if (keyA == core.keyRace)
+                    {
+                        //a = int.Parse(com[1]);
+                        str += "\nРасса родитель: ";
+                        if(mainBase.Race.MainRace == -1)
+                            str += AddLink($"Open|Add_{keyA}_MainRace", "SetMainRace");
+                        else
+                        {
+                            str += AddLink($"Key|{keyA}.{mainBase.Race.MainRace}", core.bD[core.keyRace].Base[mainBase.Race.MainRace].Name);
+                            str += "   ";
+                            str += AddLink($"Edit|Remove_{keyA}_MainRace", "Clear");
+
+                        }
+                        str += "\nГлавный стат: ";
+                        str +=  AddLink($"Open|Add_{core.keyStat}_MainStat", $"-Switch {core.bD[core.keyStat].Base[mainBase.Race.MainStat].Name}");
+                    }
+                    else if (keyA == core.keyStatGroup)
+                    {
+                        str += "\nСтат группа: ";
+                        str += "\nДелитель группы" + AddLink($"Edit|Remove_0_GroupStatMain", $"<<")+$" ({mainBase.Group.MainSize}) " +AddLink($"Edit|Add_0_GroupStatMain", $">>");
+                        for (int i = 0; i < mainBase.Group.Stat.Count; i++)
+                        {
+                            str += "\n" + AddLink($"Key|{core.keyStat}.{mainBase.Group.Stat[i]}", core.bD[core.keyStat].Base[mainBase.Group.Stat[i]].Name);
+                            str += "   ";
+                            str += AddLink($"Edit|Remove_{i}_GroupStatSize", $"<<") + $" ({mainBase.Group.Size[i]}) " + AddLink($"Edit|Add_{i}_GroupStatSize", $">>");
+                            str += "   ";
+                            str += AddLink($"Edit|Remove_{i}_GroupStat", "Clear");
+
+                        }
+                        str += "\n" + AddLink($"Open|Add_{core.keyStat}_GroupStat", $"Add Stat");
                     }
                     str += AccsesText(mainBase.accses);
                     /*
@@ -1211,6 +1278,39 @@ namespace Coder
                     }*/
 
                     ui.TT[1].text = str;
+                    break;
+                default:
+                    a = int.Parse(com[1]);
+                    str = AddLink("ClearIO", "Back") + "\n\n";
+                    List<int> mainlist = new List<int>();
+                    for (int i = 0; i < core.bD[a].Base.Count; i++)
+                        mainlist.Add(i);
+
+                    if (a == core.keyStat)
+                    {
+                        if (mainBase.Group != null)
+                            for (int i = 0; i < mainBase.Group.Stat.Count; i++)
+                                mainlist.Remove(mainBase.Group.Stat[i]);
+                        else
+                        {
+                            mainlist.Remove(mainBase.Sub.Antipod);
+                            
+                            for (int i = 0; i < mainBase.Sub.AntiStat.Count; i++)
+                                mainlist.Remove(mainBase.Sub.AntiStat[i]);
+
+                            for (int i = 0; i < mainBase.Sub.DefStat.Count; i++)
+                                mainlist.Remove(mainBase.Sub.DefStat[i]);
+                        }
+                    }
+                    else
+                    {
+                        mainlist.RemoveAt(keyB);
+                    }
+
+                    for (int i = 0; i < mainlist.Count; i++)
+                        str += "\n"+ AddLink($"Edit|{com[0]}_{mainlist[i]}_{com[2]}",$"Add {core.bD[a].Base[mainlist[i]].Name}");
+
+                    ui.TT[0].text = str;
                     break;
             }
             //return str;
@@ -2025,20 +2125,23 @@ namespace Coder
 
         #endregion
         #region BD Extend
-        static MainBase NewMainBase()
+        static MainBase NewMainBase(int a)
         {
             MainBase mainBase = new MainBase();
-            if(keyA == core.keyStat)
+            if(a== core.keyStat)
             {
                 mainBase.Sub = new MainBaseSubInt();
-                mainBase.Sub.AntiStat = new SubInt(0);
-                mainBase.Sub.DefStat = new SubInt(0);
+                mainBase.Sub.AntiStat = new List<int>();
+                mainBase.Sub.DefStat = new List<int>();
             }
-
-            if (keyA == core.keyRace)
+            else if (a == core.keyRace)
             {
                 mainBase.Race = new MainBaseSubRace();
                 //mainBase.Race.MainRace
+            }
+            else if(a == core.keyStatGroup)
+            {
+                mainBase.Group = new MainBaseStatGroup();
             }
 
             mainBase.accses = new Accses();
@@ -2118,12 +2221,14 @@ namespace Coder
         public bool Regen;
         public int Image = 0;
         public int Antipod = -1;
-        public SubInt AntiStat = new SubInt(0);
-        public SubInt DefStat = new SubInt(0);
+        public List<int> AntiStat = new List<int>();
+        public List<int> DefStat = new List<int>();
     }
     public class MainBaseStatGroup
     {
-        public SubInt Size = new SubInt(1);
+        public int MainSize =1;
+        public List<int> Stat = new List<int>();
+        public List<int> Size = new List<int>();
     }
 
     public class Accses

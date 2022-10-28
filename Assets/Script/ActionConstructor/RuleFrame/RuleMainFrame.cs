@@ -71,6 +71,7 @@ public class RuleMainFrame : ScriptableObject
         Action.Add(new SubAction("Rule", "Use_Add_Delite"));
         Action.Add(new SubAction("Status", "Add_Remove_Replace"));
         Action.Add(new SubAction("Transf", " "));
+        Action.Add(new SubAction("Create", " "));
         /*
            karma
           global = общая статистика за весь матч

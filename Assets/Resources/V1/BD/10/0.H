@@ -3,4 +3,7 @@
   <Cost>0</Cost>
   <Look>true</Look>
   <Accses>0|0|0|0|0|0</Accses>
+  <MainSize>1</MainSize>
+  <Stat> </Stat>
+  <Size> </Size>
 </root>

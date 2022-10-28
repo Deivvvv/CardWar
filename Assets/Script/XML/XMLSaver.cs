@@ -42,7 +42,8 @@ namespace XMLSaver
         }
         public static void BackUpLoad(string mood)
         {
-            string path = mainPath + "backUp/"; switch (mood)
+            string path = mainPath + "backUp/"; 
+            switch (mood)
             {
                 case ("BD"):
                     break;
@@ -261,15 +262,36 @@ namespace XMLSaver
             mainBase.Cost = int.Parse( root.Element("Cost").Value);
             mainBase.Look = bool.Parse(root.Element("Look").Value);
 
-            if(core.frame.Tayp[a] == "Stat")
+            if(a == core.keyStat)
             {
                 mainBase.Sub = new MainBaseSubInt();
                 mainBase.Sub.Regen = bool.Parse(root.Element("Regen").Value);
                 
                 mainBase.Sub.Image = int.Parse(root.Element("Image").Value);
                 mainBase.Sub.Antipod = int.Parse(root.Element("Antipod").Value);
-                mainBase.Sub.AntiStat = new SubInt(root.Element("AntiStat").Value,1);
-                mainBase.Sub.DefStat = new SubInt(root.Element("DefStat").Value, 1);
+                str = root.Element("AntiStat").Value;
+                if (str != "")
+                    mainBase.Sub.AntiStat = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+                str = root.Element("DefStat").Value;
+                if (str != "")
+                    mainBase.Sub.AntiStat = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+            }
+            else if (a == core.keyRace)
+            {
+                mainBase.Race = new MainBaseSubRace();
+                mainBase.Race.MainStat = int.Parse(root.Element("MainStat").Value);
+                mainBase.Race.MainRace = int.Parse(root.Element("MainRace").Value);
+            }
+            else if (a == core.keyStatGroup)
+            {
+                mainBase.Group = new MainBaseStatGroup();
+                mainBase.Group.MainSize = int.Parse(root.Element("MainSize").Value);
+                str = root.Element("Stat").Value;
+                if (str != "")
+                    mainBase.Group.Stat = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+                str = root.Element("Size").Value;
+                if (str != "")
+                    mainBase.Group.Size = new List<int>(str.Split('/').Select(int.Parse).ToArray());
             }
 
 
@@ -328,15 +350,27 @@ namespace XMLSaver
 
             root.Add(new XElement("Accses", mainBase.accses.Zip()));
 
-            if (core.frame.Tayp[a] == "Stat")
+            if (a == core.keyStat)
             {
                 root.Add(new XElement("Regen", mainBase.Sub.Regen));
                 root.Add(new XElement("Image", mainBase.Sub.Image));
 
                 root.Add(new XElement("Antipod", mainBase.Sub.Antipod));
 
-                root.Add(new XElement("AntiStat", mainBase.Sub.AntiStat.Zip(1)));
-                root.Add(new XElement("DefStat", mainBase.Sub.DefStat.Zip(1)));
+                root.Add(new XElement("AntiStat", ReturnListData(mainBase.Sub.AntiStat)));
+                root.Add(new XElement("DefStat", ReturnListData(mainBase.Sub.DefStat)));
+            }
+            else if (a == core.keyRace)
+            {
+                root.Add(new XElement("MainStat", mainBase.Race.MainStat));
+                root.Add(new XElement("MainRace", mainBase.Race.MainRace));
+            }
+            else if (a == core.keyStatGroup)
+            {
+                root.Add(new XElement("MainSize", mainBase.Group.MainSize));
+
+                root.Add(new XElement("Stat", ReturnListData(mainBase.Group.Stat)));
+                root.Add(new XElement("Size", ReturnListData(mainBase.Group.Size)));
             }
 
 
