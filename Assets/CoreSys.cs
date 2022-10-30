@@ -131,30 +131,19 @@ public class CoreSys : MonoBehaviour
                     go.transform.GetChild(0).gameObject.GetComponent<Text>().text = name[i];
                 }
                 break;
-            case ("BD"):
-                //TT = ui.TT;
-                //nameTT = ui.NameTT;
-
-             //   ui.ExitButton.onClick.AddListener(() => OpenScene("Main"));
-                break;
-            case ("Rule"):
-                //TT = ui.TT;
-                //nameTT = ui.NameTT;
-
-
-             //   ui.ExitButton.onClick.AddListener(() => OpenScene("Main"));
-                break;
             case ("Gallery"):
+                //CardConstructor.Load(mood);
 
-                string[] s = { "NewCard", "Colod", "Edit" };
-                for (int i = 0; i < s.Length; i++)
-                {
-                    go = Instantiate(ui.OrigButton);
-                    go.transform.GetChild(0).gameObject.GetComponent<Text>().text = s[i];
 
-                    SceneManager.LoadScene(s[i], LoadSceneMode.Single);
-                    go.transform.SetParent(ui.Menu);
-                }
+                //string[] s = { "NewCard", "Colod", "Edit" };
+                //for (int i = 0; i < s.Length; i++)
+                //{
+                //    go = Instantiate(ui.OrigButton);
+                //    go.transform.GetChild(0).gameObject.GetComponent<Text>().text = s[i];
+
+                //    SceneManager.LoadScene(s[i], LoadSceneMode.Single);
+                //    go.transform.SetParent(ui.Menu);
+                //}
                 break;
 
         }

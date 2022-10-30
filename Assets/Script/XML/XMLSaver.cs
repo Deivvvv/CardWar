@@ -281,6 +281,9 @@ namespace XMLSaver
                 mainBase.Race = new MainBaseSubRace();
                 mainBase.Race.MainStat = int.Parse(root.Element("MainStat").Value);
                 mainBase.Race.MainRace = int.Parse(root.Element("MainRace").Value);
+                str = root.Element("UseRace").Value;
+                if (str != "")
+                    mainBase.Race.UseRace = new List<int>(str.Split('/').Select(int.Parse).ToArray());
             }
             else if (a == core.keyStatGroup)
             {
@@ -334,10 +337,13 @@ namespace XMLSaver
         {
             if (b == -1)
                 return;
-                string[] com = null;
+
+            string[] com = null;
             string str ="";
             string path = mainPath + $"BD/{a}/";
             MainBase mainBase = core.bD[a].Base[b];
+
+            mainBase.accses.ClearList();
 
             str = $"{mainBase.Name}/{mainBase.Info}";
             AddLangFile(path, str, b);
@@ -364,6 +370,7 @@ namespace XMLSaver
             {
                 root.Add(new XElement("MainStat", mainBase.Race.MainStat));
                 root.Add(new XElement("MainRace", mainBase.Race.MainRace));
+                root.Add(new XElement("UseRace", ReturnListData(mainBase.Race.UseRace)));
             }
             else if (a == core.keyStatGroup)
             {
@@ -741,7 +748,10 @@ namespace XMLSaver
 
             string path = mainPath + $"Rule/{a}/";
             root = new XElement("root");
-            
+
+            head.accses.ClearList();
+
+
             root.Add(new XElement("Cost", head.Cost));
             root.Add(new XElement("Triggers", head.Trigger.Count));
             for (int i = 0; i < head.Trigger.Count; i++) {

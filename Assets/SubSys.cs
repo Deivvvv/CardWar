@@ -77,7 +77,7 @@ namespace SubSys
             for (int i= card.Count; i < bodys.Count; i++)
                 CardClear(bodys[i]);
         }
-        static void ReadCard(CardCase card, CardBody body)
+        public static void ReadCard(CardCase card, CardBody body)
         {
             CoreSys sys = DeCoder.GetCore();
 

@@ -260,6 +260,10 @@ namespace Coder
             switch (com[2])
             {
                 case ("MainRace"):
+                    if(mainBase.Race.MainRace != -1)
+                        core.bD[core.keyRace].Base[mainBase.Race.MainRace].Race.UseRace.Add(keyB);
+                    else
+                        core.bD[core.keyRace].Base[mainBase.Race.MainRace].Race.UseRace.Remove(keyB);
                     mainBase.Race.MainRace = a;
                     break;
                 case ("MainStat"):
@@ -789,10 +793,6 @@ namespace Coder
                     ui.NameTT.text = mainBase.Info;
                     break;
 
-                case ("CardName"):
-                    // cardBase = nameTT.text;
-                    break;
-
                 case ("RuleName"):
                     ui.NameTT.text = core.head[KeyAConverter()].Rule[keyB];
                     break;
@@ -815,17 +815,12 @@ namespace Coder
                     Saver.SaveBDMain(keyA);
                     break;
                 case ("Base"):
-                    //AddEdit($"{keyA}-{keyB}");
                     mainBase.Name = ui.NameTT.text;
                     break;
                 case ("Info"):
-                   // AddEdit($"{keyA}-{keyB}");
                     mainBase.Info = ui.NameTT.text;
                     break;
 
-                case ("CardName"):
-                   // cardBase = nameTT.text;
-                    break;
 
                 case ("RuleName"):
                     core.head[KeyAConverter()].Rule[keyB] = ui.NameTT.text;
@@ -1217,9 +1212,6 @@ namespace Coder
 
                 case ("Info"):
                     str = HeadBDInfo();
-                    Debug.Log(keyA);
-                    Debug.Log(core.keyStat);
-                    Debug.Log(core.keyRace);
                     if (keyA == core.keyStat)
                     {
                         str += AddLink("SetSwitch|Regen", "Regen " + ((mainBase.Sub.Regen) ? "Yes" : "No")) + "\n";
@@ -1286,21 +1278,44 @@ namespace Coder
                     for (int i = 0; i < core.bD[a].Base.Count; i++)
                         mainlist.Add(i);
 
-                    if (a == core.keyStat)
+                    if(a == core.keyStatGroup)
                     {
-                        if (mainBase.Group != null)
-                            for (int i = 0; i < mainBase.Group.Stat.Count; i++)
-                                mainlist.Remove(mainBase.Group.Stat[i]);
-                        else
-                        {
-                            mainlist.Remove(mainBase.Sub.Antipod);
+                        for (int i = 0; i < mainBase.Group.Stat.Count; i++)
+                            mainlist.Remove(mainBase.Group.Stat[i]);
+                    }
+                    else if (a == core.keyStat)
+                    {
+                        mainlist.Remove(mainBase.Sub.Antipod);
                             
-                            for (int i = 0; i < mainBase.Sub.AntiStat.Count; i++)
-                                mainlist.Remove(mainBase.Sub.AntiStat[i]);
+                        for (int i = 0; i < mainBase.Sub.AntiStat.Count; i++)
+                            mainlist.Remove(mainBase.Sub.AntiStat[i]);
 
-                            for (int i = 0; i < mainBase.Sub.DefStat.Count; i++)
-                                mainlist.Remove(mainBase.Sub.DefStat[i]);
+                        for (int i = 0; i < mainBase.Sub.DefStat.Count; i++)
+                            mainlist.Remove(mainBase.Sub.DefStat[i]);
+                        
+                    }
+                    else if(a == core.keyRace)
+                    {
+                        BD bd = core.bD[a];
+                        List<int> localList = new List<int>();
+                        for (int i = 0; i < mainBase.Race.UseRace.Count; i++)
+                            localList.Add(mainBase.Race.UseRace[i]);
+
+                        List<int> oldId;
+                        for (int i = 0; i < localList.Count; i++)
+                        {
+                            oldId = bd.Base[localList[i]].Race.UseRace;
+
+                            for (int j = 0; j < oldId.Count; j++)
+                                if (!bd.Base[oldId[j]].Look)
+                                    localList.Add(oldId[j]);
                         }
+
+
+
+                        localList.Add(keyB);
+                        for (int i = 0; i < localList.Count; i++)
+                            mainlist.Remove(localList[i]);
                     }
                     else
                     {
@@ -1315,7 +1330,7 @@ namespace Coder
             }
             //return str;
         }
-        static string AccsesText(Accses accses, bool full = true)
+        public static string AccsesText(Accses accses, bool full = true)
         {
             string sub(Accses accses, string mood, bool full)
             {
@@ -2215,6 +2230,7 @@ namespace Coder
     {
         public int MainStat = 0;
         public int MainRace = -1;
+        public List<int> UseRace = new List<int>();
     }
     public class MainBaseSubInt
     {
@@ -2274,7 +2290,7 @@ namespace Coder
 
         public void Edit(string mood,int a,int b, bool add)
         {
-            List<SubInt> list = new List<SubInt>();
+            List<SubInt> list = null;
             switch (mood)
             {
                 case ("Like"):
@@ -2325,13 +2341,80 @@ namespace Coder
             return subInt.Zip(3);
         }
 
+        public void ClearList()
+        {
+            void clire(List<SubInt> list, bool use = false)
+            {
+                for (int i = 0; i < list.Count; i++)
+                    if (list[i].Head >= 0)
+                    {
+                        if (list[i].Num.Count == 0)
+                        {
+                            list.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    else if (use)
+                    {
+                        if (list[i].Num.Count == 0)
+                        {
+                            int a = Find(Need, list[i].Head, false);
+                            if (a != -1)
+                                if (Need[a].Num.Count == 0)
+                                    Need.RemoveAt(a);
+
+                            a = Find(Like, list[i].Head, false);
+                            if (a != -1)
+                                if (Like[a].Num.Count == 0)
+                                    Like.RemoveAt(a);
+                        }
+                    }
+            }
+            clire(Like);
+            clire(Need);
+            clire(DisLike, true);
+        }
+
         void Reset()
         {
             Like = new List<SubInt>();
             Need = new List<SubInt>();
             DisLike = new List<SubInt>();
         }
-        List<int> intGuild, intLegion, intRace, intCivilian, intCardTayp, intCardClass, intStat, intRule;
+        List<int> intGuild, intLegion, intRace, intCivilian, intCardTayp, intCardClass, intStat;//, intRule;
+
+        public List<int> ReturnAccses(string mood)
+        {
+            switch (mood)
+            {
+                case ("Guild"):
+                    return intGuild;
+                    break;
+                case ("Legion"):
+                    return intLegion;
+                    break;
+                case ("Race"):
+                    return intRace;
+                    break;
+                case ("Civilian"):
+                    return intCivilian;
+                    break;
+                case ("CardTayp"):
+                    return intCardTayp;
+                    break;
+                case ("CardClass"):
+                    return intCardClass;
+                    break;
+                case ("Stat"):
+                    return intStat;
+                    break;
+                case ("Rule"):
+                    return intRule;
+                    break;
+            }
+            return null;
+        }
+
         public void AccsesComplite()
         {
             CoreSys core = DeCoder.GetCore();
@@ -2344,7 +2427,7 @@ namespace Coder
             intCardTayp = new List<int>();
             intCardClass = new List<int>();
             intStat = new List<int>();
-            intRule = new List<int>();
+            //intRule = new List<int>();
 
             void CountData(List<int> list, int i)
             {
@@ -2353,7 +2436,7 @@ namespace Coder
             }
             for (int i = 0; i < DisLike.Count; i++)
             {
-                if (DisLike[i].Head < 0)  {  intRule.Add(i);  continue;  }
+                //if (DisLike[i].Head < 0)  {  intRule.Add(i);  continue;  }
 
                 if (DisLike[i].Head == core.keyStat) { CountData(intStat, i); continue; }
 
@@ -2398,7 +2481,7 @@ namespace Coder
 
             for(int j=0;j< card.Stat.Count;j++)
                 for (int i = 0; i < intStat.Count; i++)
-                    if (card.Stat[j].Get("Stat") == intGuild[i])
+                    if (card.Stat[j].Get("Stat") == intStat[i])
                         return false;
 
 
@@ -2416,16 +2499,34 @@ namespace Coder
 
             return true;
         }
-        public int SplitCard( CardCase card)
-        {
+        public int SplitCard( CardCase card, Accses coreAccses)
+        { 
+            /*
+         Принадлежность карты
+Гильдия или наёмники
+Легион
+Раса
+Соц группа
+Тип карты
+Раздел механик
+Статы
+         */
+            void AddRace(int a)
+            {
+                if(a != -1)
+                {
+                    Split(core.bD[core.keyRace].Base[a].accses);
+                    AddRace(core.bD[core.keyRace].Base[a].Race.MainRace);
+                }
+            }
+
             CoreSys core = DeCoder.GetCore();
             Reset();
             int s = -1,a;
             //stat
             for(int i = 0; i < card.Stat.Count; i++)
-            {
                 Split(core.bD[core.keyStat].Base[card.Stat[i].Get("Stat")].accses);
-            }
+
             //tag and trait
             for (int i = 0; i < card.Trait.Count; i++)
             {
@@ -2437,13 +2538,21 @@ namespace Coder
                 }
             }
 
+            if(coreAccses == null)
+            {
+                Split(core.bD[core.keyCardTayp].Base[card.CardTayp].accses);
+                Split(core.bD[core.keyCivilian].Base[card.Civilian].accses);
 
-            Split(core.bD[core.keyLegion].Base[card.Legion].accses);
-            Split(core.bD[core.keyRace].Base[card.Race].accses);
-            Split(core.bD[core.keyGuild].Base[card.Guild].accses);
-            Split(core.bD[core.keyCivilian].Base[card.Civilian].accses);
-            Split(core.bD[core.keyCardTayp].Base[card.CardTayp].accses);
-            Split(core.bD[core.keyCardClass].Base[card.CardClass].accses);
+                Split(core.bD[core.keyRace].Base[card.Race].accses);
+                AddRace(core.bD[core.keyRace].Base[card.Race].Race.MainRace);
+
+
+                Split(core.bD[core.keyLegion].Base[card.Legion].accses);
+                Split(core.bD[core.keyGuild].Base[card.Guild].accses);
+                Split(core.bD[core.keyCardClass].Base[card.CardClass].accses);
+            }
+            else
+                Split(coreAccses);
 
             //stat->trait->legion->race->guild->civilian
             //>> keyStat >> keyTag + keyRule >> keyLegion >>keyRace >> keyGuild >> keySocial >> keyCardTayp >> keyCardClass
@@ -2497,40 +2606,13 @@ namespace Coder
 
         public int Split(Accses accses)
         {
-            /*
-             стравка
-            list.Count = 0 - блокировать/открыть весь раздел
-             
-             */
-            int s = -1;
-
-
+            SysCore core = DeCoder.GetCore();
             int a, b;
             //блок блокировки доступа
             for(int i = 0; i < accses.DisLike.Count; i++)
             {
                 if (accses.DisLike[i].Num.Count == 0)
                 {
-                    Debug.Log("!");
-                    //перенести в конструктор механик и базы данных как проверка на нарушение внетренней логики
-
-                    //проверем не блокирууем ли мы сами себя
-                    a = Find(accses.Need, accses.DisLike[i].Head, false);
-                    if (a != -1)
-                        if (accses.Need[a].Num.Count == 0)
-                        {
-                            Error($"Вы пытаеть блокировать доступ к требуему разделу {accses.DisLike[i].Head}");
-                            return accses.DisLike[i].Head;
-                        }
-
-                    a = Find(accses.Like, accses.DisLike[i].Head, false);
-                    if (a != -1)
-                        if (accses.Like[a].Num.Count == 0)
-                        {
-                            Error($"Вы пытаеть блокировать доступ к раблокирываему разделу {accses.DisLike[i].Head} Дайте конретику по блокировке или разрешению");
-                            return accses.DisLike[i].Head;
-                        }
-                    //
 
                     a = Find(Like, accses.DisLike[i].Head, false);
                     if (a != -1)
@@ -2555,7 +2637,18 @@ namespace Coder
                             b = Need[a].Find(accses.DisLike[i].Num[j].Head, false);
                             if(b != -1)
                             {
-                                Error($"(Нарушение достпа необходимо сбросить предыдущий слой требующий этот доступ)Вы пытаеть блокировать доступ к требуему экземпляру раздела{accses.DisLike[i].Head} {accses.DisLike[i].Head}");
+                                string str = $"(Нарушение достпа необходимо сбросить предыдущий слой требующий этот доступ)Вы пытаеть блокировать доступ к требуему экземпляру раздела{accses.DisLike[i].Head} {accses.DisLike[i].Head}";
+
+                                //for (int j = 0; j < Need[a].Num[b].Num.Count; j++) 
+                                //{
+                                //    str += $"\nраздел {core.bD[Need[a].Num[b].Num[j].Head].Name}";
+                                //    for (int k = 0; k < Need[a].Num[b].Num[j].Num.Count; k++)
+                                //    {
+                                //        str += $"\n     элемент {core.bD[Need[a].Num[b].Num[j].Num[k].Head].Name}";
+                                //    } 
+                                //}
+
+                                    Error(str);
                                 return accses.DisLike[i].Head;
                             }
                         }
@@ -2565,10 +2658,10 @@ namespace Coder
                     if (accses.DisLike[i].Head <0)
                     {
                         c = -accses.DisLike[i].Head - 1;
-                        c = DeCoder.GetCore().head[c].Rule.Count;
+                        c = core.head[c].Rule.Count;
                     }
                     else
-                        c = DeCoder.GetCore().bD[accses.DisLike[i].Head].Base.Count;
+                        c = core.bD[accses.DisLike[i].Head].Base.Count;
 
                     a = Find(DisLike, accses.DisLike[i].Head);
                     if (a != -1)
@@ -2635,10 +2728,10 @@ namespace Coder
                     if (accses.Like[i].Head < 0)
                     {
                         c = -accses.Like[i].Head - 1;
-                        c = DeCoder.GetCore().head[c].Rule.Count;
+                        c = core.head[c].Rule.Count;
                     }
                     else
-                        c = DeCoder.GetCore().bD[accses.Like[i].Head].Base.Count;
+                        c = core.bD[accses.Like[i].Head].Base.Count;
 
                     b = Find(DisLike,accses.Like[i].Head, false);
                     a = Find(Like,accses.Like[i].Head);

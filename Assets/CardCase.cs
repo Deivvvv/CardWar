@@ -84,6 +84,16 @@ public class CardCase : MonoBehaviour
         CardClass = intCardClass;
         Id = intId;
     }
+    public CardCase(int intGuild, int intCardTayp, int intCardClass, int intId, int intLegion, int intCivilian, int intRace)
+    {
+        Guild = intGuild;
+        CardTayp = intCardTayp;
+        CardClass = intCardClass;
+        Id = intId; 
+        Civilian = intCivilian;
+        Legion = intLegion;
+        Race = intRace;
+    }
 }
 
 public class StatExtend
