@@ -9061,8 +9061,7 @@ MonoBehaviour:
   OrigStatButton: {fileID: 0}
   OrigRing: {fileID: 2142884835997106003, guid: 830950ff04eccb6419af2218d8a739fa, type: 3}
   InfoPanel: {fileID: 363860428}
-  MainList: []
-  MainListInfo: []
+  MainRing: {fileID: 77947384}
   StatWindow: {fileID: 590857733}
   RuleWindow: {fileID: 151291592}
   LocalRuleWindow: {fileID: 0}

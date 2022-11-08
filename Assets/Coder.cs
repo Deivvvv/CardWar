@@ -352,7 +352,9 @@ namespace Coder
                         Saver.SaveBD(keyA, keyB);
                         if (keyA == core.keyTag)
                             Saver.RuleAdd();
-                       
+
+                        GetIO("Base");
+
                         break;
                     case ("Save"):
                         Saver.SaveBD(keyA, keyB);
@@ -400,6 +402,9 @@ namespace Coder
                         if(keyA >-1)
                             keyA = -key - 1;
                         subMood = -1;
+
+                        GetIO("RuleName");
+
                         break;
                     case ("Save"):
                         if (keyB > -1)
@@ -788,6 +793,7 @@ namespace Coder
         {
             string[] com = str.Split('_');
 
+            ui.NameTT.Select();
             // GetIOText();
             ui.TT[0].text = "";
             switch (com[0])

@@ -133,6 +133,7 @@ public class CardConstructor : MonoBehaviour
 
     int SetList(int mood)
     {
+        ResetAccses();
         //Debug.Log(mood);
         if (mood >= localKey.Length)
             return -1;
@@ -184,6 +185,7 @@ public class CardConstructor : MonoBehaviour
                 list.Remove(disList[i]);
 
 
+            BD bd = core.bD[key[mood]];
             a = mainAccses.Find(mainAccses.Like, key[mood], false);
             if (a != -1)
             {
@@ -194,7 +196,6 @@ public class CardConstructor : MonoBehaviour
                 // }else
                 if (key[mood] == core.keyRace)
                 {
-                    BD bd = core.bD[key[mood]];
                     List<int> localList = new List<int>();
                     for (int i = 0; i < mainAccses.Like[a].Num.Count; i++)
                         localList.Add(mainAccses.Like[a].Num[i].Head);
@@ -216,10 +217,35 @@ public class CardConstructor : MonoBehaviour
                 else
                     for (int i = 0; i < mainAccses.Like[a].Num.Count; i++)
                         list.Add(mainAccses.Like[a].Num[i].Head);
+
             }
-            //a = mainAccses.Find(mainAccses.Need, key[mood], false);
-            //if (a != -1)
-            //{ 
+
+            bool DisConnect(Accses accses, int key, int num)
+            {
+                int a = accses.Find(accses.Need, key, false);
+                if (a != -1)
+                {
+                    int b = accses.Need[a].Find(num, false);
+                    return (b == -1);
+                }
+                return false;
+            }
+
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                Accses localAccses = bd.Base[list[i]].accses;
+                //Guild ,Race ,Legion , Civilian, CardTayp, CardClass
+                if (DisConnect(localAccses, core.keyGuild, intGuild)) { list.RemoveAt(i); i--; continue; }
+                if (DisConnect(localAccses, core.keyLegion, intLegion)) { list.RemoveAt(i); i--; continue; }
+                if (DisConnect(localAccses, core.keyRace, intRace)) { list.RemoveAt(i); i--; continue; }
+                if (DisConnect(localAccses, core.keyCivilian, intCivilian)) { list.RemoveAt(i); i--; continue; }
+                if (DisConnect(localAccses, core.keyCardTayp, intCardTayp)) { list.RemoveAt(i); i--; continue; }
+                if (DisConnect(localAccses, core.keyCardClass, intCardClass)) { list.RemoveAt(i); i--; continue; }
+            }
+            //b = mainAccses.Find(mainAccses.Need, key[mood], false);
+            //if (b != -1)
+            //{
 
             //}
         }
@@ -308,29 +334,30 @@ public class CardConstructor : MonoBehaviour
             //{
             //    Destroy(window.GetChild(list.Count).gameObject); 
             //}
-            Debug.Log(window.childCount);
-            Debug.Log(list.Count);
-            int a = window.childCount;
-            for (int i = 0; i < a; i++)
-            {
-                Destroy(window.GetChild(0).gameObject);
-            }
 
-            for (int i = 0; i < list.Count; i++)
+            for (int j = window.childCount; j < list.Count;j++)
             {
                 go = Instantiate(ui.OrigButton);
                 go.transform.SetParent(window);
-            //}
-
-            ////Debug.Log(window.childCount);
-            ////Debug.Log(list.Count);
-
-            //for (int i = 0; i < list.Count; i++)
-            //{
+            }
+            int c = window.childCount - list.Count;
+            for (int i = 0; i < c; i++)
+            {
+                Destroy(window.GetChild(c - i).gameObject);
+                // i--;
+            }
+            //Debug.Log(window.childCount);
+            //Debug.Log("");
+            //Debug.Log(list.Count);
+            //Debug.Log(window.childCount);
+            //Debug.Log(c);
+            for (int i = 0; i < list.Count; i++)
+            {
+               // Debug.Log(bD.Base[list[i]].Name);
                 //go = Instantiate(ui.OrigButton);
                 //go.transform.SetParent(window);
                 //Debug.Log(bD.Base[list[i]].Name);
-                //go = window.GetChild(i).gameObject;
+                go = window.GetChild(i).gameObject;
                 go.GetComponent<CardCaseInfo>().Set(cardSys, mood, i, -1, "full");
                 go.transform.GetChild(0).GetComponent<Text>().text = bD.Base[list[i]].Name;
 
@@ -340,6 +367,15 @@ public class CardConstructor : MonoBehaviour
                 //go.GetComponent<Button>().onClick.AddListener(() => SetMainStat(mood, a));
 
             }
+
+            //int c = window.childCount - list.Count;
+            //for (int i = 0; i < c; i++)
+            //{
+            //    Destroy(window.GetChild(0).gameObject);
+            //    // i--;
+            //}
+            //Debug.Log(list.Count);
+            //Debug.Log(window.childCount);
             //Debug.Log(window.childCount);
         }
 
@@ -455,8 +491,13 @@ public class CardConstructor : MonoBehaviour
 
         void Clear(int intMood)
         {
-            for (int i = ui.MainList[intMood].childCount; i > -1; i--)
-                Destroy(ui.MainList[intMood].GetChild(0).gameObject);
+            for (int a = intMood; a < 6; a++)
+            {
+                ui.MainListInfo[a].text = core.bD[key[a]].Name;
+
+                for (int i = ui.MainList[a].childCount; i > 0; i--)
+                    Destroy(ui.MainList[a].GetChild(i - 1).gameObject);
+            }
         }
 
         if (a > 5)
@@ -488,23 +529,28 @@ public class CardConstructor : MonoBehaviour
         }
         if (b != -1)
         {
-            ResetAccses();
             b = SetList(a+1);
             if (b != -1)
             {
                 SetStat(a + 1, b, false);
+            }
+            else
+            {
+                SetStat(a + 1, -1, false);
             }
 
             LoadList(a + 1);
             //LoadList(a);
         }
         else
-        {
-            SetStat(a + 1, -1, false);
             Clear(a + 1);
-        }
-        if (full) 
-            ResetAccses();
+        //else
+        //{
+        //    SetStat(a + 1, -1, false);
+        //    Clear(a + 1);
+        //}
+        //if (full) 
+        //    ResetAccses();
 
     }
 
@@ -950,8 +996,8 @@ public class CardConstructor : MonoBehaviour
 
                 for (int i = size; i < ui.RuleRing[intMood].childCount; i++)
                 {
-                    Destroy(ui.RuleRing[intMood].GetChild(size).gameObject);
-                    i--;
+                    Destroy(ui.RuleRing[intMood].GetChild(i).gameObject);
+                    //i--;
                 }
             }
             void Build(int intMood, int i)
@@ -1041,8 +1087,8 @@ public class CardConstructor : MonoBehaviour
 
                 for (int i = size; i < ui.RuleRing[intMood].childCount; i++)
                 {
-                    Destroy(ui.RuleRing[intMood].GetChild(size).gameObject);
-                    i--;
+                    Destroy(ui.RuleRing[intMood].GetChild(i).gameObject);
+                    //i--;
                 }
             }
             void Build(int intMood,int i,int j, int size =-1)
