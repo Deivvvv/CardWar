@@ -393,6 +393,7 @@ namespace Coder
                             core.head[key].Index.Add(core.head[key].Index[keyB - 1] + 1);
                         NewMainRule(key);
                         core.head[key].Rule.Add("Void");
+                        core.head[key].Cost.Add(0);
 
                         Saver.SaveRuleMain(key);
                         Saver.SaveRule(mainRule, key, core.head[key].Index[keyB]);
@@ -748,8 +749,19 @@ namespace Coder
                 case ("Look"):
                     mainBase.Look = !mainBase.Look;
                     break;
+                case ("Visible"):
+                    if(keyA <0)
+                        mainRule.Visible = !mainRule.Visible;
+                    else
+                        mainBase.Visible = !mainBase.Visible;
+                    break;
+
+                case ("VisibleCard"):
+                        mainRule.VisibleCard = !mainRule.VisibleCard;
+                    
+                    break;
                 case ("Regen"):
-                    mainBase.Sub.Regen = !mainBase.Sub.Regen;
+                   // mainBase.Sub.Regen = !mainBase.Sub.Regen;
                     break;
                 case ("Hide"):
                     a = int.Parse(com[1]);
@@ -820,7 +832,6 @@ namespace Coder
                 case ("Info"):
                     mainBase.Info = ui.NameTT.text;
                     break;
-
 
                 case ("RuleName"):
                     core.head[KeyAConverter()].Rule[keyB] = ui.NameTT.text;
@@ -973,11 +984,18 @@ namespace Coder
 
             switch (com[0])
             {
+                case ("SizePlan"):
+                    if (mood)
+                        mainBase.Plan.Size--;
+                    else
+                        mainBase.Plan.Size++;
+                    break;
                 case ("Cost"):
                     if (mood)
-                        mainRule.Cost--;
+                        core.head[keyA].Cost[keyB]--;
                     else
-                        mainRule.Cost++;
+                        core.head[keyA].Cost[keyB]++;
+                    Saver.SaveRuleMain(keyA);
                     break;
 
                 case ("Team"):
@@ -1017,6 +1035,14 @@ namespace Coder
 
                     if (mainRule.Trigger[subMood].Action[b].Min > mainRule.Trigger[subMood].Action[b].Max)
                         mainRule.Trigger[subMood].Action[b].Min = mainRule.Trigger[subMood].Action[b].Max;
+                    break;
+
+                case ("ActionPrioritet"):
+                    if (mood)
+                        mainRule.Trigger[subMood].Action[b].Prioritet--;
+                    else
+                        mainRule.Trigger[subMood].Action[b].Prioritet++;
+
                     break;
 
 
@@ -1214,7 +1240,7 @@ namespace Coder
                     str = HeadBDInfo();
                     if (keyA == core.keyStat)
                     {
-                        str += AddLink("SetSwitch|Regen", "Regen " + ((mainBase.Sub.Regen) ? "Yes" : "No")) + "\n";
+                        //str += AddLink("SetSwitch|Regen", "Regen " + ((mainBase.Sub.Regen) ? "Yes" : "No")) + "\n";
 
                         str += AddLink("Switch|Icon", $"Icon <sprite index={mainBase.Sub.Image}>") + "\n";
                         str += AddLink("Switch|Antipod", (mainBase.Sub.Antipod == -1) ? "Antipod: Null" : "Antipod: " + core.bD[core.keyStat].Base[mainBase.Sub.Antipod].Name) + "\n";
@@ -1240,7 +1266,7 @@ namespace Coder
 
                         }
                         str += "\nГлавный стат: ";
-                        str +=  AddLink($"Open|Add_{core.keyStat}_MainStat", $"-Switch {core.bD[core.keyStat].Base[mainBase.Race.MainStat].Name}");
+                        str +=  AddLink($"Open|Add_{core.keyRace}_MainStat", $"-Switch {core.bD[core.keyStat].Base[mainBase.Race.MainStat].Name}");
                     }
                     else if (keyA == core.keyStatGroup)
                     {
@@ -1256,6 +1282,12 @@ namespace Coder
 
                         }
                         str += "\n" + AddLink($"Open|Add_{core.keyStat}_GroupStat", $"Add Stat");
+                    }
+                    else if(keyA == core.keyPlan)
+                    {
+
+                        str += "\nРазмер плана: ";
+                        str += TextEditInt("SizePlan", "" + mainBase.Plan.Size);
                     }
                     str += AccsesText(mainBase.accses);
                     /*
@@ -1296,26 +1328,42 @@ namespace Coder
                     }
                     else if(a == core.keyRace)
                     {
-                        BD bd = core.bD[a];
-                        List<int> localList = new List<int>();
-                        for (int i = 0; i < mainBase.Race.UseRace.Count; i++)
-                            localList.Add(mainBase.Race.UseRace[i]);
-
-                        List<int> oldId;
-                        for (int i = 0; i < localList.Count; i++)
+                        if (com[2] == "MainStat")
                         {
-                            oldId = bd.Base[localList[i]].Race.UseRace;
+                            mainlist = new List<int>();
+                            for (int i = 0; i < core.bD[core.keyStat].Base.Count; i++)
+                                mainlist.Add(i);
 
-                            for (int j = 0; j < oldId.Count; j++)
-                                if (!bd.Base[oldId[j]].Look)
-                                    localList.Add(oldId[j]);
+                            for (int i = 0; i < mainlist.Count; i++)
+                                str += "\n" + AddLink($"Edit|{com[0]}_{mainlist[i]}_{com[2]}", $"Add {core.bD[core.keyStat].Base[mainlist[i]].Name}");
+
+                            ui.TT[0].text = str;
+                            return;
                         }
+                        else
+                        {
+                            BD bd = core.bD[a];
+                            List<int> localList = new List<int>();
+                            for (int i = 0; i < mainBase.Race.UseRace.Count; i++)
+                                localList.Add(mainBase.Race.UseRace[i]);
+
+                            List<int> oldId;
+                            for (int i = 0; i < localList.Count; i++)
+                            {
+                                oldId = bd.Base[localList[i]].Race.UseRace;
+
+                                for (int j = 0; j < oldId.Count; j++)
+                                    if (!bd.Base[oldId[j]].Look)
+                                        localList.Add(oldId[j]);
+                            }
 
 
 
-                        localList.Add(keyB);
-                        for (int i = 0; i < localList.Count; i++)
-                            mainlist.Remove(localList[i]);
+                            localList.Add(keyB);
+                            for (int i = 0; i < localList.Count; i++)
+                                mainlist.Remove(localList[i]);
+                        }
+                      
                     }
                     else
                     {
@@ -1334,29 +1382,34 @@ namespace Coder
         {
             string sub(Accses accses, string mood, bool full)
             {
-                string str = "";
+                string str = "\n";
                 int a;
                 List<SubInt> list = null;
                 switch (mood)
                 {
                     case ("Like"):
                         list = accses.Like;
+                        str += "Разрешения";
                         break;
                     case ("Need"):
                         list = accses.Need;
+                        str += "требования";
                         break;
                     case ("DisLike"):
                         list = accses.DisLike;
+                        str += "Запреты";
                         break;
                     case ("Use"):
                         list = accses.Use;
+                        str += "Упоминается";
                         break;
                     case ("Mark"):
                         list = accses.Mark;
+                        str += "Теги";
                         break;
                 }
 
-                str += $"\n{mood} механики ";
+                str += $" механики ";
                 if(full)
                     str += AddLink($"LinkerMain|{mood}_1", $"\nСоздать раздел");
                 for (int i = 0; i < list.Count; i++)
@@ -1370,10 +1423,10 @@ namespace Coder
                             str += AddLink($"Linker|{mood}_{list[i].Head}_1", $"\nСоздать связь в {core.head[b].Name}");
                             for (int i1 = 0; i1 < list[i].Num.Count; i1++)
                             {
-                                for (int i2 = 0; i2 < core.head[b].Index.Count; i2++)
-                                {
-                                    Debug.Log(core.head[b].Index[i2]);
-                                }
+                                //for (int i2 = 0; i2 < core.head[b].Index.Count; i2++)
+                                //{
+                                //    Debug.Log(core.head[b].Index[i2]);
+                                //}
 
                                 a = core.head[b].Index.FindIndex(x => x == list[i].Num[i1].Head);
                                 if(a != -1)
@@ -1468,6 +1521,7 @@ namespace Coder
                     break;
 
 
+                    
                 case ("HeadInfo"):
                     int key = KeyAConverter();
                     if (subMood == -1)
@@ -1482,9 +1536,12 @@ namespace Coder
                         str += "\n\n";
                         str += AddLink("GetIO|RuleName", $"({core.head[key].Index[keyB]})Правило -- { core.head[key].Rule[keyB]}");
                         // str += AddLink("Edit_Cost", $"\nЦена: { mainBase.Cost}");
-                        str += $"\nЦена: " + TextEditInt("Cost", "" + mainRule.Cost);
+                        str += $"\nЦена: " + TextEditInt("Cost", "" + core.head[key].Cost[keyB]);
                         str += $"\nTag {core.bD[core.keyTag].Base[mainRule.Tag].Name}";
                         // str += AddLink("Tag_Tag", $"\nTag { mainBase.Tag}");
+
+                        str += "\n" + AddLink("SetSwitch|Visible", (mainRule.Visible) ? "Visible" : "InVisible");
+                        str += "\n" + AddLink("SetSwitch|VisibleCard", (mainRule.VisibleCard) ? "Visible" : "InVisible");
 
 
                         str += "\nТребуемые механики";
@@ -1634,6 +1691,8 @@ namespace Coder
             RuleAction action = mainRule.Trigger[subMood].Action[b];
             string key = $"Action?{b}?";
             string str = "";
+            str += $"\n({b}) Prioritet ";
+            str += TextEditInt($"ActionPrioritet_{b}", "" + action.Prioritet);
             str += $"\n({b}) Point";
             str += TextEditInt($"ActionMin_{b}", "" + action.Min);
             str += "    ";
@@ -1787,7 +1846,7 @@ namespace Coder
             str += "\n\n";
 
 
-            str += AddLink($"GetIO|HeadBase", "Head name :" + core.bD[keyA].Name);
+            str += AddLink($"GetIO|HeadBase", "Название раздела :" + core.bD[keyA].Name);
 
             string link = $"GetIO|HeadInfo";
             str +=(core.bD[keyA].Info == "Void") ? AddLink(link, "[!]", core.frame.ColorsStr[1]) : AddLink(link, "[?]", core.frame.ColorsStr[0]);
@@ -1795,14 +1854,16 @@ namespace Coder
             str += $"\n";
             str += $"\n{keyB}- ";
 
-            str += AddLink("GetIO|Base", "Name " + mainBase.Name, mainBase.Color);
+            str += AddLink("GetIO|Base", "Имя " + mainBase.Name, mainBase.Color);
             link = $"GetIO|Info";
             str += (mainBase.Info == "Void") ? AddLink(link, "[!]", core.frame.ColorsStr[1]) : AddLink(link, "[?]", core.frame.ColorsStr[0]);
 
-            str += "\n" + AddLink("Switch|Color", $"Color = {mainBase.Color}", mainBase.Color);
+            str += "\n" + AddLink("Switch|Color", $"Цвет = {mainBase.Color}", mainBase.Color);
 
             str += "\n" + $"Cost " + AddLink("Edit|Cost_0_0", " << ") + $"{mainBase.Cost}" + AddLink("Edit|Cost_1_1", " >> ");
-            str += "\n" + AddLink("SetSwitch|Look", ((mainBase.Look) ? "Close" : "Open") + IfLook(mainBase.Look)) + "\n";
+            str += "\n" + AddLink("SetSwitch|Look", "Уровень доступа: "+((mainBase.Look) ? "Требует разрешения" : "Общедоступный") + IfLook(mainBase.Look)) + "\n";
+            str += "\n" + AddLink("SetSwitch|Visible", "Видимость в вики: " + ((mainBase.Visible) ? "Виден" : "Невиден"));
+            
 
             return str;
         }
@@ -1846,7 +1907,7 @@ namespace Coder
         static void LinkerMain(string mood, int add)
         {
             string str = AddLink("ClearIO", "Back");
-            str += $"\n LinkerSys";
+            str += $"\n Система связи доступов в БД";
 
             if (mood == "Mark")
             {
@@ -2158,6 +2219,10 @@ namespace Coder
             {
                 mainBase.Group = new MainBaseStatGroup();
             }
+            else if(a == core.keyPlan)
+            {
+                mainBase.Plan = new MainBaseStatPlan();
+            }
 
             mainBase.accses = new Accses();
             //for (int i = 0; i < core.bD[keyA].Key.Count; i++)
@@ -2217,11 +2282,13 @@ namespace Coder
         public string Color = "ffff00";
         public string Info = "Void";
         public int Cost;
+        public bool Visible;
 
         public Accses accses = new Accses();
         public MainBaseSubInt Sub;
         public MainBaseSubRace Race;
         public MainBaseStatGroup Group;
+        public MainBaseStatPlan Plan;
 
         public bool Look= true;
 
@@ -2234,7 +2301,7 @@ namespace Coder
     }
     public class MainBaseSubInt
     {
-        public bool Regen;
+        //public bool Regen;
         public int Image = 0;
         public int Antipod = -1;
         public List<int> AntiStat = new List<int>();
@@ -2245,6 +2312,10 @@ namespace Coder
         public int MainSize =1;
         public List<int> Stat = new List<int>();
         public List<int> Size = new List<int>();
+    }
+    public class MainBaseStatPlan
+    {
+        public int Size;
     }
 
     public class Accses
@@ -2381,7 +2452,8 @@ namespace Coder
             Need = new List<SubInt>();
             DisLike = new List<SubInt>();
         }
-        List<int> intGuild, intLegion, intRace, intCivilian, intCardTayp, intCardClass, intStat;//, intRule;
+        List<int> intGuild, intLegion, intRace, intCivilian, intCardTayp, intCardClass, intStat, intRule;
+        //List<SubInt> intRule;
 
         public List<int> ReturnAccses(string mood)
         {
@@ -2408,9 +2480,7 @@ namespace Coder
                 case ("Stat"):
                     return intStat;
                     break;
-                case ("Rule"):
-                    return intRule;
-                    break;
+               
             }
             return null;
         }
@@ -2427,7 +2497,7 @@ namespace Coder
             intCardTayp = new List<int>();
             intCardClass = new List<int>();
             intStat = new List<int>();
-            //intRule = new List<int>();
+            intRule = new List<int>();
 
             void CountData(List<int> list, int i)
             {
@@ -2436,7 +2506,7 @@ namespace Coder
             }
             for (int i = 0; i < DisLike.Count; i++)
             {
-                //if (DisLike[i].Head < 0)  {  intRule.Add(i);  continue;  }
+                if (DisLike[i].Head < 0)  {  intRule.Add(i);  continue;  }
 
                 if (DisLike[i].Head == core.keyStat) { CountData(intStat, i); continue; }
 
@@ -2495,7 +2565,7 @@ namespace Coder
                                 for (int h = 0; h < card.Trait[j].Num.Count; h++)
                                     if (card.Trait[j].Num[h].Head == DisLike[intRule[i]].Num[k].Head)
                                         return false;
-              
+
 
             return true;
         }
@@ -2511,12 +2581,12 @@ namespace Coder
 Раздел механик
 Статы
          */
-            void AddRace(int a)
+            void AddRace(int a, CoreSys core)
             {
                 if(a != -1)
                 {
                     Split(core.bD[core.keyRace].Base[a].accses);
-                    AddRace(core.bD[core.keyRace].Base[a].Race.MainRace);
+                    AddRace(core.bD[core.keyRace].Base[a].Race.MainRace, core);
                 }
             }
 
@@ -2544,7 +2614,7 @@ namespace Coder
                 Split(core.bD[core.keyCivilian].Base[card.Civilian].accses);
 
                 Split(core.bD[core.keyRace].Base[card.Race].accses);
-                AddRace(core.bD[core.keyRace].Base[card.Race].Race.MainRace);
+                AddRace(core.bD[core.keyRace].Base[card.Race].Race.MainRace, core);
 
 
                 Split(core.bD[core.keyLegion].Base[card.Legion].accses);
@@ -2606,7 +2676,7 @@ namespace Coder
 
         public int Split(Accses accses)
         {
-            SysCore core = DeCoder.GetCore();
+            CoreSys core = DeCoder.GetCore();
             int a, b;
             //блок блокировки доступа
             for(int i = 0; i < accses.DisLike.Count; i++)
@@ -2788,6 +2858,8 @@ namespace Coder
         public string Name;
         public List<string> Rule = new List<string>();
         public List<int> Index = new List<int>();
+        public List<int> Cost = new List<int>();
+        //public int Cost;//Цена
         public int LastIndex = 0;
     }
 
@@ -2797,7 +2869,9 @@ namespace Coder
        // public string Info = "Void";//Описание
         public int Tag; //Описание
 
-        public int Cost;//Цена
+        public bool Visible;
+        public bool VisibleCard =true;
+        //public int Cost;//Цена
 
         public List<TriggerAction> Trigger;// = new List<TriggerAction>();
 
@@ -2856,6 +2930,7 @@ namespace Coder
 
         public int Min;
         public int Max;
+        public int Prioritet;
 
         public int Team;
 

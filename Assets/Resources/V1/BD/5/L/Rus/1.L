@@ -1,3 +1,3 @@
 <root>
-  <I>Voidse/Void</I>
+  <I>разбойничья банда/Void</I>
 </root>

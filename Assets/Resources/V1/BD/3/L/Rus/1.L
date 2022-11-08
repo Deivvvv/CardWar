@@ -1,3 +1,3 @@
 <root>
-  <I>Void/Void</I>
+  <I>базовые механики/Void</I>
 </root>

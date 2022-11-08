@@ -1,3 +1,3 @@
 <root>
-  <I>Void/Void</I>
+  <I>атакующие механики/Void</I>
 </root>

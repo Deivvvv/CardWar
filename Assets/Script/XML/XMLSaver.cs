@@ -189,6 +189,19 @@ namespace XMLSaver
         }
         #endregion
 
+        public static void Reload()
+        {
+            for (int i = 0; i < core.bD.Count; i++)
+                for (int j = 0; j < core.bD[i].Base.Count; j++)
+                    SaveBD(i, j);
+
+            for (int i = 0; i < core.head.Count; i++)
+                for (int j = 0; j < core.head[i].Index.Count; j++)
+                {
+                    HeadRule rule = LoadRule(i, core.head[i].Index[j]);
+                    SaveRule(rule, i, core.head[i].Index[j]);
+                }
+        }
         #region BD
 
         static void BDReload(int a)
@@ -261,11 +274,12 @@ namespace XMLSaver
             mainBase.Color = root.Element("Color").Value;
             mainBase.Cost = int.Parse( root.Element("Cost").Value);
             mainBase.Look = bool.Parse(root.Element("Look").Value);
+            mainBase.Visible = bool.Parse(root.Element("Visible").Value);
 
-            if(a == core.keyStat)
+            if (a == core.keyStat)
             {
                 mainBase.Sub = new MainBaseSubInt();
-                mainBase.Sub.Regen = bool.Parse(root.Element("Regen").Value);
+                //mainBase.Sub.Regen = bool.Parse(root.Element("Regen").Value);
                 
                 mainBase.Sub.Image = int.Parse(root.Element("Image").Value);
                 mainBase.Sub.Antipod = int.Parse(root.Element("Antipod").Value);
@@ -295,6 +309,11 @@ namespace XMLSaver
                 str = root.Element("Size").Value;
                 if (str != "")
                     mainBase.Group.Size = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+            }
+            else if (a == core.keyPlan)
+            {
+                mainBase.Plan = new MainBaseStatPlan();
+                mainBase.Plan.Size = int.Parse(root.Element("Size").Value);
             }
 
 
@@ -353,12 +372,13 @@ namespace XMLSaver
             root.Add(new XElement("Color", mainBase.Color));
             root.Add(new XElement("Cost", mainBase.Cost));
             root.Add(new XElement("Look", mainBase.Look));
+            root.Add(new XElement("Visible", mainBase.Visible));
 
             root.Add(new XElement("Accses", mainBase.accses.Zip()));
 
             if (a == core.keyStat)
             {
-                root.Add(new XElement("Regen", mainBase.Sub.Regen));
+                //root.Add(new XElement("Regen", mainBase.Sub.Regen));
                 root.Add(new XElement("Image", mainBase.Sub.Image));
 
                 root.Add(new XElement("Antipod", mainBase.Sub.Antipod));
@@ -379,9 +399,13 @@ namespace XMLSaver
                 root.Add(new XElement("Stat", ReturnListData(mainBase.Group.Stat)));
                 root.Add(new XElement("Size", ReturnListData(mainBase.Group.Size)));
             }
+            else if (a == core.keyPlan)
+            {
+                root.Add(new XElement("Size", mainBase.Plan.Size));
+            }
 
 
-            XDocument saveDoc = new XDocument(root);
+                XDocument saveDoc = new XDocument(root);
             File.WriteAllText(path + $"{b}.H", saveDoc.ToString());
         }
 
@@ -428,7 +452,14 @@ namespace XMLSaver
                     head[i].Index = new List<int>(str.Split('/').Select(int.Parse).ToArray());
                 else
                     head[i].Index = new List<int>();
-                b= head[i].Index.Count;
+                str = root.Element("Cost").Value;
+                if (str != "")
+                    head[i].Cost = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+                else
+                    head[i].Cost = new List<int>();
+
+
+                b = head[i].Index.Count;
                 if (b > 0)
                 {
                     head[i].Rule = new List<string>(new string[b]);
@@ -481,15 +512,22 @@ namespace XMLSaver
             {
                 string str1 = "" + head.Index[0];
                 str2 = head.Rule[0];
+                string str3 = "" + head.Cost[0];
+
                 for (int i = 1; i < head.Index.Count; i++)
                 {
                     str1 += "/" + head.Index[i];
                     str2 += "/" + head.Rule[i];
+                    str3 += "/" + head.Cost[i];
                 }
                 root.Add(new XElement("Id", str1));
+                root.Add(new XElement("Cost", str3));
             }
             else
+            {
                 root.Add(new XElement("Id", " "));
+                root.Add(new XElement("Cost", " "));
+            }
 
             AddLangFile(path, str2, a);
 
@@ -567,6 +605,7 @@ namespace XMLSaver
          
 
             core.ResultCore = ReturnCore(com[7]);
+            core.Prioritet = int.Parse(com[8]);
 
             return core;
         }
@@ -586,7 +625,7 @@ namespace XMLSaver
             string str = "";
             string[] com, com1;
             XElement root = XDocument.Parse(File.ReadAllText(mainPath +$"Rule/{a}/{b}.R")).Element("root");
-            head.Cost = int.Parse(root.Element("Cost").Value);
+            //head.Cost = int.Parse(root.Element("Cost").Value);
             //  str = root.Element("Cost").Value;
             //int c = int.Parse(root.Element("Triggers").Value);
 
@@ -650,6 +689,8 @@ namespace XMLSaver
             }
 
             head.accses = new Accses(root.Element("Accses").Value);
+            head.Visible = bool.Parse(root.Element("Visible").Value);
+            head.VisibleCard = bool.Parse(root.Element("VisibleCard").Value);
 
             com = FindLang(mainPath+$"Rule/{a}/", b).Split('/');
             //head.Name = com[0];
@@ -720,8 +761,9 @@ namespace XMLSaver
             }
             else
                 str += " ";
-           str +="|" + GetCore(core.ResultCore);
+            str +="|" + GetCore(core.ResultCore);
 
+            str += "|" + core.Prioritet;
             return str;
         }
 
@@ -752,7 +794,7 @@ namespace XMLSaver
             head.accses.ClearList();
 
 
-            root.Add(new XElement("Cost", head.Cost));
+            //root.Add(new XElement("Cost", head.Cost));
             root.Add(new XElement("Triggers", head.Trigger.Count));
             for (int i = 0; i < head.Trigger.Count; i++) {
 
@@ -803,6 +845,9 @@ namespace XMLSaver
             }
 
             root.Add(new XElement("Accses", head.accses.Zip()));
+            root.Add(new XElement("Visible", head.Visible));
+            root.Add(new XElement("VisibleCard", head.VisibleCard));
+
 
             AddLangFile(path, str2, b);
 
@@ -826,6 +871,7 @@ namespace XMLSaver
 
             core.head[a].Rule.RemoveAt(b);
             core.head[a].Index.RemoveAt(b);
+            core.head[a].Cost.RemoveAt(b);
             if (core.head[a].Index.Count == 0)
                 core.head[a].LastIndex = 0;
             SaveRuleMain(a);

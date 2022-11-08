@@ -28,7 +28,9 @@ public class CardCase : MonoBehaviour
     //public List<int> StatSize = new List<int>();
     //public List<int> StatSizeLocal = new List<int>();
     public int Mana;
-
+    public int Speed =1; 
+    public int ActionPoint;
+    public int ActionPointMax =1;
     //public List<int> Stat;
     public List<SubInt> Trait = new List<SubInt>();
 
@@ -99,7 +101,7 @@ public class CardCase : MonoBehaviour
 public class StatExtend
 {
     private int stat, statSize = 1, statSizeLocal = 1, icon;
-    StatExtend(int a,int b)
+    public StatExtend(int a,int b)
     {
         stat = a;
         icon = b;
@@ -174,7 +176,7 @@ public class StatExtend
 
     public string Read(string mood)
     {
-        string str = $"<index={icon}>";
+        string str = $"<sprite index={icon}>";
         switch (mood)
         {
             case ("All"):

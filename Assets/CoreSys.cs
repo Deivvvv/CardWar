@@ -70,6 +70,7 @@ public class CoreSys : MonoBehaviour
 
         Saver.LoadBDAll();
         Saver.LoadAllRule();
+        //Saver.Reload();
 
         LoadScene("Main");
        // OpenScene("Main");
@@ -102,7 +103,6 @@ public class CoreSys : MonoBehaviour
     {
         ui = _ui;
         canvasTransform = transform;
-        ui.ExitButton.onClick.AddListener(() => OpenRedactor());
 
 
         // BaseUi ui = null;
@@ -121,8 +121,9 @@ public class CoreSys : MonoBehaviour
         switch (mood)
         {
             case ("Main"):
-                string[] name = {"Колоды","Карты", "Выход" };
-                string[] com = {"Colod", "Card" , "Exit"};
+                ui.ExitButton.onClick.AddListener(() => OpenRedactor());
+                string[] name = {"Колоды","Карты","Конструктор карт", "Выход" };
+                string[] com = {"Colod", "Card" , "CardCreator", "Exit"};
                 for(int i = 0; i < com.Length; i++)
                 {
                     go = Instantiate(ui.OrigButton);
@@ -130,6 +131,10 @@ public class CoreSys : MonoBehaviour
                     SetLoader(go.GetComponent<Button>(), com[i]);
                     go.transform.GetChild(0).gameObject.GetComponent<Text>().text = name[i];
                 }
+                break;
+            case ("CardCreator"):
+                ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
+                ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>());
                 break;
             case ("Gallery"):
                 //CardConstructor.Load(mood);

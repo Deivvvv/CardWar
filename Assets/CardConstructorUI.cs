@@ -7,6 +7,7 @@ using TMPro;
 
 public class CardConstructorUI : MonoBehaviour
 {
+
     public TMP_InputField NameTT;
     public GameObject SaveWindow;
     public CardBody Body;
@@ -19,9 +20,12 @@ public class CardConstructorUI : MonoBehaviour
     [HideInInspector] public List<Text> MainListInfo;
 
 
-    public Transform ListWindow
     public Transform StatWindow;
     public Transform RuleWindow;
+    public Transform LocalRuleWindow;
     [HideInInspector] public List<Transform> StatRing;
     [HideInInspector] public List<Transform> RuleRing;
+    [HideInInspector] public List<Transform> LocalRuleRing;
+
+    public List<Button> ButtonList;
 }

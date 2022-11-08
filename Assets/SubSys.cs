@@ -80,7 +80,8 @@ namespace SubSys
         public static void ReadCard(CardCase card, CardBody body)
         {
             CoreSys sys = DeCoder.GetCore();
-
+            //Debug.Log(card);
+            //Debug.Log(body);
             body.Avatar.sprite = card.Image;
 
             body.Name.text = card.Name;
