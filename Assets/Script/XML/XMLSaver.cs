@@ -22,7 +22,7 @@ namespace XMLSaver
 {
     static class Saver
     {
-        static XElement root = null;
+        //static XElement root = null;
         static string mainPath = Application.dataPath + $"/Resources/";
         static CoreSys core;
         public static void SetCore(CoreSys coreSys) { core = coreSys; }
@@ -164,7 +164,7 @@ namespace XMLSaver
             string[] com = text.Split('*');
             string[] lang = com[0].Split('/');
             com = com[1].Split('/');
-
+            XElement root;
             string str = "";
             for (int i=0; i< lang.Length; i++)
             {
@@ -269,7 +269,7 @@ namespace XMLSaver
             string[] com;
             string str = "";
             MainBase mainBase = new MainBase();
-            root = XDocument.Parse(File.ReadAllText($"{path}{b}.H")).Element("root");
+            XElement root = XDocument.Parse(File.ReadAllText($"{path}{b}.H")).Element("root");
 
             mainBase.Color = root.Element("Color").Value;
             mainBase.Cost = int.Parse( root.Element("Cost").Value);
@@ -329,6 +329,17 @@ namespace XMLSaver
 
             core.bD[a].Base[b] = mainBase;
         }
+        static string ReturnListData(List<bool> list)
+        {
+            string str = " ";
+            if (list.Count > 0)
+            {
+                str = "" + list[0];
+                for (int i = 1; i < list.Count; i++)
+                    str += $"/{list[i]}";
+            }
+            return str;
+        }
         static string ReturnListData(List<int> list)
         {
             string str = " ";
@@ -367,7 +378,7 @@ namespace XMLSaver
             str = $"{mainBase.Name}/{mainBase.Info}";
             AddLangFile(path, str, b);
 
-            root = new XElement("root");
+            XElement root = new XElement("root");
 
             root.Add(new XElement("Color", mainBase.Color));
             root.Add(new XElement("Cost", mainBase.Cost));
@@ -446,7 +457,7 @@ namespace XMLSaver
             {
                 head[i] = new SubRuleHead();
                 head[i].Name = core.bD[core.keyTag].Base[i].Name;
-                root = XDocument.Parse(File.ReadAllText($"{path}{i}.HR")).Element("root");
+                XElement root = XDocument.Parse(File.ReadAllText($"{path}{i}.HR")).Element("root");
                 str = root.Element("Id").Value;
                 if(str != "")
                     head[i].Index = new List<int>(str.Split('/').Select(int.Parse).ToArray());
@@ -505,7 +516,7 @@ namespace XMLSaver
             Debug.Log(core.head.Count);
             SubRuleHead head = core.head[a];
             string path = mainPath + "Rule/";
-            root = new XElement("root");
+            XElement root = new XElement("root");
 
             string str2 = " ";
             if (head.Index.Count > 0)
@@ -789,7 +800,7 @@ namespace XMLSaver
             string str, str1, str2 = " ";
 
             string path = mainPath + $"Rule/{a}/";
-            root = new XElement("root");
+            XElement root = new XElement("root");
 
             head.accses.ClearList();
 
@@ -910,51 +921,140 @@ namespace XMLSaver
         //-1 последн€€ сеси€
         public static SubInt LoadGuildCard(int a)
         {
-            XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Guild/{a}.CD")).Element("root");
-            string str = root.Element("Id").Value;
-            return new SubInt(str, '|');//lable;
+            if (!File.Exists(mainPath + $"Card/{a}.CD"))
+                return new SubInt(0);
+
+            XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{a}.CD")).Element("root");
+            string str = root.Element("Index").Value;
+            return new SubInt(str, 4);//lable;
+        }
+        public static void SaveGuildCard(SubInt sub, int a)
+        {
+            string path = mainPath + $"Card/{a}.CD";
+            Debug.Log(path);
+            XElement root = new XElement("root");
+            string str = "";
+            root.Add(new XElement("Index", sub.Zip(3)));
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path, saveDoc.ToString());
         }
         public static HideLibrary LoadGuild( int a)
         {
             HideLibrary lib = new HideLibrary();
-            XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Guild/{a}.G")).Element("root");
-
-
-            if (a != -1) 
+            if (!File.Exists(mainPath + $"Card/{a}.G"))
             {
                 lib.Index = new List<SubInt>();
-                lib.Index.Add(LoadGuildCard(a)); 
+                SaveGuild(lib, a);
+                return lib;
             }
-            else
-            {
-                SubInt sub = new SubInt(root.Element("Id").Value, 4);
 
-                lib.Index = sub.Num;
+            HideLibraryCase ReadCase(XElement root,string com)
+            {
+                string str;
+                HideLibraryCase cases = new HideLibraryCase();
+                str = root.Element(com+ "Use").Value;
+                if (str != "")
+                    cases.Use = new List<bool>(str.Split('/').Select(bool.Parse).ToArray());
+
+                str = root.Element(com + "Index").Value;
+                if (str != "")
+                    cases.Index = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+
+                str = root.Element(com + "Size").Value;
+                if (str != "")
+                    cases.Size = new List<int>(str.Split('/').Select(int.Parse).ToArray());
+
+                return cases;
             }
+
+            XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{a}.G")).Element("root");
+
+            SubInt sub = LoadGuildCard( a);
+            lib.Index = sub.Num;
+
+            lib.Legion = ReadCase(root,"Legion");
+            lib.Civilian = ReadCase(root, "Civilian");
+            lib.Race = ReadCase(root, "Race");
+            lib.Tag = ReadCase(root, "Tag");
+            lib.Stat = ReadCase(root, "Stat");
+
+            lib.AllCard = int.Parse(root.Element("AllCard").Value);
 
             return lib;
         }
-        public static void SaveGuild(HideLibrary guild)
+        public static void SaveGuildCard(CardCase card)
         {
-            //stat->trait->legion->race->guild->civilian
+            HideLibrary lib = LoadGuild(card.Guild);
+            lib.SwitchCard(card);
+            SaveGuild(lib, card.Guild);
+            SaveCard(card);
+        }
+        public static void SaveGuild(HideLibrary lib, int a)
+        {
+
+            void SaveCase(XElement root, HideLibraryCase cases, string com)
+            {
+                root.Add(new XElement(com + "Use", ReturnListData(cases.Use)));
+                root.Add(new XElement(com + "Index", ReturnListData(cases.Index)));
+                root.Add(new XElement(com + "Size", ReturnListData(cases.Size)));
+            }
+
+            string path = mainPath + $"Card/{a}.G";
+            XElement root = new XElement("root");
+            if(lib.Index.Count !=0)
+            {
+                SubInt sub = new SubInt(0);
+                sub.Num = lib.Index;
+                SaveGuildCard(sub, a);
+            }
+
+            SaveCase(root, lib.Legion, "Legion");
+            SaveCase(root, lib.Civilian, "Civilian");
+            SaveCase(root, lib.Race, "Race");
+            SaveCase(root, lib.Tag, "Tag");
+            SaveCase(root, lib.Stat, "Stat");
+
+            root.Add(new XElement("AllCard", lib.AllCard));
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path, saveDoc.ToString());
         }
 
         public static void DeliteCard(CardCase card)
         {
             string path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}.c";
             File.Delete(path);
-            path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/L/{lang}/{card.Id}.L";
-            File.Delete(path);
+            //path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/L/{lang}/{card.Id}.L";
+            //File.Delete(path);
         }
         public static void SaveCard(CardCase card )
         {
+            string path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+           // string path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}.c";
+            XElement root = new XElement("root");
 
-            string path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}";
-            root = new XElement("root");
+            root.Add(new XElement("Name", card.Name));
+            root.Add(new XElement("Mana", card.Mana));
 
-           // root.Add(new XElement("EnemyRule", str));
+            root.Add(new XElement("Legion", card.Legion));
+            root.Add(new XElement("Civilian", card.Civilian));
+            root.Add(new XElement("Race", card.Race));
 
-            AddLangFile(path, card.Name, card.Id);
+
+            string str = card.Stat[0].Read("Save");
+            for (int i = 1; i < card.Stat.Count; i++)
+                str += "|" + card.Stat[i].Read("Save");
+            root.Add(new XElement("Stat", str));
+
+            {
+                SubInt sub = new SubInt(0);
+                sub.Num = card.Trait;
+                root.Add(new XElement("Trait", sub.Zip(3)));
+            }
+           // AddLangFile(path, card.Name, card.Id);
 
 
             XDocument saveDoc = new XDocument(root);
@@ -963,6 +1063,23 @@ namespace XMLSaver
         public static CardCase LoadCard(int intGuild, int intCardTayp, int intCardClass, int intId)
         {
             CardCase card = new CardCase(intGuild, intCardTayp, intCardClass, intId);
+            XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}.c")).Element("root");
+            card.Name = root.Element("Name").Value;
+            card.Mana = int.Parse(root.Element("Mana").Value);
+
+            card.Legion = int.Parse(root.Element("Mana").Value);
+            card.Civilian = int.Parse(root.Element("Civilian").Value);
+            card.Race = int.Parse(root.Element("Race").Value);
+
+            BD bd = core.bD[core.keyStat];
+            string[] com = root.Element("Stat").Value.Split('|');
+            for (int i = 0; i < com.Length; i++)
+                card.Stat.Add(new StatExtend(com[i], bd));
+
+            {
+                SubInt sub = new SubInt(root.Element("Trait").Value, 3);
+                card.Trait = sub.Num;
+            }
 
             return card;
         }

@@ -8,7 +8,7 @@ using Coder;
 
 namespace SubSys 
 {
-    public class Crator : MonoBehaviour
+    public class Creator : MonoBehaviour
     {
         public static CardBody NewCardBody(BaseUi ui)
         {
@@ -34,22 +34,33 @@ namespace SubSys
             int b = 0;
             int size=0;
             int cardModSize = num * bodys.Count;
-            for (int i = 0; i < cardsPath.Count && cards.Count != bodys.Count; i++)
-                for (int j = 0; j < cardsPath[i].Num.Count && cards.Count != bodys.Count; j++)
-                    for (int k = 0; k < cardsPath[i].Num[j].Num.Count && cards.Count != bodys.Count; k++)
-                        //for (int h = 0; h < cards[i].Num[j].Num[k].Num.Count; h++)
-                        if (size + cardsPath[i].Num[j].Num[k].Num.Count < cardModSize)
-                            size += cardsPath[i].Num[j].Num[k].Num.Count;
-                        else
-                        {
-                            for (int a = cardModSize - size; a < cardsPath[i].Num[j].Num[k].Num.Count && cards.Count != bodys.Count; a++)
-                            {
-                                cards.Add(Sorter.ReadCard(i, j, k, a));
 
-                            }
-                            cardModSize = size +cardsPath[i].Num[j].Num[k].Num.Count;
+            for (int i = 0; i < cardsPath.Count; i++)
+                for (int j = 0; j < cardsPath[i].Num.Count; j++)
+                    for (int k = 0; k < cardsPath[i].Num[j].Num.Count; k++)
+                        for (int a = 0; a < cardsPath[i].Num[j].Num[k].Num.Count; a++)
+                            cards.Add(Sorter.ReadCard(i, j, k, a));
 
-                        }
+            //            for (int i = 0; i < cardsPath.Count && cards.Count != bodys.Count; i++)
+            //for (int j = 0; j < cardsPath[i].Num.Count && cards.Count != bodys.Count; j++)
+            //    for (int k = 0; k < cardsPath[i].Num[j].Num.Count && cards.Count != bodys.Count; k++)
+            //        //for (int h = 0; h < cards[i].Num[j].Num[k].Num.Count; h++)
+            //        //if (size + cardsPath[i].Num[j].Num[k].Num.Count < cardModSize)
+            //        //    size += cardsPath[i].Num[j].Num[k].Num.Count;
+            //        //else
+            //        {
+            //            for (int a = cardModSize - size; a < cardsPath[i].Num[j].Num[k].Num.Count && cards.Count != bodys.Count; a++)
+            //            {
+            //                cards.Add(Sorter.ReadCard(i, j, k, a));
+
+            //            }
+            //            cardModSize = size +cardsPath[i].Num[j].Num[k].Num.Count;
+
+            //        }
+            Debug.Log(cardsPath.Count);
+            Debug.Log(cardModSize);
+            Debug.Log(size);
+            Debug.Log(cards.Count);
             View(bodys, cards);
         }
 
@@ -66,8 +77,12 @@ namespace SubSys
             int a = 20;
             bodys = new List<CardBody>(new CardBody[a]);
             for (int i = 0; i < a; i++)
-                bodys[i] = Crator.NewCardBody(ui);
-          
+                bodys[i] = Creator.NewCardBody(ui);
+            Sorter.SetGuild(0);
+            CoreSys core = DeCoder.GetCore();
+            for (int i = 1; i < core.bD[core.keyGuild].Base.Count; i++)
+                Sorter.SplitGuild(i);
+            NewPathCard();
             //View();
         }
         static void View(List<CardBody> bodys, List<CardCase>  card, bool mood =true)
@@ -161,7 +176,7 @@ namespace SubSys
         // static List<int> lastIndex;
         public static int GetAllCard() { return guild.AllCard; }
         public static List<SubInt> GetCard() { return guild.Index; }
-        static void SetGuild(int a)
+        public static void SetGuild(int a)
         {
             guild = Saver.LoadGuild(a);
             //cardSet.add(new setCase());
@@ -201,7 +216,7 @@ namespace SubSys
 
         }
 */
-        static void SplitGuild(int a)
+        public static void SplitGuild(int a)
         {
             HideLibrary localGuild = Saver.LoadGuild(a);
             //SubIntFull cardList = Saver.LoadGuildCard(a);
@@ -328,15 +343,15 @@ public class HideLibrary
     {
 
     }
-    public HideLibrary(string str)
-    {
-        string[] mood = str.Split(';');
+    //public HideLibrary(string str)
+    //{
+    //    //string[] mood = str.Split(';');
+    //    SubInt sub = new SubInt(str, 4);
+    //    Index = sub.Num;
+    //    //for(int i = 0; i < mood.Length; i++)
+    //    //    Index[i] = new SubInt(mood[i], '|');
 
-        Index = new List<SubInt>(new SubInt[mood.Length]);
-        for(int i = 0; i < mood.Length; i++)
-            Index[i] = new SubInt(mood[i], '|');
-
-    }
+    //}
 
     public void AddCard(CardCase card)
     {
@@ -345,23 +360,27 @@ public class HideLibrary
         {
             a = Index.Count;
             Index.Add(new SubInt(card.Guild));
-            AllCard++;
+           // AllCard++;
         }
+        Debug.Log(a);
 
         SubInt listIndex = Index[a];
         a = listIndex.Find(card.CardTayp);
         int b = listIndex.Num[a].Find(card.CardClass);
+        Debug.Log(a);
 
         if (card.Id == -1)
         {
-            int c = Index[a].Num[b].Num.Count;
-            card.Id = (c == 0) ? 0 :
-                listIndex.Num[a].Num[b].Num[
-                listIndex.Num[a].Num[b].Num[c - 1].Head
-                ].Head + 1;
-            listIndex.Num[a].Num[b].Find(card.Id);
+            int c = listIndex.Num[a].Num[b].Num.Count;
+            Debug.Log(c);
+            if (c == 0)
+                card.Id = c;
+            else
+                card.Id = listIndex.Num[a].Num[b].Num[c - 1].Head + 1;
+            AllCard++;
         }
         listIndex.Num[a].Num[b].Find(card.Id);
+        Debug.Log(a);
 
 
 
@@ -396,6 +415,11 @@ public class HideLibrary
     }
     public void SwitchCard( CardCase card)
     {
+        if(card.Id == -1)
+        {
+            AddCard(card);
+            return;
+        }
         CardCase card1 = Saver.LoadCard(card.Guild, card.CardTayp, card.CardClass ,card.Id);
         if (card.Legion != card1.Legion)
         {

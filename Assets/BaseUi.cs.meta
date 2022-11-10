@@ -8,7 +8,7 @@ MonoImporter:
   - OrigButton: {instanceID: 0}
   - Menu: {instanceID: 0}
   - ExitButton: {instanceID: 0}
-  - CardOrig: {instanceID: 0}
+  - CardOrig: {fileID: 6115808302141344361, guid: 8ac98f5708eeac14f81ae166aa453b0a, type: 3}
   - MenuExtend: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}

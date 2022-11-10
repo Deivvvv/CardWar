@@ -8,6 +8,7 @@ using TMPro;
 
 using Coder;
 using XMLSaver;
+using SubSys;
 
 
 public class CoreSys : MonoBehaviour
@@ -122,8 +123,8 @@ public class CoreSys : MonoBehaviour
         {
             case ("Main"):
                 ui.ExitButton.onClick.AddListener(() => OpenRedactor());
-                string[] name = {"Колоды","Карты","Конструктор карт", "Выход" };
-                string[] com = {"Colod", "Card" , "CardCreator", "Exit"};
+                string[] name = {"Колоды","Галлерея","Конструктор карт", "Выход" };
+                string[] com = {"Colod", "Gallery", "CardCreator", "Exit"};
                 for(int i = 0; i < com.Length; i++)
                 {
                     go = Instantiate(ui.OrigButton);
@@ -137,6 +138,7 @@ public class CoreSys : MonoBehaviour
                 ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>());
                 break;
             case ("Gallery"):
+                Gallery.Reset(_ui);
                 //CardConstructor.Load(mood);
 
 

@@ -60,7 +60,8 @@ public class CardConstructor : MonoBehaviour
         ui.ButtonList[1].onClick.AddListener(() => OpenRuleWindow());
         ui.ButtonList[2].onClick.AddListener(() => Reset());
         ui.ButtonList[3].onClick.AddListener(() => SaveButton());
-        
+        ui.ButtonList[4].onClick.AddListener(() => FullReset());
+
         SetPublicList();
 
         key = new List<int>();
@@ -95,7 +96,8 @@ public class CardConstructor : MonoBehaviour
     }
     void SaveButton()
     {
-        ui.SaveWindow.active = true;
+        if (ui.StartWindow.active == false)
+            ui.SaveWindow.active = true;
     }
 
     #region Fist Stage
@@ -428,18 +430,28 @@ public class CardConstructor : MonoBehaviour
     }
 
     void Reset()  { ui.StartWindow.active = true; }
+    void FullReset() { Reset();
+        SetStat(1, -1);
+    }
     void SetCardMain()
     {
         if (intGuild == -1 || intCardTayp == -1 || intCardClass == -1 || intLegion == -1 || intCivilian == -1 || intRace == -1)
             return;
         card = new CardCase(intGuild, intCardTayp, intCardClass, intId, intLegion, intCivilian, intRace);
-        //Debug.Log(card);
+        //Debug.Log(card.Guild);
+        //Debug.Log(card.CardTayp); 
+        //Debug.Log(card.CardClass);
+        //Debug.Log(card.Id);
+        //Debug.Log(card.Legion);
+        //Debug.Log(card.Civilian);
+        //Debug.Log(card.Race);
+
         int b;
         int a = mainAccses.Find(mainAccses.Need, core.keyStat,false);
         for (int i = 0; i < mainAccses.Need[a].Num.Count; i++) 
         {
             b = mainAccses.Need[a].Num[i].Head;
-            card.Stat.Add(new StatExtend(b, core.bD[core.keyStat].Base[b].Sub.Image)); 
+            card.Stat.Add(new StatExtend(b, core.bD[core.keyStat])); 
         }
 
         for (int j = 0; j < mainAccses.Need.Count; j++)
@@ -479,6 +491,7 @@ public class CardConstructor : MonoBehaviour
                         break;
                     case (3):// ("intLegion"):
                         intLegion = -1;
+                        intId = -1;
                         break;
                     case (4):// ("intRace"):
                         intRace = -1;
@@ -1284,10 +1297,11 @@ public class CardConstructor : MonoBehaviour
 
     void SetStat(int a)
     {
-       
+
+        Debug.Log(card);
         BD bd = core.bD[core.keyStat];
-        
-        card.Stat.Add(new StatExtend(statAccses.Like[a].Head, bd.Base[statAccses.Like[a].Head].Sub.Image));
+        int b = statAccses.Like[a].Head;
+        card.Stat.Add(new StatExtend(b, bd));
         CountSize();
         FullAccsesCount();
     }
@@ -1378,10 +1392,10 @@ public class CardConstructor : MonoBehaviour
         bd = core.bD[core.keyTag];
         for (int i = 0; i < card.Trait.Count; i++)
         {
-            Debug.Log(bd);
-            Debug.Log(bd.Base.Count);
-            Debug.Log(-card.Trait[i].Head - 1);
-            Debug.Log(bd.Base[-card.Trait[i].Head - 1]);
+            //Debug.Log(bd);
+            //Debug.Log(bd.Base.Count);
+            //Debug.Log(-card.Trait[i].Head - 1);
+            //Debug.Log(bd.Base[-card.Trait[i].Head - 1]);
             mana += bd.Base[-card.Trait[i].Head - 1].Cost;
             for (int j = 0; j < card.Trait[i].Num.Count; j++)
             {
@@ -1856,6 +1870,7 @@ public class CardConstructor : MonoBehaviour
             return;
         List<int> list = new List<int>(str.Split('/').Select(int.Parse).ToArray());
         card = Saver.LoadCard(list[0], list[1], list[2], list[3]);
+        ui.NameTT.text = card.Name;
         ui.StartWindow.active = false;
         intGuild = card.Guild;
         intCardTayp = card.CardTayp;
@@ -1880,8 +1895,9 @@ public class CardConstructor : MonoBehaviour
     {
         edit = false;
         ui.SaveWindow.active = false;
+        card.Name = ui.NameTT.text;
         if (use)
-            Saver.SaveCard(card);
+            Saver.SaveGuildCard(card);
 
         Exit(exitMood);
     }

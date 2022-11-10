@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Coder;
 
 public class CardCase : MonoBehaviour
 {
@@ -11,15 +12,15 @@ public class CardCase : MonoBehaviour
     public int Guild ,Race ,Legion , Civilian, CardTayp, CardClass;
 
     // public List<Constant> Constants;
-    public int HeadWalkMood;
-    public int HeadActionMood;
-    public int HeadDefMood;
-    public int HeadDefAction;
+    //public int HeadWalkMood;
+    //public int HeadActionMood;
+    //public int HeadDefMood;
+    //public int HeadDefAction;
 
-    public int WalkMood;
-    public int ActionMood;
-    public int DefMood;
-    public int DefAction;
+    //public int WalkMood;
+    //public int ActionMood;
+    //public int DefMood;
+    //public int DefAction;
 
     public List<StatExtend> Stat = new List<StatExtend>();
 
@@ -101,10 +102,17 @@ public class CardCase : MonoBehaviour
 public class StatExtend
 {
     private int stat, statSize = 1, statSizeLocal = 1, icon;
-    public StatExtend(int a,int b)
+    public StatExtend(int a, BD bd)
     {
         stat = a;
-        icon = b;
+        icon = bd.Base[stat].Sub.Image;
+    }
+    public StatExtend(string str, BD bd )
+    {
+        string[] com = str.Split('/');
+        stat = int.Parse(com[0]);
+        statSize = int.Parse(com[1]);
+        icon = bd.Base[stat].Sub.Image;
     }
     public void Swap(int a, int b)
     {
@@ -190,6 +198,9 @@ public class StatExtend
                 break;
             case ("LocalForce"):
                 str += $"{statSizeLocal}";
+                break;
+            case ("Save"):
+                str = $"{stat}/{statSize}";
                 break;
         }
         return str;

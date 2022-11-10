@@ -15,17 +15,15 @@ public class SubInt
 
     public SubInt(string str, int key)
     {
+        key--;
         if (key < 0)
             return;
-        else
-            key--;
 
         string[] mood = str.Split(keys[key]);
         if (mood[0] == " ")
             return;
-       // Debug.Log(mood[0]);
 
-        Num = new List<SubInt>();
+        // Num = new List<SubInt>();
         Head = int.Parse(mood[0]);
 
         for (int i = 1; i < mood.Length; i++)
