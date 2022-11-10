@@ -3,5 +3,5 @@
   <Cost>0</Cost>
   <Look>true</Look>
   <Visible>false</Visible>
-  <Accses>0|0|0|0|0|0</Accses>
+  <Accses>0|0|0|0|0?0:4|0</Accses>
 </root>

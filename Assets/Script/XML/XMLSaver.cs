@@ -87,7 +87,7 @@ namespace XMLSaver
         }
         static void AddLangFile(string path,string str,int a)
         {
-            Debug.Log(path);
+            //Debug.Log(path);
             path = $"{path}L/{lang}/";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);

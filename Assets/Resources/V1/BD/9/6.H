@@ -3,8 +3,8 @@
   <Cost>0</Cost>
   <Look>true</Look>
   <Visible>false</Visible>
-  <Accses>0|0|0|0|0?7:0|0</Accses>
+  <Accses>0|0|0|0|0?0:11|0</Accses>
   <MainStat>0</MainStat>
-  <MainRace>8</MainRace>
+  <MainRace>-1</MainRace>
   <UseRace> </UseRace>
 </root>

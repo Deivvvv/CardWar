@@ -1,11 +1,10 @@
 <root>
   <Color>ffff00</Color>
-  <Cost>3</Cost>
+  <Cost>0</Cost>
   <Look>true</Look>
   <Visible>false</Visible>
   <Accses>0|0|0|0|0|0</Accses>
-  <Image>110</Image>
-  <Antipod>-1</Antipod>
-  <AntiStat> </AntiStat>
-  <DefStat> </DefStat>
+  <MainStat>0</MainStat>
+  <MainRace>7</MainRace>
+  <UseRace> </UseRace>
 </root>

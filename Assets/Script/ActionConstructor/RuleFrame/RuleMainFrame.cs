@@ -56,17 +56,17 @@ public class RuleMainFrame : ScriptableObject
 
         {
             //создать кнопку действия , кто-то выполнил действие // перенос на другой план // кого-то перенесли на другой план
-            string[] com = { "NextTurn", "Action", "AnotherAction", "Transf", "AnotherTransf", "Destroy", "Equip", "AnotherDestroy", "AnotherEquip", "PreAction", "PostAction", "EndAction", "Target", "Usebel", "NoTarget", "SecondAction" };
+            string[] com = { "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", "ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction", "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt" };
             Trigger = com;
         }
 
         /*
-        
+        "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction" "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt"
         1: эффект в начале хода 
         2: эффеки при смене хода
         3: в конце
 
-         до атаки
+         вклинивание в порядок атаки
         1: перед атакой
         атака 
         дейстыие защиты
@@ -89,21 +89,21 @@ public class RuleMainFrame : ScriptableObject
         реакция ( активируется после чужой атаки
 
 
-        эффект при экипировке кого либо
+         при экипировке кого либо
 
-        эффект при экипировке самого существа
+         при экипировке самого существа
        
-        эффект до разыгрывания карты протиыника
+         до разыгрывания карты протиыника
 
-        эффект до атаки карты противника
+         до атаки карты противника
 
-        эффект при получении урона
+         при получении урона
 
-        эффект когда существо ранено
+         когда существо ранено
 
-        эффект когда сущестыо что-то сделало
+         когда сущестыо что-то сделало
 
-        эффект за каждую активацию другого триггера
+         за каждую активацию другого триггера
 
          */
 

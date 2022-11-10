@@ -263,7 +263,7 @@ namespace Coder
                     if(mainBase.Race.MainRace != -1)
                         core.bD[core.keyRace].Base[mainBase.Race.MainRace].Race.UseRace.Add(keyB);
                     else
-                        core.bD[core.keyRace].Base[mainBase.Race.MainRace].Race.UseRace.Remove(keyB);
+                        core.bD[core.keyRace].Base[a].Race.UseRace.Remove(keyB);
                     mainBase.Race.MainRace = a;
                     break;
                 case ("MainStat"):
@@ -298,7 +298,6 @@ namespace Coder
                     }
                     else
                     {
-
                         mainBase.Group.MainSize--;
                         if (mainBase.Group.MainSize == 0)
                             mainBase.Group.MainSize--;
@@ -354,6 +353,7 @@ namespace Coder
                             Saver.RuleAdd();
 
                         GetIO("Base");
+                        return;
 
                         break;
                     case ("Save"):
@@ -404,6 +404,7 @@ namespace Coder
                         subMood = -1;
 
                         GetIO("RuleName");
+                        return;
 
                         break;
                     case ("Save"):
@@ -791,12 +792,12 @@ namespace Coder
         #region IO
         static void GetIO(string str)
         {
-            string[] com = str.Split('_');
+            //string[] com = str.Split('_');
 
             ui.NameTT.Select();
             // GetIOText();
             ui.TT[0].text = "";
-            switch (com[0])
+            switch (str)
             {
                 case ("HeadBase"):
                     ui.NameTT.text = core.bD[keyA].Name;
@@ -816,7 +817,7 @@ namespace Coder
                     break;
             }
            // nameTT.gameObject.active = true;
-            GetIOText(com[0]);
+            GetIOText(str);
             //Debug.Log(com[0]);
         }
 
@@ -997,11 +998,13 @@ namespace Coder
                         mainBase.Plan.Size++;
                     break;
                 case ("Cost"):
+
+                    int key = KeyAConverter();
                     if (mood)
-                        core.head[keyA].Cost[keyB]--;
+                        core.head[key].Cost[keyB]--;
                     else
-                        core.head[keyA].Cost[keyB]++;
-                    Saver.SaveRuleMain(keyA);
+                        core.head[key].Cost[keyB]++;
+                    Saver.SaveRuleMain(key);
                     break;
 
                 case ("Team"):
@@ -1866,7 +1869,7 @@ namespace Coder
 
             str += "\n" + AddLink("Switch|Color", $"Цвет = {mainBase.Color}", mainBase.Color);
 
-            str += "\n" + $"Cost " + AddLink("Edit|Cost_0_0", " << ") + $"{mainBase.Cost}" + AddLink("Edit|Cost_1_1", " >> ");
+            str += "\n" + $"Цена: " + AddLink("Edit|Remove_0_Cost", " << ") + $"{mainBase.Cost}" + AddLink("Edit|Add_0_Cost", " >> ");
             str += "\n" + AddLink("SetSwitch|Look", "Уровень доступа: "+((mainBase.Look) ? "Требует разрешения" : "Общедоступный") + IfLook(mainBase.Look)) + "\n";
             str += "\n" + AddLink("SetSwitch|Visible", "Видимость в вики: " + ((mainBase.Visible) ? "Виден" : "Невиден"));
             

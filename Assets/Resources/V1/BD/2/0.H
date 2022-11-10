@@ -1,6 +1,6 @@
 <root>
   <Color>ffff00</Color>
-  <Cost>0</Cost>
+  <Cost>1</Cost>
   <Look>false</Look>
   <Visible>false</Visible>
   <Accses>0|0?5:1?-1:1|0|0|0|0</Accses>

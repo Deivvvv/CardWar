@@ -568,12 +568,14 @@ public class CardConstructor : MonoBehaviour
         startMana += core.bD[core.keyLegion].Base[intLegion].Cost;
         startMana += core.bD[core.keyCivilian].Base[intCivilian].Cost;
         startMana += core.bD[core.keyRace].Base[intRace].Cost;
+        CountSize();
     }
     #endregion
     #region Second Stage
     bool statMood;
     void SecondStageStart()
     {
+        statMood = true;
         ResetAccses();
         List<int> Add(BD bD)
         {
@@ -675,7 +677,7 @@ public class CardConstructor : MonoBehaviour
                     a = accses.DisLike[j].Find(card.Stat[k].Get("Stat"), false);
                     if (a != -1)
                     {
-                        if(root ==0)
+                        if(root == 0)
                             fullAccses.DisLike.Add(sub);
                         else
                         {
@@ -729,6 +731,7 @@ public class CardConstructor : MonoBehaviour
 
                 }
             }
+       // Debug.Log(a);
         if (a != -1)
             return;
 
@@ -795,12 +798,15 @@ public class CardConstructor : MonoBehaviour
 
                 }
             }
-        if (a != -1)
+        //Debug.Log(a);
+        if (a == -1)
         {
             if (root == 0)
                 fullAccses.Like.Add(sub);
             else
             {
+                Debug.Log(root);
+                Debug.Log(sub.Head);
                 c = fullAccses.Find(fullAccses.Like, root);
                 fullAccses.Like[c].Num.Add(sub);
             }
@@ -809,21 +815,41 @@ public class CardConstructor : MonoBehaviour
 
     void CountStatList()
     {
+       // Debug.Log("Ok");
         List<int> listStat = new List<int>();
         for (int i = 0; i < publicStatList.Count; i++)
+        {
             listStat.Add(publicStatList[i]);
+            //  Debug.Log("Add Stat" + publicStatList[i]);
+
+        }
+        for (int i = 0; i < card.Stat.Count; i++)
+        {
+            listStat.Remove(card.Stat[i].Get("Stat"));
+        }
+            // listStat.Add(publicStatList[i]);
 
         int a, b, c;
         a = compliteAccses.Find(compliteAccses.Like, core.keyStat, false);
         if (a != -1)
             for (int i = 0; i < compliteAccses.Like[a].Num.Count; i++)
-                listStat.Add(compliteAccses.Like[a].Num[i].Head);
+            {
+                listStat.Add(publicStatList[i]);
+               // Debug.Log("Add Stat" + publicStatList[i]);
+
+            }
+       // listStat.Add(compliteAccses.Like[a].Num[i].Head);
         
 
         a = compliteAccses.Find(compliteAccses.DisLike, core.keyStat, false);
         if (a != -1)
             for (int i = 0; i < compliteAccses.Like[a].Num.Count; i++)
+            {
                 listStat.Remove(compliteAccses.Like[a].Num[i].Head);
+               // Debug.Log("Remove"+compliteAccses.Like[a].Num[i].Head);
+
+            }
+        //listStat.Remove(compliteAccses.Like[a].Num[i].Head);
 
         statAccses = new Accses();
         for (int i = 0; i < listStat.Count; i++)
@@ -831,12 +857,17 @@ public class CardConstructor : MonoBehaviour
             SubInt sub = new SubInt(listStat[i]);
             Accses accses = core.bD[core.keyStat].Base[listStat[i]].accses;
             ScanAccses(accses, statAccses, sub);
+           // Debug.Log("Remove" + listStat[i]);
         }
+        //Debug.Log(statAccses.Like.Count);
+        //Debug.Log(statAccses.Need.Count);
+        //Debug.Log(statAccses.DisLike.Count);
         LoadStatButton();
     }
 
     void CountRuleList()
     {
+        //Debug.Log("Ok");
         int a, b;
         int keyA = 0;
         List<SubInt> listRule = new List<SubInt>();
@@ -862,6 +893,20 @@ public class CardConstructor : MonoBehaviour
                     for (int j = 0; j < compliteAccses.Like[i].Num.Count; j++)
                         listRule[a].Find(compliteAccses.Like[i].Num[j].Head);
             }
+
+
+        for (int i = 0; i < card.Trait.Count; i++)
+        {
+            a = compliteAccses.Find(listRule, card.Trait[i].Head, false);
+            if (a != -1)
+                for (int j = 0; j < card.Trait[i].Num.Count; j++)
+                {
+                    b = listRule[a].Find(card.Trait[i].Num[j].Head, false);
+                    if (b != -1)
+                        listRule[a].Num.RemoveAt(b);
+                }
+        }
+
 
         for (int i = 0; i < compliteAccses.DisLike.Count; i++)
             if (compliteAccses.DisLike[i].Head < 0)
@@ -905,7 +950,10 @@ public class CardConstructor : MonoBehaviour
             Accses accses = core.bD[core.keyTag].Base[keyA].accses;
             ScanAccses(accses, ruleAccses, sub);
             for (int j = 0; j < listRule[i].Num.Count; j++)
-                ScanAccses(accses, ruleAccses, sub, listRule[i].Head);
+            {
+                //Debug.Log(listRule[i].Head);
+                ScanAccses(accses, ruleAccses, listRule[i].Num[j], sub.Head);
+            }
             
         }
 
@@ -916,10 +964,9 @@ public class CardConstructor : MonoBehaviour
 
     void OpenStatWindow()
     {
-        if (statMood)
+        if (!statMood)
         {
-
-            statMood = false;
+            statMood = true;
             ui.StatWindow.gameObject.active = true;
             ui.RuleWindow.gameObject.active = false;
             CountStatList();
@@ -928,9 +975,9 @@ public class CardConstructor : MonoBehaviour
 
     void OpenRuleWindow()
     {
-        if (!statMood)
+        if (statMood)
         {
-            statMood = true;
+            statMood = false;
             ui.StatWindow.gameObject.active = false;
             ui.RuleWindow.gameObject.active = true;
             CountRuleList();
@@ -993,19 +1040,19 @@ public class CardConstructor : MonoBehaviour
         {
             void Clear(int intMood, int size)
             {
-
-                for (int i = size; i < ui.RuleRing[intMood].childCount; i++)
+                for (int i = size; i < ui.StatRing[intMood].GetChild(0).GetChild(0).childCount; i++)
                 {
-                    Destroy(ui.RuleRing[intMood].GetChild(i).gameObject);
+                    Destroy(ui.StatRing[intMood].GetChild(0).GetChild(0).GetChild(i).gameObject);
                     //i--;
                 }
             }
             void Build(int intMood, int i)
             {
+                //Debug.Log(intMood);
                 void SetStatButton(Button button, Button button1,int a)
                 {
                     button.onClick.AddListener(() => EditStat(a, false));
-                    button.onClick.AddListener(() => EditStat(a, true));
+                    button1.onClick.AddListener(() => EditStat(a, true));
                     //button.onClick.RemoveAllListeners();
                 }
 
@@ -1023,19 +1070,21 @@ public class CardConstructor : MonoBehaviour
                 {
                     go = Instantiate(ui.OrigButton);
                     if (intMood == 1)
-                        SetButton(go.transform.GetChild(1).gameObject.GetComponent<Button>(), i);
+                        SetButton(go.GetComponent<Button>(), i);
                 }
-                go.transform.SetParent(ui.RuleRing[intMood]);
+                //Debug.Log(go);
+                go.transform.SetParent(ui.StatRing[intMood].GetChild(0).GetChild(0));
 
                 go.GetComponent<CardCaseInfo>().Set(cardSys, intMood, i, - 1, "Stat");
             }
             void SetInfo(int intMood, int i, List<SubInt> list)
             {
+                //Debug.Log($"{i} {list[i].Head}");
                 int b = list[i].Head;
                 BD bd = core.bD[core.keyStat];
                 string str = bd.Base[b].Name;
                 str += $"\n{bd.Base[b].Cost}/4";
-                ui.StatRing[intMood].GetChild(i).GetChild(0).gameObject.GetComponent<Text>().text = str;
+                ui.StatRing[intMood].GetChild(0).GetChild(0).GetChild(i).GetChild(0).gameObject.GetComponent<Text>().text = str;
 
             }
 
@@ -1055,28 +1104,32 @@ public class CardConstructor : MonoBehaviour
                     list = statAccses.DisLike;
                     break;
             }
-            Debug.Log(card.Stat.Count);
+            //Debug.Log(card.Stat.Count);
+            //Debug.Log(ui.StatRing[intMood].childCount);
             int i = 0;
-            if(intMood == 0)
-            {
-                for (; i < card.Stat.Count; i++)
-                {
-                    if (i == ui.StatRing[intMood].childCount)
-                        Build(intMood, i);
 
+
+            if (intMood == 0)
+            {
+                for (int j = ui.StatRing[intMood].GetChild(0).GetChild(0).childCount; j < card.Stat.Count; j++)
+                    Build(intMood, j);
+                for (; i < card.Stat.Count; i++)
                     StatView(i);
-                }
+                //Clear(intMood, card.Stat.Count);
             }
             else
+            {
+                //Debug.Log(list.Count);
+                for (int j = ui.StatRing[intMood].GetChild(0).GetChild(0).childCount; j < list.Count; j++)
+                    Build(intMood, j);
                 for (; i < list.Count; i++)
-                {
-                    if (i == ui.StatRing[intMood].childCount)
-                        Build(intMood, i);
-
-                    SetInfo(intMood,i, list);
-                }
+                    SetInfo(intMood, i, list);
+                //Clear(intMood, list.Count);
+            }
             Clear(intMood, i);
         }
+        for (int i = 0; i < ui.StatRing.Count; i++)
+            Build(i);
     }
     void LoadRuleButton()
     {
@@ -1085,9 +1138,9 @@ public class CardConstructor : MonoBehaviour
             void Clear(int intMood, int size)
             {
 
-                for (int i = size; i < ui.RuleRing[intMood].childCount; i++)
+                for (int i = size; i < ui.RuleRing[intMood].GetChild(0).GetChild(0).childCount; i++)
                 {
-                    Destroy(ui.RuleRing[intMood].GetChild(i).gameObject);
+                    Destroy(ui.RuleRing[intMood].GetChild(0).GetChild(0).GetChild(i).gameObject);
                     //i--;
                 }
             }
@@ -1108,28 +1161,37 @@ public class CardConstructor : MonoBehaviour
                             break;
                     }
                 }
+
+                //Debug.Log(ui.RuleRing[intMood].GetChild(0).GetChild(0));
+                //Debug.Log(ui.RuleRing[intMood].GetChild(0).GetChild(0).childCount);
+                //Debug.Log(size);
                 GameObject go = null;
                 if (size == -1)
                 {
                     go = Instantiate(ui.OrigButton);
-                    go.transform.SetParent(ui.RuleRing[intMood]);
+                    go.transform.SetParent(ui.RuleRing[intMood].GetChild(0).GetChild(0));
                 }
                 else
-                    go = ui.RuleRing[intMood].GetChild(size).gameObject;
+                    go = ui.RuleRing[intMood].GetChild(0).GetChild(0).GetChild(size).gameObject;
 
                 go.GetComponent<CardCaseInfo>().Set(cardSys, intMood, i, j, "Rule");
-                SetButton(go.transform.GetChild(1).gameObject.GetComponent<Button>(), i, j, intMood);
+                SetButton(go.GetComponent<Button>(), i, j, intMood);
             }
             void SetInfo(int intMood, int i, int j, List<SubInt> list,int size)
             {
                 int mainA = -list[i].Head - 1;
                 int mainB = list[i].Num[j].Head;
+                //Debug.Log($"{i} {j} {mainA} {mainB}");
 
                 string str = core.head[mainA].Rule[mainB];
-                Text text = ui.RuleRing[intMood].GetChild(1).GetChild(size).gameObject.GetComponent<Text>();
+                Text text = ui.RuleRing[intMood].GetChild(0).GetChild(0).GetChild(size).GetChild(0).gameObject.GetComponent<Text>();
 
                 str += $"\nCost: {core.head[mainA].Cost[mainB]}";
 
+                //Debug.Log(ui.RuleRing[intMood]);
+                //Debug.Log(ui.RuleRing[intMood].GetChild(size));
+                //Debug.Log(ui.RuleRing[intMood].GetChild(size).GetChild(0));
+                //Debug.Log(text);
                 text.text = str;
             }
 
@@ -1154,7 +1216,10 @@ public class CardConstructor : MonoBehaviour
             for(int i=0;i< list.Count;i++)
                 for (int j = 0; j < list[i].Num.Count; j++)
                 {
-                    if (size == ui.RuleRing[intMood].childCount)
+                    //Debug.Log(ui.RuleRing[intMood].GetChild(0).GetChild(0));
+                    //Debug.Log(ui.RuleRing[intMood].GetChild(0));
+
+                    if (size > ui.RuleRing[intMood].GetChild(0).GetChild(0).childCount)
                         Build(intMood, i, j, size);
                     else
                         Build(intMood, i, j);
@@ -1164,6 +1229,8 @@ public class CardConstructor : MonoBehaviour
                 }
             Clear(intMood,size);
         }
+        for (int i = 0; i < ui.StatRing.Count; i++)
+            Build(i);
     }
 
     public void GetFullInfo()//вся статистика по текущему набору введенной информации
@@ -1217,8 +1284,10 @@ public class CardConstructor : MonoBehaviour
 
     void SetStat(int a)
     {
+       
         BD bd = core.bD[core.keyStat];
-        card.Stat.Add(new StatExtend(a, bd.Base[a].Sub.Image));
+        
+        card.Stat.Add(new StatExtend(statAccses.Like[a].Head, bd.Base[statAccses.Like[a].Head].Sub.Image));
         CountSize();
         FullAccsesCount();
     }
@@ -1228,11 +1297,17 @@ public class CardConstructor : MonoBehaviour
             card.Stat[a].Edit("Max", 1);
         else if (card.Stat[a].Get("Max") ==1)
         {
-            int b = compliteAccses.Find(compliteAccses.Need, core.keyStat, false);
-            int c = compliteAccses.Need[b].Find(card.Stat[a].Get("Stat"), false);
-            if (c != -1)
-                card.Stat.RemoveAt(a);
-            FullAccsesCount();
+            if (a != 0)
+            {
+                int b = compliteAccses.Find(compliteAccses.Need, core.keyStat, false);
+                int c = compliteAccses.Need[b].Find(card.Stat[a].Get("Stat"), false);
+                if (c == -1) {
+                    card.Stat.RemoveAt(a);
+                    FullAccsesCount();
+                    CountSize();
+                    return;
+                } 
+            }
         }
         else 
             card.Stat[a].Edit("Max", -1);
@@ -1242,23 +1317,29 @@ public class CardConstructor : MonoBehaviour
 
     void SetRule(int a, int b)
     {
-        int c = compliteAccses.Find(card.Trait, a);
-        card.Trait[c].Find(b);
+        int mainA = ruleAccses.Like[a].Head;
+        int mainB = ruleAccses.Like[a].Num[b].Head;
+
+        int c = ruleAccses.Find(card.Trait, mainA);
+        card.Trait[c].Find(mainB);
         CountSize();
         FullAccsesCount();
     }
     void RemoveRule(int a, int b)
     {
+        int mainA = card.Trait[a].Head;
+        int mainB = card.Trait[a].Num[b].Head;
+
         int d;
-        int c = compliteAccses.Find(compliteAccses.Need, a,false);
+        int c = compliteAccses.Find(compliteAccses.Need, mainA, false);
         if(c!= -1)
         {
-            d = compliteAccses.Need[c].Find(b);
+            d = compliteAccses.Need[c].Find(mainB);
             if (d != -1)
                 return;
         }
-        c = compliteAccses.Find(card.Trait, a, false);
-        d = card.Trait[c].Find(b,false);
+        c = compliteAccses.Find(card.Trait, mainA, false);
+        d = card.Trait[c].Find(mainB, false);
         card.Trait[c].Num.RemoveAt(d);
         if(card.Trait[c].Num.Count ==0)
             card.Trait.RemoveAt(c);
@@ -1270,14 +1351,16 @@ public class CardConstructor : MonoBehaviour
     void StatView(int a)
     {
         int b = card.Stat[a].Get("Stat");
+
         BD bd = core.bD[core.keyStat];
         string str = bd.Base[b].Name;
         str += $"\n{bd.Base[b].Cost}/4 * {card.Stat[a].Get("Max")}";
-        ui.StatRing[0].GetChild(a).GetChild(0).gameObject.GetComponent<Text>().text = str;
+        ui.StatRing[0].GetChild(0).GetChild(0).GetChild(a).GetChild(0).gameObject.GetComponent<Text>().text = str;
+        //ui.StatRing[0].GetChild(a).GetChild(0).gameObject.GetComponent<Text>().text = str;
     }
     void CountSize()
     {
-        int mana = startMana;
+        float mana = startMana;
         int a, b;
         BD bd = core.bD[core.keyStat];
         for (int i = 0; i < card.Stat.Count; i++)
@@ -1295,17 +1378,27 @@ public class CardConstructor : MonoBehaviour
         bd = core.bD[core.keyTag];
         for (int i = 0; i < card.Trait.Count; i++)
         {
+            Debug.Log(bd);
+            Debug.Log(bd.Base.Count);
+            Debug.Log(-card.Trait[i].Head - 1);
+            Debug.Log(bd.Base[-card.Trait[i].Head - 1]);
             mana += bd.Base[-card.Trait[i].Head - 1].Cost;
             for (int j = 0; j < card.Trait[i].Num.Count; j++)
-                mana += core.head[-card.Trait[i].Head - 1].Cost[card.Trait[i].Num[j].Head];
+            {
+                a = core.head[-card.Trait[i].Head - 1].Index.FindIndex(x => x == card.Trait[i].Num[j].Head);
+                if (a != -1)
+                    mana += core.head[-card.Trait[i].Head - 1].Cost[a];
+            }
         }
 
+        mana /= 4;
+        card.Mana = Mathf.CeilToInt(mana);
         ViewCard();
     }
 
     void ViewCard()
     {
-       SubSys.Gallery.ReadCard(card, ui.Body);
+       SubSys.Gallery.ReadCard(card, ui.Body, false);
         //card
     }
     #endregion

@@ -70,32 +70,38 @@ namespace SubSys
           
             //View();
         }
-        static void View(List<CardBody> bodys, List<CardCase>  card)
+        static void View(List<CardBody> bodys, List<CardCase>  card, bool mood =true)
         {
             for (int i = 0; i < card.Count; i++)
-                ReadCard(card[i], bodys[i]);
+                ReadCard(card[i], bodys[i], mood);
             for (int i= card.Count; i < bodys.Count; i++)
                 CardClear(bodys[i]);
         }
-        public static void ReadCard(CardCase card, CardBody body)
+        public static void ReadCard(CardCase card, CardBody body, bool mood)
         {
+            int a;
             CoreSys sys = DeCoder.GetCore();
             //Debug.Log(card);
             //Debug.Log(body);
             body.Avatar.sprite = card.Image;
 
             body.Name.text = card.Name;
+            string strMood = (mood) ? "All" : "Max";
 
-            body.Stat.text = card.Stat[0].Read("All");
+            body.Stat.text = card.Stat[0].Read(strMood);
             for (int i = 1; i < card.Stat.Count; i++)
-                body.Stat.text += "\n" +card.Stat[i].Read("All");
+                body.Stat.text += "\n" +card.Stat[i].Read(strMood);
 
             if (card.Trait.Count > 0)
             {
                 List<string> str = new List<string>();
                 for (int i = 0; i < card.Trait.Count; i++)
                     for (int i1 = 0; i1 < card.Trait[i].Num.Count; i1++)
-                        str.Add(sys.head[-card.Trait[i].Head-1].Rule[card.Trait[i].Num[i1].Head]);
+                    {
+                        a = sys.head[-card.Trait[i].Head - 1].Index.FindIndex(x => x == card.Trait[i].Num[i1].Head);
+                        if(a !=-1)
+                            str.Add(sys.head[-card.Trait[i].Head - 1].Rule[a]);
+                    }
 
                 body.Trait.text = str[0];
                 for (int i = 1; i < str.Count; i++)
