@@ -5,7 +5,7 @@ using System.Linq;
 
 public class SubInt
 {
-    private char[] keys = { '/', ':', '?', '|' };
+    private char[] keys = { '/', ':', '?', '|', ',' };
     public int Head;
     public List<SubInt> Num = new List<SubInt>();
     public SubInt(int a)

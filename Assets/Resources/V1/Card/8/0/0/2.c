@@ -1,0 +1,9 @@
+<root>
+  <Name>лучник</Name>
+  <Mana>3</Mana>
+  <Legion>0</Legion>
+  <Civilian>0</Civilian>
+  <Race>0</Race>
+  <Stat>0/4|2/4</Stat>
+  <Trait>0</Trait>
+</root>

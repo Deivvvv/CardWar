@@ -1,0 +1,9 @@
+<root>
+  <Name>Walker</Name>
+  <Mana>2</Mana>
+  <Legion>0</Legion>
+  <Civilian>0</Civilian>
+  <Race>0</Race>
+  <Stat>0/6</Stat>
+  <Trait>0</Trait>
+</root>

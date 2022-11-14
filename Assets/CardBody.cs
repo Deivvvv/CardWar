@@ -18,5 +18,6 @@ public class CardBody : MonoBehaviour
 
     public TMP_Text Mana;
 
+    public GameObject CountButton;
     public TMP_Text Count;
 }

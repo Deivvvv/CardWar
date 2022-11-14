@@ -593,35 +593,35 @@ namespace Coder
             Debug.Log(str);
             if (com[1] == "Core")
             {
-                a = int.Parse(com[3]); 
+                IfAction ifAction = null;
+                a = int.Parse(com[3]);
+                if (com[2] == "Plus")
+                    ifAction = mainRule.Trigger[subMood].PlusAction[a];
+                else
+                    ifAction = mainRule.Trigger[subMood].MinusAction[a];
+
                 switch (com[0])
                 {
                     case ("Add"):
-                        switch (com[2])
-                        {
-                            case ("Plus"):
-                                mainRule.Trigger[subMood].PlusAction[a].Core.Add(new RuleForm());
-                                mainRule.Trigger[subMood].PlusAction[a].Result.Add(0);
-                                break;
-                            case ("Minus"):
-                                mainRule.Trigger[subMood].MinusAction[a].Core.Add(new RuleForm());
-                                mainRule.Trigger[subMood].MinusAction[a].Result.Add(0);
-                                break;
-                        }
+
+                        ifAction.Core.Add(new RuleForm());
+                        ifAction.Result.Add(0);
+
                         break;
                     case ("Remove"):
                         b = int.Parse(com[4]);
-                        switch (com[2])
+
+                        int h = 0;
+                        if (ifAction.Core[b].Tayp == core.keyStat)
                         {
-                            case ("Plus"):
-                                mainRule.Trigger[subMood].PlusAction[a].Core.RemoveAt(b);
-                                mainRule.Trigger[subMood].PlusAction[a].Result.RemoveAt(b);
-                                break;
-                            case ("Minus"):
-                                mainRule.Trigger[subMood].MinusAction[a].Core.RemoveAt(b);
-                                mainRule.Trigger[subMood].MinusAction[a].Result.RemoveAt(b);
-                                break;
+                            for (int i = 0; i < b; i++)
+                                if (ifAction.Core[i].Tayp == core.keyStat)
+                                    h++;
+                            ifAction.ResultCore.RemoveAt(h);
                         }
+                        ifAction.Core.RemoveAt(b);
+                        ifAction.Result.RemoveAt(b);
+
                         break;
                 }
             }
@@ -878,7 +878,7 @@ namespace Coder
             string str = "";
             for (int i = 0; i < core.bD[a].Base.Count; i++)
             {
-                str += "\n  " + AddLink($"Key|{a}.{i}", core.bD[a].Base[i].Name + IfLook(core.bD[a].Base[i].Look)) ;
+                str += "\n  " + AddLink($"Key|{a}.{i}", core.bD[a].Base[i].Name + IfLook(core.bD[a].Base[i].Look) + $" [{ core.bD[a].Base[i].Cost}]" );
             }
 
             return str;
@@ -1142,7 +1142,7 @@ namespace Coder
                 RuleForm form = ifAction.Core[c];
                 ifAction.Core[c] = ifAction.Core[d];
                 ifAction.Core[d] = form;
-
+                form = null;
                 b = ifAction.Result[c];
                 ifAction.Result[c] = ifAction.Result[d];
                 ifAction.Result[d] = b;
@@ -1427,9 +1427,9 @@ namespace Coder
                         int b = -list[i].Head - 1;
                         if (full)
                         {
-                            str += AddLink($"LinkerRead|{mood}_{list[i].Head}_-1_0", $"\nУдалить заголовок {core.head[b].Name}");
+                            str += AddLink($"LinkerRead|{mood}_{list[i].Head}_-1_0", $"\nУдалить заголовок {core.bD[core.keyTag].Base[b].Name}");
 
-                            str += AddLink($"Linker|{mood}_{list[i].Head}_1", $"\nСоздать связь в {core.head[b].Name}");
+                            str += AddLink($"Linker|{mood}_{list[i].Head}_1", $"\nСоздать связь в {core.bD[core.keyTag].Base[b].Name}");
                             for (int i1 = 0; i1 < list[i].Num.Count; i1++)
                             {
                                 //for (int i2 = 0; i2 < core.head[b].Index.Count; i2++)
@@ -1449,17 +1449,16 @@ namespace Coder
                         }
                         else
                         {
-                            str += $"\nЗаголовок {core.head[b].Name}";
+                            str += $"\nЗаголовок  == {core.bD[core.keyTag].Base[b].Name}";
                             for (int i1 = 0; i1 < list[i].Num.Count; i1++)
                             {
                                 a = core.head[b].Index.FindIndex(x => x == list[i].Num[i1].Head);
-                                if (a != 0)
-                                    str += AddLink($"Key|{b}.{a}", core.head[b].Rule[a]);
+                                if (a != -1)
+                                    str += $"\n"+ AddLink($"Key|{list[i].Head}.{a}", core.head[b].Rule[a]);
                                 else
                                     str += $"\n  {b} |{list[i].Num[i1].Head} !!!!!";
                             }
                         }
-
                     }
                     else
                     {
@@ -1474,7 +1473,6 @@ namespace Coder
 
                                 str += $"\n " + AddLink($"Key|{list[i].Head}-{list[i].Num[i1].Head}", core.bD[list[i].Head].Base[list[i].Num[i1].Head].Name);
                             }
-                            
                         }
                         else
                         {
@@ -1518,13 +1516,13 @@ namespace Coder
                     a = int.Parse(com[1]);
                     b = -a - 1;
                     str = AddLink("Open|MenuHead", "Back") + "\n";
-                    str += AddLink($"Sys|New_{a}", "New Rule " + core.head[b].Name);
+                    str += AddLink($"Sys|New_{a}", "New Rule " + core.bD[core.keyTag].Base[b].Name);
                     str += "\n";
 
                     for (int i = 0; i < core.head[b].Index.Count; i++)
                     {
-                        str += "\n  " + AddLink($"Key|{a}.{i}", $"({core.head[b].Index[i]})"+ core.head[b].Rule[i]);
-                    }
+                        str += "\n  " + AddLink($"Key|{a}.{i}", $"({core.head[b].Index[i]})"+ core.head[b].Rule[i] + $" [{core.head[b].Cost[i]}]");
+            }
 
                     ui.TT[0].text = str;
                     break;
@@ -1549,11 +1547,11 @@ namespace Coder
                         str += $"\nTag {core.bD[core.keyTag].Base[mainRule.Tag].Name}";
                         // str += AddLink("Tag_Tag", $"\nTag { mainBase.Tag}");
 
-                        str += "\n" + AddLink("SetSwitch|Visible", (mainRule.Visible) ? "Visible" : "InVisible");
-                        str += "\n" + AddLink("SetSwitch|VisibleCard", (mainRule.VisibleCard) ? "Visible" : "InVisible");
+                        str += "\nВидимость в вики " + AddLink("SetSwitch|Visible", (mainRule.Visible) ? "Visible" : "InVisible");
+                        str += "\nВидимость на карте " + AddLink("SetSwitch|VisibleCard", (mainRule.VisibleCard) ? "Visible" : "InVisible");
 
 
-                        str += "\nТребуемые механики";
+                        str += "\n";
                         str += AccsesText(mainRule.accses);
                         str += "\n";
 
@@ -1663,7 +1661,7 @@ namespace Coder
 
                 bool use = (ifAction.Core[i].Tayp == core.keyStat);
                 //str += "\n";
-                Debug.Log(key + i);
+                //Debug.Log(key + i);
                 str += ReturnCore(ifAction.Core[i],key+i);
 
                 str += " ";
@@ -1883,12 +1881,12 @@ namespace Coder
             if (keyA >-1)
             {
                 localAccses = mainBase.accses;
-                localKey = keyA;
+              //  localKey = keyA;
             }
             else
             {
                 localAccses = mainRule.accses;
-                localKey = -keyA - 1;
+               // localKey = -keyA - 1;
             }
 
             Debug.Log(core.keyMark);
@@ -1900,12 +1898,12 @@ namespace Coder
                     {
                         Debug.Log(core.keyMark);
                         HeadRule localRule = Saver.LoadRule(-a - 1, b);
-                        localRule.accses.Edit("Use", localKey, keyB, add);
+                        localRule.accses.Edit("Use", keyA, keyB, add);
                         Saver.SaveRule(localRule, -a - 1, b);
                     }
                     else
                     {
-                        core.bD[a].Base[b].accses.Edit("Use", localKey, keyB, add);
+                        core.bD[a].Base[b].accses.Edit("Use", keyA, keyB, add);
                         Saver.SaveBD(a, b);
                     }
                 }

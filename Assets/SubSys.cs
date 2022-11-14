@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using System.Linq;
 using XMLSaver;
 using Coder;
 
@@ -10,89 +11,503 @@ namespace SubSys
 {
     public class Creator : MonoBehaviour
     {
-        public static CardBody NewCardBody(BaseUi ui)
+        public static CardBody NewCardBody(BaseUi ui, int a)
         {
             GameObject go = Instantiate(ui.CardOrig);
             go.transform.SetParent(ui.MenuExtend);
-           return go.GetComponent<CardBody>();
-           
+            go.GetComponent<Button>().onClick.AddListener(() => Gallery.RedactCard(a));
+            return go.GetComponent<CardBody>();
         }
+        public static CardBody NewCardBody(BaseUi ui, ColodConstructorUi uiExtend, int a)
+        {
+            GameObject go = Instantiate(ui.CardOrig);
+            go.transform.SetParent(uiExtend.ColodWindow);
+            go.GetComponent<Button>().onClick.AddListener(() => Gallery.RemoveCardColod(a));
+            return go.GetComponent<CardBody>();
+        }
+
+        public static GameObject NewButton(BaseUi ui, Transform t)
+        {
+            GameObject go = Instantiate(ui.SimpleButton);
+            go.transform.SetParent(t);
+            return go;
+        }
+        public static void Des(GameObject go)
+        {
+            Destroy(go);
+        }
+        public static Button ReturnButtonID(GameObject go,int a)
+        {
+            return go.transform.GetChild(a).gameObject.GetComponent<Button>();
+        }
+        public static void SetButtonText(GameObject go,string str)
+        {
+            go.transform.GetChild(0).gameObject.GetComponent<Text>().text = str;
+        }
+
     }
 
-    static public class Gallery 
+    static public class Gallery
     {
+        static BaseUi ui;
+        static ColodConstructorUi uiExtend;
+        
         static List<CardCase> cards;
         static List<CardBody> bodys;
-        static List<int> listIndex; 
+
+        public static List<CardCase> cardsColod;
+        static List<CardBody> bodysColod;
+
+        public static List<int> colodGuild;
+        public static List<string> colodName;
+
+        public static List<int> size;
+        public static int cardSum;
+
+        static List<string> listID;
+
+        static List<int> listIndex;
         static int num;
+        static int numColod;
+        static int colod =-1;
+        static int guild =-1;
+        static bool redactor;
+       // static bool galleryMood;
+        static bool editColod;
 
-
-        static void NewPathCard()
+        //public static void ResetColod(ColodConstructorUi _uiExtend)
+        //{
+        //    uiExtend = _uiExtend;
+        //}
+        static void LoadGuildList()
         {
-            List<SubInt> cardsPath = Sorter.GetCard();
-            cards = new List<CardCase>();
-            int b = 0;
-            int size=0;
-            int cardModSize = num * bodys.Count;
+            void SetButton(Button button, int a)
+            {
+                button.onClick.AddListener(() => SetGuild(a));
+            }
 
+            CoreSys core = DeCoder.GetCore();
+            GameObject go = null;
+            for(int i = 0; i < core.bD[core.keyGuild].Base.Count; i++)
+            {
+                go = Creator.NewButton(ui,uiExtend.GuildList);
+                SetButton( go.GetComponent<Button>(),i);
+                if (!core.bD[core.keyGuild].Base[i].Look)
+                    go.active = false;
+
+#if UNITY_EDITOR
+                    go.active = true;
+#endif
+                Creator.SetButtonText(go, core.bD[core.keyGuild].Base[i].Name);
+            }
+        }
+        
+        static void SaveWindowSet(string mood, int id =-1)
+        {//Подтвердить сохрание.. вернуться.. Не сохранять измения
+            void SetButton(Button button, string mood,int id)
+            {
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => OpenButton(mood, id));
+            }
+
+            switch (mood)
+            {
+                case ("NewColod"):
+                    if (guild == -1)
+                        return;
+                    if (colod == -1)
+                    {
+
+                        return;
+                    }
+                    else if (!editColod)
+                    {
+                       // colod == -1;
+                    }
+
+                        break;
+                case ("NewCard"):
+                    DeCoder.GetCore().LoadScene($"CardCreator| |Gallery"); //PageUp
+                        return;
+                    break;
+                case ("SwitchColod"):
+                    if (!editColod)
+                    {
+                        SetColod(id);
+                        return;
+                    }
+                    break;
+                case ("Exit"):
+                    if (!editColod) 
+                    {
+                        DeCoder.GetCore().LoadScene($"Main");
+                        return;
+                    }
+
+                    break;
+            }
+
+            uiExtend.SaveWindow.active = true;
+
+            SetButton(Creator.ReturnButtonID(uiExtend.SaveWindow,0), mood, 0);
+            SetButton(Creator.ReturnButtonID(uiExtend.SaveWindow, 1), mood, 1);
+            SetButton(Creator.ReturnButtonID(uiExtend.SaveWindow, 2), mood, 2);
+        }
+        static void OpenButton(string mood, int id)
+        {
+            uiExtend.SaveWindow.active = false;
+            switch (mood)
+            {
+                case ("NewColod"):
+                    //if(guild)
+                    break;
+                case ("NewCard"):
+                    break;
+                case ("SwitchColod"):
+                    break;
+                case ("Exit"):
+                    break;
+            }
+            //ui.Buttons[6].onClick.AddListener(() => SaveWindowSet("NewColod")); //PageDown
+            //ui.Buttons[7].onClick.AddListener(() => SaveColod()); //PageDown
+            //ui.Buttons[8].onClick.AddListener(() => DeliteColod()); //PageDown
+
+            ////DeCoder.GetCore().//
+            //ui.ExitButton.onClick.AddListener(() => SaveWindowSet("Exit"));
+            //ui.Buttons[2].onClick.AddListener(() => SaveWindowSet("CardCreator"));
+
+        }
+
+        static void SetGuild(int a)
+        {
+            guild = a;
+            num = 0;
+            Saver.LoadColodBD(a);
+
+
+            Sorter.SetGuild(a);
+            if(a !=0)
+                Sorter.SplitGuild(0);
+            listID = new List<string>();
+            List<SubInt> cardsPath = Sorter.GetCard();
             for (int i = 0; i < cardsPath.Count; i++)
                 for (int j = 0; j < cardsPath[i].Num.Count; j++)
                     for (int k = 0; k < cardsPath[i].Num[j].Num.Count; k++)
-                        for (int a = 0; a < cardsPath[i].Num[j].Num[k].Num.Count; a++)
-                            cards.Add(Sorter.ReadCard(i, j, k, a));
+                        for (int c = 0; c < cardsPath[i].Num[j].Num[k].Num.Count; c++)
+                            listID.Add($"{i}|{j}|{k}|{c}");
 
-            //            for (int i = 0; i < cardsPath.Count && cards.Count != bodys.Count; i++)
-            //for (int j = 0; j < cardsPath[i].Num.Count && cards.Count != bodys.Count; j++)
-            //    for (int k = 0; k < cardsPath[i].Num[j].Num.Count && cards.Count != bodys.Count; k++)
-            //        //for (int h = 0; h < cards[i].Num[j].Num[k].Num.Count; h++)
-            //        //if (size + cardsPath[i].Num[j].Num[k].Num.Count < cardModSize)
-            //        //    size += cardsPath[i].Num[j].Num[k].Num.Count;
-            //        //else
-            //        {
-            //            for (int a = cardModSize - size; a < cardsPath[i].Num[j].Num[k].Num.Count && cards.Count != bodys.Count; a++)
-            //            {
-            //                cards.Add(Sorter.ReadCard(i, j, k, a));
 
-            //            }
-            //            cardModSize = size +cardsPath[i].Num[j].Num[k].Num.Count;
+            ReadGalleryCard();
 
-            //        }
-            Debug.Log(cardsPath.Count);
-            Debug.Log(cardModSize);
-            Debug.Log(size);
-            Debug.Log(cards.Count);
-            View(bodys, cards);
+
+            LoadColodList();
+        }
+        static void LoadColodList()
+        {
+            for (int i = colodGuild.Count; i < uiExtend.ColodList.childCount; i++)
+                Creator.Des(uiExtend.ColodList.GetChild(i).gameObject);
+
+            void SetButton(Button button, int a )
+            {
+                button.onClick.AddListener(() => SetColod(a));
+            }
+
+            GameObject go = null;
+            for(int i = uiExtend.ColodList.childCount; i < colodGuild.Count; i++)
+            {
+                go =Creator.NewButton(ui, uiExtend.ColodList);
+                SetButton( go.GetComponent<Button>(),i); //PageDown
+            }
+
+            for (int i = 0; i < colodName.Count; i++)
+                uiExtend.ColodList.GetChild(i).GetChild(0).gameObject.GetComponent<Text>().text = colodName[i];
+        }
+        static void SetColod(int a)
+        {
+            colod = a;
+            cardsColod = new List<CardCase>();
+            numColod = 0;
+            Saver.LoadColod(guild,a);
+            uiExtend.NameTT.text = colodName[a];
+            ReadColodCard();
         }
 
-
-        public static void Reset(BaseUi ui )
+        //static void SwitchGalleryMood()
+        //{
+        //    galleryMood = !galleryMood;
+        //    Text text = ui.Buttons[9].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>();
+        //    if (galleryMood)
+        //        text.text = "AddCard On";
+        //    else
+        //        text.text = "AddCard Off";
+        //}
+        static void RedactSwitch()
         {
-            
+            redactor = !redactor;
+            //Text text = Creator.SetButtonText( ui.Buttons[4].gameObject,.transform.GetChild(0).gameObject.GetComponent<Text>();
+            string text =   (redactor)? "Redact On":"Redact Off";
+            Creator.SetButtonText(ui.Buttons[4].gameObject,text);
+        }
+
+        public static void RedactCard(int a)
+        {
+            //if (galleryMood)
+            //{
+            if (a < cards.Count)
+                if (redactor)
+                {
+                    CardCase card = cards[a];
+                    DeCoder.GetCore().LoadScene($"CardCreator|{card.Guild}/{card.CardClass}/{card.CardTayp}/{card.Id}|Gallery");
+
+                }
+                else
+                    AddCardColod(a);
+        }
+        static void AddCardColod(int a)
+        {
+            //if (cardSum >= 40)
+            //    return;
+
+            for (int i=0;i<cardsColod.Count;i++)
+                if( cardsColod[i].Id == cards[a].Id &&
+                    cardsColod[i].Guild == cards[a].Guild &&
+                    cardsColod[i].CardTayp == cards[a].CardTayp &&
+                    cardsColod[i].CardClass == cards[a].CardClass
+                    )
+                {
+                    if (size[i] < 3)
+                    {
+                        size[i]++;
+                        cardSum++;
+                        uiExtend.allCardCount.text = $"{cardSum}/40";
+
+                        ReadColodCard();
+                    }
+                    return;
+                }
+            cardsColod.Add(cards[a]);
+            size.Add(1);
+            cardSum++;
+            uiExtend.allCardCount.text = $"{cardSum}/40";
+            //View(bodysColod, cardsColod, false, size);
+
+            ReadColodCard();
+        }
+        public static void AddCardColodAlt(int a)
+        {
+            int realA = numColod * bodysColod.Count + a;
+
+            if (realA < cardsColod.Count)
+            {
+                if (size[realA] < 3)
+                {
+                    size[realA]++;
+                    cardSum++;
+                    uiExtend.allCardCount.text = $"{cardSum}/40";
+                    ReadCard(cardsColod[realA], bodysColod[realA], false, size[realA]);
+                }
+            }
+        }
+        public static void RemoveCardColod(int a)
+        {
+            int realA = numColod * bodysColod.Count +a;
+
+            if (realA < cardsColod.Count)
+            {
+                if (redactor)
+                {
+                    CardCase card = cards[a];
+                    DeCoder.GetCore().LoadScene($"CardCreator|{card.Guild}/{card.CardClass}/{card.CardTayp}/{card.Id}|Gallery");
+                }
+                else
+                {
+                    cardSum--;
+                    size[realA]--;
+
+                    if (size[realA] <= 0)
+                    {
+                        cardsColod.RemoveAt(realA);
+                        CardClear(bodysColod[realA]);
+                        return;
+                    }
+                    uiExtend.allCardCount.text = $"{cardSum}/40";
+                    ReadCard( cardsColod[realA], bodysColod[realA], false, size[realA]);
+
+                    //ReadColodCard();
+                }
+             
+            }
+        }
+
+        static void ReadGalleryCard()
+        {
+            cards = new List<CardCase>();
+
+            for (int i = num * bodys.Count; i < (num +1)* bodys.Count && i <listID.Count; i++)
+            {
+                List<int> nums = new List<int>(listID[i].Split('|').Select(int.Parse).ToArray());
+                cards.Add(Sorter.ReadCard(nums[0], nums[1], nums[2], nums[3]));
+            }
+            uiExtend.cardCount.text = $"{num * bodys.Count}/{listID.Count}";
+
+            View(bodys, cards, false);
+        }
+        static void ReadColodCard()
+        {
+            List<CardCase> localCardsColod = new List<CardCase>();
+
+            for (int i = numColod * bodysColod.Count; i < (numColod + 1) * bodysColod.Count && i < cardsColod.Count; i++)
+                localCardsColod.Add(cardsColod[i]);
+
+
+            uiExtend.colodCount.text = $"{numColod * bodysColod.Count}/{cardsColod.Count}";
+            View(bodysColod, localCardsColod, false);
+        }
+
+        static void NewColod()
+        {
+            SaveColod();
+            colod = -1;
+            uiExtend.NameTT.text = "NewColod";
+            cardsColod = new List<CardCase>();
+            size = new List<int>();
+            View(bodysColod, cardsColod);
+
+        }
+
+        static void SaveColod()
+        {
+            if (guild == -1)
+                return;
+
+            if (cardsColod.Count ==0)
+                return;
+
+            if(colod == -1)
+            {
+                if (colodGuild.Count == 0)
+                    colod = 0;
+                else
+                    colod = colodGuild[colodGuild.Count-1]+1;
+                colodGuild.Add(colod);
+                colodName.Add(uiExtend.NameTT.text);
+                LoadColodList();
+            }
+            else
+            {
+                colodName[colod] = uiExtend.NameTT.text;
+            }
+            Saver.SaveColodBD(guild,colodName, colodGuild);
+            //Creator.SetButtonText(uiExtend.ColodList.GetChild(colod).gameObject, uiExtend.NameTT.text);
+            //uiExtend.ColodList.GetChild(colod).GetChild(0).transform.gameObject.GetComponent<Text>().text = uiExtend.NameTT.text;
+
+            editColod = false;
+            List<string> id = new List<string>();
+            for (int i = 0; i < cardsColod.Count; i++)
+                id.Add($"{cardsColod[i].Guild}|{cardsColod[i].CardClass}|{cardsColod[i].CardTayp}|{cardsColod[i].Id}");
+
+            Saver.SaveColod(guild,colod, cardSum,  id,size);
+        }
+        static void DiliteColod()
+        {
+            if (guild == -1)
+                return;
+            if (colod == -1)
+                return;
+            cardsColod = new List<CardCase>();
+            size = new List<int>();
+
+            Saver.DliteColod(guild,colod);
+        }
+        static void LoadColod(int a)
+        {
+            numColod = 0;
+            Saver.LoadColod(guild, a);
+            ReadColodCard();
+        }
+
+        public static void Reset(BaseUi _ui, ColodConstructorUi _uiExtend)
+        {
+            uiExtend = _uiExtend;
+            ui = _ui;
+            redactor = false;
+            //galleryMood = true;
+            editColod = false;
             num = 0;
+            numColod = 0;
             //NewPage( true,num, bodys.Count, Sorter.Get)
-            ui.Buttons[0].onClick.AddListener(() => num = NewPage(true, num, bodys.Count, Sorter.GetAllCard())); //PageUp
-            ui.Buttons[1].onClick.AddListener(() => num = NewPage(false, num, bodys.Count, Sorter.GetAllCard())); //PageDown
+            ui.Buttons[0].onClick.AddListener(() => NextCard(true)); //PageUp
+            ui.Buttons[1].onClick.AddListener(() => NextCard(false)); //PageDown
+            ui.Buttons[2].onClick.AddListener(() => NextColodCard(true)); //PageUp
+            ui.Buttons[3].onClick.AddListener(() => NextColodCard(false)); //PageDown
+
+            ui.Buttons[4].onClick.AddListener(() => RedactSwitch()); //PageUp
+
+            ui.Buttons[5].onClick.AddListener(() => DeCoder.GetCore().LoadScene($"CardCreator| |Gallery")); //PageUp
+            ui.Buttons[6].onClick.AddListener(() => NewColod());//SaveWindowSet("NewCard")); //PageUp
+            ui.Buttons[6].onClick.AddListener(() => SaveColod());//SaveWindowSet("NewCard")); //PageUp
+            //ui.Buttons[7].onClick.AddListener(() => SaveWindowSet("NewCard")); //PageUp
+
+
+            // ui.Buttons[5].onClick.AddListener(() => RedactSwitch()); //PageUp
+            // ui.Buttons[4].onClick.AddListener(() => SaveWindowSet("NewCard"));
+            //ui.Buttons[2].onClick.AddListener(() => DeCoder.GetCore().LoadScene($"CardCreator|")); //PageUp
+
+            // ui.Buttons[6].onClick.AddListener(() => SaveWindowSet("NewColod")); //PageDown
+            //ui.Buttons[7].onClick.AddListener(() => SaveColod()); //PageDown
+            //ui.Buttons[8].onClick.AddListener(() => DeliteColod()); //PageDown
+            //ui.Buttons[9].onClick.AddListener(() => SwitchGalleryMood()); //PageDown
+
+            //SetGuild()
+
+            //DeCoder.GetCore().//
+            ui.ExitButton.onClick.AddListener(() => SaveWindowSet("Exit"));
+            //ui.Buttons[2].onClick.AddListener(() => SaveWindowSet("CardCreator"));
+
             GameObject go = null;
 
             int a = 20;
             bodys = new List<CardBody>(new CardBody[a]);
             for (int i = 0; i < a; i++)
-                bodys[i] = Creator.NewCardBody(ui);
-            Sorter.SetGuild(0);
-            CoreSys core = DeCoder.GetCore();
-            for (int i = 1; i < core.bD[core.keyGuild].Base.Count; i++)
-                Sorter.SplitGuild(i);
-            NewPathCard();
+                bodys[i] = Creator.NewCardBody(ui,i);
+
+            a = 8;
+            bodysColod = new List<CardBody>(new CardBody[a]);
+            for (int i = 0; i < a; i++)
+                bodysColod[i] = Creator.NewCardBody(ui, uiExtend, i);
+            // Sorter.SetGuild(0);
+            //CoreSys core = DeCoder.GetCore();
+            //for (int i = 1; i < core.bD[core.keyGuild].Base.Count; i++)
+            //    Sorter.SplitGuild(i);
+            if (cardsColod == null)
+            {
+                cardsColod = new List<CardCase>();
+                size = new List<int>();
+            }
+            if (listID == null)
+                listID = new List<string>();
+
+            uiExtend.NameTT.text = "NewColod";
+            uiExtend.allCardCount.text = $"{cardSum}/40";
+            LoadGuildList();
+            ReadColodCard();
+            ReadGalleryCard();
             //View();
         }
-        static void View(List<CardBody> bodys, List<CardCase>  card, bool mood =true)
+        static void View(List<CardBody> bodys, List<CardCase>  card, bool mood =true, List<int> size = null)
         {
-            for (int i = 0; i < card.Count; i++)
-                ReadCard(card[i], bodys[i], mood);
-            for (int i= card.Count; i < bodys.Count; i++)
+            int i = 0;
+            if (size != null)
+                for (; i < card.Count; i++)
+                    ReadCard(card[i], bodys[i], mood, size[i]);
+            else
+                for (; i < card.Count; i++)
+                    ReadCard(card[i], bodys[i], mood);
+
+            for (; i < bodys.Count; i++)
                 CardClear(bodys[i]);
         }
-        public static void ReadCard(CardCase card, CardBody body, bool mood)
+        public static void ReadCard(CardCase card, CardBody body, bool mood, int size =-1)
         {
             int a;
             CoreSys sys = DeCoder.GetCore();
@@ -100,7 +515,7 @@ namespace SubSys
             //Debug.Log(body);
             body.Avatar.sprite = card.Image;
 
-            body.Name.text = card.Name;
+            body.Name.text =$"{card.Id} "+ card.Name;
             string strMood = (mood) ? "All" : "Max";
 
             body.Stat.text = card.Stat[0].Read(strMood);
@@ -125,6 +540,13 @@ namespace SubSys
             else
                 body.Trait.text = "";
           
+            if(size != -1)
+            {
+                body.CountButton.active = true;
+                body.Count.text = ""+size;
+            }
+            else
+                body.CountButton.active = false;
 
 
             body.Mana.text = "" + card.Mana;
@@ -138,6 +560,8 @@ namespace SubSys
             body.Stat.text = "";
             body.Trait.text = "";
 
+            body.CountButton.active = false;
+
             body.Mana.text = "";
         }
 
@@ -147,13 +571,24 @@ namespace SubSys
         {
             if(add)
             {
-                if(num * size + size> sizeAll)
+                if((num+1) * size< sizeAll)
                     return num + 1;
             }
             else if (num >0)
                 return num - 1;
             
             return num;
+        }
+
+        static void NextCard(bool next)
+        {
+            num= NewPage(next, num, bodys.Count, listID.Count);
+            ReadGalleryCard();
+        }
+        static void NextColodCard(bool next)
+        {
+            numColod = NewPage(next, numColod, bodysColod.Count, cardsColod.Count);
+            ReadColodCard();
         }
     }
 
@@ -226,25 +661,25 @@ namespace SubSys
                 if (a == -1)
                 {
                     a = guild.Index.Count;
-                    guild.Index.Add(new SubInt(localGuild.Index[i].Head));
+                    guild.Index.Add(localGuild.Index[i]);
                 }
-
-                for (int j = 0; j < guild.Index[i].Num.Count; j++)
-                {
-                    int b = guild.Index[a].Find(localGuild.Index[i].Num[j].Head);
-                    for(int k=0;k< localGuild.Index[i].Num[j].Num.Count; k++)
+                else
+                    for (int j = 0; j < guild.Index[i].Num.Count; j++)
                     {
-                        int c = localGuild.Index[i].Num[j].Num[k].Head;
-                        c = guild.Index[a].Num[b].Find(c);//Index(x => x.Head == c);
-                        for(int h=0;h< localGuild.Index[i].Num[j].Num[k].Num.Count; h++)
+                        int b = guild.Index[a].Find(localGuild.Index[i].Num[j].Head);
+                        for (int k = 0; k < localGuild.Index[i].Num[j].Num.Count; k++)
                         {
-                            int d = localGuild.Index[i].Num[j].Num[k].Num[h].Head;
-                            d = localGuild.Index[a].Num[b].Num[c].Find(d);
-                            if(d !=-1) 
-                                localGuild.RemoveCard(ReadCard(i, j, k, h));
+                            int c = localGuild.Index[i].Num[j].Num[k].Head;
+                            c = guild.Index[a].Num[b].Find(c);//Index(x => x.Head == c);
+                            for (int h = 0; h < localGuild.Index[i].Num[j].Num[k].Num.Count; h++)
+                            {
+                                int d = localGuild.Index[i].Num[j].Num[k].Num[h].Head;
+                                d = localGuild.Index[a].Num[b].Num[c].Find(d);
+                                if (d != -1)
+                                    localGuild.RemoveCard(ReadCard(i, j, k, h));
+                            }
                         }
                     }
-                }
             }
             guild.Split(localGuild);
         }
@@ -445,7 +880,7 @@ public class HideLibrary
             Tag.Remove(card1.Trait[i].Head);
 
         for (int i = 0; i < card.Stat.Count; i++)
-            Stat.Add(card1.Stat[i].Get("Stat"));
+            Stat.Add(card.Stat[i].Get("Stat"));
         for (int i = 0; i < card1.Stat.Count; i++)
             Stat.Remove(card1.Stat[i].Get("Stat"));
     }

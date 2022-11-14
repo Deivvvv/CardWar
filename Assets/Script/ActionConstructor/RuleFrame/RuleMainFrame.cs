@@ -56,12 +56,12 @@ public class RuleMainFrame : ScriptableObject
 
         {
             //создать кнопку действия , кто-то выполнил действие // перенос на другой план // кого-то перенесли на другой план
-            string[] com = { "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", "ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction", "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt" };
+            string[] com = { "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", "ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction", "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt", "TriggerUse" };
             Trigger = com;
         }
 
         /*
-        "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction" "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt"
+        "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction" "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt", "TriggerUse"
         1: эффект в начале хода 
         2: эффеки при смене хода
         3: в конце
@@ -73,7 +73,7 @@ public class RuleMainFrame : ScriptableObject
          2: после атаки
 
         до дейстыия
-        во время действия
+        во время действия 
         после дейстыия
 
         до подготовки
@@ -104,6 +104,8 @@ public class RuleMainFrame : ScriptableObject
          когда сущестыо что-то сделало
 
          за каждую активацию другого триггера
+
+        использование карты
 
          */
 

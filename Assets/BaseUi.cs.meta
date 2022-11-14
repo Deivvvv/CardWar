@@ -5,7 +5,8 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - OrigRedactor: {fileID: 1267363617391834249, guid: 1afdeff5866b3124db2e3a8e01a62176, type: 3}
-  - OrigButton: {instanceID: 0}
+  - OrigButton: {fileID: 1630871134639763511, guid: 246eb338ffce9164299d1c9cb507bbd5, type: 3}
+  - SimpleButton: {fileID: 6861483901461574393, guid: 56bc64153b9413e4eabb211f8b86e086, type: 3}
   - Menu: {instanceID: 0}
   - ExitButton: {instanceID: 0}
   - CardOrig: {fileID: 6115808302141344361, guid: 8ac98f5708eeac14f81ae166aa453b0a, type: 3}

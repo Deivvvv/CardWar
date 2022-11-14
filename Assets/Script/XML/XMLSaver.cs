@@ -14,6 +14,7 @@ using UnityEngine.U2D;
 using System.Linq;
 
 using Coder;
+using SubSys;
 
 
 
@@ -30,7 +31,7 @@ namespace XMLSaver
 
         public static void BackUpSave(string mood)
         {
-            string path = mainPath + "backUp/"; 
+            string path = mainPath + "backUp/";
             switch (mood)
             {
                 case ("BD"):
@@ -42,7 +43,7 @@ namespace XMLSaver
         }
         public static void BackUpLoad(string mood)
         {
-            string path = mainPath + "backUp/"; 
+            string path = mainPath + "backUp/";
             switch (mood)
             {
                 case ("BD"):
@@ -54,7 +55,7 @@ namespace XMLSaver
         }
         public static void BackUpAllLoad(string mood)
         {
-            switch(mood)
+            switch (mood)
             {
                 case ("BD"):
                     break;
@@ -71,21 +72,21 @@ namespace XMLSaver
             XElement root = null;
             //string str = $"{path}/{lang}/{a}.L" 
 
-           // Debug.Log($"{path}L/{lang}/{a}.L");
+            // Debug.Log($"{path}L/{lang}/{a}.L");
             if (File.Exists($"{path}L/{lang}/{a}.L"))
                 root = XDocument.Parse(File.ReadAllText($"{path}/L/{lang}/{a}.L")).Element("root");
-            else if(File.Exists($"{path}L/Eng/{a}.L"))
+            else if (File.Exists($"{path}L/Eng/{a}.L"))
                 root = XDocument.Parse(File.ReadAllText($"{path}/L/Eng/{a}.L")).Element("root");
 
             string str = "";
-            if(root != null)
+            if (root != null)
                 str = root.Element("I").Value;
 
-           // Debug.Log(str);
+            // Debug.Log(str);
             return str;
 
         }
-        static void AddLangFile(string path,string str,int a)
+        static void AddLangFile(string path, string str, int a)
         {
             //Debug.Log(path);
             path = $"{path}L/{lang}/";
@@ -98,7 +99,7 @@ namespace XMLSaver
             XDocument saveDoc = new XDocument(root);
             File.WriteAllText($"{path}{a}.L", saveDoc.ToString());
         }
-        static void RemoveWord(string path,int a)
+        static void RemoveWord(string path, int a)
         {
             XElement root = null;
             string str = "";
@@ -108,7 +109,7 @@ namespace XMLSaver
             str = FindLang(path, a);
             int f = str.Split('/').Length;
             com1 = Directory.GetFiles($"{path}L/", "*", SearchOption.TopDirectoryOnly);
-            for(int i=0;i< com1.Length; i++)
+            for (int i = 0; i < com1.Length; i++)
             {
                 Debug.Log(com1[i]);
                 path = $"{com1[i]}/{a}.L";
@@ -135,10 +136,10 @@ namespace XMLSaver
                             XDocument saveDoc = new XDocument(root);
                             File.WriteAllText(path, saveDoc.ToString());
                         }
-                       
+
                     }
                 }
-               
+
             }
         }
         static void RemoveLocal(string path, int a)
@@ -154,7 +155,7 @@ namespace XMLSaver
 
         static string GetWord(string path, int a)
         {
-            string str1 ="",str2="";
+            string str1 = "", str2 = "";
             //TranfWord()
             return str1 + "*" + str2;
         }
@@ -166,7 +167,7 @@ namespace XMLSaver
             com = com[1].Split('/');
             XElement root;
             string str = "";
-            for (int i=0; i< lang.Length; i++)
+            for (int i = 0; i < lang.Length; i++)
             {
                 str = $"{path}L/{lang[i]}/{a}.L";
                 if (File.Exists(path))
@@ -205,7 +206,7 @@ namespace XMLSaver
         #region BD
 
         static void BDReload(int a)
-        { 
+        {
             core.bD = new List<BD>(new BD[core.frame.Tayp.Count]);
             string path = mainPath + "BD/";
             for (; a < core.frame.Tayp.Count; a++)
@@ -226,7 +227,7 @@ namespace XMLSaver
             string path = mainPath + "BD/";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            
+
             int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
             if (fCount + 1 < l)
                 BDReload(fCount);
@@ -235,7 +236,7 @@ namespace XMLSaver
             string str = "";
             BD bd = null;
             core.bD = bD;
-            for (int i=0;i< l; i++)
+            for (int i = 0; i < l; i++)
             {
                 bd = new BD();
                 str = FindLang($"{path}{i}/", -1);
@@ -248,7 +249,7 @@ namespace XMLSaver
                 fCount = Directory.GetFiles($"{path}{i}/", "*.H").Length;
                 bd.Base = new List<MainBase>(new MainBase[fCount]);
                 for (int i1 = 0; i1 < fCount; i1++)
-                  LoadBD(i, i1);
+                    LoadBD(i, i1);
 
 
             }
@@ -263,7 +264,7 @@ namespace XMLSaver
             AddLangFile(path, str, -1);
         }
 
-        public static void LoadBD( int a, int b)
+        public static void LoadBD(int a, int b)
         {
             string path = mainPath + $"BD/{a}/";
             string[] com;
@@ -272,7 +273,7 @@ namespace XMLSaver
             XElement root = XDocument.Parse(File.ReadAllText($"{path}{b}.H")).Element("root");
 
             mainBase.Color = root.Element("Color").Value;
-            mainBase.Cost = int.Parse( root.Element("Cost").Value);
+            mainBase.Cost = int.Parse(root.Element("Cost").Value);
             mainBase.Look = bool.Parse(root.Element("Look").Value);
             mainBase.Visible = bool.Parse(root.Element("Visible").Value);
 
@@ -280,7 +281,7 @@ namespace XMLSaver
             {
                 mainBase.Sub = new MainBaseSubInt();
                 //mainBase.Sub.Regen = bool.Parse(root.Element("Regen").Value);
-                
+
                 mainBase.Sub.Image = int.Parse(root.Element("Image").Value);
                 mainBase.Sub.Antipod = int.Parse(root.Element("Antipod").Value);
                 str = root.Element("AntiStat").Value;
@@ -345,7 +346,7 @@ namespace XMLSaver
             string str = " ";
             if (list.Count > 0)
             {
-                str = ""+list[0];
+                str = "" + list[0];
                 for (int i = 1; i < list.Count; i++)
                     str += $"/{list[i]}";
             }
@@ -363,13 +364,13 @@ namespace XMLSaver
             return str;
         }
 
-        public static void SaveBD( int a, int b)
+        public static void SaveBD(int a, int b)
         {
             if (b == -1)
                 return;
 
             string[] com = null;
-            string str ="";
+            string str = "";
             string path = mainPath + $"BD/{a}/";
             MainBase mainBase = core.bD[a].Base[b];
 
@@ -416,7 +417,7 @@ namespace XMLSaver
             }
 
 
-                XDocument saveDoc = new XDocument(root);
+            XDocument saveDoc = new XDocument(root);
             File.WriteAllText(path + $"{b}.H", saveDoc.ToString());
         }
 
@@ -430,36 +431,36 @@ namespace XMLSaver
             int a = core.head.Count;
             string path = mainPath + "Rule/";
             //if (!Directory.Exists($"{path}{a}/"))
-           // {
-                Directory.CreateDirectory($"{path}{a}/");
-                core.head.Add(new SubRuleHead());
-                SaveRuleMain(a);
-           // }
+            // {
+            Directory.CreateDirectory($"{path}{a}/");
+            core.head.Add(new SubRuleHead());
+            SaveRuleMain(a);
+            // }
             LoadAllRule();
         }
 
         public static void LoadAllRule()
         {
-            string[] com = null, com1 =null;
+            string[] com = null, com1 = null;
             string str = "";
             string path = mainPath + "Rule/";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             //int f = DeCoder.ReturnIndex("Tag");
 
-           // int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
-           // if (fCount <= core.bD[f].Base.Count)
-           //     RuleReload( fCount, core.bD[f].Base.Count);
+            // int fCount = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Length;
+            // if (fCount <= core.bD[f].Base.Count)
+            //     RuleReload( fCount, core.bD[f].Base.Count);
 
-            int a=0,b = 0;
+            int a = 0, b = 0;
             List<SubRuleHead> head = new List<SubRuleHead>(new SubRuleHead[core.bD[core.keyTag].Base.Count]);
-            for(int i =0; i < head.Count;i++)
+            for (int i = 0; i < head.Count; i++)
             {
                 head[i] = new SubRuleHead();
                 head[i].Name = core.bD[core.keyTag].Base[i].Name;
                 XElement root = XDocument.Parse(File.ReadAllText($"{path}{i}.HR")).Element("root");
                 str = root.Element("Id").Value;
-                if(str != "")
+                if (str != "")
                     head[i].Index = new List<int>(str.Split('/').Select(int.Parse).ToArray());
                 else
                     head[i].Index = new List<int>();
@@ -478,8 +479,8 @@ namespace XMLSaver
 
                     str = FindLang($"{path}", i);
                     com = str.Split('/');
-                    
-                    a =com.Length ;
+
+                    a = com.Length;
                     if (a < b)
                     {
                         string oldLang = lang;
@@ -495,13 +496,13 @@ namespace XMLSaver
                         com = str.Split('/');
                     }
 
-                   // Debug.Log(com.Length);
-                   // Debug.Log(head[i].Rule.Count);
+                    // Debug.Log(com.Length);
+                    // Debug.Log(head[i].Rule.Count);
                     for (int i1 = 0; i1 < com.Length; i1++)
                         head[i].Rule[i1] = com[i1];
-                    
+
                     if (com.Length != a)
-                        SaveRuleMain( i);
+                        SaveRuleMain(i);
                 }
                 else
                     head[i].Rule = new List<string>();
@@ -510,7 +511,7 @@ namespace XMLSaver
 
             core.head = head;
         }
-        public static void SaveRuleMain( int a)
+        public static void SaveRuleMain(int a)
         {
             Debug.Log(a);
             Debug.Log(core.head.Count);
@@ -545,11 +546,11 @@ namespace XMLSaver
             Debug.Log(path);
 
             XDocument saveDoc = new XDocument(root);
-            File.WriteAllText(path +$"{a}.HR", saveDoc.ToString());
+            File.WriteAllText(path + $"{a}.HR", saveDoc.ToString());
 
         }
 
-        static RuleForm ReturnCore(string str )
+        static RuleForm ReturnCore(string str)
         {
             string[] com = str.Split('*');
             RuleForm core = new RuleForm();
@@ -564,7 +565,7 @@ namespace XMLSaver
         }
         static IfAction ReturnIfAction(string str)
         {
-            string[] com = str.Split('|'); 
+            string[] com = str.Split('|');
             IfAction core = new IfAction();
             core.Point = int.Parse(com[0]);
 
@@ -573,7 +574,7 @@ namespace XMLSaver
 
             string[] com1 = com[2].Split('!');
             core.Core = new List<RuleForm>(new RuleForm[com1.Length]);
-            for (int i =0;i<com1.Length;i++)
+            for (int i = 0; i < com1.Length; i++)
                 core.Core[i] = ReturnCore(com1[i]);
 
             if (com[3] == " ")
@@ -604,8 +605,8 @@ namespace XMLSaver
             //core.Rule = int.Parse(com[6]);
 
             core.ForseMood = int.Parse(com[5]);
-            if(com[6] == " ")
-                core.Core = new List<RuleForm>( );
+            if (com[6] == " ")
+                core.Core = new List<RuleForm>();
             else
             {
                 string[] com1 = com[6].Split('!');
@@ -613,7 +614,7 @@ namespace XMLSaver
                 for (int i = 0; i < com1.Length; i++)
                     core.Core[i] = ReturnCore(com1[i]);
             }
-         
+
 
             core.ResultCore = ReturnCore(com[7]);
             core.Prioritet = int.Parse(com[8]);
@@ -625,7 +626,7 @@ namespace XMLSaver
         {
             XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Rule/{a}/{b}.R")).Element("root");
             return new Accses(root.Element("Accses").Value);
-            
+
         }
         public static HeadRule LoadRule(int a, int b)
         {
@@ -635,19 +636,19 @@ namespace XMLSaver
 
             string str = "";
             string[] com, com1;
-            XElement root = XDocument.Parse(File.ReadAllText(mainPath +$"Rule/{a}/{b}.R")).Element("root");
+            XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Rule/{a}/{b}.R")).Element("root");
             //head.Cost = int.Parse(root.Element("Cost").Value);
             //  str = root.Element("Cost").Value;
             //int c = int.Parse(root.Element("Triggers").Value);
 
-            head.Trigger = new List<TriggerAction>(new TriggerAction[int.Parse(root.Element("Triggers").Value)] );
-            for (int i = 0; i < head.Trigger.Count; i++) 
-            { 
+            head.Trigger = new List<TriggerAction>(new TriggerAction[int.Parse(root.Element("Triggers").Value)]);
+            for (int i = 0; i < head.Trigger.Count; i++)
+            {
 
                 //Debug.Log(root.Element($"Trigger{i}").Value);
                 //str = root.Element($"Trigger{i}").Value;
                 //com = str.Split('/');
-                
+
                 com = root.Element($"Trigger{i}").Value.Split('/');
                 TriggerAction trigger = new TriggerAction();
                 //com1 = com[0].Split('|');
@@ -691,7 +692,7 @@ namespace XMLSaver
                         trigger.Action[i1] = ReturnRuleAction(com1[i1]);
                 }
 
-              
+
 
 
 
@@ -703,9 +704,9 @@ namespace XMLSaver
             head.Visible = bool.Parse(root.Element("Visible").Value);
             head.VisibleCard = bool.Parse(root.Element("VisibleCard").Value);
 
-            com = FindLang(mainPath+$"Rule/{a}/", b).Split('/');
+            com = FindLang(mainPath + $"Rule/{a}/", b).Split('/');
             //head.Name = com[0];
-            if(com.Length > 0)
+            if (com.Length > 0)
             {
                 b = 1;
                 for (int i = 0; i < head.Trigger.Count; i++)
@@ -717,7 +718,7 @@ namespace XMLSaver
                             if (b == com.Length)
                             {
                                 i = head.Trigger.Count;
-                                i1= head.Trigger[i].Action.Count;
+                                i1 = head.Trigger[i].Action.Count;
                             }
                         }
             }
@@ -772,7 +773,7 @@ namespace XMLSaver
             }
             else
                 str += " ";
-            str +="|" + GetCore(core.ResultCore);
+            str += "|" + GetCore(core.ResultCore);
 
             str += "|" + core.Prioritet;
             return str;
@@ -789,11 +790,11 @@ namespace XMLSaver
                 for (int i = 1; i < subInt.Num.Count; i++)
                     str += $"-{subInt.Num[i]}";
             }
-            
+
             return str;
         }
 
-        public static void SaveRule(HeadRule head,int a, int b)
+        public static void SaveRule(HeadRule head, int a, int b)
         {
             if (b == -1)
                 return;
@@ -807,7 +808,8 @@ namespace XMLSaver
 
             //root.Add(new XElement("Cost", head.Cost));
             root.Add(new XElement("Triggers", head.Trigger.Count));
-            for (int i = 0; i < head.Trigger.Count; i++) {
+            for (int i = 0; i < head.Trigger.Count; i++)
+            {
 
                 TriggerAction trigger = head.Trigger[i];
                 str = $"{trigger.Plan}/{trigger.Trigger}/{trigger.CountMod}/{trigger.CountModExtend}/{trigger.Team}";
@@ -815,7 +817,7 @@ namespace XMLSaver
                     str += "/ ";
                 else
                 {
-                    str1 = "/"+ GetIfAction(trigger.PlusAction[0]);
+                    str1 = "/" + GetIfAction(trigger.PlusAction[0]);
                     for (int i1 = 1; i1 < trigger.PlusAction.Count; i1++)
                         str1 += "?" + GetIfAction(trigger.PlusAction[i1]);
 
@@ -852,7 +854,7 @@ namespace XMLSaver
 
                     str += str1;
                 }
-                root.Add(new XElement("Trigger"+i, str));
+                root.Add(new XElement("Trigger" + i, str));
             }
 
             root.Add(new XElement("Accses", head.accses.Zip()));
@@ -877,8 +879,8 @@ namespace XMLSaver
             RemoveLocal(path, b);
             path += $"{b}.R";
             File.Delete(path);
-            b= core.head[a].Index.FindIndex(x => x == b);
-        
+            b = core.head[a].Index.FindIndex(x => x == b);
+
 
             core.head[a].Rule.RemoveAt(b);
             core.head[a].Index.RemoveAt(b);
@@ -926,7 +928,7 @@ namespace XMLSaver
 
             XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{a}.CD")).Element("root");
             string str = root.Element("Index").Value;
-            return new SubInt(str, 4);//lable;
+            return new SubInt(str, 5);//lable;
         }
         public static void SaveGuildCard(SubInt sub, int a)
         {
@@ -934,12 +936,12 @@ namespace XMLSaver
             Debug.Log(path);
             XElement root = new XElement("root");
             string str = "";
-            root.Add(new XElement("Index", sub.Zip(3)));
+            root.Add(new XElement("Index", sub.Zip(4)));
 
             XDocument saveDoc = new XDocument(root);
             File.WriteAllText(path, saveDoc.ToString());
         }
-        public static HideLibrary LoadGuild( int a)
+        public static HideLibrary LoadGuild(int a)
         {
             HideLibrary lib = new HideLibrary();
             if (!File.Exists(mainPath + $"Card/{a}.G"))
@@ -949,11 +951,11 @@ namespace XMLSaver
                 return lib;
             }
 
-            HideLibraryCase ReadCase(XElement root,string com)
+            HideLibraryCase ReadCase(XElement root, string com)
             {
                 string str;
                 HideLibraryCase cases = new HideLibraryCase();
-                str = root.Element(com+ "Use").Value;
+                str = root.Element(com + "Use").Value;
                 if (str != "")
                     cases.Use = new List<bool>(str.Split('/').Select(bool.Parse).ToArray());
 
@@ -970,10 +972,10 @@ namespace XMLSaver
 
             XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{a}.G")).Element("root");
 
-            SubInt sub = LoadGuildCard( a);
+            SubInt sub = LoadGuildCard(a);
             lib.Index = sub.Num;
 
-            lib.Legion = ReadCase(root,"Legion");
+            lib.Legion = ReadCase(root, "Legion");
             lib.Civilian = ReadCase(root, "Civilian");
             lib.Race = ReadCase(root, "Race");
             lib.Tag = ReadCase(root, "Tag");
@@ -1002,7 +1004,7 @@ namespace XMLSaver
 
             string path = mainPath + $"Card/{a}.G";
             XElement root = new XElement("root");
-            if(lib.Index.Count !=0)
+            if (lib.Index.Count != 0)
             {
                 SubInt sub = new SubInt(0);
                 sub.Num = lib.Index;
@@ -1028,12 +1030,12 @@ namespace XMLSaver
             //path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/L/{lang}/{card.Id}.L";
             //File.Delete(path);
         }
-        public static void SaveCard(CardCase card )
+        public static void SaveCard(CardCase card)
         {
             string path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-           // string path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}.c";
+            // string path = mainPath + $"Card/{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}.c";
             XElement root = new XElement("root");
 
             root.Add(new XElement("Name", card.Name));
@@ -1054,7 +1056,7 @@ namespace XMLSaver
                 sub.Num = card.Trait;
                 root.Add(new XElement("Trait", sub.Zip(3)));
             }
-           // AddLangFile(path, card.Name, card.Id);
+            // AddLangFile(path, card.Name, card.Id);
 
 
             XDocument saveDoc = new XDocument(root);
@@ -1067,7 +1069,7 @@ namespace XMLSaver
             card.Name = root.Element("Name").Value;
             card.Mana = int.Parse(root.Element("Mana").Value);
 
-            card.Legion = int.Parse(root.Element("Mana").Value);
+            card.Legion = int.Parse(root.Element("Legion").Value);
             card.Civilian = int.Parse(root.Element("Civilian").Value);
             card.Race = int.Parse(root.Element("Race").Value);
 
@@ -1084,6 +1086,77 @@ namespace XMLSaver
             return card;
         }
 
+        #endregion
+
+        #region Colod
+        public static void SaveColodBD(int guild,List<string> names,List<int> index)
+        {
+
+            //string path = mainPath + $"Card/{guild}.cMain";
+            XElement root = new XElement("root");
+
+            root.Add(new XElement("Names", ReturnListData(names)));
+
+            root.Add(new XElement("Index", ReturnListData(index)));
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(mainPath + $"Card/{guild}.cMain", saveDoc.ToString());
+
+
+        }
+
+        public static void LoadColodBD(int guild)
+        {
+            if (!File.Exists(mainPath + $"Card/{guild}.cMain"))
+            {
+                Gallery.colodGuild = new List<int>();
+                Gallery.colodName = new List<string>();
+                return;
+            }
+                XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{guild}.cMain")).Element("root");
+            Gallery.colodGuild = new List<int>(root.Element("Index").Value.Split('/').Select(int.Parse).ToArray());
+            Gallery.colodName = new List<string>(root.Element("Names").Value.Split('/'));
+
+        }
+        public static void SaveColod(int guild, int colod, int cardSum,List<string> id,List<int> size)
+        {
+
+            string path = mainPath + $"Card/{guild}/Colod/";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            XElement root = new XElement("root");
+
+            root.Add(new XElement("CardSum", cardSum));
+
+            root.Add(new XElement("Id", ReturnListData(id)));
+
+            root.Add(new XElement("Size", ReturnListData(size)));
+
+
+            XDocument saveDoc = new XDocument(root);
+            File.WriteAllText(path + $"{colod}.co", saveDoc.ToString());
+           
+        }
+        public static void DliteColod(int guild,int colod)
+        {
+        }
+        public static void LoadColod(int guild, int colod)
+        {
+            XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{guild}/Colod/{colod}.co")).Element("root");
+
+            Gallery.cardSum = int.Parse(root.Element("CardSum").Value);
+
+            Gallery.cardsColod = new List<CardCase>();
+            string[] com = root.Element("Id").Value.Split('/');
+            for (int i = 0; i < com.Length; i++)
+            {
+                int[] index = com[i].Split('|').Select(int.Parse).ToArray();
+
+                Gallery.cardsColod.Add(LoadCard(index[0], index[1], index[2], index[3]));
+            }
+
+            Gallery.size = new List<int>(root.Element("Size").Value.Split('/').Select(int.Parse).ToArray());
+        }
         #endregion
         //#region GameData
 

@@ -10,6 +10,7 @@ public class BaseUi : MonoBehaviour
 {
     public GameObject OrigRedactor;
     public GameObject OrigButton;
+    public GameObject SimpleButton;
     public Transform Menu;
     public Button ExitButton;
 

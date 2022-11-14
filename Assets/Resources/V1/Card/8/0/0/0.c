@@ -1,5 +1,5 @@
 <root>
-  <Name></Name>
+  <Name>Walk</Name>
   <Mana>1</Mana>
   <Legion>0</Legion>
   <Civilian>0</Civilian>

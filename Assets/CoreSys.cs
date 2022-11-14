@@ -79,7 +79,7 @@ public class CoreSys : MonoBehaviour
 
        // OpenScene("Main");
     }
-    void LoadScene(string str)
+    public void LoadScene(string str)
     {
         //switch (mood)
         //{
@@ -96,7 +96,8 @@ public class CoreSys : MonoBehaviour
         else
         {
             mood = str;
-            SceneManager.LoadScene(str, LoadSceneMode.Single);
+            string[] com = mood.Split('|');
+            SceneManager.LoadScene(com[0], LoadSceneMode.Single);
         }
     }
 
@@ -118,27 +119,32 @@ public class CoreSys : MonoBehaviour
 
         //if (go == null)
         //    return;
+        string[] com = mood.Split('|');
         Debug.Log(mood);
-        switch (mood)
+        switch (com[0])
         {
             case ("Main"):
                 ui.ExitButton.onClick.AddListener(() => OpenRedactor());
-                string[] name = {"Колоды","Галлерея","Конструктор карт", "Выход" };
-                string[] com = {"Colod", "Gallery", "CardCreator", "Exit"};
-                for(int i = 0; i < com.Length; i++)
+                string[] name = {"Галлерея","Конструктор карт", "Выход" };
+                string[] comS = { "Gallery", "CardCreator| |Main", "Exit"};
+                for(int i = 0; i < comS.Length; i++)
                 {
                     go = Instantiate(ui.OrigButton);
                     go.transform.SetParent(ui.Menu);
-                    SetLoader(go.GetComponent<Button>(), com[i]);
+                    SetLoader(go.GetComponent<Button>(), comS[i]);
                     go.transform.GetChild(0).gameObject.GetComponent<Text>().text = name[i];
                 }
                 break;
             case ("CardCreator"):
-                ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
-                ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>());
+                ui.ExitButton.onClick.AddListener(() => LoadScene(com[2]));
+                ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>(), com[1]);
                 break;
             case ("Gallery"):
-                Gallery.Reset(_ui);
+                //Gallery.ResetColod(_ui.gameObject.GetComponent<ColodConstructorUi>());
+                Gallery.Reset(_ui, _ui.gameObject.GetComponent<ColodConstructorUi>());
+                //ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
+                //ui.Buttons[2].onClick.AddListener(() => LoadScene("CardCreator| |Gallery"));
+                //ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>(), mood);
                 //CardConstructor.Load(mood);
 
 

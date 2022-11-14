@@ -574,13 +574,21 @@ public class CardConstructor : MonoBehaviour
     void StartMana()
     {
         //int intGuild = -1, intCardTayp = -1, intCardClass = 0, intId = -1, intLegion = -1, intCivilian = -1, intRace = -1;
+
+
         startMana = 0;
-        startMana += core.bD[core.keyGuild].Base[intGuild].Cost;
-        startMana += core.bD[core.keyCardTayp].Base[intCardTayp].Cost;
-        startMana += core.bD[core.keyCardClass].Base[intCardClass].Cost;
-        startMana += core.bD[core.keyLegion].Base[intLegion].Cost;
-        startMana += core.bD[core.keyCivilian].Base[intCivilian].Cost;
-        startMana += core.bD[core.keyRace].Base[intRace].Cost;
+       // Debug.Log(card.Guild);
+        startMana += core.bD[core.keyGuild].Base[card.Guild].Cost;
+       // Debug.Log(card.CardTayp);
+        startMana += core.bD[core.keyCardTayp].Base[card.CardTayp].Cost;
+       // Debug.Log(card.CardClass);
+        startMana += core.bD[core.keyCardClass].Base[card.CardClass].Cost;
+       // Debug.Log(card.Legion);
+        startMana += core.bD[core.keyLegion].Base[card.Legion].Cost;
+       // Debug.Log(card.Civilian);
+        startMana += core.bD[core.keyCivilian].Base[card.Civilian].Cost;
+      //  Debug.Log(card.Race);
+        startMana += core.bD[core.keyRace].Base[card.Race].Cost;
         CountSize();
     }
     #endregion
@@ -818,8 +826,8 @@ public class CardConstructor : MonoBehaviour
                 fullAccses.Like.Add(sub);
             else
             {
-                Debug.Log(root);
-                Debug.Log(sub.Head);
+                //Debug.Log(root);
+                //Debug.Log(sub.Head);
                 c = fullAccses.Find(fullAccses.Like, root);
                 fullAccses.Like[c].Num.Add(sub);
             }
@@ -1861,13 +1869,16 @@ public class CardConstructor : MonoBehaviour
     #endregion
 
     #region Save/Load
-    public void Load(CoreSys coreSys, string str = " ")
+    public void Load(CoreSys coreSys, string str)
     {
         core = coreSys; 
         gameObject.GetComponent<CardConstructor>().enabled =true;
         StartData();
         if (str == " ")
+        {
             return;
+        }
+
         List<int> list = new List<int>(str.Split('/').Select(int.Parse).ToArray());
         card = Saver.LoadCard(list[0], list[1], list[2], list[3]);
         ui.NameTT.text = card.Name;
@@ -1880,6 +1891,7 @@ public class CardConstructor : MonoBehaviour
         intCivilian = card.Civilian;
         intRace = card.Race;
         StartMana();
+        SecondStageStart();
     }
 
     void Exit(string str)
