@@ -14,7 +14,7 @@ using UnityEngine.U2D;
 using System.Linq;
 
 using Coder;
-using SubSys;
+//using SubSys;
 
 
 
@@ -632,6 +632,7 @@ namespace XMLSaver
         {
             HeadRule head = new HeadRule();
             head.Tag = a;
+            head.Id = b;
             //string path = mainPath + $"Rule/{a}/{b};
 
             string str = "";
@@ -694,9 +695,6 @@ namespace XMLSaver
 
 
 
-
-
-
                 head.Trigger[i] = trigger;
             }
 
@@ -710,17 +708,13 @@ namespace XMLSaver
             {
                 b = 1;
                 for (int i = 0; i < head.Trigger.Count; i++)
-                    for (int i1 = 0; i1 < head.Trigger[i].Action.Count; i1++)
-                        if (head.Trigger[i].Action[i1].Action == 1) //a = 1;//Trigger =Action;
-                        {
-                            head.Trigger[i].Action[i1].Name = com[b];
-                            b++;
-                            if (b == com.Length)
-                            {
-                                i = head.Trigger.Count;
-                                i1 = head.Trigger[i].Action.Count;
-                            }
-                        }
+                    if (head.Trigger[i].Trigger == 1)
+                    {
+                        head.Trigger[i].Name = com[b];
+                        b++;
+                        if (b == com.Length)
+                            break;
+                    }
             }
 
             return head;
@@ -843,17 +837,19 @@ namespace XMLSaver
                     for (int i1 = 1; i1 < trigger.Action.Count; i1++)
                         str1 += "?" + GetRuleAction(trigger.Action[i1]);
 
-                    for (int i1 = 0; i1 < trigger.Action.Count; i1++)
-                        if (trigger.Action[i1].Action == 1) //a = 1;//Trigger =Action;
-                        {
-                            if (str2 == " ")
-                                str2 = trigger.Action[i1].Name;
-                            else
-                                str2 += "/" + trigger.Action[i1].Name;
-                        }
 
                     str += str1;
                 }
+
+
+                if (trigger.Trigger == 1)
+                {
+                    if (str2 == " ")
+                        str2 = trigger.Name;
+                    else
+                        str2 += "/" + trigger.Name;
+                }
+
                 root.Add(new XElement("Trigger" + i, str));
             }
 
@@ -1105,17 +1101,22 @@ namespace XMLSaver
 
         }
 
-        public static void LoadColodBD(int guild)
+        public static void LoadColodBD(int guild, List<int> colodGuild, List<string> colodName)
         {
             if (!File.Exists(mainPath + $"Card/{guild}.cMain"))
             {
-                Gallery.colodGuild = new List<int>();
-                Gallery.colodName = new List<string>();
+               // Gallery.colodGuild = new List<int>();
+                //Gallery.colodName = new List<string>();
                 return;
             }
                 XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{guild}.cMain")).Element("root");
-            Gallery.colodGuild = new List<int>(root.Element("Index").Value.Split('/').Select(int.Parse).ToArray());
-            Gallery.colodName = new List<string>(root.Element("Names").Value.Split('/'));
+            int[] comI  = root.Element("Index").Value.Split('/').Select(int.Parse).ToArray();
+            for (int i = 0; i < comI.Length; i++)
+                colodGuild.Add(comI[i]);
+
+            string[] com  =root.Element("Names").Value.Split('/');
+            for (int i = 0; i < com.Length; i++)
+                colodName.Add(com[i]);
 
         }
         public static void SaveColod(int guild, int colod, int cardSum,List<string> id,List<int> size)
@@ -1140,22 +1141,26 @@ namespace XMLSaver
         public static void DliteColod(int guild,int colod)
         {
         }
-        public static void LoadColod(int guild, int colod)
+        public static int LoadColod(int guild, int colod, List<CardCase> cardsColod, List<int> size)
         {
+            //! Добавить сюда добавление нулевой карты, карты-палатки
+
             XElement root = XDocument.Parse(File.ReadAllText(mainPath + $"Card/{guild}/Colod/{colod}.co")).Element("root");
 
-            Gallery.cardSum = int.Parse(root.Element("CardSum").Value);
+            int cardSum = int.Parse(root.Element("CardSum").Value);
 
-            Gallery.cardsColod = new List<CardCase>();
             string[] com = root.Element("Id").Value.Split('/');
             for (int i = 0; i < com.Length; i++)
             {
                 int[] index = com[i].Split('|').Select(int.Parse).ToArray();
 
-                Gallery.cardsColod.Add(LoadCard(index[0], index[1], index[2], index[3]));
+                cardsColod.Add(LoadCard(index[0], index[1], index[2], index[3]));
             }
 
-            Gallery.size = new List<int>(root.Element("Size").Value.Split('/').Select(int.Parse).ToArray());
+            int[] ints = root.Element("Size").Value.Split('/').Select(int.Parse).ToArray();
+            for (int i = 0; i < ints.Length; i++)
+                size.Add(ints[i]);
+            return cardSum;
         }
         #endregion
         //#region GameData

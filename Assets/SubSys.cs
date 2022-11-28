@@ -51,18 +51,18 @@ namespace SubSys
     {
         static BaseUi ui;
         static ColodConstructorUi uiExtend;
-        
+
         static List<CardCase> cards;
         static List<CardBody> bodys;
 
-        public static List<CardCase> cardsColod;
+        static List<CardCase> cardsColod;
         static List<CardBody> bodysColod;
 
         public static List<int> colodGuild;
         public static List<string> colodName;
 
-        public static List<int> size;
-        public static int cardSum;
+        static List<int> size;
+        static int cardSum;
 
         static List<string> listID;
 
@@ -182,7 +182,9 @@ namespace SubSys
         {
             guild = a;
             num = 0;
-            Saver.LoadColodBD(a);
+            colodGuild = new List<int>();
+            colodName = new List<string>();
+            Saver.LoadColodBD(a, colodGuild, colodName);
 
 
             Sorter.SetGuild(a);
@@ -226,9 +228,12 @@ namespace SubSys
         {
             colod = a;
             cardsColod = new List<CardCase>();
+            size = new List<int>();
             numColod = 0;
-            Saver.LoadColod(guild,a);
+            cardSum = Saver.LoadColod(guild,a, cardsColod, size);
             uiExtend.NameTT.text = colodName[a];
+
+            ReadCard(cardsColod[0], uiExtend.MainBody, false);
             ReadColodCard();
         }
 
@@ -267,6 +272,14 @@ namespace SubSys
         {
             //if (cardSum >= 40)
             //    return;
+
+            if (cards[a].CardClass == 3)
+            {
+                cardsColod[0] = cards[a];
+                ReadCard(cardsColod[0], uiExtend.MainBody, false);
+                return;
+            }
+
 
             for (int i=0;i<cardsColod.Count;i++)
                 if( cardsColod[i].Id == cards[a].Id &&
@@ -311,7 +324,8 @@ namespace SubSys
         public static void RemoveCardColod(int a)
         {
             int realA = numColod * bodysColod.Count +a;
-
+            if (realA == 0)
+                return;
             if (realA < cardsColod.Count)
             {
                 if (redactor)
@@ -356,8 +370,8 @@ namespace SubSys
         {
             List<CardCase> localCardsColod = new List<CardCase>();
 
-            for (int i = numColod * bodysColod.Count; i < (numColod + 1) * bodysColod.Count && i < cardsColod.Count; i++)
-                localCardsColod.Add(cardsColod[i]);
+            for (int i = numColod * bodysColod.Count; i < (numColod + 1) * bodysColod.Count && i < cardsColod.Count -1; i++)
+                localCardsColod.Add(cardsColod[i+1]);
 
 
             uiExtend.colodCount.text = $"{numColod * bodysColod.Count}/{cardsColod.Count}";
@@ -371,6 +385,11 @@ namespace SubSys
             uiExtend.NameTT.text = "NewColod";
             cardsColod = new List<CardCase>();
             size = new List<int>();
+            size.Add(1);
+           // List <SubInt> cardsPath = Sorter.GetCard();
+           // int a = cardsPath[
+
+            cardsColod.Add(Saver.LoadCard(guild, 0, 3, 0));//-загрузка маин карты
             View(bodysColod, cardsColod);
 
         }
@@ -827,7 +846,7 @@ public class HideLibrary
             Tag.Add(card.Trait[i].Head);
 
         for (int i = 0; i < card.Stat.Count; i++)
-            Stat.Add(card.Stat[i].Get("Stat"));
+            Stat.Add(card.Stat[i].GetStat());
 
 
     }
@@ -845,7 +864,7 @@ public class HideLibrary
             Tag.Remove(card.Trait[i].Head);
 
         for (int i = 0; i < card.Stat.Count; i++)
-            Stat.Remove(card.Stat[i].Get("Stat"));
+            Stat.Remove(card.Stat[i].GetStat());
         AllCard--;
     }
     public void SwitchCard( CardCase card)
@@ -880,9 +899,9 @@ public class HideLibrary
             Tag.Remove(card1.Trait[i].Head);
 
         for (int i = 0; i < card.Stat.Count; i++)
-            Stat.Add(card.Stat[i].Get("Stat"));
+            Stat.Add(card.Stat[i].GetStat());
         for (int i = 0; i < card1.Stat.Count; i++)
-            Stat.Remove(card1.Stat[i].Get("Stat"));
+            Stat.Remove(card1.Stat[i].GetStat());
     }
 
     public void Split(HideLibrary lib)

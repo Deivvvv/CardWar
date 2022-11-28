@@ -15,5 +15,6 @@ public class ColodConstructorUi : MonoBehaviour
     public TextMeshProUGUI InfoPanel;
     public GameObject SaveWindow;
     public Transform ColodWindow;
+    public CardBody MainBody;
     // public Transform GuildList;
 }

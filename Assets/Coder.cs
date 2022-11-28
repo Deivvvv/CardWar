@@ -997,6 +997,12 @@ namespace Coder
                     else
                         mainBase.Plan.Size++;
                     break;
+                case ("Prioritet"):
+                    if (mood)
+                        mainRule.Trigger[subMood].Prioritet--;
+                    else
+                        mainRule.Trigger[subMood].Prioritet++;
+                    break;
                 case ("Cost"):
 
                     int key = KeyAConverter();
@@ -1582,6 +1588,7 @@ namespace Coder
                         str += "\n" + AddLink($"SetSwitch|CountModExtend", $"Правило с разницей -- " + ((mainRule.Trigger[subMood].CountModExtend) ? "Yes" : "No"));
 
 
+                        str += $"\nПриоритет тригера: " + TextEditInt("Prioritet", "" + mainRule.Trigger[subMood].Prioritet);
                         str += "\n" + AddLink($"Edit|RuleList_Return_Plan_{subMood}", $"Текущий план " + ((mainRule.Trigger[subMood].Plan > -1) ? core.bD[core.keyPlan].Base[mainRule.Trigger[subMood].Plan].Name : "AllPlan"));
                         
                         str += "\nTeam";
@@ -1657,7 +1664,7 @@ namespace Coder
             for (int i = 0; i < ifAction.Core.Count; i++)
             {
                 str += "\n";
-                str += TextMove($"{plus}_{b}_{i}", i, ifAction.Core.Count);
+               // str += TextMove($"{plus}_{b}_{i}", i, ifAction.Core.Count);
 
                 bool use = (ifAction.Core[i].Tayp == core.keyStat);
                 //str += "\n";
@@ -2045,7 +2052,7 @@ namespace Coder
                          //       str += $"\n" + AddLink($"{key}{i}_{com[2]}", $"Set { core.head[-a].Rule[i]}");
                         break;
                     case ("Card"):
-                        for (int i = 0; i < core.frame.CardString.Length; i++)
+                        for (int i = 0; i < core.frame.CardString.Count; i++)
                             str += $"\n" + AddLink($"{key}-{i + 1}_{path}", $"Set { core.frame.CardString[i]}");
 
                         //core.frame.CardString[-(coreForm.Card + 1)]
@@ -2319,6 +2326,7 @@ namespace Coder
         public int MainSize =1;
         public List<int> Stat = new List<int>();
         public List<int> Size = new List<int>();
+        public List<int> Forse = new List<int>();
     }
     public class MainBaseStatPlan
     {
@@ -2558,7 +2566,7 @@ namespace Coder
 
             for(int j=0;j< card.Stat.Count;j++)
                 for (int i = 0; i < intStat.Count; i++)
-                    if (card.Stat[j].Get("Stat") == intStat[i])
+                    if (card.Stat[j].GetStat() == intStat[i])
                         return false;
 
 
@@ -2602,7 +2610,7 @@ namespace Coder
             int s = -1,a;
             //stat
             for(int i = 0; i < card.Stat.Count; i++)
-                Split(core.bD[core.keyStat].Base[card.Stat[i].Get("Stat")].accses);
+                Split(core.bD[core.keyStat].Base[card.Stat[i].GetStat()].accses);
 
             //tag and trait
             for (int i = 0; i < card.Trait.Count; i++)
@@ -2872,8 +2880,9 @@ namespace Coder
 
     public class HeadRule
     {
-       // public string Name;//Название
-       // public string Info = "Void";//Описание
+        // public string Name;//Название
+        // public string Info = "Void";//Описание
+        public int Id;//origId
         public int Tag; //Описание
 
         public bool Visible;
@@ -2889,9 +2898,12 @@ namespace Coder
 
     public class TriggerAction
     {
+        public string Name = "Action";
 
         public int Plan =-1;
         public int Trigger;
+
+        public int Prioritet;
         //public int TriggerExtend;
 
         public bool CountMod;
@@ -2908,7 +2920,7 @@ namespace Coder
 
     public class IfAction
     {
-        public int Point;
+        public int Point =1;
 
         public List<RuleForm> Core = new List<RuleForm>();
         public List<RuleForm> ResultCore = new List<RuleForm>();
@@ -2927,11 +2939,11 @@ namespace Coder
         public int TaypId = 0;
         public int Mod = 1;
         public int Num = 0;
+        public int Forse = 0;
     }
 
     public class RuleAction
     {
-        public string Name = "Action";
         public int Action;
         public int ActionExtend;
 

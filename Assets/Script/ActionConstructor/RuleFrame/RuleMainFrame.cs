@@ -6,12 +6,12 @@ using UnityEngine;
 public class RuleMainFrame : ScriptableObject
 {
     //public string[] BoolString;
-    public string[] ForseTayp;
-    public string[] EqualString;
+    [HideInInspector] public string[] ForseTayp = { "All" ,"Max","Local","LocalForse"};
+    [HideInInspector] public string[] EqualString = {"==", "!=","<=",">=","<",">" };
 
-    public string[] PlayerString;
-    public string[] CardString;
-    public string[] SysStat = { "Skip", "MainStat", "Mana", "Speed", "ManaCard", "EnemyMana" };
+    [HideInInspector] public string[] PlayerString = {"All","My","Enemy" };
+    [HideInInspector] public List<string> CardString;//имена карт
+    [HideInInspector] public string[] SysStat = { "Skip", "MainStat", "Mana", "EnemyMana", "Speed", "ManaCard"};
     //public string[] StatTayp;
     [HideInInspector] public List<string> Tayp;
 
@@ -21,7 +21,7 @@ public class RuleMainFrame : ScriptableObject
 
     [Space(10)]
     //public List<string> KeyWord;
-    public List<string> KeyWordStatus;
+   // public List<string> KeyWordStatus;
 
 
     [Space(10)]
@@ -56,10 +56,32 @@ public class RuleMainFrame : ScriptableObject
 
         {
             //создать кнопку действия , кто-то выполнил действие // перенос на другой план // кого-то перенесли на другой план
-            string[] com = { "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", "ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction", "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt", "TriggerUse" };
+            string[] com = {"Start", "Button", "UseRule", "StartTurn", 
+                "WedgeAttack", "BeforeAttack", "Attack", "ProtAttack", "AfterAttack", 
+                "BeforeAction", "Action", "AfterAction", 
+                "BeforePreparation", "Preparation", "AfterPreparation", 
+                "CardReaction", "MovePlane", "AttackReaction", 
+                "AnotherEquip", "SelfEquip", "BeforeCard",
+                "TakingDamage", "Hurt", "TriggerUse" };
             Trigger = com;
         }
 
+        {
+            string[] com = { "MyCard", "TargetCard", "MyCard|Main", "MyCard|MainEnemy", "NewCollectCard", "CollectCard", "RemoveCard", "TakeCard", "GetLine" };//, "First|MyCard", "First|TargetCard" };
+            CardString = new List<string>(com);
+
+            //string str = "NewCollectCard_CollectCard_RemoveCard_TakeCard_GetLine";
+
+            //com = str.Split('_');
+            //str = "Local";
+            //string[] com1 = str.Split('_');
+            //for (int i = 0; i < com.Length; i++)
+            //{
+            //    CardString.Add(com[i]);
+            //    for(int j=0;j<com1.Length;j++)
+            //        CardString.Add(com[i]+"|"+ com1[j]);
+            //}
+        }
         /*
         "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction" "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt", "TriggerUse"
         1: эффект в начале хода 
@@ -110,15 +132,17 @@ public class RuleMainFrame : ScriptableObject
          */
 
         Action = new List<SubAction>();
-        Action.Add(new SubAction("Attack", "Meele_Shot"));
-        Action.Add(new SubAction("Stat", "Add_Clear_MainStat_Replace"));//изсенить стат - удалить стат - заменить основной стат - заменить параметр
+        Action.Add(new SubAction("Attack"," ", " _NeedTarget"));
+        Action.Add(new SubAction("Stat", "Add_Set_Clear_MainStat_MainStatSet_Replace_ReplaceMainStat", " _NeedTarget"));//изсенить стат - удалить стат - заменить основной стат - заменить параметр
                                                                         // Action.Add(new SubAction("Karma", "Clear_Add_Remove", "PG_PS_PL_PT_NG_NS_NL_NT"));//karma_{global}_{all}_Stat   .. перобсудить этот раздел
                                                                         // Action.Add(new SubAction("Switch", "Guild_Ligion_Social_Race"));
                                                                         // Action.Add(new SubAction("Effect", "Add_Remove_Replace", "Eternal_NoEternal"));
-        Action.Add(new SubAction("Rule", "Use_Add_Delite"));
+        Action.Add(new SubAction("Rule", "Use_Add_Remove"));
         Action.Add(new SubAction("Status", "Add_Remove_Replace"));
         Action.Add(new SubAction("Transf", " "));
-        Action.Add(new SubAction("Create", " "));
+       // Action.Add(new SubAction("Create", " "));
+        Action.Add(new SubAction("SwitchPosition", " "));
+        Action.Add(new SubAction("Equip", " "));
         /*
            karma
           global = общая статистика за весь матч

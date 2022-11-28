@@ -1305,8 +1305,6 @@ public class CardConstructor : MonoBehaviour
 
     void SetStat(int a)
     {
-
-        Debug.Log(card);
         BD bd = core.bD[core.keyStat];
         int b = statAccses.Like[a].Head;
         card.Stat.Add(new StatExtend(b, bd));
@@ -1389,21 +1387,12 @@ public class CardConstructor : MonoBehaviour
         {
             a = card.Stat[i].Get("Stat");
             b = card.Stat[i].Get("Max");
-           // if (b <= 0)
-          //  {
-           //     RemoveStat(i);
-           //     return;
-          //  }
             mana += bd.Base[a].Cost * b;
         }
 
         bd = core.bD[core.keyTag];
         for (int i = 0; i < card.Trait.Count; i++)
         {
-            //Debug.Log(bd);
-            //Debug.Log(bd.Base.Count);
-            //Debug.Log(-card.Trait[i].Head - 1);
-            //Debug.Log(bd.Base[-card.Trait[i].Head - 1]);
             mana += bd.Base[-card.Trait[i].Head - 1].Cost;
             for (int j = 0; j < card.Trait[i].Num.Count; j++)
             {
