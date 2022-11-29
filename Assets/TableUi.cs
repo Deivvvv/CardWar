@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class TableUi : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public GameObject OrigButton;
+    public GameObject CardOrig;
+    public List<Transform> PlanButton;
+    public List<Transform> PlanView;
+    public List<Transform> Stol;
+    public Transform CardButton;
 }

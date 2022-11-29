@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using System.Text;
+using System.Linq;
 
 using Coder;
 using XMLSaver;
@@ -29,14 +32,20 @@ namespace TableSys
             card2 = _card2;
             power = _power;
         }
+        public ActionLine Clone()
+        {//true,allCardLocal,card1,card2, triggerAction.Action[i],0
+
+            return new ActionLine(reCall,cardInt,card1,card2,action,power);
+        }
+
         public bool Use()
         {//выполнить утверждение
             return IfSys.UseAction(action,cardInt,card1,card2,reCall,power);
         }
-        public bool NewTagert(int a)
+        public void NewTagert(int a)
         {
             card2 = a;
-            return Use();
+            //return Use();
         }
         public int GetCard(int a)
         {
@@ -60,20 +69,54 @@ namespace TableSys
             ActionTrigger = new List<ActionLine>();
             //ActionTrigger.Add()
         }
+        public TriggerLineCase(TriggerLineCase triggerLineCase)
+        {
+            triggerAction = triggerLineCase.GetTrigger();
+            card1 = triggerLineCase.GetCard(0);
+            card2 = triggerLineCase.GetCard(1);
+            ActionTrigger = new List<ActionLine>();
+            for (int i = 0; i < triggerLineCase.ActionTrigger.Count; i++)
+                ActionTrigger.Add( triggerLineCase.ActionTrigger[i].Clone());
+        }
+        public TriggerAction GetTrigger()  {  return triggerAction; }
+        public int GetCard(int a)
+        {
+            if (a == 0)
+                return card1;
+            else
+                return card2;
+        }
         public void Sort()
         {
-            ActionTrigger.OrderBy(x => x.Prioritet);
+            int a = 0;
+            for (int i = 0; i < ActionTrigger.Count; i++)
+            {
+                a = i;
+                for (int j = i; j < ActionTrigger.Count; j++)
+                    if (ActionTrigger[a].Prioritet < ActionTrigger[j].Prioritet)
+                        a = j;
+                if(a != i)
+                {
+                    ActionLine line = ActionTrigger[i];
+                    ActionTrigger[i] = ActionTrigger[a];
+                    ActionTrigger[a] = line;
+                }
+            }
         }
         public bool Use()
         {
-            if(ActionTrigger.Count == 0)
-                IfSys.UseRule(ActionTrigger,triggerAction, card1, card2);
+            if (ActionTrigger.Count == 0)
+                IfSys.UseRule(ActionTrigger, triggerAction, card1, card2);
 
             for (int i = 0; i < ActionTrigger.Count; i++)
-                if (!IfSys.UseAction(ActionTrigger[i], cardInt, card1, card2, reCall, power))
+                if (!ActionTrigger[i].Use())
                     return false;
 
             return true;
+        }
+        public int Prioritet()
+        {
+            return triggerAction.Prioritet;
         }
     }
     
@@ -88,20 +131,42 @@ namespace TableSys
             RuleTrigger.Add(new TriggerLineCase(triggerAction,  card1, card2));
 
         }
+        public TriggerLine(TriggerLine triggerLine)
+        {
+            Trigger = triggerLine.Trigger;
+            RuleTrigger = new List<TriggerLineCase>();
+            for(int i=0;i< triggerLine.RuleTrigger.Count;i++)
+                RuleTrigger.Add(new TriggerLineCase(triggerLine.RuleTrigger[i]));
+
+        }
         public void Sort()
         {
-            RuleTrigger.OrderBy(x => x.Prioritet);
+            int a = 0;
+            for (int i = 0; i < RuleTrigger.Count; i++)
+            {
+                a = i;
+                for (int j = i; j < RuleTrigger.Count; j++)
+                    if (RuleTrigger[a].Prioritet() < RuleTrigger[j].Prioritet())
+                        a = j;
+                if (a != i)
+                {
+                    TriggerLineCase line = RuleTrigger[i];
+                    RuleTrigger[i] = RuleTrigger[a];
+                    RuleTrigger[a] = line;
+                }
+            }
+           // RuleTrigger.OrderBy(x => x.Prioritet);
         }
     }
 
     class Line
     {
-        public ActionLine StartActions;
+       // public ActionLine StartActions;
         public List<TriggerLine> Actions;
-        public Line(ActionLine _Actions)
-        {
-            StartActions = _Actions;
-        }
+        //public Line(ActionLine _Actions)
+        //{
+        //    StartActions = _Actions;
+        //}
     }
 
     static class RootSys
@@ -119,7 +184,7 @@ namespace TableSys
             if (cardId == -1)
                 return triggers[trigger];
 
-            return triggers[trigger].Find(cardId, false);
+            return triggers[trigger].Num[triggers[trigger].Find(cardId, false)];
         }
 
         #region Rule
@@ -133,15 +198,15 @@ namespace TableSys
         }
         static int AddRule(HeadRule newRule)
         {
-            int keyRule = core.frame.Acton.FindIndex(x => x.Name == "Rule");
+            int keyRule = core.frame.Action.FindIndex(x => x.Name == "Rule");
             int Id = rule.Count;
             rule.Add(newRule);
-            int c = core.head[rule.Tag].Index.FindIndex(x => x == rule.Id);
-            ruleName.Add(core.head[rule.Tag].Name[c]);
+            int c = core.head[newRule.Tag].Index.FindIndex(x => x == newRule.Id);
+            ruleName.Add(core.head[newRule.Tag].Rule[c]);
 
-            for (int i = 0; i < rule.Trigger.Count; i++)
+            for (int i = 0; i < newRule.Trigger.Count; i++)
             {
-                TriggerAction action = rule.Trigger[i];
+                TriggerAction action = newRule.Trigger[i];
                 for(int j = 0; j < action.Action.Count; j++)
                 {
                     if(action.Action[j].Action == keyRule)
@@ -155,7 +220,7 @@ namespace TableSys
                         {
                             b = -1;
                             for (int k = 0; k < nums.Count; k++)
-                                if (resultCore.TaypId == rule[nums[k]].Id)
+                                if (resultCore.TaypId == nums[k])// newRule[nums[k]].Id)
                                 {
                                     b = k;
                                     resultCore.TaypId = nums[k];
@@ -217,7 +282,7 @@ namespace TableSys
                     nums.Add(localCard.Id);
                 }
 
-                nums.Add(cardOrig.Id);
+                nums.Add(cardOrig[i].Id);
             }
 
             int a ;
@@ -243,7 +308,7 @@ namespace TableSys
             rule = new List<HeadRule>();
             allCard = new List<CardCase>();
             triggers = new List<SubInt>();
-            for (int i = 0; i < core.frame.Trigger.Count; i++)
+            for (int i = 0; i < core.frame.Trigger.Length; i++)
                 triggers.Add(new SubInt(i));
 
                 List<CardCase> allCard1 = new List<CardCase>();
@@ -257,7 +322,7 @@ namespace TableSys
             int[] com1 = com[0].Split('/').Select(int.Parse).ToArray();
             Saver.LoadColod(com1[0], com1[1], allCard1, size1);
 
-            int[] com1 = com[1].Split('/').Select(int.Parse).ToArray();
+            com1 = com[1].Split('/').Select(int.Parse).ToArray();
             Saver.LoadColod(com1[0], com1[1], allCard2, size2);
 
             for(int i=0;i<allCard2.Count;i++)
@@ -314,10 +379,10 @@ namespace TableSys
                 for (int j = 0; j < card.Trait[i].Num.Count; j++)
                 {
                     HeadRule localRule = rule[card.Trait[i].Num[j].Head];
-                    for(int k =0;k< localRule.Triggers.Count; k++)
+                    for(int k =0;k< localRule.Trigger.Count; k++)
                     {
-                        int a = triggers[localRule.Trigger].Find(card.Id);
-                        triggers[localRule.Trigger].Num[a].Find(card.Trait[i].Num[j].Head);
+                        int a = triggers[localRule.Trigger[k].Trigger].Find(card.Id);
+                        triggers[localRule.Trigger[k].Trigger].Num[a].Find(card.Trait[i].Num[j].Head);
                     }
                 }
         }
@@ -337,7 +402,7 @@ namespace TableSys
         {
             for(int i = 0; i < triggers[trigger].Num.Count; i++)
                 for (int j = 0; j < triggers[trigger].Num[i].Num.Count; j++)
-                    IfSys.UseTrigger(triggers[trigger].Num[i].Head, -1, triggers[trigger].Num[i].Num[j].Head, trigger);
+                    IfSys.UseTrigger(triggers[trigger].Num[i].Head, -1, rule[triggers[trigger].Num[i].Num[j].Head].Trigger[ trigger]);
                 
         }
 
@@ -347,18 +412,22 @@ namespace TableSys
             CallTrigger(0);
         }
     }
-    class UiSys : MonoBehaviour
+    public class UiSys : MonoBehaviour
     {
+        static int myTeam, enemyTeam =1, rememberPlan =1, rememberPlanEnemy =1, cardId=-1;
+
+        static CoreSys core;
         static TriggerAction triggerActionCase;
+        static List<TriggerAction> triggerActionList;
         static List<string> planName;
         static List<SubInt> sizePlan;
-        static List<SubInt> sizePlanSort;
+        static List<SubInt> sizePlanLocal;
         //static List<bool> planVisible;
 
         static List<CardCase> allCard;
-        List<CardCase> allCardSimulation;
+        static List<CardCase> allCardSimulation;
         static List<HeadRule> rule;
-        static List<string> Name;
+       // static List<string> Name;
         static bool compliteFind =false;
         static bool compliteUse = false;
         static TableUi ui;
@@ -366,21 +435,21 @@ namespace TableSys
         { 
             allCard = _allCardGame;
             rule = _rule;
-            ruleName = _Name;
+            core = DeCoder.GetCore();
+         //   Name = _Name;
         }
         public static void SetUi(TableUi _ui) { ui = _ui; }
 
-        public static void ViewSimulation(List<CardCase> _allCardSimulation)
+        public static void View(List<CardCase> _allCardSimulation)
         {
             allCardSimulation = _allCardSimulation;
-        }
-        static void ClearSimulation()
-        {
-            allCardSimulation = null ;
-        }
-        public static void View()
-        {
 
+
+            CountPlan();
+            ViewCard(myTeam, rememberPlan, ui.PlanView[myTeam]);
+            ViewCard(enemyTeam, rememberPlanEnemy, ui.PlanView[enemyTeam]);
+            ViewStol(myTeam);
+            ViewStol(enemyTeam);
         }
         static void LoadPlanButton()
         {
@@ -396,14 +465,14 @@ namespace TableSys
                 {
                     sizePlan[team].Num.Add(new SubInt(0));
                     GameObject go = Instantiate(ui.OrigButton);
-                    go.transform.SetParent(ui.planButton[team]);
+                    go.transform.SetParent(ui.PlanButton[team]);
 
                     AddButton(go.GetComponent<Button>(),team,i);
 
                 }
             }
             planName = new List<string>();
-            planVisible = new List<bool>();
+            //planVisible = new List<bool>();
             sizePlan = new List<SubInt>();
             for (int i = 0; i < core.bD[core.keyPlan].Base.Count; i++)
             {
@@ -415,85 +484,166 @@ namespace TableSys
         }
         static void ViewPlanButton(int team, bool localMood = false)
         {
-            SubInt sub = (localMood) ? sizePlanSort[team] : sizePlan[team];
+            SubInt sub = (localMood) ? sizePlanLocal[team] : sizePlan[team];
             for (int i = 0; i < planName.Count; i++)
-                if(sub.Num[i] > 0)
+                if(sub.Num[i].Head > 0)
                 {
-                    ui.planButton[team].GetChuild(i).gameObject.active = true;
-                    ui.planButton[team].GetChuild(i).GetChild(0).gameObject.GetComponent<Text>().text = planName[i] + " " + sub.Num[i];
+                    ui.PlanButton[team].GetChild(i).gameObject.active = true;
+                    ui.PlanButton[team].GetChild(i).GetChild(0).gameObject.GetComponent<Text>().text = planName[i] + " " + sub.Num[i];
                 }
                 else
-                    ui.planButton[team].GetChuild(i).gameObject.active = false;
+                    ui.PlanButton[team].GetChild(i).gameObject.active = false;
         }
         static void ViewPlan(int team,int a)
         {
-            SubInt sub = sizePlan[team].Num[a];
-            for (int i = sub.Num.Count; i < ui.planView[team].ChildCount; i++)
-                Destoy(ui.planView[team].GetChild(i).gameObject);
-
-            void AddButton(Button button,int team, int a)
+            if (team == myTeam)
+                rememberPlan = a;
+            else
+                rememberPlanEnemy = a;
+            ViewCard(team, a, ui.PlanView[team]);
+        }
+        static void ViewStol(int team)
+        {
+            Transform trans = ui.Stol[team];
+            ViewCard(team, 3,trans);//допустим 3 - стол
+        }
+        static void CountPlan()
+        {
+            if (allCardSimulation == null)
             {
-                button.onClick.AddListener(() => Use(team, i));
+                sizePlan[0].Num = new List<SubInt>();
+                sizePlan[1].Num = new List<SubInt>();
+                for (int i = 0; i < planName.Count; i++)
+                {
+                    sizePlan[0].Num.Add(new SubInt(0));
+                    sizePlan[1].Num.Add(new SubInt(0));
+                }
+
+                for (int i = 0; i < allCard.Count; i++)
+                    sizePlan[allCard[i].Team].Num[allCard[i].Plan].Num.Add(new SubInt(allCard[i].Id));
+            }
+            else
+            {
+                sizePlanLocal[0].Num = new List<SubInt>();
+                sizePlanLocal[1].Num = new List<SubInt>();
+                for (int i = 0; i < planName.Count; i++)
+                {
+                    sizePlanLocal[0].Num.Add(new SubInt(0));
+                    sizePlanLocal[1].Num.Add(new SubInt(0));
+                }
+
+                for (int i = 0; i < allCardSimulation.Count; i++)
+                    sizePlanLocal[allCardSimulation[i].Team].Num[allCardSimulation[i].Plan].Num.Add(new SubInt(allCardSimulation[i].Id));
+            }
+        }
+        static void ViewCard(int team, int a , Transform trans)
+        {
+            List<CardCase> localCard = null;
+            SubInt sub = null;
+            if (allCardSimulation == null)
+            {
+                sub = sizePlan[team].Num[a];
+                localCard = allCard;
+            }
+            else
+            {
+                sub = sizePlanLocal[team].Num[a];
+                localCard = allCardSimulation;
             }
 
-            for (int i = ui.planView[team].ChildCount; i < sub.Num.Count; i++)
+            for (int i = sub.Num.Count; i < trans.childCount; i++)
+                Destroy(trans.GetChild(i).gameObject);
+
+            void AddButton(Button button, int a)
+            {
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => Use(a, false));
+            }
+
+            for (int i = trans.childCount; i < sub.Num.Count; i++)
             {
                 GameObject go = Instantiate(ui.CardOrig);
-                go.transform.SetParent(ui.planView[team]);
-
-                AddButton(go.GetComponent<Button>(), team, i);
+                go.transform.SetParent(trans);
             }
 
             for (int i = 0; i < sub.Num.Count; i++)
-                Gallery.ReadCard(allCard[sub.Num[i].Head], 
-                    ui.planView[team].GetChild(i).gameObject.GetComponent<CardBody>());
+            {
+                GameObject go = trans.GetChild(i).gameObject;
+
+                AddButton(go.GetComponent<Button>(), sub.Num[i].Head);
+                Gallery.ReadCard(localCard[sub.Num[i].Head], go.GetComponent<CardBody>(), true);
+                go.GetComponent<TableInfo>().Set(sub.Num[i].Head, null);
+            }
 
         }
+
+
         public static void ClearActionButton()
         {
-            for (int i = 0; i < ui.cardButton.ChildCount; i++)
-                Destroy(ui.cardButton.GetChild(i).gameObject);
+            triggerActionList = new List< TriggerAction>();
+            for (int i = 0; i < ui.CardButton.childCount; i++)
+                Destroy(ui.CardButton.GetChild(i).gameObject);
         }
         public static void AddActionButton(int cardId, TriggerAction triggerAction)
         {
-            ui.cardButton.gameObject.active = true;
+            ui.CardButton.gameObject.active = true;
             GameObject go = Instantiate(ui.OrigButton);
-            go.transform.SetParent(ui.cardButton);
+            go.transform.SetParent(ui.CardButton);
             go.transform.GetChild(0).gameObject.GetComponent<Text>().text = triggerAction.Name;
-            go.GetComponent<TableInfo>().Call( cardId, triggerAction);//=>FindTarget(cardId, ruleId,  triggerId)
+            go.GetComponent<TableInfo>().Set( cardId, triggerAction);////=>FindTarget(cardId, ruleId,  triggerId)
 
-
-            go.GetComponent<Button>().onClick.AddListener(() => SelectTarget(cardId, triggerAction));
+            triggerActionList.Add(triggerAction); 
+            go.GetComponent<Button>().onClick.AddListener(() => SelectTarget(triggerAction));//bool simulated
         }
-        static void SelectTarget(int _cardId, TriggerAction triggerAction)
+        public static void SelectTarget(TriggerAction triggerAction)//bool simulated
         {
             //включить интерфейс выбора
-            ui.cardButton.gameObject.active = false;
-            cardId = _cardId;
+            ui.CardButton.gameObject.active = false;
+           // cardId = _cardId;
             triggerActionCase = triggerAction;
-            IfSys.line = null;
-            Use(-1);
+            Use(-1, true);
            // FindTarget();
         }
-        public static void Use(int card2)//вызывается через мышку
+        public static void Use(int card, bool simulated)//вызывается через мышку
         {
             if (compliteUse)
                 return;
             compliteUse = true;
-            ui.cardButton.gameObject.active = false;
-            if(IfSys.line == null && triggerAction== null)
+            ui.CardButton.gameObject.active = false;
+            if (cardId == -1)//(IfSys.line == null && triggerAction== null)
             {
-                if ( allCard[card2].ActionPoint >0)
-                    IfSys.FindButton(card2);
+                if ( allCard[card].ActionPoint >0)
+                    IfSys.FindButton(card);
+
                 compliteUse = false;
-                if (ui.cardButton.ChildCount == 1)
-                    ui.cardButton.GetChild(0).gameObject.GetComponent<Button>().clicked;
+                if (triggerActionList.Count>0)
+                {
+                    cardId = card;
+                    if (triggerActionList.Count == 0)
+                        SelectTarget(triggerActionList[0]);
+                }
+                else 
+                {
+                    //cardId == -1
+                    ui.CardButton.gameObject.active = false; 
+                }
+                //compliteUse = false;
                 return;
             }
-            IfSys.UseRule(cardId, card2,rule[ruleId].Trigger[triggerId]);
 
-            cardId = -1;
-            allCard[cardId].ActionPoint--;
+            if (!IfSys.Simulation(allCard, simulated, cardId, card, triggerActionCase))
+                if (!simulated)
+                    if(triggerActionCase != null)
+                    {
+                        allCard[cardId].ActionPoint--;
+                        triggerActionCase = null;
+                    }
+
+
+            //IfSys.UseRule(cardId, card,rule[ruleId].Trigger[triggerId]);
+
+            //cardId = -1;
+            // allCard[cardId].ActionPoint--;
             compliteUse = false;
         }
         //static void FindTarget()
@@ -535,20 +685,33 @@ namespace TableSys
             allCardGame = _allCardGame;
             rule = _rule;
             core = DeCoder.GetCore();
+            line = new Line();
         }
-        public static void Simulation(List<CardCase> allCard, bool simulated, int card1, int card2, int ruleId, int trigger)
+        public static bool Simulation(List<CardCase> allCard, bool simulated, int card1, int card2, TriggerAction triggerAction)
         {
+            Line fantomLine = null;
             simulation = simulated;
             if (simulation)
             {
                 allCardGame = new List<CardCase>();
                 for (int i = 0; i < allCard.Count; i++)
                     allCardGame.Add(new CardCase(allCard[i]));
+
+                fantomLine = line;
+                line = new Line();
+                for(int i = 0; i < fantomLine.Actions.Count; i++)
+                    line.Actions.Add(new TriggerLine(fantomLine.Actions[i]));
+                
             }
             else
                 allCardGame = allCard;
 
-            UseTrigger(card1, card2, ruleId, trigger);
+            if(triggerAction != null)
+                UseTrigger(card1, card2, triggerAction);
+            else
+            {
+                line.Actions[line.Actions.Count - 1].RuleTrigger[0].ActionTrigger[0].NewTagert(card2);
+            }
             while (true)
             {
                 if (line.Actions.Count == 0)
@@ -561,10 +724,19 @@ namespace TableSys
 
 
             if (simulation)
-                UiSys.ViewSimulation(allCardGame);
+                UiSys.View(allCardGame);
             else
-                UiSys.View();
+                UiSys.View(null);
 
+            if (simulated)
+            {
+                line = fantomLine;
+                return false;
+            }
+
+            if(line.Actions.Count == 0)
+                return true;
+            return false;
         }
         public static void FindButton(int cardId)
         {
@@ -594,7 +766,7 @@ namespace TableSys
             void ConnectTriggerSub(SubInt sub, int card2, int trigger)
             {
                 for (int i = 0; i < sub.Num.Count; i++)
-                    UseTrigger(sub.Head, card2, sub.Num[i].Head, trigger);
+                    UseTrigger(sub.Head, card2, rule[sub.Num[i].Head].Trigger[ trigger]);
             }
             SubInt triggers = RootSys.GetTriggers(trigger, card1);
 
@@ -604,9 +776,11 @@ namespace TableSys
             else
                 ConnectTriggerSub(triggers, card2, trigger);
         }
-        static void UseTrigger(int card1, int card2, TriggerAction triggerAction)
+        public static void UseTrigger(int card1, int card2, TriggerAction triggerAction)
         {
-            if (rule[ruleId].Trigger[i].Trigger == trigger && allCardGame[card1].Plan == rule[ruleId].Trigger[i].Plan)
+            int a;
+            string str = core.frame.Trigger[triggerAction.Trigger];
+            if (allCardGame[card1].Plan == triggerAction.Plan)
             {
                 switch (str)
                 {
@@ -626,7 +800,7 @@ namespace TableSys
                         ConnectTrigger(-1, card1, a);
                         break;
                 }
-                LineAddTrigger(rule[ruleId].Trigger[i], card1, card2);
+                LineAddTrigger(triggerAction, card1, card2);
                 //   UseRule(rule[ruleId].Trigger[i], true, card1,card2);
                 switch (str)
                 {
@@ -651,68 +825,14 @@ namespace TableSys
             }
         }
 
-        public static void UseTrigger(int card1, int card2, int ruleId, int trigger)
+        public static bool UseRule(List<ActionLine> actionTrigger,TriggerAction triggerAction, int card1, int card2)
         {
-        
-
-            int a;
-            string str = core.frame.Trigger[trigger];
-            for (int i = 0; i < rule[ruleId].Trigger.Count; i++)
-                if (rule[ruleId].Trigger[i].Trigger == trigger && allCardGame[card1].Plan == rule[ruleId].Trigger[i].Plan)
-                {
-                    switch (str)
-                    {
-                        case ("Attack"):
-                            a = ReturnTriggerId("AfterAttack");
-                            ConnectTrigger(card1, card2, a);
-                            ConnectTrigger(card2, card1, a);
-                            a = ReturnTriggerId("ProtAttack");
-                            ConnectTrigger(card2, card1, a);
-                            break;
-                        case ("Action"):
-                            a = ReturnTriggerId("AfterAction");
-                            ConnectTrigger(-1, card1, a);
-                            break;
-                        case ("Preparation"):
-                            a = ReturnTriggerId("AfterPreparation");
-                            ConnectTrigger(-1, card1, a);
-                            break;
-                    }
-                    LineAddTrigger(rule[ruleId].Trigger[i], card1, card2);
-                 //   UseRule(rule[ruleId].Trigger[i], true, card1,card2);
-                    switch (str)
-                    {
-                        case ("Attack"):
-                            a = ReturnTriggerId("BeforeAttack");
-                            ConnectTrigger(card1, card2, a);
-                            ConnectTrigger(card2, card1, a);
-                            a = ReturnTriggerId("WedgeAttack");
-                            ConnectTrigger(card1, card2, a);
-                            ConnectTrigger(card2, card1, a);
-                            break;
-                        case ("Action"):
-                            a = ReturnTriggerId("BeforeAction");
-                            ConnectTrigger(-1, card1, a);
-                            break;
-                        case ("Preparation"):
-                            a = ReturnTriggerId("BeforePreparation");
-                            ConnectTrigger(-1, card1, a);
-                            break;
-                    }
-
-                }
-
-        }
-
-
-        public static bool UseRule(List<ActionLine> actionTrigger,TriggerAction triggerAction, int card1, int card2, List<int>power)
-        {
-            int CountSize(List<IfAction> actions, bool sumMod, List<int> allCardLocal)
+            int CountSize(List<IfAction> actions, bool sumMod, List<int> allCardLocal, int card1, int card2)
             {
                 int size = 0;
                 for (int i = 0; i < actions.Count; i++)
                 {
-                    size += UseIfAction(actions[i], allCardLocal);
+                    size += UseIfAction(actions[i], allCardLocal, card1,  card2);
 
                     if (size != 0 && !sumMod)
                         break;
@@ -725,12 +845,12 @@ namespace TableSys
             int p = 0;
             if (triggerAction.MinusAction.Count > 0)
             {
-                int m = CountSize(triggerAction.MinusAction,triggerAction.CountMod,allCardLocal);
+                int m = CountSize(triggerAction.MinusAction,triggerAction.CountMod,allCardLocal,card1,card2);
 
                 complite = (triggerAction.PlusAction.Count == 0 && m == 0);
                 if (!complite)
                 {
-                    p = CountSize(triggerAction.PlusAction, triggerAction.CountMod, allCardLocal);
+                    p = CountSize(triggerAction.PlusAction, triggerAction.CountMod, allCardLocal, card1, card2);
                     if (triggerAction.CountModExtend)
                     {
                         p -= m;
@@ -742,7 +862,7 @@ namespace TableSys
             }
             else if (triggerAction.PlusAction.Count > 0)
             {
-                p = CountSize(triggerAction.PlusAction, triggerAction.CountMod, allCardLocal);
+                p = CountSize(triggerAction.PlusAction, triggerAction.CountMod, allCardLocal, card1, card2);
                 complite = (p > 0);
             }
             else
@@ -761,7 +881,7 @@ namespace TableSys
                         //    actionTrigger.Add(new ActionLine(true, allCardLocal, card1, -1, actions, power));
                         //}
                         //else
-                            actionTrigger.Add(new ActionLine(true, allCardLocal, card1, card2, actions, power));
+                            actionTrigger.Add(new ActionLine(true, allCardLocal, card1, card2, actions, new List<int>()));
                     }
                 }
                        // ConnectAction(actionTrigger,triggerAction.Action[i]);
@@ -834,18 +954,18 @@ namespace TableSys
                 power = new List<int>();
                 for (int i = 0; i < formList.Count; i++)
                 {
-                    string str = core.frame.CardString[formList[i].card];
+                    string str1 = core.frame.CardString[formList[i].Card];
                     int a = 0;
                     float b = 0, c = 0;
-                    card = ReturnCard(str, card1, card2);
+                    card = ReturnCard(str1, card1, card2);
                     if (card != null)
                     {
                         b = IfResult(card, formList[i], cardInt);
                     }
-                    else if (str == "TakeCard")
+                    else if (str1 == "TakeCard")
                     {
                         for (int j = 0; j < cardInt.Count; j++)
-                            if (IfResult(allCardGame[cardInt[j]], formList[i], cardInt))
+                            if (IfResult(allCardGame[cardInt[j]], formList[i], cardInt) !=-1)
                                 b++;
                     }
                     else
@@ -853,15 +973,15 @@ namespace TableSys
 
                     if (i + 1 != formList.Count)
                     {
-                        card = ReturnCard(core.frame.CardString[formList[i + 1].card], card1, card2);
+                        card = ReturnCard(core.frame.CardString[formList[i + 1].Card], card1, card2);
                         if (card != null)
                         {
                             c = IfResult(card, formList[i + 1], cardInt);
                         }
-                        else if (str == "TakeCard")
+                        else if (str1 == "TakeCard")
                         {
                             for (int j = 0; j < cardInt.Count; j++)
-                                if (IfResult(allCardGame[cardInt[j]], formList[i + 1], cardInt))
+                                if (IfResult(allCardGame[cardInt[j]], formList[i + 1], cardInt) != -1)
                                     c++;
                         }
                         else
@@ -884,14 +1004,14 @@ namespace TableSys
                 //if(ruleForm.Tayp == core.KeyStat)
                     //finalPower =
 
-                switch (core.frame.Action[actions.Action])
+                switch (core.frame.Action[actions.Action].Name)
                 {
                     case ("Attack"):
                         ConnectTrigger(card1, card2, ReturnTriggerId("Attack"));
                         float f = power[0] / power[1];
                         f *= ruleForm.Mod;
                         f += ruleForm.Num;
-                        AttackStat(allCardGame[card1], allCardGame[card2], ruleForm.TaypId, ruleForm.Forse, f);
+                        AttackStat(allCardGame[card1], allCardGame[card2], ruleForm.TaypId, core.frame.ForseTayp[ruleForm.Forse], f);
                         //SubInt triggers = RootSys.GetTriggers(1, card1);
                        // UseTrigger(card1,card2,)
                         break;
@@ -900,7 +1020,7 @@ namespace TableSys
                         {
                             case ("Use"):
                                 //2
-                                UseTrigger(card1, card2, ruleForm.Tayp, 2);
+                                ConnectTrigger(card1, card2, 2);
                                 //int a = ReturnTriggerId("Attack");
                                 break;
                             case ("Add"):
@@ -920,7 +1040,7 @@ namespace TableSys
 
                                 break;
                             case ("Remove"):
-                                SubInt sub = null;
+                                //sub = null;
                                 //CardCase card = ReturnCard( allCardGame[card2];
                                 for (int i = 0; i < card.Trait.Count; i++)
                                     if (card.Trait[i].Head == ruleForm.Tayp)
@@ -930,8 +1050,8 @@ namespace TableSys
                                         if (a != -1)
                                         {
                                             //sub.Find(ruleForm.TaypId);
-                                            for (int j = 0; j < rule[ruleForm.TaypId].Triggers.Count; j++)
-                                                RootSys.ConnectCard(card.Id, rule[ruleForm.TaypId].Triggers[j].trigger, j, false);
+                                            for (int j = 0; j < rule[ruleForm.TaypId].Trigger.Count; j++)
+                                                RootSys.ConnectCard(card.Id, rule[ruleForm.TaypId].Trigger[j].Trigger, j, false);
                                             sub.Num.RemoveAt(a);
                                             if (sub.Num.Count == 0)
                                                 card.Trait.RemoveAt(i);
@@ -968,36 +1088,37 @@ namespace TableSys
                         break;
 
                     case ("SwitchPosition"):
-                        PositionCard(card.Team, card.Id, ruleForm.Num);
+                        RootSys.PositionCard(card.Team, card.Id, ruleForm.Num);
                         break;
                     case ("Stat"):
                         f = power[0] / power[1];
                         f *= ruleForm.Mod;
                         f += ruleForm.Num;
+                        string strForse = core.frame.ForseTayp[ruleForm.Forse];
                         switch (strEx)
                         {
                             case ("Add"):
-                                StatEdit(false,card1,card2, ruleForm.TaypId, f, ruleForm.Forse);
+                                StatEdit(false,card1,card2, ruleForm.TaypId, f, strForse);
                                 break;
                             case ("Set"):
-                                StatEdit(true, card1, card2, ruleForm.TaypId, f, ruleForm.Forse);
+                                StatEdit(true, card1, card2, ruleForm.TaypId, f, strForse);
                                 break;
                             case ("Clear"):
-                                StatEdit(true, card1, card2, ruleForm.TaypId, 0, ruleForm.Forse);
+                                StatEdit(true, card1, card2, ruleForm.TaypId, 0, strForse);
                                 break;
                             case ("MainStat"):
-                                StatEdit(false, card2, -1, allCardGame[card1].Stat[0].GetStat(), f, ruleForm.Forse);
+                                StatEdit(false, card2, -1, allCardGame[card1].Stat[0].GetStat(), f, strForse);
                                 break;
                             case ("MainStatSet"):
-                                StatEdit(true, card2, -1, allCardGame[card1].Stat[0].GetStat(), f, ruleForm.Forse);
+                                StatEdit(true, card2, -1, allCardGame[card1].Stat[0].GetStat(), f, strForse);
                                 break;
                             case ("Replace"):
                                 int a = allCardGame[card1].Stat.FindIndex(x => x.GetStat() == ruleForm.TaypId);
                                 if (a != -1)
-                                    allCardGame[a].Stat.Swap(ruleForm.Num, core.bD[core.KeyStat]);
+                                    allCardGame[card1].Stat[a].Swap(ruleForm.Num, core.bD[core.keyStat]);
                                 break;
                             case ("ReplaceMainStat"):
-                                allCardGame[card1].Stat[0].Swap(ruleForm.Num, core.bD[core.KeyStat]);
+                                allCardGame[card1].Stat[0].Swap(ruleForm.Num, core.bD[core.keyStat]);
                                 break;
                                 //"Add_Clear_MainStat_Replace"
                         }
@@ -1011,7 +1132,7 @@ namespace TableSys
             string str = core.frame.Action[actions.Action].Name;
             string strEx = core.frame.Action[actions.Action].Extend[actions.ActionExtend];
             
-            card = ReturnCard(core.frame.CardString[actions.ResultCore.card], card1, card2);
+            card = ReturnCard(core.frame.CardString[actions.ResultCore.Card], card1, card2);
             if (card != null)
             {
                 UseAct(card, actions.ResultCore, str, strEx, power, card1,card2);
@@ -1030,10 +1151,10 @@ namespace TableSys
         {
             void AttackStatUse(CardCase card1, CardCase card2, int stat, string forse, float size)
             {
-                BD bd = core.bD[core.KeyStat];
-                for (int i = 0; i < bd.Base[stat].AntiStat.Count; i++)
+                BD bd = core.bD[core.keyStat];
+                for (int i = 0; i < bd.Base[stat].Sub.AntiStat.Count; i++)
                 {
-                    int a = card1.Stat.FindIndex(x => x.GetStat() == bd.Base[stat].AntiStat[i]);
+                    int a = card1.Stat.FindIndex(x => x.GetStat() == bd.Base[stat].Sub.AntiStat[i]);
                     if (a != -1)
                     {
                         float f = 0;
@@ -1042,16 +1163,16 @@ namespace TableSys
                         else
                             f = card1.Stat[a].Get(forse);
 
-                        if (a > 0)
-                            for (int j = 0; j < bd.Base[stat].DefStat.Count; j++)
+                        if (f > 0)
+                            for (int j = 0; j < bd.Base[stat].Sub.DefStat.Count; j++)
                             {
-                                int b = card2.Stat.FindIndex(x => x.GetStat() == bd.Base[stat].DefStat[j]);
+                                int b = card2.Stat.FindIndex(x => x.GetStat() == bd.Base[stat].Sub.DefStat[j]);
                                 if (b != -1)
                                     f -= card2.Stat[b].Get("Local");
                             }
 
-                        if (a > 0)
-                            StatEdit(false,card1,-1, bd.Base[stat].AntiStat[i], Mathf.FloorToInt(f), forse);
+                        if (f > 0)
+                            StatEdit(false,card1.Id,-1, bd.Base[stat].Sub.AntiStat[i], f, forse);
                     }
                 }
             }
@@ -1062,14 +1183,15 @@ namespace TableSys
                 root = -stat - 1;
             if (root != -1)
             {
-                MainBase mainBase = core.bD[core.KeyStatGroup].Base[root];
+                MainBase mainBase = core.bD[core.keyStatGroup].Base[root];
                 root = mainBase.Group.MainSize;
                 for (int i = 0; i < mainBase.Group.Stat.Count; i++)
                 {
                     int a = card1.Stat.FindIndex(x => x.GetStat() == mainBase.Group.Stat[i]);
                     if (a != -1)
                     {
-                        float f = card1.Stat[a].Get(mainBase.Group.Forse[i]) * mainBase.Group.Size[i] / root;
+                        string strForse = core.frame.ForseTayp[mainBase.Group.Forse[i]];
+                        float f = card1.Stat[a].Get(strForse) * mainBase.Group.Size[i] / root;
 
                         AttackStatUse(card1, card2, mainBase.Group.Stat[i], forse, f);
 
@@ -1095,7 +1217,7 @@ namespace TableSys
           //    }
             void StatEditUse(bool set, CardCase card, int stat, int size, string forse)
             {
-                BD bdStat = core.bD[core.KeyStat];
+                BD bdStat = core.bD[core.keyStat];
                 MainBase mainBase = bdStat.Base[stat];
                 StatExtend se = null;
                 int a = card.Stat.FindIndex(x => x.GetStat() == stat);
@@ -1103,9 +1225,9 @@ namespace TableSys
                     se = card.Stat[a];
                 else
                 {
-                    if (mainBase.Sub.AntiStat != -1)
+                    if (mainBase.Sub.Antipod != -1)
                     {
-                        a = card.Stat.FindIndex(x => x.GetStat() == mainBase.Sub.AntiStat);
+                        a = card.Stat.FindIndex(x => x.GetStat() == mainBase.Sub.Antipod);
                         if (a != -1)
                         {
                             se = card.Stat[a];
@@ -1119,7 +1241,7 @@ namespace TableSys
                 }
 
                 if (size < 0)
-                    if (mainBase.Sub.AntiStat != -1)
+                    if (mainBase.Sub.Antipod != -1)
                     {
                         if (mainBase.Sub.Antipod == se.GetStat())
                             se.Swap(stat, bdStat);
@@ -1137,12 +1259,12 @@ namespace TableSys
 
                 a = se.Get("Local");
                 if (a < 0)
-                    if (mainBase.Sub.AntiStat != -1)
+                    if (mainBase.Sub.Antipod != -1)
                     {
-                        if (mainBase.Sub.AntiStat == se.GetStat())
+                        if (mainBase.Sub.Antipod == se.GetStat())
                             se.Swap(stat, bdStat);
                         else
-                            se.Swap(mainBase.Sub.AntiStat, bdStat);
+                            se.Swap(mainBase.Sub.Antipod, bdStat);
                     }
             }
 
@@ -1152,7 +1274,7 @@ namespace TableSys
                 root = -stat - 1;
             if (root != -1)
             {
-                MainBase mainBase = core.bD[core.KeyStatGroup].Base[root];
+                MainBase mainBase = core.bD[core.keyStatGroup].Base[root];
                 root = mainBase.Group.MainSize;
 
                 CardCase cards1 = allCardGame[card2];
@@ -1161,7 +1283,8 @@ namespace TableSys
                     int a = cards1.Stat.FindIndex(x => x.GetStat() == mainBase.Group.Stat[i]);
                     if (a != -1)
                     {
-                        float f = cards1.Stat[a].Get(mainBase.Group.Forse[i]) * mainBase.Group.Size[i] / root;
+                        string strForse = core.frame.ForseTayp[mainBase.Group.Forse[i]];
+                        float f = cards1.Stat[a].Get(strForse) * mainBase.Group.Size[i] / root;
 
                         StatEditUse(set, cards, stat, Mathf.FloorToInt(f), forse);
 
@@ -1281,14 +1404,14 @@ namespace TableSys
                         case ("Speed"):
                             return card.Speed;
                             break;
-                        case ("Mana"):
+                        case ("ManaCard"):
                             return card.Mana;
                             break;
-                        case ("AllCount"):
-                            return allCard.Count;
-                            break;
+                        //case ("AllCount"):
+                        //    return cardInt.Count;
+                        //    break;
                         case ("PlanSize"):
-                            return card.bD[core.keyPlan].Base[form.Mod].Plan.Size;
+                            return core.bD[core.keyPlan].Base[form.Mod].Plan.Size;
                             break;
                         case ("Action"):
                             return card.ActionPoint;
@@ -1308,7 +1431,7 @@ namespace TableSys
                     if (form.TaypId == card.Stat[i].GetStat())
                         return card.Stat[i].Get(core.frame.ForseTayp[form.Forse]);
 
-                MainBase mainBase = core.bD[core.KeyStat].Base[form.TaypId];
+                MainBase mainBase = core.bD[core.keyStat].Base[form.TaypId];
                 if(mainBase.Sub.Antipod != -1)
                 {
                     for (int i = 0; i < card.Stat.Count; i++)
@@ -1361,10 +1484,10 @@ namespace TableSys
             return false;
         }
 
-        static List<CardCase> ReturnCard(string str, List<int> cardList, RuleForm form1 = null, RuleForm form2 =null, int moodResult =0)
+        static List<CardCase> ReturnCard(string str, List<int> cardList, RuleForm form1, RuleForm form2, int moodResult,CardCase card2)
         {
-            if (cardList == null)
-                cardList = allCard;
+            //if (cardList == null)
+            //    cardList = allCard;
             switch (str)
             {
                 case ("NewCollectCard"):
@@ -1373,15 +1496,14 @@ namespace TableSys
                         cardList.RemoveAt(0);
                         i--;
                     }
-                    return ReturnCard("CollectCard", cardList);
+                    return ReturnCard("CollectCard", cardList, form1,form2,moodResult,card2);
                     break;
                 case ("CollectCard"):
-                    voidCard = GetAllCard();
                     for (int i = 0; i < allCardGame.Count; i++)
                     {
-                        if(IfResultFull(allCardGame[i],form1,form2,moodResult,cardList))
+                        if(IfResultFull(allCardGame[i],form1,card2,form2,moodResult,cardList))
                         {
-                            int c = cardList.Index.FindIndex(x => x == allCardGame[i].Id);
+                            int c = cardList.FindIndex(x => x == allCardGame[i].Id);
                             if (c == -1)
                                 cardList.Add(allCardGame[i].Id);
                         }
@@ -1390,9 +1512,9 @@ namespace TableSys
                 case ("RemoveCard"):
                     for (int i = 0; i < cardList.Count; i++)
                     {
-                        if (IfResultFull(allCardGame[cardList[i]], form1, form2, moodResult, cardList))
+                        if (IfResultFull(allCardGame[cardList[i]], form1,card2, form2, moodResult, cardList))
                         {
-                            int c = cardList.Index.FindIndex(x => x == cardList[i]);
+                            int c = cardList.FindIndex(x => x == cardList[i]);
                             if (c != -1)
                             {
                                 cardList.RemoveAt(c);
@@ -1402,18 +1524,18 @@ namespace TableSys
                         }
                     }
                     break;
-                case ("GetLine"):
-                    for (int i = 0; i < line.Actions.Count; i++)
-                    {
-                        int c = cardList.Index.FindIndex(x => x == line.Actions[i].MyCard.Id);
-                        if (c == -1)
-                            cardList.Add(line.Actions[i].MyCard.Id);
+                //case ("GetLine"):
+                //    for (int i = 0; i < line.Actions.Count; i++)
+                //    {
+                //        int c = cardList.FindIndex(x => x == line.Actions[i].MyCard.Id);
+                //        if (c == -1)
+                //            cardList.Add(line.Actions[i].MyCard.Id);
 
-                        c = cardList.Index.FindIndex(x => x == line.Actions[i].TargetCard.Id);
-                        if (c == -1)
-                            cardList.Add(line.Actions[i].TargetCard.Id);
-                    }
-                    break;
+                //        c = cardList.FindIndex(x => x == line.Actions[i].TargetCard.Id);
+                //        if (c == -1)
+                //            cardList.Add(line.Actions[i].TargetCard.Id);
+                //    }
+                //    break;
             }
 
             List<CardCase> cardCases = new List<CardCase>();
@@ -1434,7 +1556,6 @@ namespace TableSys
             //}
             //else
             //    action = line.Actions[line.Actions.Count - 1].RuleTrigger[0].ActionTrigger[0];
-            CardCase card = null;
 
 
             switch (com[0])
@@ -1463,14 +1584,14 @@ namespace TableSys
             return card;
         }
 
-        static bool IfResultFull(CardCase card, RuleForm form1, RuleForm form2, int moodResult, List<int> cardInt)
+        static bool IfResultFull(CardCase card1, RuleForm form1, CardCase card2, RuleForm form2, int moodResult, List<int> cardInt)
         {
             int c = 0;
-            int b = IfResult(card, form1, cardInt);
-            if (form2 != null)
+            int b = IfResult(card1, form1, cardInt);
+            if (card2 != null)
             {
-                card = ReturnCard(core.frame.CardString[form2.Card]);
-                c = IfResult(card, form2, cardInt);
+                //card = ReturnCard(core.frame.CardString[form2.Card]);
+                c = IfResult(card2, form2, cardInt);
             }
 
             return EqualBool(b, c, moodResult);
@@ -1487,33 +1608,35 @@ namespace TableSys
 
             return -1;
         }
-        static int UseIfAction(IfAction action, List<int> cardInt)
+        static int UseIfAction(IfAction action, List<int> cardInt, int card1,int card2)
         {
             int h=0;
             //if(sunMod)
             for (int i = 0; i < action.Core.Count; i++)
             {
-                RuleForm form1 = action.Core;
+                RuleForm form1 = action.Core[i];
                 RuleForm form2 =null;
+                CardCase card = null;
                 if (form1.Tayp == core.keyStat || form1.Tayp == core.keyStatGroup)
                 {
                     form2 = action.ResultCore[h];
+                    card = ReturnCard(core.frame.CardString[form2.Card], card1, card2);
                     h++;
                 }
 
-                string str = core.frame.CardString[action.Core[i].Card];
+                string str = core.frame.CardString[form1.Card];
                 string[] com = str.Split('|');
                 if (com[0] == "NewCollectCard" || com[0] == "CollectCard" || com[0] == "RemoveCard" || com[0] == "GetLine")
                 {
                     List<int> cards = (com.Length == 1) ? null : cardInt;
-                    ReturnCard(com[0], cards, form1, form2, action.Result[i]);
+                    ReturnCard(com[0], cards, form1, form2, action.Result[i],card);
                     //continue;
                 }
                 // else if ("TakeCard")
                 //card = (com.Length == 1) ? ReturnCard(com[0], null) : ReturnCard(com[0], cardInt);
-                else 
+                else
                 {
-                    if(IfResultFull(ReturnCard(str),form1,form2, action.Result[i], cardInt))
+                    if (IfResultFull(ReturnCard(str, card1, card2), form1,card,form2, action.Result[i], cardInt))
                         return 0;
                 }
             }

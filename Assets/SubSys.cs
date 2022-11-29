@@ -441,7 +441,7 @@ namespace SubSys
         static void LoadColod(int a)
         {
             numColod = 0;
-            Saver.LoadColod(guild, a);
+            Saver.LoadColod(guild, a,cardsColod,size);
             ReadColodCard();
         }
 
