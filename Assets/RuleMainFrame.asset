@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 043ed8662342d2b40a96c80a1c8e6509, type: 3}
+  m_Name: RuleMainFrame
+  m_EditorClassIdentifier: 
+  ForseTayp:
+  - All
+  - Max
+  - Local
+  - LocalForse
+  EqualString:
+  - ==
+  - '!='
+  - <=
+  - '>='
+  - <
+  - '>'
+  PlayerString:
+  - All
+  - My
+  - Enemy
+  CardString:
+  - MyCard
+  - TargetCard
+  - MyCard|Main
+  - MyCard|MainEnemy
+  - NewCollectCard
+  - CollectCard
+  - RemoveCard
+  - TakeCard
+  - GetLine
+  SysStat:
+  - Skip
+  - MainStat
+  - Mana
+  - EnemyMana
+  - Speed
+  - ManaCard
+  Tayp:
+  - Guild
+  - Legion
+  - Stat
+  - Tag
+  - Plan
+  - Civilian
+  - Status
+  - CardTayp
+  - CardClass
+  - Race
+  - StatGroup
+  - Mark
+  Trigger:
+  - Start
+  - Button
+  - UseRule
+  - StartTurn
+  - WedgeAttack
+  - BeforeAttack
+  - Attack
+  - ProtAttack
+  - AfterAttack
+  - BeforeAction
+  - Action
+  - AfterAction
+  - BeforePreparation
+  - Preparation
+  - AfterPreparation
+  - CardReaction
+  - MovePlane
+  - AttackReaction
+  - AnotherEquip
+  - SelfEquip
+  - BeforeCard
+  - TakingDamage
+  - Hurt
+  - TriggerUse
+  colors:
+  - {r: 0.8867924, g: 0.8491456, b: 0.8491456, a: 1}
+  - {r: 0.55915886, g: 0.8962264, b: 0.51152545, a: 0.8784314}
+  - {r: 0, g: 0, b: 0, a: 0}
+  ColorsStr:
+  - E2D9D9
+  - 8FE582
+  - 000000

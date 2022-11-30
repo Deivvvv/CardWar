@@ -9,6 +9,7 @@ using TMPro;
 using Coder;
 using XMLSaver;
 using SubSys;
+using TableSys;
 
 
 public class CoreSys : MonoBehaviour
@@ -125,8 +126,8 @@ public class CoreSys : MonoBehaviour
         {
             case ("Main"):
                 ui.ExitButton.onClick.AddListener(() => OpenRedactor());
-                string[] name = {"Галлерея","Конструктор карт", "Выход" };
-                string[] comS = { "Gallery", "CardCreator| |Main", "Exit"};
+                string[] name = {"Играть","Галлерея","Конструктор карт", "Выход" };
+                string[] comS = {"Stol", "Gallery", "CardCreator| |Main", "Exit"};
                 for(int i = 0; i < comS.Length; i++)
                 {
                     go = Instantiate(ui.OrigButton);
@@ -140,23 +141,16 @@ public class CoreSys : MonoBehaviour
                 ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>(), com[1]);
                 break;
             case ("Gallery"):
-                //Gallery.ResetColod(_ui.gameObject.GetComponent<ColodConstructorUi>());
                 Gallery.Reset(_ui, _ui.gameObject.GetComponent<ColodConstructorUi>());
-                //ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
-                //ui.Buttons[2].onClick.AddListener(() => LoadScene("CardCreator| |Gallery"));
-                //ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>(), mood);
-                //CardConstructor.Load(mood);
-
-
-                //string[] s = { "NewCard", "Colod", "Edit" };
-                //for (int i = 0; i < s.Length; i++)
-                //{
-                //    go = Instantiate(ui.OrigButton);
-                //    go.transform.GetChild(0).gameObject.GetComponent<Text>().text = s[i];
-
-                //    SceneManager.LoadScene(s[i], LoadSceneMode.Single);
-                //    go.transform.SetParent(ui.Menu);
-                //}
+                break;
+            case ("Stol"):
+                List<CardCase> card1 = new List<CardCase>();
+                List<CardCase> card2 = new List<CardCase>();
+                List<int> size1 = new List<int>();
+                List<int> size2 = new List<int>();
+                Saver.LoadColod(5, 0, card1, size1);
+                Saver.LoadColod(5, 0, card2, size2);
+                RootSys.StartData(card1,size1,card2,size2,_ui.gameObject.GetComponent<TableUi>());
                 break;
 
         }

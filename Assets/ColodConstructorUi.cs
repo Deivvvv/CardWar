@@ -16,5 +16,6 @@ public class ColodConstructorUi : MonoBehaviour
     public GameObject SaveWindow;
     public Transform ColodWindow;
     public CardBody MainBody;
+    public GameObject AltCard;
     // public Transform GuildList;
 }

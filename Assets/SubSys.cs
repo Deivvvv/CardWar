@@ -22,7 +22,7 @@ namespace SubSys
         {
             GameObject go = Instantiate(ui.CardOrig);
             go.transform.SetParent(uiExtend.ColodWindow);
-            go.GetComponent<Button>().onClick.AddListener(() => Gallery.RemoveCardColod(a));
+            go.GetComponent<Button>().onClick.AddListener(() => Gallery.RemoveCardColod(a+1));
             return go.GetComponent<CardBody>();
         }
 
@@ -201,6 +201,7 @@ namespace SubSys
 
             ReadGalleryCard();
 
+            NewColod();
 
             LoadColodList();
         }
@@ -281,7 +282,7 @@ namespace SubSys
             }
 
 
-            for (int i=0;i<cardsColod.Count;i++)
+            for (int i=1;i<cardsColod.Count;i++)
                 if( cardsColod[i].Id == cards[a].Id &&
                     cardsColod[i].Guild == cards[a].Guild &&
                     cardsColod[i].CardTayp == cards[a].CardTayp &&
@@ -323,7 +324,7 @@ namespace SubSys
         }
         public static void RemoveCardColod(int a)
         {
-            int realA = numColod * bodysColod.Count +a;
+            int realA = numColod * bodysColod.Count +a+1;
             if (realA == 0)
                 return;
             if (realA < cardsColod.Count)
@@ -380,7 +381,8 @@ namespace SubSys
 
         static void NewColod()
         {
-            SaveColod();
+            if(bodysColod.Count >0)
+                SaveColod();
             colod = -1;
             uiExtend.NameTT.text = "NewColod";
             cardsColod = new List<CardCase>();
@@ -389,7 +391,7 @@ namespace SubSys
            // List <SubInt> cardsPath = Sorter.GetCard();
            // int a = cardsPath[
 
-            cardsColod.Add(Saver.LoadCard(guild, 0, 3, 0));//-загрузка маин карты
+            cardsColod.Add(Saver.LoadCard(0, 0, 3, 0));//-загрузка маин карты
             View(bodysColod, cardsColod);
 
         }
@@ -505,6 +507,8 @@ namespace SubSys
             }
             if (listID == null)
                 listID = new List<string>();
+
+            Gallery.CardClear(uiExtend.MainBody);
 
             uiExtend.NameTT.text = "NewColod";
             uiExtend.allCardCount.text = $"{cardSum}/40";

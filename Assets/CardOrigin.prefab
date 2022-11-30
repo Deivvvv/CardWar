@@ -737,7 +737,7 @@ RectTransform:
   m_GameObject: {fileID: 6115808302141344361}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_Children:
   - {fileID: 3813089805798807132}
   - {fileID: 4843596597679161573}
@@ -891,7 +891,7 @@ MonoBehaviour:
   Trait: {fileID: 8398239435042539069}
   Mana: {fileID: 6197745019797970102}
   CountButton: {fileID: 1329161237927611626}
-  Count: {fileID: 0}
+  Count: {fileID: 7185499378348612795}
 --- !u!1 &7195567846417038381
 GameObject:
   m_ObjectHideFlags: 0

@@ -5492,7 +5492,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.16874333, g: 0.27922153, b: 0.4528302, a: 0.9019608}
+  m_BackGroundColor: {r: 0.16874333, g: 0.27922153, b: 0.4528302, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -5532,13 +5532,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1201898146}
-  m_LocalRotation: {x: 0.3234433, y: -0, z: -0, w: 0.9462476}
-  m_LocalPosition: {x: -0.435, y: 2, z: 0}
+  m_LocalRotation: {x: 0.16221707, y: -0, z: -0, w: 0.98675513}
+  m_LocalPosition: {x: -0.472, y: 1.095, z: 0.673}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 37.743, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 18.671, y: 0, z: 0}
 --- !u!114 &1201898150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7963,7 +7963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4138511184629900, guid: 32eb347f03c37014080d0c1fba9fae61, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.3458838
+      value: 0.30820468
       objectReference: {fileID: 0}
     - target: {fileID: 4138511184629900, guid: 32eb347f03c37014080d0c1fba9fae61, type: 3}
       propertyPath: m_LocalRotation.x
@@ -7971,7 +7971,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4138511184629900, guid: 32eb347f03c37014080d0c1fba9fae61, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.93827736
+      value: 0.95132005
       objectReference: {fileID: 0}
     - target: {fileID: 4138511184629900, guid: 32eb347f03c37014080d0c1fba9fae61, type: 3}
       propertyPath: m_LocalRotation.z
@@ -7983,7 +7983,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4138511184629900, guid: 32eb347f03c37014080d0c1fba9fae61, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 220.472
+      value: 144.098
       objectReference: {fileID: 0}
     - target: {fileID: 4138511184629900, guid: 32eb347f03c37014080d0c1fba9fae61, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -9101,6 +9101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OrigRedactor: {fileID: 1267363617391834249, guid: 1afdeff5866b3124db2e3a8e01a62176, type: 3}
   OrigButton: {fileID: 0}
+  SimpleButton: {fileID: 0}
   Menu: {fileID: 0}
   ExitButton: {fileID: 1977470551}
   CardOrig: {fileID: 0}
@@ -9497,6 +9498,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1744952148}
     m_Modifications:
+    - target: {fileID: 1329161237927611626, guid: 8ac98f5708eeac14f81ae166aa453b0a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6115808302141344361, guid: 8ac98f5708eeac14f81ae166aa453b0a, type: 3}
       propertyPath: m_Name
       value: CardOrigin

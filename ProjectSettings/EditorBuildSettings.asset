@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/CardCreator.unity
     guid: 5e59fcc128b9f2947b6bc17280804ee1
   - enabled: 1
+    path: Assets/Stol.unity
+    guid: 630e43a7e409fe64a920728a018d6442
+  - enabled: 1
     path: Assets/Gallery.unity
-    guid: 0f58ea2034f49e3428c5985f84ec6177
+    guid: 580311d7df559db4394906c6a5ae5f1a
   m_configObjects: {}

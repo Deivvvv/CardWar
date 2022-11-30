@@ -300,7 +300,7 @@ namespace TableSys
             card.Id = allCard.Count;
             allCard.Add(card);
         }
-        static void StartData(string colod)
+        public static void StartData(List<CardCase> allCard1, List<int> size1, List<CardCase> allCard2, List<int> size2, TableUi ui)
         {
             //Сброс ядра
             core = DeCoder.GetCore();
@@ -311,19 +311,19 @@ namespace TableSys
             for (int i = 0; i < core.frame.Trigger.Length; i++)
                 triggers.Add(new SubInt(i));
 
-                List<CardCase> allCard1 = new List<CardCase>();
-            List<CardCase> allCard2 = new List<CardCase>();
-            List<int> size1 = new List<int>();
-            List<int> size2 = new List<int>();
+            //List<CardCase> allCard1 = new List<CardCase>();
+            //List<CardCase> allCard2 = new List<CardCase>();
+            //List<int> size1 = new List<int>();
+            //List<int> size2 = new List<int>();
 
             //запуск загрузки карт (!соло режим)
-            string[] com = colod.Split('|');
+            //string[] com = colod.Split('|');
 
-            int[] com1 = com[0].Split('/').Select(int.Parse).ToArray();
-            Saver.LoadColod(com1[0], com1[1], allCard1, size1);
+            //int[] com1 = com[0].Split('/').Select(int.Parse).ToArray();
+            //Saver.LoadColod(com1[0], com1[1], allCard1, size1);
 
-            com1 = com[1].Split('/').Select(int.Parse).ToArray();
-            Saver.LoadColod(com1[0], com1[1], allCard2, size2);
+            //com1 = com[1].Split('/').Select(int.Parse).ToArray();
+            //Saver.LoadColod(com1[0], com1[1], allCard2, size2);
 
             for(int i=0;i<allCard2.Count;i++)
                 allCard2[i].Team =1;
@@ -344,6 +344,8 @@ namespace TableSys
             colod2 = SortCard(allCard2, size2);
 
             //запуск предварительных процедур
+
+            UiSys.SetUi(ui);
             IfSys.Connect(allCard, rule);
             UiSys.Connect(allCard, rule, ruleName);
             //запуск игры
@@ -410,11 +412,12 @@ namespace TableSys
         {
             //запуск сесии
             CallTrigger(0);
+            UiSys.View(null);
         }
     }
     public class UiSys : MonoBehaviour
     {
-        static int myTeam, enemyTeam =1, rememberPlan =1, rememberPlanEnemy =1, cardId=-1;
+        static int activeTeam ,myTeam, enemyTeam =1, rememberPlan =1, rememberPlanEnemy =1, cardId=-1;
 
         static CoreSys core;
         static TriggerAction triggerActionCase;
@@ -436,7 +439,17 @@ namespace TableSys
             allCard = _allCardGame;
             rule = _rule;
             core = DeCoder.GetCore();
-         //   Name = _Name;
+            sizePlan = new List<SubInt>();
+            sizePlanLocal = new List<SubInt>();
+
+            sizePlan.Add(new SubInt(0));
+            sizePlan.Add(new SubInt(0));
+
+            sizePlanLocal.Add(new SubInt(0));
+            sizePlanLocal.Add(new SubInt(0));
+            LoadPlanButton();
+            triggerActionList = new List<TriggerAction>();
+            //   Name = _Name;
         }
         public static void SetUi(TableUi _ui) { ui = _ui; }
 
@@ -444,12 +457,14 @@ namespace TableSys
         {
             allCardSimulation = _allCardSimulation;
 
-
+            Debug.Log(allCardSimulation == null);
             CountPlan();
             ViewCard(myTeam, rememberPlan, ui.PlanView[myTeam]);
             ViewCard(enemyTeam, rememberPlanEnemy, ui.PlanView[enemyTeam]);
             ViewStol(myTeam);
             ViewStol(enemyTeam);
+            ViewPlanButton(0);
+            ViewPlanButton(1);
         }
         static void LoadPlanButton()
         {
@@ -468,7 +483,7 @@ namespace TableSys
                     go.transform.SetParent(ui.PlanButton[team]);
 
                     AddButton(go.GetComponent<Button>(),team,i);
-
+                    Destroy(go.GetComponent<TableInfo>());
                 }
             }
             planName = new List<string>();
@@ -486,13 +501,13 @@ namespace TableSys
         {
             SubInt sub = (localMood) ? sizePlanLocal[team] : sizePlan[team];
             for (int i = 0; i < planName.Count; i++)
-                if(sub.Num[i].Head > 0)
-                {
-                    ui.PlanButton[team].GetChild(i).gameObject.active = true;
-                    ui.PlanButton[team].GetChild(i).GetChild(0).gameObject.GetComponent<Text>().text = planName[i] + " " + sub.Num[i];
-                }
-                else
-                    ui.PlanButton[team].GetChild(i).gameObject.active = false;
+            if (sub.Num[i].Num.Count > 0)
+            {
+                ui.PlanButton[team].GetChild(i).gameObject.active = true;
+                ui.PlanButton[team].GetChild(i).GetChild(0).gameObject.GetComponent<Text>().text = planName[i] + " (" + sub.Num[i].Num.Count+")";
+            }
+            else
+                ui.PlanButton[team].GetChild(i).gameObject.active = false;
         }
         static void ViewPlan(int team,int a)
         {
@@ -612,8 +627,15 @@ namespace TableSys
             ui.CardButton.gameObject.active = false;
             if (cardId == -1)//(IfSys.line == null && triggerAction== null)
             {
+                if (activeTeam != myTeam)//Корявый костыль заприщабщий хватать карты опонента
+                {
+
+                    compliteUse =false;
+                    return;
+                }
+
                 if ( allCard[card].ActionPoint >0)
-                    IfSys.FindButton(card);
+                    IfSys.FindButton(card, activeTeam);
 
                 compliteUse = false;
                 if (triggerActionList.Count>0)
@@ -738,7 +760,7 @@ namespace TableSys
                 return true;
             return false;
         }
-        public static void FindButton(int cardId)
+        public static void FindButton(int cardId, int team)
         {
             UiSys.ClearActionButton();
             //SetBuffer(cardId);
@@ -746,8 +768,22 @@ namespace TableSys
             SubInt triggers = RootSys.GetTriggers(1, cardId);
             for (int i = 0; i < triggers.Num.Count; i++)
                 for (int j = 0; j < rule[i].Trigger.Count; j++)
-                    if (rule[i].Trigger[j].Trigger == 1 && card.Plan == rule[i].Trigger[j].Plan)
+                    if (rule[i].Trigger[j].Trigger == 1 && card.Plan == rule[i].Trigger[j].Plan) 
+                    {
+                        switch (rule[i].Trigger[j].Team)
+                        {
+                            case (1):
+                                if (card.Team != team)
+                                    continue;
+                                break;
+                            case (2):
+                                if (card.Team == team)
+                                    continue;
+                                break;
+                        }
                         UiSys.AddActionButton(cardId, rule[i].Trigger[j]);
+                    }
+                       
             // UseTrigger(cardId, -1, triggers.Num[i].Head, 1);
 
             // for (int i = 0; i < line.Actions.Count; i++)
