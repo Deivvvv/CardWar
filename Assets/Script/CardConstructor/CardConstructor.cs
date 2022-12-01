@@ -575,7 +575,6 @@ public class CardConstructor : MonoBehaviour
     {
         //int intGuild = -1, intCardTayp = -1, intCardClass = 0, intId = -1, intLegion = -1, intCivilian = -1, intRace = -1;
 
-
         startMana = 0;
        // Debug.Log(card.Guild);
         startMana += core.bD[core.keyGuild].Base[card.Guild].Cost;
@@ -656,7 +655,7 @@ public class CardConstructor : MonoBehaviour
         SetStatButton();
         SetRuleButton();
 
-
+        statMood = true;
         FullAccsesCount();
         ui.StatWindow.gameObject.active = true;
         ui.RuleWindow.gameObject.active = false;
@@ -687,7 +686,7 @@ public class CardConstructor : MonoBehaviour
         }
 
     }
-    void ScanAccses(Accses accses, Accses fullAccses, SubInt sub, int root =0)
+    void ScanAccses(Accses accses, Accses fullAccses, int sub, int root =0)
     {
         int a=-1,b = -1, c;
         for (int j = 0; j < accses.DisLike.Count; j++)
@@ -695,15 +694,15 @@ public class CardConstructor : MonoBehaviour
             {
                 for (int k = 0; k < card.Stat.Count; k++)
                 {
-                    a = accses.DisLike[j].Find(card.Stat[k].Get("Stat"), false);
+                    a = accses.DisLike[j].Find(card.Stat[k].GetStat(), false);
                     if (a != -1)
                     {
                         if(root == 0)
-                            fullAccses.DisLike.Add(sub);
+                            fullAccses.Find(fullAccses.DisLike, sub);
                         else
                         {
                             c = fullAccses.Find(fullAccses.DisLike, root);
-                            fullAccses.DisLike[c].Num.Add(sub);
+                            fullAccses.DisLike[c].Find(sub);
                         }
                         break;
                     }
@@ -723,11 +722,11 @@ public class CardConstructor : MonoBehaviour
                             if (b != -1)
                             {
                                 if (root == 0)
-                                    fullAccses.DisLike.Add(sub);
+                                    fullAccses.Find(fullAccses.DisLike,sub);
                                 else
                                 {
                                     c = fullAccses.Find(fullAccses.DisLike, root);
-                                    fullAccses.DisLike[c].Num.Add(sub);
+                                    fullAccses.DisLike[c].Find(sub);
                                 }
                                 break;
                             }
@@ -741,11 +740,11 @@ public class CardConstructor : MonoBehaviour
                     else
                     {
                         if (root == 0)
-                            fullAccses.DisLike.Add(sub);
+                            fullAccses.Find(fullAccses.DisLike, sub);
                         else
                         {
                             c = fullAccses.Find(fullAccses.DisLike, root);
-                            fullAccses.DisLike[c].Num.Add(sub);
+                            fullAccses.DisLike[c].Find(sub);
                         }
                         break;
                     }
@@ -761,15 +760,15 @@ public class CardConstructor : MonoBehaviour
             {
                 for (int k = 0; k < card.Stat.Count; k++)
                 {
-                    a = accses.Need[j].Find(card.Stat[k].Get("Stat"), false);
+                    a = accses.Need[j].Find(card.Stat[k].GetStat(), false);
                     if (a == -1)
                     {
                         if (root == 0)
-                            fullAccses.Need.Add(sub);
+                            fullAccses.Find(fullAccses.Need, sub);
                         else
                         {
                             c = fullAccses.Find(fullAccses.Need, root);
-                            fullAccses.Need[c].Num.Add(sub);
+                            fullAccses.Need[c].Find(sub);
                         }
                         break;
                     }
@@ -790,11 +789,11 @@ public class CardConstructor : MonoBehaviour
                             if (b == -1)
                             {
                                 if (root == 0)
-                                    fullAccses.Need.Add(sub);
+                                    fullAccses.Find(fullAccses.Need, sub);
                                 else
                                 {
                                     c = fullAccses.Find(fullAccses.Need, root);
-                                    fullAccses.Need[c].Num.Add(sub);
+                                    fullAccses.Need[c].Find(sub);
                                 }
                                 break;
                             }
@@ -808,11 +807,11 @@ public class CardConstructor : MonoBehaviour
                     else
                     {
                         if (root == 0)
-                            fullAccses.Need.Add(sub);
+                            fullAccses.Find(fullAccses.Need, sub);
                         else
                         {
                             c = fullAccses.Find(fullAccses.Need, root);
-                            fullAccses.Need[c].Num.Add(sub);
+                            fullAccses.Need[c].Find(sub);
                         }
                         break;
                     }
@@ -823,13 +822,11 @@ public class CardConstructor : MonoBehaviour
         if (a == -1)
         {
             if (root == 0)
-                fullAccses.Like.Add(sub);
+                fullAccses.Find(fullAccses.Like, sub);
             else
             {
-                //Debug.Log(root);
-                //Debug.Log(sub.Head);
                 c = fullAccses.Find(fullAccses.Like, root);
-                fullAccses.Like[c].Num.Add(sub);
+                fullAccses.Like[c].Find(sub);
             }
         }
     }
@@ -846,7 +843,7 @@ public class CardConstructor : MonoBehaviour
         }
         for (int i = 0; i < card.Stat.Count; i++)
         {
-            listStat.Remove(card.Stat[i].Get("Stat"));
+            listStat.Remove(card.Stat[i].GetStat());
         }
             // listStat.Add(publicStatList[i]);
 
@@ -877,8 +874,15 @@ public class CardConstructor : MonoBehaviour
         {
             SubInt sub = new SubInt(listStat[i]);
             Accses accses = core.bD[core.keyStat].Base[listStat[i]].accses;
-            ScanAccses(accses, statAccses, sub);
+            ScanAccses(accses, statAccses, sub.Head);
            // Debug.Log("Remove" + listStat[i]);
+        }
+
+        for (int i = 0; i < card.Stat.Count; i++)
+        {
+            a = statAccses.Find(statAccses.Like, card.Stat[i].GetStat());
+            if (a != -1)
+                statAccses.Like.RemoveAt(a);
         }
         //Debug.Log(statAccses.Like.Count);
         //Debug.Log(statAccses.Need.Count);
@@ -969,11 +973,11 @@ public class CardConstructor : MonoBehaviour
             keyA = -listRule[i].Head - 1;
             SubInt sub = new SubInt(listRule[i].Head);
             Accses accses = core.bD[core.keyTag].Base[keyA].accses;
-            ScanAccses(accses, ruleAccses, sub);
+            ScanAccses(accses, ruleAccses, sub.Head);
             for (int j = 0; j < listRule[i].Num.Count; j++)
             {
                 //Debug.Log(listRule[i].Head);
-                ScanAccses(accses, ruleAccses, listRule[i].Num[j], sub.Head);
+                ScanAccses(accses, ruleAccses, listRule[i].Num[j].Head, sub.Head);
             }
             
         }
@@ -1059,7 +1063,7 @@ public class CardConstructor : MonoBehaviour
     {
         void Build(int intMood)
         {
-            void Clear(int intMood, int size)
+            void Clear(int intMood, int size, List<SubInt> list)
             {
                 for (int i = size; i < ui.StatRing[intMood].GetChild(0).GetChild(0).childCount; i++)
                 {
@@ -1102,6 +1106,8 @@ public class CardConstructor : MonoBehaviour
             {
                 //Debug.Log($"{i} {list[i].Head}");
                 int b = list[i].Head;
+                //Debug.Log(i);
+                //Debug.Log(b);
                 BD bd = core.bD[core.keyStat];
                 string str = bd.Base[b].Name;
                 str += $"\n{bd.Base[b].Cost}/4";
@@ -1147,7 +1153,7 @@ public class CardConstructor : MonoBehaviour
                     SetInfo(intMood, i, list);
                 //Clear(intMood, list.Count);
             }
-            Clear(intMood, i);
+            Clear(intMood, i, list);
         }
         for (int i = 0; i < ui.StatRing.Count; i++)
             Build(i);
@@ -1309,7 +1315,7 @@ public class CardConstructor : MonoBehaviour
         int b = statAccses.Like[a].Head;
         card.Stat.Add(new StatExtend(b, bd));
         CountSize();
-        FullAccsesCount();
+        CountStatList(); 
     }
     void EditStat(int a, bool add)
     {
@@ -1320,10 +1326,10 @@ public class CardConstructor : MonoBehaviour
             if (a != 0)
             {
                 int b = compliteAccses.Find(compliteAccses.Need, core.keyStat, false);
-                int c = compliteAccses.Need[b].Find(card.Stat[a].Get("Stat"), false);
+                int c = compliteAccses.Need[b].Find(card.Stat[a].GetStat(), false);
                 if (c == -1) {
                     card.Stat.RemoveAt(a);
-                    FullAccsesCount();
+                    CountStatList(); 
                     CountSize();
                     return;
                 } 
@@ -1370,7 +1376,7 @@ public class CardConstructor : MonoBehaviour
 
     void StatView(int a)
     {
-        int b = card.Stat[a].Get("Stat");
+        int b = card.Stat[a].GetStat();
 
         BD bd = core.bD[core.keyStat];
         string str = bd.Base[b].Name;
@@ -1385,7 +1391,7 @@ public class CardConstructor : MonoBehaviour
         BD bd = core.bD[core.keyStat];
         for (int i = 0; i < card.Stat.Count; i++)
         {
-            a = card.Stat[i].Get("Stat");
+            a = card.Stat[i].GetStat();
             b = card.Stat[i].Get("Max");
             mana += bd.Base[a].Cost * b;
         }
@@ -1413,445 +1419,6 @@ public class CardConstructor : MonoBehaviour
         //card
     }
     #endregion
-
-    //#region Rule
-    ////мусор
-    //void SetMainRuleButton(int a)
-    //{
-    //    void Clear(int intMood, int size)
-    //    {
-
-    //        for (int i = size; i < ui.RuleRing[intMood].childCount; i++)
-    //        {
-    //            Destroy(ui.RuleRing[intMood].GetChild(size).gameObject);
-    //            i--;
-    //        }
-    //    }
-
-
-    //    void Build(int intMood, int size)
-    //    {
-
-    //        void SetButton(Button button, int a, int intMood)
-    //        {
-    //            switch (intMood)
-    //            {
-    //                case (1):
-    //                    button.onClick.AddListener(() => RemoveRule(a));
-    //                    //button.onClick.AddListener(() => CountSize());
-    //                    break;
-    //                case (1):
-    //                    button.onClick.AddListener(() => SetMainRule(a));
-    //                    //button.onClick.AddListener(() => CountSize());
-    //                    break;
-    //                case (2):
-    //                    button.onClick.AddListener(() => SetRule(a));
-    //                    break;
-    //            }
-    //        }
-
-    //        for (int i = ui.RuleRing[intMood].childCount; i < size; i++)
-    //        {
-    //            GameObject go = Instantiate(ui.OrigButton);
-    //            go.transform.SetParent(ui.RuleRing[intMood]);
-    //            go.GetComponent<CardCaseInfo>().SetRule(cardSys, intMood, i);
-    //            SetButton(go.transform.GetChild(1).gameObject.GetComponent<Button>(), i, intMood);
-    //        }
-    //    }
-
-    //    List<SubInt> list = null;
-    //    if (a == 0)
-    //        list = card.Trait;
-    //    else
-    //        list = ruleList[a - 1];
-
-    //    int size = 0;
-    //    for (int i = 0; i < list.Count; i++)
-    //        for (int j = 0; j < list[i].Num.Count; j++)
-    //            size++;
-
-    //    Clear(a, size);
-    //    Build(a, size);
-
-    //}
-
-    
-
-    //void SetListRule(Accses accses)
-    //{
-    //    localRuleList = new List<SubInt>();
-    //    ruleListKey = new List<SubInt>();
-    //    for (int i = 0; i < accses.Need.Count; i++) 
-    //    {
-    //        SubInt sub = new SubInt(accses.Need[i].Head);
-    //        for (int j = 0; j < accses.Need[i].Count; j++)
-    //            sub.Num.Add(new SubInt(accses.Need[i].Num[j].Head));
-    //    }
-    //       // for(int i)
-
-    //}
-
-    //void RemoveRule(int a, List<int> b, string log = "")
-    //{
-    //    int c;
-    //    if (b == null)
-    //    {
-    //        c = card.Trait[a].Head;
-    //        log += "\nRuleS" + core.bD[core.keyTag].Base[c].Name;
-    //        card.Trait.RemoveAt(a);
-    //    }
-    //    else
-    //        for (int i = 0; i < b.Count; i++)
-    //        {
-    //            log += "\nRule" + core.head[a].Rule[b[i]];
-    //            c = card.Trait[a].Find(b[i], false);
-    //            card.Trait[a].Num.RemoveAt(c);
-    //        }
-    //    FindConect(log);
-    //}
-
-    //void SetRule(int a,int b,int c)
-    //{
-    //    Accses accses = Saver.LoadRuleAccses(-ruleListKey[a].Num[b].Head - 1, ruleListKey[a].Num[b].Num[c].Head);
-    //    int d = accses.Find(card.Trait, ruleListKey[a].Num[b].Head);
-    //    card.Trait[d].Find(ruleListKey[a].Num[b].Num[c].Head);
-
-    //    AddNeed(accses);
-    //    if (ruleListKey.Count == 0)
-    //    {
-    //        FindConect();
-    //    }
-
-    //}
-    //void SetListRule(int a ,int b)
-    //{
-    //    if (ruleListKey.Count > 0)
-    //    {
-    //        ruleListKey[a].Num[0].Head = b;
-
-    //        bool preLoad = false;
-    //        for (int i = 0; i < ruleListKey.Count && !preLoad; i++)
-    //            preLoad = (ruleListKey[i].Num[0].Head == -1);
-
-    //        if (preLoad)
-    //            return;
-
-    //        for(int i=0;i< ruleListKey.Count; i++)
-    //            SetRule(i, ruleListKey[i].Head, ruleListKey[i].Num[0].Head);
-            
-    //        ruleListKey = new List<SubInt>();
-    //        FindConect();
-             
-    //    }
-    //    else
-    //    {
-    //        SubInt sub;
-    //        ruleListKey = new List<SubInt>();
-    //        SetListRule(Saver.LoadRuleAccses(-ruleListKey[1].Num[a].Head - 1, ruleListKey[1].Num[a].Num[b].Head));
-    //        for(int i = 0; i < ruleList.Count; i++)
-    //            if ( ruleList[i].Num.Count == 1)
-    //            {
-    //                sub = new SubInt(ruleList[i].Head);
-    //                sub.Num.Add(new SubInt(ruleList[i].Num[0].Head));
-    //                ruleListKey.Add(sub);
-    //            }
-    //            else if (ruleList[i].Num.Count == 0)
-    //            {
-    //                Debug.Log("Error load");
-    //                ruleListKey = new List<SubInt>();
-    //                SetListRule();
-    //            }
-    //            else
-    //            {
-    //                sub = new SubInt(ruleList[i].Head);
-    //                sub.Num.Add(new SubInt(-1));
-    //                ruleListKey.Add(sub);
-    //            }
-    //    }
-    //}
-
-    //void SetRuleButtonInfo(List<SubInt>list ,int a,int b, bool full = true)
-    //{
-    //    int mainA = -list[a].Head - 1;
-    //    int mainB = list[a].Num[b].Head ;
-
-    //    bool lost = false;
-    //    List<string> sum = new List<string>();
-    //    int maxSum =0;
-    //    string str = core.head[mainA].Rule[mainB];
-    //    Text text = ui.RuleRing[a].GetChild(1).GetChild(b).gameObject.GetComponent<Text>();
-
-    //    sum.Add("" + core.head[mainA].Cost[mainB]);
-    //    int c = mainAccses.Find(card.Trait, list[a].Head, false);
-    //    if (c == -1)
-    //        sum.Add("" + core.bD[core.keyTag].Base[mainA].Cost);
-
-    //    if (full)
-    //    {
-    //        Accses accses = Saver.LoadRuleAccses(mainA, mainB);
-    //        for (int i = 0; i < accses.Need.Count; i++)
-    //        {
-    //            c = mainAccses.Find(card.Trait, list[a].Head, false);
-    //            if (c == -1)
-    //                sum.Add("" + core.bD[core.keyTag].Base[mainA].Cost);
-    //            if (accses.Need[i].Num.Count == 0)
-    //                sum.Add("?");
-    //            for (int j = 0; j < accses.Need[i].Num.Count; j++)
-    //                sum.Add("" + core.head[-accses.Need[i].Head-1].Cost[accses.Need[i].Num[j].Head]);
-    //        }
-    //    }
-      
-    //    str += "\n";
-
-    //    str += sum[0];
-    //    maxSum += int.Parse(sum[0]);
-    //    for (int i = 1; i < sum.Count; i++)
-    //    {
-    //        str += "+" + sum[i];
-    //        if(sum[i] != "?")
-    //            maxSum += int.Parse(sum[i]);
-
-    //    }
-    //    if (sum.Count != 1)
-    //        str += "=" + maxSum ;
-    //    if(lost)
-    //        str += "+";
-
-
-    //    text.text = str;
-    //}
-    
-    //void SetRuleButton(int a)
-    //{
-    //    void Clear(int intMood, int size)
-    //    {
-    //        for (int i = size; i < ui.RuleRing[intMood].childCount; i++)
-    //        {
-    //            Destroy(ui.RuleRing[intMood].GetChild(size).gameObject);
-    //            i--;
-    //        }
-    //    }
-
-    //    int intMood = 0;
-    //    Clear(a, ruleList[a].Num.Count);
-
-    //    for (int i = ui.RuleRing[a].childCount; i < ruleList[a].Num.Count; i++)
-    //    {
-    //        GameObject go = Instantiate(ui.OrigButton);
-    //        go.transform.SetParent(ui.RuleRing[a]);
-
-    //        go.transform.gameObject.GetComponent<CardCaseInfo>().SetRuleAlt(cardSys, a, i);
-
-    //        Button button = go.transform.GetChild(1).gameObject.GetComponent<Button>();
-    //        button.onClick.AddListener(() => card.Stat[i].Edit("Max", -1));
-    //        //button.onClick.AddListener(() => CountSize());
-
-    //    }
-    //    if (ruleListKey.Count > 0)
-    //    {
-
-    //    }
-    //    else
-    //    {
-    //      //  for(int i=0;i<ruleList[0].Num.Count;i++)
-    //            //ui.RuleWindow[a].ChildCount
-    //    }
-    //}
-
-    //void AddHeadRule(int a )
-    //{
-    //    card.Trait.Add(new SubInt(a));
-    //    AddNeed(core.bD[core.keyTag].Base[-a - 1].accses);
-    //}
-    //#endregion
-
-    //#region Stat
-    //void OpenStatWindow()
-    //{
-    //    if (statMood)
-    //    {
-    //        statMood = false;
-    //        ui.StatWindow.gameObject.active = true;
-    //        ui.RuleWindow.gameObject.active = false;
-    //        SetListStat();
-    //    }
-    //}
-
-
-
-    //void SetStat(int a, bool global = false)
-    //{
-    //    //a = core.bD[core.keyStat].Base[a]
-    //    if (!global)
-    //        a = statList[a];
-    //    BD bd = core.bD[core.keyStat];
-    //    card.Stat.Add(new StatExtend(a, bd.Base[a].Sub.Image));
-    //    AddNeed(bd.Base[a].accses);
-
-    //    FindConect();
-    //    ViewCard();
-    //    //SetStatButton();
-
-    //}
-
-    //void RemoveStat(int a, string log = "")
-    //{
-    //    int b = card.Stat[a].Get("Stat");
-    //    int c = compliteAccses.Find(compliteAccses.Need, core.keyStat, false);
-    //    if (c != -1)
-    //    {
-    //        int d = compliteAccses.Need[c].Find(b, false);
-    //        if (d != -1)
-    //        {
-    //            card.Stat[a].Edit("Max", 1);
-    //            return;
-    //        }
-    //    }
-
-    //    card.Stat.RemoveAt(a);
-    //    FindConect(log);
-
-    //}
-
-    //void StatView(int a)
-    //{
-    //    int b = card.Stat[a].Get("Stat");
-    //    BD bd = core.bD[core.keyStat];
-    //    string str = bd.Base[b].Name;
-    //    str += $"\n{bd.Base[b].Cost}/4 * {card.Stat[a].Get("Max")}";
-    //    ui.StatRing[0].GetChild(a).GetChild(0).gameObject.GetComponent<Text>().text = str;
-    //}
-    ////void SetStatButton()
-    ////{
-    ////    void Clear(int intMood, int size)
-    ////    {
-    ////        for (int i = size; i < ui.StatRing[intMood].childCount; i++)
-    ////        {
-    ////            Destroy(ui.StatRing[intMood].GetChild(size).gameObject);
-    ////            i--;
-    ////        }
-    ////    }
-
-    ////    int intMood = 0;
-    ////    Clear(intMood, card.Stat.Count);
-
-    ////    for (int i = ui.StatRing[intMood].childCount; i < card.Stat.Count; i++)
-    ////    {
-    ////        GameObject go = Instantiate(ui.OrigStatButton);
-    ////        go.transform.SetParent(ui.StatRing[intMood]);
-
-    ////        go.GetComponent<CardCaseInfo>().SetAlt(cardSys, intMood, i);
-
-    ////        Button button = go.transform.GetChild(1).gameObject.GetComponent<Button>();
-    ////        button.onClick.AddListener(() => card.Stat[i].Edit("Max", -1));
-    ////        button.onClick.AddListener(() => CountSize());
-
-    ////        button = go.transform.GetChild(2).gameObject.GetComponent<Button>();
-    ////        button.onClick.AddListener(() => card.Stat[i].Edit("Max", 1));
-    ////        button.onClick.AddListener(() => CountSize());
-    ////    }
-
-    ////    for (int i = 0; i < card.Stat.Count; i++)
-    ////        StatView(i);
-
-
-    ////    intMood = 1;
-    ////    Clear(intMood, statList.Count);
-
-    ////    for (int i = ui.StatRing[intMood].childCount; i < statList.Count; i++)
-    ////    {
-    ////        GameObject go = Instantiate(ui.OrigButton);
-    ////        go.transform.SetParent(ui.StatRing[intMood]);
-
-    ////        go.transform.gameObject.GetComponent<CardCaseInfo>().SetAlt(cardSys, intMood, i);
-
-    ////        go.GetComponent<Button>().onClick.AddListener(() => SetStat(i));
-    ////    }
-
-
-    ////    for (int i = 0; i < statList.Count; i++)
-    ////        ui.StatRing[1].GetChild(i).gameObject.GetComponent<Text>().text = core.bD[core.keyStat].Base[statList[i]].Name;
-    ////}
-
-    //void SetListStat()
-    //{
-    //    List<int> list = new List<int>();
-    //    for (int i = 0; i < publicStatList.Count; i++)
-    //        list.Add(publicStatList[i]);
-
-    //    int a = compliteAccses.Find(compliteAccses.DisLike, core.keyStat, false);
-    //    if(a != -1)
-    //        for (int i = 0; i < compliteAccses.DisLike[a].Num.Count; i++)
-    //            list.Remove(compliteAccses.DisLike[a].Num[i].Head);
-
-    //    a = compliteAccses.Find(compliteAccses.Like, core.keyStat, false);
-    //    if (a != -1)
-    //        for (int i = 0; i < compliteAccses.Like[a].Num.Count; i++)
-    //            if(core.bD[core.keyStat].Base[compliteAccses.Like[a].Num[i].Head].Look)
-    //                list.Add(compliteAccses.Like[a].Num[i].Head);
-
-
-    //    for (int i = 0; i < card.Stat.Count; i++)
-    //        list.Remove(card.Stat[i].Get("Stat"));
-
-
-    //    bool DisConnect(Accses accses,int key, int num)
-    //    {
-    //        int a = accses.Find(accses.DisLike, key, false);
-    //        if (a != -1)
-    //        {
-    //            int b = accses.DisLike[a].Find( num, false);
-    //            return (b != -1);
-    //        }
-    //        return false;
-    //    }
-
-    //    int b;
-    //    for (int i = 0; i < list.Count; i++)
-    //    {
-    //        b = -1;
-    //        Accses localAccses = core.bD[core.keyStat].Base[list[i]].accses;
-
-    //        a = localAccses.Find(localAccses.DisLike, core.keyStat, false);
-    //        if(a!= -1)
-    //            for (int j = 0; j < card.Stat.Count; j++)
-    //            {
-    //                b = localAccses.DisLike[a].Find(card.Stat[j].Get("Stat"), false);
-    //                if (b != -1) { list.RemoveAt(i); i--; break; }
-
-    //            }
-    //        if (b != -1)
-    //            continue;
-
-    //        for (int j = 0; j < localAccses.DisLike.Count; j++)
-    //            if (localAccses.DisLike[j].Head < 0)
-    //            {
-    //                a = localAccses.Find(card.Trait, localAccses.DisLike[j].Head, false);
-    //                if (a != -1)
-    //                    if(localAccses.DisLike[j].Num.Count > 0)
-    //                    {
-    //                        for (int k = 0; k < localAccses.DisLike[j].Num.Count; k++)
-    //                        {
-    //                            b = card.Trait[a].Find(localAccses.DisLike[j].Num[k].Head, false);
-    //                            if (b != -1)
-    //                            { list.RemoveAt(i); i--; break; }
-    //                        }
-    //                        if (b != -1) 
-    //                            break;
-    //                    }
-    //                    else { list.RemoveAt(i); i--; break; }
-    //            }
-    //    }
-
-
-    //    statList = list;
-    //    SetStatButton();
-    //}
-    //#endregion
-
-
-
-
 
 
 

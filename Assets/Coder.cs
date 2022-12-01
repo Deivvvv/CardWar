@@ -1842,7 +1842,20 @@ namespace Coder
             int a = -1;
             if (core.frame.Action[action.Action].Name == "Rule")
                 a = action.ActionExtend;
-
+            /*
+                Action.Add(new SubAction("Attack"," ", " _NeedTarget"));
+        Action.Add(new SubAction("Stat", "Add_Set_Clear_MainStat_MainStatSet_Replace_ReplaceMainStat", " _NeedTarget"));//изсенить стат - удалить стат - заменить основной стат - заменить параметр
+                                                                        // Action.Add(new SubAction("Karma", "Clear_Add_Remove", "PG_PS_PL_PT_NG_NS_NL_NT"));//karma_{global}_{all}_Stat   .. перобсудить этот раздел
+                                                                        // Action.Add(new SubAction("Switch", "Guild_Ligion_Social_Race"));
+                                                                        // Action.Add(new SubAction("Effect", "Add_Remove_Replace", "Eternal_NoEternal"));
+        Action.Add(new SubAction("Rule", "Use_Add_Remove"));
+        Action.Add(new SubAction("Status", "Add_Remove_Replace"));
+        Action.Add(new SubAction("Transf", " "));
+       // Action.Add(new SubAction("Create", " "));
+        Action.Add(new SubAction("SwitchPosition", " "));
+        Action.Add(new SubAction("Equip", " "));
+             
+             */
             str += "\nРезультат " + ReturnCore(action.ResultCore, result, true,a);
 
             //if(action.ResultCore.Tayp == core.keyStat)

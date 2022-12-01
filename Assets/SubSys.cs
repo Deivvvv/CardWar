@@ -265,7 +265,7 @@ namespace SubSys
                 if (redactor)
                 {
                     CardCase card = cards[a];
-                    DeCoder.GetCore().LoadScene($"CardCreator|{card.Guild}/{card.CardClass}/{card.CardTayp}/{card.Id}|Gallery");
+                    DeCoder.GetCore().LoadScene($"CardCreator|{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}|Gallery");
 
                 }
                 else
@@ -336,7 +336,7 @@ namespace SubSys
                 if (redactor)
                 {
                     CardCase card = cards[a];
-                    DeCoder.GetCore().LoadScene($"CardCreator|{card.Guild}/{card.CardClass}/{card.CardTayp}/{card.Id}|Gallery");
+                    DeCoder.GetCore().LoadScene($"CardCreator|{card.Guild}/{card.CardTayp}/{card.CardClass}/{card.Id}|Gallery");
                 }
                 else
                 {

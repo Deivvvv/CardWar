@@ -1155,7 +1155,7 @@ namespace XMLSaver
             {
                 int[] index = com[i].Split('|').Select(int.Parse).ToArray();
 
-                cardsColod.Add(LoadCard(index[0], index[2], index[1], index[3]));
+                cardsColod.Add(LoadCard(index[0], index[1], index[2], index[3]));
             }
 
             int[] ints = root.Element("Size").Value.Split('/').Select(int.Parse).ToArray();
