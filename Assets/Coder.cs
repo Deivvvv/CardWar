@@ -973,6 +973,12 @@ namespace Coder
                     else
                         form.Num++;
                     break;
+                case ("Forse"):
+                    if (mood)
+                        form.Forse--;
+                    else
+                        form.Forse++;
+                    break;
             }
             return form;
         }
@@ -2153,6 +2159,10 @@ namespace Coder
                     {
                         str += TextEditInt("Mod?" + path, "" + coreForm.Mod);
                         str += TextEditInt("Num?" + path, "" + coreForm.Num);
+                    }
+                    if (coreForm.Tayp == core.keyStat || coreForm.Tayp == core.keyPlan)
+                    {
+                        str += TextEditInt("Forse?" + path, "" + coreForm.Forse);
                     }
                 }
             }

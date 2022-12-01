@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Coder;
 
-public class CardCase : MonoBehaviour
+public class CardCase
 {
 
     public int Id;

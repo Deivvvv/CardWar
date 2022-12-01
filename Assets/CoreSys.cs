@@ -138,6 +138,7 @@ public class CoreSys : MonoBehaviour
                 break;
             case ("CardCreator"):
                 ui.ExitButton.onClick.AddListener(() => LoadScene(com[2]));
+                ui.Buttons[0].onClick.AddListener(() => OpenRedactor());
                 ui.gameObject.GetComponent<CardConstructor>().Load(gameObject.GetComponent<CoreSys>(), com[1]);
                 break;
             case ("Gallery"):

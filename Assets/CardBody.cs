@@ -20,4 +20,5 @@ public class CardBody : MonoBehaviour
 
     public GameObject CountButton;
     public TMP_Text Count;
+    public Button AltAdd;
 }

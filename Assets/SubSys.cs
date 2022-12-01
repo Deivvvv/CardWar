@@ -23,6 +23,8 @@ namespace SubSys
             GameObject go = Instantiate(ui.CardOrig);
             go.transform.SetParent(uiExtend.ColodWindow);
             go.GetComponent<Button>().onClick.AddListener(() => Gallery.RemoveCardColod(a+1));
+            go.GetComponent<CardBody>().AltAdd.onClick.AddListener(() => Gallery.AltAddCardColod(a + 1));
+
             return go.GetComponent<CardBody>();
         }
 
@@ -274,9 +276,10 @@ namespace SubSys
             //if (cardSum >= 40)
             //    return;
 
-            if (cards[a].CardClass == 3)
+            if (cards[a].CardTayp == 3)
             {
                 cardsColod[0] = cards[a];
+                size[0] = 1;
                 ReadCard(cardsColod[0], uiExtend.MainBody, false);
                 return;
             }
@@ -294,8 +297,9 @@ namespace SubSys
                         size[i]++;
                         cardSum++;
                         uiExtend.allCardCount.text = $"{cardSum}/40";
+                        ReadCard(cardsColod[i], bodysColod[i - 1], false, size[i]);
 
-                        ReadColodCard();
+                        //ReadColodCard();
                     }
                     return;
                 }
@@ -307,7 +311,7 @@ namespace SubSys
 
             ReadColodCard();
         }
-        public static void AddCardColodAlt(int a)
+        public static void AltAddCardColod(int a)
         {
             int realA = numColod * bodysColod.Count + a;
 
@@ -318,13 +322,13 @@ namespace SubSys
                     size[realA]++;
                     cardSum++;
                     uiExtend.allCardCount.text = $"{cardSum}/40";
-                    ReadCard(cardsColod[realA], bodysColod[realA], false, size[realA]);
+                    ReadCard(cardsColod[realA], bodysColod[realA-1], false, size[realA]);
                 }
             }
         }
         public static void RemoveCardColod(int a)
         {
-            int realA = numColod * bodysColod.Count +a+1;
+            int realA = numColod * bodysColod.Count +a;
             if (realA == 0)
                 return;
             if (realA < cardsColod.Count)
@@ -346,7 +350,7 @@ namespace SubSys
                         return;
                     }
                     uiExtend.allCardCount.text = $"{cardSum}/40";
-                    ReadCard( cardsColod[realA], bodysColod[realA], false, size[realA]);
+                    ReadCard( cardsColod[realA], bodysColod[realA-1], false, size[realA]);
 
                     //ReadColodCard();
                 }
@@ -369,14 +373,18 @@ namespace SubSys
         }
         static void ReadColodCard()
         {
+            List<int> newSize = new List<int>();
             List<CardCase> localCardsColod = new List<CardCase>();
 
-            for (int i = numColod * bodysColod.Count; i < (numColod + 1) * bodysColod.Count && i < cardsColod.Count -1; i++)
-                localCardsColod.Add(cardsColod[i+1]);
+            for (int i = numColod * bodysColod.Count; i < (numColod + 1) * bodysColod.Count && i < cardsColod.Count - 1; i++)
+            {
+                localCardsColod.Add(cardsColod[i + 1]);
+                newSize.Add(size[i + 1]);
+            }
 
 
-            uiExtend.colodCount.text = $"{numColod * bodysColod.Count}/{cardsColod.Count}";
-            View(bodysColod, localCardsColod, false);
+            uiExtend.colodCount.text = $"{numColod * bodysColod.Count}/{cardsColod.Count-1}";
+            View(bodysColod, localCardsColod, false, newSize);
         }
 
         static void NewColod()
@@ -391,8 +399,9 @@ namespace SubSys
            // List <SubInt> cardsPath = Sorter.GetCard();
            // int a = cardsPath[
 
-            cardsColod.Add(Saver.LoadCard(0, 0, 3, 0));//-загрузка маин карты
-            View(bodysColod, cardsColod);
+            cardsColod.Add(Saver.LoadCard(0, 3, 0, 0));//-загрузка маин карты
+            ReadCard(cardsColod[0], uiExtend.MainBody, false);
+            ReadColodCard();
 
         }
 
@@ -401,7 +410,7 @@ namespace SubSys
             if (guild == -1)
                 return;
 
-            if (cardsColod.Count ==0)
+            if (cardsColod.Count ==1 || cardsColod.Count == 0)
                 return;
 
             if(colod == -1)
@@ -512,6 +521,7 @@ namespace SubSys
 
             uiExtend.NameTT.text = "NewColod";
             uiExtend.allCardCount.text = $"{cardSum}/40";
+            Debug.Log("Reload");
             LoadGuildList();
             ReadColodCard();
             ReadGalleryCard();
@@ -538,7 +548,7 @@ namespace SubSys
             //Debug.Log(body);
             body.Avatar.sprite = card.Image;
 
-            body.Name.text =$"{card.Id} "+ card.Name;
+            body.Name.text =$"({card.Id}) "+ card.Name;
             string strMood = (mood) ? "All" : "Max";
 
             body.Stat.text = card.Stat[0].Read(strMood);

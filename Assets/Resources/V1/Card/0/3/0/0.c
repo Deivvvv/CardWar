@@ -1,9 +1,9 @@
 <root>
-  <Name>Walk</Name>
+  <Name>OldCamp</Name>
   <Mana>1</Mana>
   <Legion>0</Legion>
   <Civilian>0</Civilian>
-  <Race>0</Race>
+  <Race>10</Race>
   <Stat>0/1</Stat>
   <Trait>0</Trait>
 </root>

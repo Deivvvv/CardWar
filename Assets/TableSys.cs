@@ -551,7 +551,7 @@ namespace TableSys
                     sizePlanLocal[allCardSimulation[i].Team].Num[allCardSimulation[i].Plan].Num.Add(new SubInt(allCardSimulation[i].Id));
             }
         }
-        static void ViewCard(int team, int a , Transform trans)
+        static void ViewCard(int team, int a, Transform trans)
         {
             List<CardCase> localCard = null;
             SubInt sub = null;
