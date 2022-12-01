@@ -560,6 +560,7 @@ namespace XMLSaver
             core.TaypId = int.Parse(com[2]);
             core.Mod = int.Parse(com[3]);
             core.Num = int.Parse(com[4]);
+            core.Forse= int.Parse(com[5]);
 
             return core;
         }
@@ -723,7 +724,7 @@ namespace XMLSaver
 
         static string GetCore(RuleForm core)
         {
-            string str = $"{core.Card}*{core.Tayp}*{core.TaypId}*{core.Mod}*{core.Num}";
+            string str = $"{core.Card}*{core.Tayp}*{core.TaypId}*{core.Mod}*{core.Num}*{core.Forse}";
 
             return str;
         }

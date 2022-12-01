@@ -1903,7 +1903,7 @@ namespace Coder
                // localKey = -keyA - 1;
             }
 
-            Debug.Log(core.keyMark);
+            //Debug.Log(core.keyMark);
             localAccses.Edit(moodData, a, b, add);
             if (moodData != "Mark")
                 if (b != -1)
