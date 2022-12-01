@@ -494,10 +494,10 @@ namespace Coder
                         com = com[3].Split('*');
                         switch (com[0])
                         {
-                            case ("Forse"):
-                                b = int.Parse(com[1]);
-                                mainRule.Trigger[subMood].Action[b].ForseMood = a;
-                                break;
+                            //case ("Forse"):
+                            //    b = int.Parse(com[1]);
+                            //    mainRule.Trigger[subMood].Action[b].ForseMood = a;
+                            //    break;
 
                             case ("Trigger"):
                                 mainRule.Trigger[subMood].Trigger = a;
@@ -1079,9 +1079,9 @@ namespace Coder
                 case ("ActionTeam"):
                     mainRule.Trigger[subMood].Action[b].Team = IfPlus(mainRule.Trigger[subMood].Action[b].Team, core.frame.PlayerString.Length, mood);
                     break;
-                case ("ActionForse"):
-                    mainRule.Trigger[subMood].Action[b].ForseMood = IfPlus(mainRule.Trigger[subMood].Action[b].ForseMood, core.frame.ForseTayp.Length, mood);
-                    break;
+                //case ("ActionForse"):
+                //    mainRule.Trigger[subMood].Action[b].ForseMood = IfPlus(mainRule.Trigger[subMood].Action[b].ForseMood, core.frame.ForseTayp.Length, mood);
+                //    break;
 
 
 
@@ -1806,7 +1806,7 @@ namespace Coder
                     break;
                 default:
                     action.ResultCore = new RuleForm(core.keyStat);
-                    action.ForseMood = 0;
+                    //action.ForseMood = 0;
                     break;
             }
             return action;
@@ -1845,9 +1845,10 @@ namespace Coder
 
             str += "\nРезультат " + ReturnCore(action.ResultCore, result, true,a);
 
-            if(action.ResultCore.Tayp == core.keyStat)
-                str += "\nForse " + AddLink($"Edit|RuleList_Return_Forse_{path}", $"{core.frame.ForseTayp[action.ForseMood]}");
-
+            //if(action.ResultCore.Tayp == core.keyStat)
+            //    str += "\nForse " + AddLink($"Edit|RuleList_Return_Forse_{path}", $"{core.frame.ForseTayp[action.ForseMood]}");
+            if (action.ResultCore.Tayp == core.keyPlan)
+                str += TextEditInt("Num?" + path, "" + action.ResultCore.Num);
             return str;
         }
 
@@ -2159,9 +2160,6 @@ namespace Coder
                     {
                         str += TextEditInt("Mod?" + path, "" + coreForm.Mod);
                         str += TextEditInt("Num?" + path, "" + coreForm.Num);
-                    }
-                    if (coreForm.Tayp == core.keyStat || coreForm.Tayp == core.keyPlan)
-                    {
                         str += TextEditInt("Forse?" + path, "" + coreForm.Forse);
                     }
                 }
@@ -2967,7 +2965,7 @@ namespace Coder
         //public int Rule;
         public List<RuleForm> Core = new List<RuleForm>();
         public RuleForm ResultCore = new RuleForm();
-        public int ForseMood;
+        //public int ForseMood;
 
     }
    

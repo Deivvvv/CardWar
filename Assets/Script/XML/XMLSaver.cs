@@ -604,20 +604,20 @@ namespace XMLSaver
             //core.RuleTag = int.Parse(com[5]);
             //core.Rule = int.Parse(com[6]);
 
-            core.ForseMood = int.Parse(com[5]);
-            if (com[6] == " ")
+            //core.ForseMood = int.Parse(com[5]);
+            if (com[5] == " ")
                 core.Core = new List<RuleForm>();
             else
             {
-                string[] com1 = com[6].Split('!');
+                string[] com1 = com[5].Split('!');
                 core.Core = new List<RuleForm>(new RuleForm[com1.Length]);
                 for (int i = 0; i < com1.Length; i++)
                     core.Core[i] = ReturnCore(com1[i]);
             }
 
 
-            core.ResultCore = ReturnCore(com[7]);
-            core.Prioritet = int.Parse(com[8]);
+            core.ResultCore = ReturnCore(com[6]);
+            core.Prioritet = int.Parse(com[7]);
 
             return core;
         }
@@ -758,7 +758,7 @@ namespace XMLSaver
         }
         static string GetRuleAction(RuleAction core)
         {
-            string str = $"{core.Action}|{core.ActionExtend}|{core.Min}|{core.Max}|{core.Team}|{core.ForseMood}|";
+            string str = $"{core.Action}|{core.ActionExtend}|{core.Min}|{core.Max}|{core.Team}|";
             if (core.Core.Count > 0)
             {
                 str += GetCore(core.Core[0]);
