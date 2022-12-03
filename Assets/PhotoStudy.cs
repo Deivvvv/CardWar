@@ -25,6 +25,7 @@ public class PhotoStudy : MonoBehaviour
 
     int[] index;
     string model;
+    public LineRenderer lineRenderer;
     void SetModel(string modelName)
     {
         model = modelName;//HumanM
@@ -199,7 +200,7 @@ public class PhotoStudy : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100))
             Debug.DrawLine(ray.origin, hit.point);
         Debug.Log(ray);
-        Debug.Log(hit.collider.gameObject);
+       // Debug.Log(hit.collider.gameObject);
 
     }
 }

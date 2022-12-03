@@ -208,7 +208,9 @@ namespace SubSys
             if(a !=0)
                 Sorter.SplitGuild(0);
 
-            Sorter.HardSort();
+            //Sorter.HardSort();
+
+            Sorter.LoadUi();
             ReloadGallery();
 
             NewColod();
@@ -896,7 +898,7 @@ namespace SubSys
             }
             LoadUi();
         }
-        static void LoadUi()
+        public static void LoadUi()
         {
             string AddLink(BD bd, HideLibraryCase libraryCase, string linkText)
             {
