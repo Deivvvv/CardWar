@@ -200,7 +200,12 @@ public class PhotoStudy : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100))
             Debug.DrawLine(ray.origin, hit.point);
         Debug.Log(ray);
-       // Debug.Log(hit.collider.gameObject);
+        var points = new Vector3[2];
+        points[0] = ray.origin;
+        points[1] = hit.point;
+        lineRenderer.SetPosition(0,points[0]);
+        lineRenderer.SetPosition(1, points[1]);
+        // Debug.Log(hit.collider.gameObject);
 
     }
 }

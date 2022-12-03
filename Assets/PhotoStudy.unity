@@ -892,6 +892,7 @@ MonoBehaviour:
   Head: {fileID: 1456280029}
   Back: {fileID: 0}
   Hair: {fileID: 1930643158}
+  lineRenderer: {fileID: 662261932}
 --- !u!1001 &471704148
 PrefabInstance:
   m_ObjectHideFlags: 0
