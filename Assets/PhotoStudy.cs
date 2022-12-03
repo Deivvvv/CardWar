@@ -194,8 +194,12 @@ public class PhotoStudy : MonoBehaviour
     void UseRayCast()
     {
         Ray ray = RayCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, 100))
-            print("Hit something!");
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 100))
+            Debug.DrawLine(ray.origin, hit.point);
         Debug.Log(ray);
+        Debug.Log(hit.collider.gameObject);
+
     }
 }

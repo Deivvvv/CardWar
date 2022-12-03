@@ -876,6 +876,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb43809a906648841b7b4195192d7e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RayCamera: {fileID: 1388428854}
   LeftLowerArm: {fileID: 381293440}
   LeftArm: {fileID: 595181862}
   LeftHand: {fileID: 246070303}

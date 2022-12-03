@@ -852,7 +852,7 @@ public class CardConstructor : MonoBehaviour
         if (a != -1)
             for (int i = 0; i < compliteAccses.Like[a].Num.Count; i++)
             {
-                listStat.Add(publicStatList[i]);
+                listStat.Add(compliteAccses.Like[a].Num[i].Head);
                // Debug.Log("Add Stat" + publicStatList[i]);
 
             }
@@ -861,12 +861,15 @@ public class CardConstructor : MonoBehaviour
 
         a = compliteAccses.Find(compliteAccses.DisLike, core.keyStat, false);
         if (a != -1)
-            for (int i = 0; i < compliteAccses.Like[a].Num.Count; i++)
+            for (int i = 0; i < compliteAccses.DisLike[a].Num.Count; i++)
             {
-                listStat.Remove(compliteAccses.Like[a].Num[i].Head);
-               // Debug.Log("Remove"+compliteAccses.Like[a].Num[i].Head);
+                listStat.Remove(compliteAccses.DisLike[a].Num[i].Head);
+                // Debug.Log("Remove"+compliteAccses.Like[a].Num[i].Head);
 
             }
+        //Debug.Log("");
+        //for (int i = 0; i < listStat.Count; i++)
+        //    Debug.Log(listStat[i]);
         //listStat.Remove(compliteAccses.Like[a].Num[i].Head);
 
         statAccses = new Accses();
@@ -875,8 +878,12 @@ public class CardConstructor : MonoBehaviour
             SubInt sub = new SubInt(listStat[i]);
             Accses accses = core.bD[core.keyStat].Base[listStat[i]].accses;
             ScanAccses(accses, statAccses, sub.Head);
-           // Debug.Log("Remove" + listStat[i]);
+            // Debug.Log("Remove" + listStat[i]);
         }
+        //Debug.Log("");
+        //for (int i = 0; i < listStat.Count; i++)
+        //    Debug.Log(listStat[i]);
+        
 
         for (int i = 0; i < card.Stat.Count; i++)
         {
