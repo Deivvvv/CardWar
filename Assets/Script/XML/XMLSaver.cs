@@ -1079,8 +1079,9 @@ namespace XMLSaver
             for (int i = 0; i < com.Length; i++)
                 card.Stat.Add(new StatExtend(com[i], bd));
 
+
             {
-                SubInt sub = new SubInt(root.Element("Trait").Value, 3);
+                SubInt sub = new SubInt(root.Element("Trait").Value, 4);
                 card.Trait = sub.Num;
             }
 

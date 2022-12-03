@@ -9,7 +9,7 @@
   <RaceIndex>0</RaceIndex>
   <RaceSize>1</RaceSize>
   <TagUse>True</TagUse>
-  <TagIndex>-1</TagIndex>
+  <TagIndex>0</TagIndex>
   <TagSize>1</TagSize>
   <StatUse>True/True</StatUse>
   <StatIndex>0/6</StatIndex>

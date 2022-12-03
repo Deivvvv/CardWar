@@ -24,6 +24,7 @@ public class SubInt
             return;
 
         // Num = new List<SubInt>();
+        Debug.Log(mood[0]);
         Head = int.Parse(mood[0]);
 
         for (int i = 1; i < mood.Length; i++)

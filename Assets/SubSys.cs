@@ -686,7 +686,7 @@ namespace SubSys
                                         use = guild.Stat.Find(card.Stat[h].GetStat());
 
                                     for (int h = 0; h < card.Trait.Count && use; h++)
-                                        use = guild.Tag.Find(card.Trait[h].Head);
+                                        use = guild.Tag.Find(-card.Trait[h].Head-1);
 
                                     if (revers)
                                         use = !use;
@@ -901,6 +901,7 @@ namespace SubSys
             string AddLink(BD bd, HideLibraryCase libraryCase, string linkText)
             {
                 string str = "\n\n"+linkText;
+               // Debug.Log(libraryCase.Size.Count);
                 for (int i = 0; i < libraryCase.Size.Count; i++)
                     str += DeCoder.AddLink($"{linkText}_{i}", $"\n  {bd.Base[libraryCase.Index[i]].Name}  ({libraryCase.Size[i]})  {(libraryCase.Use[i]? "Yes":"No")}"   );
 
@@ -1018,7 +1019,7 @@ public class HideLibrary
         TaypCard.Add(card.CardTayp);
 
         for (int i = 0; i < card.Trait.Count; i++)
-            Tag.Add(card.Trait[i].Head);
+            Tag.Add(-card.Trait[i].Head - 1);
 
         for (int i = 0; i < card.Stat.Count; i++)
             Stat.Add(card.Stat[i].GetStat());
@@ -1038,7 +1039,7 @@ public class HideLibrary
         TaypCard.Remove(card.CardTayp);
 
         for (int i = 0; i < card.Trait.Count; i++)
-            Tag.Remove(card.Trait[i].Head);
+            Tag.Remove(-card.Trait[i].Head - 1);
 
         for (int i = 0; i < card.Stat.Count; i++)
             Stat.Remove(card.Stat[i].GetStat());
@@ -1071,9 +1072,9 @@ public class HideLibrary
         //}
 
         for (int i = 0; i < card.Trait.Count; i++)
-            Tag.Add(card.Trait[i].Head);
+            Tag.Add(-card.Trait[i].Head-1);
         for (int i = 0; i < card1.Trait.Count; i++)
-            Tag.Remove(card1.Trait[i].Head);
+            Tag.Remove(-card1.Trait[i].Head - 1);
 
         for (int i = 0; i < card.Stat.Count; i++)
             Stat.Add(card.Stat[i].GetStat());
