@@ -1,0 +1,24 @@
+<root>
+  <LegionUse>True</LegionUse>
+  <LegionIndex>0</LegionIndex>
+  <LegionSize>1</LegionSize>
+  <CivilianUse>True</CivilianUse>
+  <CivilianIndex>0</CivilianIndex>
+  <CivilianSize>1</CivilianSize>
+  <RaceUse>True</RaceUse>
+  <RaceIndex>0</RaceIndex>
+  <RaceSize>1</RaceSize>
+  <TagUse>True</TagUse>
+  <TagIndex>-1</TagIndex>
+  <TagSize>1</TagSize>
+  <StatUse>True/True</StatUse>
+  <StatIndex>0/6</StatIndex>
+  <StatSize>1/1</StatSize>
+  <TaypUse>True</TaypUse>
+  <TaypIndex>0</TaypIndex>
+  <TaypSize>1</TaypSize>
+  <ClassUse>True</ClassUse>
+  <ClassIndex>0</ClassIndex>
+  <ClassSize>1</ClassSize>
+  <AllCard>1</AllCard>
+</root>

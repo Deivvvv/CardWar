@@ -1,0 +1,9 @@
+<root>
+  <Name>щитоносец</Name>
+  <Mana>1</Mana>
+  <Legion>0</Legion>
+  <Civilian>0</Civilian>
+  <Race>0</Race>
+  <Stat>0/1|6/1</Stat>
+  <Trait>0|-1?1</Trait>
+</root>
