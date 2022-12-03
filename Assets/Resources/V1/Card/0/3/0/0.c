@@ -1,5 +1,5 @@
 <root>
-  <Name>OldCamp</Name>
+  <Name>Old Camp</Name>
   <Mana>1</Mana>
   <Legion>0</Legion>
   <Civilian>0</Civilian>

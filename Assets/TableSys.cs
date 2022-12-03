@@ -627,7 +627,7 @@ namespace TableSys
             ui.CardButton.gameObject.active = false;
             if (cardId == -1)//(IfSys.line == null && triggerAction== null)
             {
-                if (activeTeam != myTeam)//Корявый костыль заприщабщий хватать карты опонента
+                if (activeTeam != myTeam)//Корявый костыль заприщающий хватать карты опонента
                 {
 
                     compliteUse =false;
@@ -912,11 +912,11 @@ namespace TableSys
                     RuleAction actions = triggerAction.Action[i];
                     if (actions.Min <= p && actions.Max >= p)
                     {
-                        //if (core.frame.Action[actions.Action].Dop[actions.ActionDop] == "NeedTarget")
-                        //{
-                        //    actionTrigger.Add(new ActionLine(true, allCardLocal, card1, -1, actions, power));
-                        //}
-                        //else
+                        if (core.frame.Action[actions.Action].Dop[actions.ActionDop] == "NeedTarget")
+                        {
+                            actionTrigger.Add(new ActionLine(true, allCardLocal, card1, -1, actions, new List<int>()));
+                        }
+                        else
                             actionTrigger.Add(new ActionLine(true, allCardLocal, card1, card2, actions, new List<int>()));
                     }
                 }
@@ -1127,9 +1127,13 @@ namespace TableSys
                         RootSys.PositionCard(card.Team, card.Id, ruleForm.Num);
                         break;
                     case ("Stat"):
-                        f = power[0] / power[1];
-                        f *= ruleForm.Mod;
-                        f += ruleForm.Num;
+                        f = 0;
+                        if(strEx != "Replace" && strEx != "ReplaceMainStat")
+                        {
+                            f = power[0] / power[1];
+                            f *= ruleForm.Mod;
+                            f += ruleForm.Num;
+                        }
                         string strForse = core.frame.ForseTayp[ruleForm.Forse];
                         switch (strEx)
                         {

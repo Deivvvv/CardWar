@@ -145,6 +145,7 @@ public class CoreSys : MonoBehaviour
                 Gallery.Reset(_ui, _ui.gameObject.GetComponent<ColodConstructorUi>());
                 break;
             case ("Stol"):
+                ui.ExitButton.onClick.AddListener(() => LoadScene("Main"));
                 List<CardCase> card1 = new List<CardCase>();
                 List<CardCase> card2 = new List<CardCase>();
                 List<int> size1 = new List<int>();

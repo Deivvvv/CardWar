@@ -4008,7 +4008,7 @@ MonoBehaviour:
   SaveWindow: {fileID: 2063854326}
   ColodWindow: {fileID: 1097476689}
   MainBody: {fileID: 1876126092}
-  AltCard: {fileID: 0}
+  TT: {fileID: 1030406977}
 --- !u!114 &1585165589
 MonoBehaviour:
   m_ObjectHideFlags: 0

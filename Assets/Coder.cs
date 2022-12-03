@@ -506,6 +506,7 @@ namespace Coder
                                 b = int.Parse(com[1]);
                                 mainRule.Trigger[subMood].Action[b].Action = a;
                                 mainRule.Trigger[subMood].Action[b].ActionExtend = 0;
+                                mainRule.Trigger[subMood].Action[b].ActionDop = 0;
                                 NewForm(mainRule.Trigger[subMood].Action[b]);
                                 break;
 
@@ -513,6 +514,10 @@ namespace Coder
                                 b = int.Parse(com[1]);
                                 mainRule.Trigger[subMood].Action[b].ActionExtend = a;
                                 NewForm(mainRule.Trigger[subMood].Action[b]);
+                                break;
+                            case ("ActionDop"):
+                                b = int.Parse(com[1]);
+                                mainRule.Trigger[subMood].Action[b].ActionDop = a;
                                 break;
 
                             case ("Plan"):
@@ -1734,60 +1739,54 @@ namespace Coder
 
             str += "\nAction ";
             str += AddLink($"Edit|RuleList_Return_Action_{b}", core.frame.Action[action.Action].Name);
-            if (core.frame.Action[subMood].Extend.Length > 1)
+            if (core.frame.Action[action.Action].Extend.Length > 1)
             {
                 str += " ";
-                str += AddLink($"Edit|RuleList_Return_ActionExtend_{b}*{action.Action}", core.frame.Action[action.Action].Extend[action.ActionExtend]);
+                str += AddLink($"Edit|RuleList_Return_ActionExtend_{b}*{action.Action}", "Extend: "+core.frame.Action[action.Action].Extend[action.ActionExtend]);
+            }
+            if (core.frame.Action[action.Action].Dop.Length > 1)
+            {
+                str += " ";
+                str += AddLink($"Edit|RuleList_Return_ActionDop_{b}*{action.Action}", "Dop: "+ core.frame.Action[action.Action].Dop[action.ActionDop]);
             }
 
             str += "\n" + ReadForm(action, key);
-            //редактирование через лист и затем обработка через форму
-            // str +=  Action;
-            //  str += ActionExtend;
-
-            // for (int i = 0; i < (action.Core.Count / 2); i++)
-            // {
-            //     str += "\n";
-
-            //     str += ReturnCore(action.Core[i * 2],key +i, true);
-
-            //     str += " / ";
-
-            //     str += ReturnCore(action.Core[i * 2 + 1], key + (i+1), true);
-
-            //     //str += AddLink($"Edit|Remove_Core_Action_{a}_{b}_{i}", "-- Remove");
-            // }
-            // //str += AddLink($"Edit|Add_Core_Action_{a}_{b}", "-- Add");
-
-            // str += "\n";
-            //// Debug.Log("!");//тут стоит вариатор условии в сотвествии 
-            // str += ReturnCore(action.ResultCore, key, true);//использу€ма€ бд идет с шаблона
-
             return str;
         }
         static RuleAction NewForm(RuleAction action)
         {
-            int a = 1;
+            int a = 0;
+            string str = core.frame.Action[action.Action].Extend[action.ActionExtend];
             switch (core.frame.Action[action.Action].Name)
             {
                 case ("Attack"):
                     a = 2;
                     break;
                 case ("Stat"):
-                    a = 2;
+                    if (str == "Clear" || str == "Replace" || str == "ReplaceMainStat")
+                        a = 0;
+                    else
+                        a = 2;
                     break;
                 case ("Rule"):
-                    a = 2;
+                    if (str == "Use")
+                        a = 2;
+                    //else
+                    //    a = 0;
                     break;
-                case ("Effect"):
-                    a = 5;
+                //case ("Transf"):
+                //    a = 0;
+                //    break;
+                case ("Status"):
+                    if(str == "Replace")
+                    a = 1;
                     break;
-                case ("Transf"):
-                    a = 0;
-                    break;
-                    //case ("Rule"):
-                    //    action.ResultCore.TaypId = keyStat; 
-                    //    break;
+                //case ("SwitchPosition"):
+                //    a = 0;
+                //    break;
+                //case ("Equip"):
+                //    a = 0;
+                //    break;
             }
 
             action.Core = new List<RuleForm>(new RuleForm[a]);
@@ -1798,8 +1797,8 @@ namespace Coder
             {
                 case ("Rule"):
                     action.ResultCore = new RuleForm(0);
-                    action.Core[2].Tayp = core.keyPlan;
-                    Debug.Log(action.Core[2].Tayp);
+                    //action.Core[2].Tayp = core.keyPlan;
+                   // Debug.Log(action.Core[2].Tayp);
                     break;
                 case ("Transf"):
                     action.ResultCore = new RuleForm(core.keyPlan);
@@ -1842,26 +1841,31 @@ namespace Coder
             int a = -1;
             if (core.frame.Action[action.Action].Name == "Rule")
                 a = action.ActionExtend;
-            /*
-                Action.Add(new SubAction("Attack"," ", " _NeedTarget"));
-        Action.Add(new SubAction("Stat", "Add_Set_Clear_MainStat_MainStatSet_Replace_ReplaceMainStat", " _NeedTarget"));//изсенить стат - удалить стат - заменить основной стат - заменить параметр
-                                                                        // Action.Add(new SubAction("Karma", "Clear_Add_Remove", "PG_PS_PL_PT_NG_NS_NL_NT"));//karma_{global}_{all}_Stat   .. перобсудить этот раздел
-                                                                        // Action.Add(new SubAction("Switch", "Guild_Ligion_Social_Race"));
-                                                                        // Action.Add(new SubAction("Effect", "Add_Remove_Replace", "Eternal_NoEternal"));
-        Action.Add(new SubAction("Rule", "Use_Add_Remove"));
-        Action.Add(new SubAction("Status", "Add_Remove_Replace"));
-        Action.Add(new SubAction("Transf", " "));
-       // Action.Add(new SubAction("Create", " "));
-        Action.Add(new SubAction("SwitchPosition", " "));
-        Action.Add(new SubAction("Equip", " "));
-             
-             */
             str += "\n–езультат " + ReturnCore(action.ResultCore, result, true,a);
 
             //if(action.ResultCore.Tayp == core.keyStat)
             //    str += "\nForse " + AddLink($"Edit|RuleList_Return_Forse_{path}", $"{core.frame.ForseTayp[action.ForseMood]}");
-            if (action.ResultCore.Tayp == core.keyPlan)
-                str += TextEditInt("Num?" + path, "" + action.ResultCore.Num);
+            //if (action.ResultCore.Tayp == core.keyPlan)
+            //{
+            //    str += TextEditInt("Num?" + path, "" + action.ResultCore.Num);
+            //    int size = core.bD[core.keyPlan].Base.Count;
+            //    if (action.ResultCore.Num == size)
+            //        action.ResultCore.Num = size-1;
+            //    if (action.ResultCore.Num < 0)
+            //        action.ResultCore.Num = 0;
+            //    str += $" {core.bD[core.keyPlan].Base[action.ResultCore.Num].Name}";
+            //}
+            string str1 = core.frame.Action[action.Action].Extend[action.ActionExtend];
+            if( str1 == "Replace" || str1 == "ReplaceMainStat")
+            {
+                int size = core.bD[core.keyStat].Base.Count;
+                if (action.ResultCore.Num == size)
+                    action.ResultCore.Num = size - 1;
+                if (action.ResultCore.Num <0)
+                    action.ResultCore.Num = 0;
+                str += $" {core.bD[core.keyStat].Base[action.ResultCore.Num].Name}";
+            }
+
             return str;
         }
 
@@ -2094,7 +2098,6 @@ namespace Coder
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.Action[i].Name}");
                         break;
                     case ("ActionExtend"):
-                        Debug.Log(path);
                         com = path.Split('*');
                         a = int.Parse(com[2]);
                         //str += $"\n Add|-1 null";
@@ -2102,7 +2105,15 @@ namespace Coder
                         for (int i = 0; i < core.frame.Action[a].Extend.Length; i++)
                             str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.Action[a].Extend[i]}");
                         break;
-                    case ("Plan"):
+                case ("ActionDop"):
+                    com = path.Split('*');
+                    a = int.Parse(com[2]);
+                    //str += $"\n Add|-1 null";
+
+                    for (int i = 0; i < core.frame.Action[a].Dop.Length; i++)
+                        str += $"\n" + AddLink($"{key}{i}_{path}", $"Set { core.frame.Action[a].Dop[i]}");
+                    break;
+                case ("Plan"):
                         //ForseTayp
                         str += $"\n Add|-1 AllPlans";
                         for (int i = 0; i < core.bD[core.keyPlan].Base.Count; i++)
@@ -2229,7 +2240,7 @@ namespace Coder
         //}
 
 
-        static string AddLink(string link, string text, string colors = "ffff00")
+        public static string AddLink(string link, string text, string colors = "ffff00")
         {
             return $"<link={link}><color=#{colors}>{text}</color></link>";
         }
@@ -2967,6 +2978,7 @@ namespace Coder
     {
         public int Action;
         public int ActionExtend;
+        public int ActionDop;
 
         public int Min;
         public int Max;

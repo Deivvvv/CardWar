@@ -14,5 +14,11 @@
   <StatUse>True</StatUse>
   <StatIndex>0</StatIndex>
   <StatSize>1</StatSize>
+  <TaypUse>True</TaypUse>
+  <TaypIndex>3</TaypIndex>
+  <TaypSize>1</TaypSize>
+  <ClassUse>True</ClassUse>
+  <ClassIndex>0</ClassIndex>
+  <ClassSize>1</ClassSize>
   <AllCard>1</AllCard>
 </root>

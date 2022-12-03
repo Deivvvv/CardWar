@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using System.Linq;
 using XMLSaver;
@@ -179,19 +180,9 @@ namespace SubSys
             //ui.Buttons[2].onClick.AddListener(() => SaveWindowSet("CardCreator"));
 
         }
-
-        static void SetGuild(int a)
+        public static void ReloadGallery()
         {
-            guild = a;
             num = 0;
-            colodGuild = new List<int>();
-            colodName = new List<string>();
-            Saver.LoadColodBD(a, colodGuild, colodName);
-
-
-            Sorter.SetGuild(a);
-            if(a !=0)
-                Sorter.SplitGuild(0);
             listID = new List<string>();
             List<SubInt> cardsPath = Sorter.GetCard();
             for (int i = 0; i < cardsPath.Count; i++)
@@ -202,6 +193,23 @@ namespace SubSys
 
 
             ReadGalleryCard();
+        }
+
+        static void SetGuild(int a)
+        {
+            guild = a;
+            //num = 0;
+            colodGuild = new List<int>();
+            colodName = new List<string>();
+            Saver.LoadColodBD(a, colodGuild, colodName);
+
+
+            Sorter.SetGuild(a);
+            if(a !=0)
+                Sorter.SplitGuild(0);
+
+            Sorter.HardSort();
+            ReloadGallery();
 
             NewColod();
 
@@ -358,7 +366,7 @@ namespace SubSys
             }
         }
 
-        static void ReadGalleryCard()
+        public static void ReadGalleryCard()
         {
             cards = new List<CardCase>();
 
@@ -628,11 +636,12 @@ namespace SubSys
 
     static public class Sorter
     {
-
+        static TMP_Text ui;
         static CoreSys sys;
         static HideLibrary guild;
-        static HideLibrary guildSort;
 
+        static List<SubInt> size = new List<SubInt>();
+        static List<SubInt> cardsPath;
         // static HideLibrary cardSet;
         //static HideLibrary guild;
         static bool revers = false;
@@ -643,7 +652,70 @@ namespace SubSys
         //  static List<int> sortIndex = new List<int>();
         // static List<int> lastIndex;
         public static int GetAllCard() { return guild.AllCard; }
-        public static List<SubInt> GetCard() { return guild.Index; }
+        public static List<SubInt> GetCard()
+        {
+            size = new List<SubInt>();
+            cardsPath = new List<SubInt>();
+            List<SubInt> newPath = guild.Index;
+            for (int i = 0; i < newPath.Count; i++)
+            {
+                size.Add(new SubInt(0));
+                SubInt gInt = new SubInt(newPath[i].Head);
+                if(guild.TaypCard.Use[i])
+                    for (int j = 0; j < newPath[i].Num.Count; j++)
+                    {
+                        size[i].Num.Add(new SubInt(0));
+                        SubInt tInt = new SubInt(newPath[i].Num[j].Head);
+                        if (guild.ClassCard.Use[j])
+                            for (int k = 0; k < newPath[i].Num[j].Num.Count; k++)
+                            {
+                                size[i].Num[j].Num.Add(new SubInt(0));
+                                SubInt cInt = new SubInt(newPath[i].Num[j].Num[k].Head);
+                                for (int c = 0; c < newPath[i].Num[j].Num[k].Num.Count; c++)
+                                {
+                                    //  size[i].Num[j].Num[k].Num.Add(new SubInt(0));
+                                    CardCase card = ReadCard(i, j, k, c);
+                                    bool use = true;
+                                    use = guild.Civilian.Find(card.Civilian);
+                                    if (use)
+                                        use = guild.Legion.Find(card.Legion);
+                                    if (use)
+                                        use = guild.Race.Find(card.Race);
+
+                                    for (int h = 0; h < card.Stat.Count && use; h++)
+                                        use = guild.Stat.Find(card.Stat[h].GetStat());
+
+                                    for (int h = 0; h < card.Trait.Count && use; h++)
+                                        use = guild.Tag.Find(card.Trait[h].Head);
+
+                                    if (revers)
+                                        use = !use;
+                                    if (use)
+                                    {
+                                        size[i].Num[j].Num[k].Head++;
+                                        size[i].Num[j].Head++;
+                                        size[i].Head++;
+                                        cInt.Num.Add(new SubInt(newPath[i].Num[j].Num[k].Num[c].Head));
+                                    }
+                                }
+                                if (cInt.Num.Count > 0)
+                                    tInt.Num.Add(cInt);
+                            }
+                        if (tInt.Num.Count > 0)
+                            gInt.Num.Add(tInt);
+                    }
+                cardsPath.Add(gInt);
+            }
+
+
+            LoadUi();
+            return cardsPath;//guild.Index; 
+        }
+        public static void SetUi(TMP_Text _ui)
+        {
+            ui = _ui;
+            sys = DeCoder.GetCore();
+        }
         public static void SetGuild(int a)
         {
             guild = Saver.LoadGuild(a);
@@ -735,12 +807,13 @@ namespace SubSys
         }
 
 
-        static void HardSort()
+        public static void HardSort()
         {
-            SimpleSort(guild.Index);
+            Debug.Log("extraSort");
+            //SimpleSort(guild.Index);
 
-            for (int i = 0; i < guild.Index.Count; i++)
-                guild.Index[i].Sort();
+            //for (int i = 0; i < guild.Index.Count; i++)
+            //    guild.Index[i].Sort();
 
 
 
@@ -773,7 +846,7 @@ namespace SubSys
                         for (int h = 0; h < guild.Index[i].Num[j].Num[k].Num.Count; h++)
                         {
                             CardCase card = ReadCard(i, j, k, h);
-                            if (!mainAccses.AccsesCard(card))
+                            if (!localAccses.AccsesCard(card))
                             {
 
                                 guild.RemoveCard(card);
@@ -784,7 +857,91 @@ namespace SubSys
                         }
                     }
                 }
+
+            LoadUi();
         }
+        
+        public static void ReadCode(string str)
+        {
+            string[] com = str.Split('_');
+            int a = int.Parse(com[1]);
+            switch (com[0])
+            {
+                case ("Use"): // использовать физическую кнопу для перезгрузки колоды из конструктора колод
+                    GetCard();
+                    Gallery.ReloadGallery();
+                    break;
+                case ("Tayp"):
+                    guild.TaypCard.Use[a] = !guild.TaypCard.Use[a];
+                    break;
+                case ("Class"):
+                    guild.ClassCard.Use[a] = !guild.ClassCard.Use[a];
+                    break;
+
+                case ("Civilian"):
+                    guild.Civilian.Use[a] = !guild.Civilian.Use[a];
+                    break;
+                case ("Race"):
+                    guild.Race.Use[a] = !guild.Race.Use[a];
+                    break;
+                case ("Tag"):
+                    guild.Tag.Use[a] = !guild.Tag.Use[a];
+                    break;
+                case ("Legion"):
+                    guild.Legion.Use[a] = !guild.Legion.Use[a];
+                    break;
+                case ("Stat"):
+                    guild.Stat.Use[a] = !guild.Stat.Use[a];
+                    break;
+            }
+            LoadUi();
+        }
+        static void LoadUi()
+        {
+            string AddLink(BD bd, HideLibraryCase libraryCase, string linkText)
+            {
+                string str = "\n\n"+linkText;
+                for (int i = 0; i < libraryCase.Size.Count; i++)
+                    str += DeCoder.AddLink($"{linkText}_{i}", $"\n  {bd.Base[libraryCase.Index[i]].Name}  ({libraryCase.Size[i]})  {(libraryCase.Use[i]? "Yes":"No")}"   );
+
+                return str;
+            }
+
+            string str = DeCoder.AddLink("Use_0","RELOAD");
+            str += $"\n\nCardCount:({guild.AllCard}) ";
+            int siz = 0;
+            for (int i = 0; i < size.Count; i++)
+                siz += size[i].Head;
+            str += "" + siz;
+            for (int i = 0; i < size.Count; i++)
+                str += $"\n{sys.bD[sys.keyGuild].Base[cardsPath[i].Head].Name} ({ size[i].Head})";// + size[i].Head;
+
+            /*
+             блок вывода  данных о картах
+             
+             */
+
+            //str += "CardTayp"
+            //for (int i = 0; i < cardsPath.Count; i++)
+            //{
+            //    for (int j = 0; j < cardsPath[i].Num.Count; j++)
+            //        for (int k = 0; k < cardsPath[i].Num[j].Num.Count; k++)
+            //            for (int c = 0; c < cardsPath[i].Num[j].Num[k].Num.Count; c++)
+            //            {
+
+            //            }
+            //}
+            str += AddLink(sys.bD[sys.keyLegion], guild.Legion, "Legion");
+            str += AddLink(sys.bD[sys.keyRace], guild.Race, "Race");
+            str += AddLink(sys.bD[sys.keyStat], guild.Stat, "Stat");
+            str += AddLink(sys.bD[sys.keyTag], guild.Tag, "Tag");
+            str += AddLink(sys.bD[sys.keyCivilian], guild.Civilian, "Civilian");
+
+
+
+            ui.text = str;
+        }
+
         public static CardCase ReadCard(int i,int j, int k, int h)
         {
             return Saver.LoadCard(
@@ -803,6 +960,8 @@ public class HideLibrary
     public HideLibraryCase Race = new HideLibraryCase();
     public HideLibraryCase Tag = new HideLibraryCase();
     public HideLibraryCase Stat = new HideLibraryCase();
+    public HideLibraryCase TaypCard = new HideLibraryCase();
+    public HideLibraryCase ClassCard = new HideLibraryCase();
     // public int Guild;
     //private int oldKey;
     public int AllCard;
@@ -830,17 +989,17 @@ public class HideLibrary
             Index.Add(new SubInt(card.Guild));
            // AllCard++;
         }
-        Debug.Log(a);
+        //Debug.Log(a);
 
         SubInt listIndex = Index[a];
         a = listIndex.Find(card.CardTayp);
         int b = listIndex.Num[a].Find(card.CardClass);
-        Debug.Log(a);
+       // Debug.Log(a);
 
         if (card.Id == -1)
         {
             int c = listIndex.Num[a].Num[b].Num.Count;
-            Debug.Log(c);
+           // Debug.Log(c);
             if (c == 0)
                 card.Id = c;
             else
@@ -848,13 +1007,15 @@ public class HideLibrary
             AllCard++;
         }
         listIndex.Num[a].Num[b].Find(card.Id);
-        Debug.Log(a);
+        //Debug.Log(a);
 
 
 
         Legion.Add(card.Legion);
         Civilian.Add(card.Civilian);
         Race.Add(card.Race);
+        ClassCard.Add(card.CardClass);
+        TaypCard.Add(card.CardTayp);
 
         for (int i = 0; i < card.Trait.Count; i++)
             Tag.Add(card.Trait[i].Head);
@@ -873,6 +1034,8 @@ public class HideLibrary
         Legion.Remove(card.Legion);
         Civilian.Remove(card.Civilian);
         Race.Remove(card.Race);
+        ClassCard.Remove(card.CardClass);
+        TaypCard.Remove(card.CardTayp);
 
         for (int i = 0; i < card.Trait.Count; i++)
             Tag.Remove(card.Trait[i].Head);
@@ -889,23 +1052,23 @@ public class HideLibrary
             return;
         }
         CardCase card1 = Saver.LoadCard(card.Guild, card.CardTayp, card.CardClass ,card.Id);
-        if (card.Legion != card1.Legion)
-        {
-            Legion.Remove(card1.Legion);
-            Legion.Add(card.Legion);
-        }
+        //if (card.Legion != card1.Legion)
+        //{
+        //    Legion.Remove(card1.Legion);
+        //    Legion.Add(card.Legion);
+        //}
 
-        if (card.Civilian != card1.Civilian)
-        {
-            Civilian.Remove(card1.Civilian);
-            Civilian.Add(card.Civilian);
-        }
+        //if (card.Civilian != card1.Civilian)
+        //{
+        //    Civilian.Remove(card1.Civilian);
+        //    Civilian.Add(card.Civilian);
+        //}
 
-        if (card.Race != card1.Race)
-        {
-            Race.Remove(card1.Race);
-            Race.Add(card.Race);
-        }
+        //if (card.Race != card1.Race)
+        //{
+        //    Race.Remove(card1.Race);
+        //    Race.Add(card.Race);
+        //}
 
         for (int i = 0; i < card.Trait.Count; i++)
             Tag.Add(card.Trait[i].Head);
@@ -925,6 +1088,8 @@ public class HideLibrary
         Race.Split(lib.Race);
         Tag.Split(lib.Tag);
         Stat.Split(lib.Stat);
+        TaypCard.Split(lib.TaypCard);
+        ClassCard.Split(lib.ClassCard);
         AllCard += lib.AllCard;
     }
 }

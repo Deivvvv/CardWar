@@ -1349,7 +1349,7 @@ public class CardConstructor : MonoBehaviour
         int c = ruleAccses.Find(card.Trait, mainA);
         card.Trait[c].Find(mainB);
         CountSize();
-        FullAccsesCount();
+        CountRuleList();
     }
     void RemoveRule(int a, int b)
     {

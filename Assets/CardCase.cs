@@ -23,10 +23,6 @@ public class CardCase
     public int Iniciativa = 2;
     public int Team;
 
-
-    public List<Effect> Effect;
-    public List<Effect> InfinityEffect;
-
     public List<int> Status;
 
     public CardCase(int intGuild, int intCardTayp, int intCardClass, int intId)

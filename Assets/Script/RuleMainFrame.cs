@@ -67,20 +67,33 @@ public class RuleMainFrame : ScriptableObject
         }
 
         {
-            string[] com = { "MyCard", "TargetCard", "MyCard|Main", "MyCard|MainEnemy", "NewCollectCard", "CollectCard", "RemoveCard", "TakeCard", "GetLine" };//, "First|MyCard", "First|TargetCard" };
+            string[] com = {"NewCollectCard", "CollectCard", "RemoveCard", "TakeCard" };//"GetLine", "First|MyCard", "First|TargetCard" };
             CardString = new List<string>(com);
 
-            //string str = "NewCollectCard_CollectCard_RemoveCard_TakeCard_GetLine";
+            string str = "MyCard_TargetCard";
+            string str1 = "Main_MainEnemy_Karma|Global_Karma|Local_Karma|Time";
+            string str2 = "All_Positive_Negative";
 
-            //com = str.Split('_');
-            //str = "Local";
-            //string[] com1 = str.Split('_');
-            //for (int i = 0; i < com.Length; i++)
-            //{
-            //    CardString.Add(com[i]);
-            //    for(int j=0;j<com1.Length;j++)
-            //        CardString.Add(com[i]+"|"+ com1[j]);
-            //}
+            com = str.Split('_');
+            string[] com1 = str1.Split('_');
+            string[] com2 = str2.Split('_');
+            for (int i = 0; i < com.Length; i++)
+            {
+                CardString.Add(com[i]);
+                for (int j = 0; j < com1.Length; j++)
+                {
+                    str = com[i] + "|" + com1[j];
+                    string[] com3 = com1[j].Split('|');
+                    if (com3[0] == "Karma")
+                    {
+                        for (int l = 0; l < com2.Length;l++)
+                            CardString.Add(str +"|" + com2[l]);
+
+                    }
+                    else
+                        CardString.Add(str);
+                }
+            }
         }
         /*
         "StartTurn", "WedgeAttack", "BeforeAttack", "Attack", ProtAction", "AfterAttack", "BeforeAction", "Action", "AfterAction", "BeforePreparation", "Preparation", "AfterPreparation", "CardReaction", "MovePlane", "AttackReaction" "AnotherEquip", "SelfEquip", "BeforeCard", "TakingDamage", "Hurt", "TriggerUse"
@@ -139,7 +152,7 @@ public class RuleMainFrame : ScriptableObject
                                                                         // Action.Add(new SubAction("Effect", "Add_Remove_Replace", "Eternal_NoEternal"));
         Action.Add(new SubAction("Rule", "Use_Add_Remove"));
         Action.Add(new SubAction("Status", "Add_Remove_Replace"));
-        Action.Add(new SubAction("Transf", " "));
+        Action.Add(new SubAction("Transf", " ", " _NeedTarget"));
        // Action.Add(new SubAction("Create", " "));
         Action.Add(new SubAction("SwitchPosition", " "));
         Action.Add(new SubAction("Equip", " "));
@@ -160,6 +173,33 @@ public class RuleMainFrame : ScriptableObject
         for (int i = 0; i < ColorsStr.Length; i++)
             ColorsStr[i] = ColorUtility.ToHtmlStringRGB(colors[i]);
     }
+    /*
+     * уточнить формуло расчето урона для групп по униперсальной фощмуле защиты или нет
+     атака - действие насения урона - урон расчитывается на основе группы понижаемых статов и грпуппы защитных параметров
+     --уточнить по поводу системы ближний-дальний-любой удар
+    -- для активации: основа- делитель- резльтат
+     
+    стат - операция над числами при помощи чисел или груп чисел
+    -- для добавления, установки конкретно значения,добавления к основному числу, установить основное число: - основа- делитель- резльтат
+    -- для замены типа числа, замены типа основного числа: изначальный тип - результат как новый тип
+
+    механика - опирация присваения карте механики и связывание карты с соответсующими триггерами
+    -- использование : в резльтате указать механику из которой будет задействован триггер "UseTule", основа и делитель для расчёта силы действия
+    -- добавить, удалить: результат для указания необходимой для удаления добавления механики 
+    -- заменить - работает анлогично предыдыщему с указанием заменяемой механики и новой механкики. замена проиходит исключительно при налчиии механкики
+     
+    Статус - упраляет статусами карты
+    -- добавить удалить, заменить по аналогии с механиками
+
+    перенос - оперция переноса карты между планами
+    -- указывается новая позиция выбранной карты,  через резльтат + num для указания нового плана карты
+
+    сменая позиции - смещает карту в колоде на указаную позицию  и смещением всех карт вправо
+
+    экипировать - команда переместить карту в другую карту и передавать её своиства носителю,  при изменении свойств карты, они переносятса на носителя
+
+
+     */
 }
 
 public class SubAction

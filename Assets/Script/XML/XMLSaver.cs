@@ -977,6 +977,8 @@ namespace XMLSaver
             lib.Race = ReadCase(root, "Race");
             lib.Tag = ReadCase(root, "Tag");
             lib.Stat = ReadCase(root, "Stat");
+            lib.TaypCard = ReadCase(root, "Tayp");
+            lib.ClassCard = ReadCase(root, "Class");
 
             lib.AllCard = int.Parse(root.Element("AllCard").Value);
 
@@ -1013,6 +1015,8 @@ namespace XMLSaver
             SaveCase(root, lib.Race, "Race");
             SaveCase(root, lib.Tag, "Tag");
             SaveCase(root, lib.Stat, "Stat");
+            SaveCase(root, lib.TaypCard, "Tayp");
+            SaveCase(root, lib.ClassCard, "Class");
 
             root.Add(new XElement("AllCard", lib.AllCard));
 
