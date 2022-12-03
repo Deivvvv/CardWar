@@ -2651,7 +2651,7 @@ namespace Coder
                 Split(core.bD[core.keyStat].Base[a].accses);
                 for(int j = 0; j < core.head[a].Rule.Count;j++)
                 {
-                    Split(Saver.LoadRuleAccses(a, j));
+                    Split(Saver.LoadRuleAccses(a, core.head[a].Index[j]));
                 }
             }
 
@@ -2858,7 +2858,7 @@ namespace Coder
                         if (Like[a].Num.Count == c)
                             Like[a].Num = new List<SubInt>();
 
-                        if(b!= -1)
+                        if (b!= -1)
                         {
                             int d = DisLike[b].Find(accses.Like[i].Num[j].Head, false);
                             if (d != -1)
@@ -2868,6 +2868,7 @@ namespace Coder
                     }
 
                     if (Like[a].Num.Count ==0)
+                        if(b !=-1)
                         if (DisLike[b].Num.Count == 0)
                             DisLike.RemoveAt(b);
                 }
@@ -2879,7 +2880,7 @@ namespace Coder
         public int Find(List<SubInt> list,int a, bool rewrite = true)
         {
             int i = list.FindIndex(x => x.Head == a);
-            if(rewrite)
+            if (rewrite)
                 if (i == -1)
                 {
                     list.Add(new SubInt(a));
