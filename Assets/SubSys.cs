@@ -321,26 +321,32 @@ namespace SubSys
         }
         public static void AltAddCardColod(int a)
         {
+          //  Debug.Log(a);
             int realA = numColod * bodysColod.Count + a;
 
+          //  Debug.Log(realA);
             if (realA < cardsColod.Count)
             {
+            //    Debug.Log(bodysColod[a]);
                 if (size[realA] < 3)
                 {
                     size[realA]++;
                     cardSum++;
                     uiExtend.allCardCount.text = $"{cardSum}/40";
-                    ReadCard(cardsColod[realA], bodysColod[realA-1], false, size[realA]);
+                    ReadCard(cardsColod[realA], bodysColod[a-1], false, size[realA]);
                 }
             }
         }
         public static void RemoveCardColod(int a)
         {
+           // Debug.Log(a);
             int realA = numColod * bodysColod.Count +a;
             if (realA == 0)
                 return;
+           // Debug.Log(realA);
             if (realA < cardsColod.Count)
             {
+               // Debug.Log(bodysColod[a]);
                 if (redactor)
                 {
                     CardCase card = cards[a];
@@ -354,11 +360,13 @@ namespace SubSys
                     if (size[realA] <= 0)
                     {
                         cardsColod.RemoveAt(realA);
-                        CardClear(bodysColod[realA]);
+                        size.RemoveAt(realA);
+                        ReadColodCard();
+                        //CardClear(bodysColod[a - 1]);
                         return;
                     }
                     uiExtend.allCardCount.text = $"{cardSum}/40";
-                    ReadCard( cardsColod[realA], bodysColod[realA-1], false, size[realA]);
+                    ReadCard( cardsColod[realA], bodysColod[a-1], false, size[realA]);
 
                     //ReadColodCard();
                 }
@@ -442,7 +450,7 @@ namespace SubSys
             editColod = false;
             List<string> id = new List<string>();
             for (int i = 0; i < cardsColod.Count; i++)
-                id.Add($"{cardsColod[i].Guild}|{cardsColod[i].CardClass}|{cardsColod[i].CardTayp}|{cardsColod[i].Id}");
+                id.Add($"{cardsColod[i].Guild}|{cardsColod[i].CardTayp}|{cardsColod[i].CardClass}|{cardsColod[i].Id}");
 
             Saver.SaveColod(guild,colod, cardSum,  id,size);
         }
@@ -628,7 +636,7 @@ namespace SubSys
         }
         static void NextColodCard(bool next)
         {
-            numColod = NewPage(next, numColod, bodysColod.Count, cardsColod.Count);
+            numColod = NewPage(next, numColod, bodysColod.Count, cardsColod.Count-1);
             ReadColodCard();
         }
     }
