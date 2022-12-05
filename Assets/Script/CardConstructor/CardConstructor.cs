@@ -1214,8 +1214,18 @@ public class CardConstructor : MonoBehaviour
             void SetInfo(int intMood, int i, int j, List<SubInt> list,int size)
             {
                 int mainA = -list[i].Head - 1;
-                int mainB = list[i].Num[j].Head;
-                //Debug.Log($"{i} {j} {mainA} {mainB}");
+                int mainB = 0;
+                //Debug.Log(list[i].Num[j].Head);
+                for(int k=0;k< core.head[mainA].Index.Count; k++)
+                {
+                    if(core.head[mainA].Index[k] == list[i].Num[j].Head)
+                    {
+                        mainB = k;
+                        break;
+                    }
+                }
+          //      int mainB = core.head[mainA].Index[list[i].Num[j].Head];
+             //   Debug.Log($"{i} {j} {mainA} {mainB}");
 
                 string str = core.head[mainA].Rule[mainB];
                 Text text = ui.RuleRing[intMood].GetChild(0).GetChild(0).GetChild(size).GetChild(0).gameObject.GetComponent<Text>();
