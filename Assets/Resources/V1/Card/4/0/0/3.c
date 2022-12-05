@@ -1,9 +1,9 @@
 <root>
-  <Name>лучник</Name>
-  <Mana>1</Mana>
+  <Name>свояк</Name>
+  <Mana>5</Mana>
   <Legion>0</Legion>
   <Civilian>0</Civilian>
   <Race>0</Race>
-  <Stat>0/1|2/1|3/1</Stat>
+  <Stat>0/5|8/1|5/1|7/2|6/1|1/1</Stat>
   <Trait>0|-1?1</Trait>
 </root>

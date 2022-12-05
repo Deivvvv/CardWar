@@ -1,9 +1,9 @@
 <root>
-  <Name>воин с палицей</Name>
+  <Name>помощник</Name>
   <Mana>5</Mana>
   <Legion>0</Legion>
   <Civilian>0</Civilian>
   <Race>0</Race>
-  <Stat>0/5|4/5|1/5</Stat>
+  <Stat>0/2|2/7|5/4</Stat>
   <Trait>0|-1?1</Trait>
 </root>

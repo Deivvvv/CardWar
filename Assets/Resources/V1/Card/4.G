@@ -1,24 +1,24 @@
 <root>
   <LegionUse>True</LegionUse>
   <LegionIndex>0</LegionIndex>
-  <LegionSize>1</LegionSize>
+  <LegionSize>13</LegionSize>
   <CivilianUse>True</CivilianUse>
   <CivilianIndex>0</CivilianIndex>
-  <CivilianSize>1</CivilianSize>
+  <CivilianSize>13</CivilianSize>
   <RaceUse>True</RaceUse>
   <RaceIndex>0</RaceIndex>
-  <RaceSize>1</RaceSize>
+  <RaceSize>13</RaceSize>
   <TagUse>True</TagUse>
   <TagIndex>0</TagIndex>
-  <TagSize>1</TagSize>
-  <StatUse>True/True</StatUse>
-  <StatIndex>0/6</StatIndex>
-  <StatSize>1/1</StatSize>
+  <TagSize>13</TagSize>
+  <StatUse>True/True/True/True/True/True/True/True/True</StatUse>
+  <StatIndex>0/6/4/1/8/5/7/3/2</StatIndex>
+  <StatSize>13/5/3/8/5/6/6/2/2</StatSize>
   <TaypUse>True</TaypUse>
   <TaypIndex>0</TaypIndex>
-  <TaypSize>1</TaypSize>
+  <TaypSize>13</TaypSize>
   <ClassUse>True</ClassUse>
   <ClassIndex>0</ClassIndex>
-  <ClassSize>1</ClassSize>
-  <AllCard>1</AllCard>
+  <ClassSize>13</ClassSize>
+  <AllCard>13</AllCard>
 </root>
