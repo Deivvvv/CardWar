@@ -655,61 +655,62 @@ namespace SubSys
         public static List<SubInt> GetCard()
         {
             size = new List<SubInt>();
-            cardsPath = new List<SubInt>();
-            List<SubInt> newPath = guild.Index;
-            for (int i = 0; i < newPath.Count; i++)
-            {
-                size.Add(new SubInt(0));
-                SubInt gInt = new SubInt(newPath[i].Head);
-                if(guild.TaypCard.Use[i])
-                    for (int j = 0; j < newPath[i].Num.Count; j++)
-                    {
-                        size[i].Num.Add(new SubInt(0));
-                        SubInt tInt = new SubInt(newPath[i].Num[j].Head);
-                        if (guild.ClassCard.Use[j])
-                            for (int k = 0; k < newPath[i].Num[j].Num.Count; k++)
-                            {
-                                size[i].Num[j].Num.Add(new SubInt(0));
-                                SubInt cInt = new SubInt(newPath[i].Num[j].Num[k].Head);
-                                for (int c = 0; c < newPath[i].Num[j].Num[k].Num.Count; c++)
-                                {
-                                    //  size[i].Num[j].Num[k].Num.Add(new SubInt(0));
-                                    CardCase card = ReadCard(i, j, k, c);
-                                    bool use = true;
-                                    use = guild.Civilian.Find(card.Civilian);
-                                    if (use)
-                                        use = guild.Legion.Find(card.Legion);
-                                    if (use)
-                                        use = guild.Race.Find(card.Race);
+            //cardsPath = new List<SubInt>();
+            //List<SubInt> newPath = guild.Index;
+            //for (int i = 0; i < newPath.Count; i++)
+            //{
+            //    size.Add(new SubInt(0));
+            //    SubInt gInt = new SubInt(newPath[i].Head);
+            //    if(guild.TaypCard.Use[i])
+            //        for (int j = 0; j < newPath[i].Num.Count; j++)
+            //        {
+            //            size[i].Num.Add(new SubInt(0));
+            //            SubInt tInt = new SubInt(newPath[i].Num[j].Head);
+            //            if (guild.ClassCard.Use[j])
+            //                for (int k = 0; k < newPath[i].Num[j].Num.Count; k++)
+            //                {
+            //                    size[i].Num[j].Num.Add(new SubInt(0));
+            //                    SubInt cInt = new SubInt(newPath[i].Num[j].Num[k].Head);
+            //                    for (int c = 0; c < newPath[i].Num[j].Num[k].Num.Count; c++)
+            //                    {
+            //                        //  size[i].Num[j].Num[k].Num.Add(new SubInt(0));
+            //                        CardCase card = ReadCard(i, j, k, c);
+            //                        bool use = true;
+            //                        use = guild.Civilian.Find(card.Civilian);
+            //                        if (use)
+            //                            use = guild.Legion.Find(card.Legion);
+            //                        if (use)
+            //                            use = guild.Race.Find(card.Race);
 
-                                    for (int h = 0; h < card.Stat.Count && use; h++)
-                                        use = guild.Stat.Find(card.Stat[h].GetStat());
+            //                        for (int h = 0; h < card.Stat.Count && use; h++)
+            //                            use = guild.Stat.Find(card.Stat[h].GetStat());
 
-                                    for (int h = 0; h < card.Trait.Count && use; h++)
-                                        use = guild.Tag.Find(-card.Trait[h].Head-1);
+            //                        for (int h = 0; h < card.Trait.Count && use; h++)
+            //                            use = guild.Tag.Find(-card.Trait[h].Head-1);
 
-                                    if (revers)
-                                        use = !use;
-                                    if (use)
-                                    {
-                                        size[i].Num[j].Num[k].Head++;
-                                        size[i].Num[j].Head++;
-                                        size[i].Head++;
-                                        cInt.Num.Add(new SubInt(newPath[i].Num[j].Num[k].Num[c].Head));
-                                    }
-                                }
-                                if (cInt.Num.Count > 0)
-                                    tInt.Num.Add(cInt);
-                            }
-                        if (tInt.Num.Count > 0)
-                            gInt.Num.Add(tInt);
-                    }
-                cardsPath.Add(gInt);
-            }
+            //                        if (revers)
+            //                            use = !use;
+            //                        if (use)
+            //                        {
+            //                            size[i].Num[j].Num[k].Head++;
+            //                            size[i].Num[j].Head++;
+            //                            size[i].Head++;
+            //                            cInt.Num.Add(new SubInt(newPath[i].Num[j].Num[k].Num[c].Head));
+            //                        }
+            //                    }
+            //                    if (cInt.Num.Count > 0)
+            //                        tInt.Num.Add(cInt);
+            //                }
+            //            if (tInt.Num.Count > 0)
+            //                gInt.Num.Add(tInt);
+            //        }
+            //    cardsPath.Add(gInt);
+            //}
 
 
-            LoadUi();
-            return cardsPath;//guild.Index; 
+            //LoadUi();
+            //return cardsPath;//guild.Index; 
+            return guild.Index; 
         }
         public static void SetUi(TMP_Text _ui)
         {

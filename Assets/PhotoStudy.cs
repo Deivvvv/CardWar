@@ -25,7 +25,6 @@ public class PhotoStudy : MonoBehaviour
 
     int[] index;
     string model;
-    public LineRenderer lineRenderer;
     void SetModel(string modelName)
     {
         model = modelName;//HumanM
@@ -187,10 +186,36 @@ public class PhotoStudy : MonoBehaviour
     }
 
     // Update is called once per frame
+
+
+    public List<Material> selectMaterial;//3 компонента 0- не выбрано 1- наведено -2 открыто
+    GameObject openTrigger;
+    GameObject selectTrigger;
+    string openPart ="2";
+    string selectPart ="1";
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
-            UseRayCast();
+        {
+            OpenPart();
+        }
+    }
+    void FixedUpdate()
+    {
+        UseRayCast();
+    }
+    void OpenPart()
+    {
+        if(openPart != selectPart)
+        {
+            openPart = selectPart;
+            if (openTrigger != null)
+                openTrigger.GetComponent<Renderer>().material = selectMaterial[0];
+
+            openTrigger = selectTrigger;
+
+            openTrigger.GetComponent<Renderer>().material = selectMaterial[2];
+        }
     }
     void UseRayCast()
     {
@@ -198,13 +223,34 @@ public class PhotoStudy : MonoBehaviour
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, 100))
-            Debug.DrawLine(ray.origin, hit.point);
-        Debug.Log(ray);
-        var points = new Vector3[2];
-        points[0] = ray.origin;
-        points[1] = hit.point;
-        lineRenderer.SetPosition(0,points[0]);
-        lineRenderer.SetPosition(1, points[1]);
+            if(hit.collider.gameObject.GetComponent<CallBodyPart>())
+            {
+                GameObject go = hit.collider.gameObject;
+                //Debug.Log(go);
+                string str = go.GetComponent<CallBodyPart>().NameComponent;
+                if (str != selectPart)
+                {
+                    if (str == openPart)
+                        return;
+                    if (selectTrigger != null)
+                       // if (selectPart != openPart)
+                            selectTrigger.GetComponent<Renderer>().material = selectMaterial[0];
+
+                    selectTrigger = go;
+
+                    selectTrigger.GetComponent<Renderer>().material = selectMaterial[1];
+                    selectPart = str;
+                    if (openTrigger != null)
+                        openTrigger.GetComponent<Renderer>().material = selectMaterial[2];
+                }
+
+            }
+        //Debug.Log(ray);
+        //var points = new Vector3[2];
+        //points[0] = ray.origin;
+        //points[1] = hit.point;
+        //lineRenderer.SetPosition(0,points[0]);
+        //lineRenderer.SetPosition(1, points[1]);
         // Debug.Log(hit.collider.gameObject);
 
     }
