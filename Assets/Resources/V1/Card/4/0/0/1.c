@@ -1,0 +1,9 @@
+<root>
+  <Name>мечник</Name>
+  <Mana>3</Mana>
+  <Legion>0</Legion>
+  <Civilian>0</Civilian>
+  <Race>0</Race>
+  <Stat>0/5|1/3|6/1|5/1</Stat>
+  <Trait>0|-1?1</Trait>
+</root>

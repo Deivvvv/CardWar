@@ -1,0 +1,9 @@
+<root>
+  <Name>воин</Name>
+  <Mana>5</Mana>
+  <Legion>0</Legion>
+  <Civilian>0</Civilian>
+  <Race>0</Race>
+  <Stat>0/6|7/2|1/2|4/2</Stat>
+  <Trait>0|-1?1</Trait>
+</root>
